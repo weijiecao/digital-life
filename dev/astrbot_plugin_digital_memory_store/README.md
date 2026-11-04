@@ -1,4 +1,4 @@
-# 数字生命独立记忆库（自用版）v1.0.3
+# 数字生命独立记忆库（自用版）v1.0.4
 
 AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时以“未确认线索”的形式回注给模型。
 默认关闭；不自动确认事实；除显式开启的可选功能外不联网。
@@ -7,7 +7,7 @@ AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时�
 
 - 从 [Releases](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
   下载 `astrbot_plugin_digital_memory_store-<version>.zip` 与同名 `.sha256`；
-- 校验：`Get-FileHash .\astrbot_plugin_digital_memory_store-1.0.3.zip -Algorithm SHA256`；
+- 校验：`Get-FileHash .\astrbot_plugin_digital_memory_store-1.0.4.zip -Algorithm SHA256`；
 - 解压后把 `astrbot_plugin_digital_memory_store/` 整个目录放进 AstrBot 的 `data/plugins/`，
   重启 AstrBot；随后按 `INSTALL.md` 配置白名单与模型目录。
 

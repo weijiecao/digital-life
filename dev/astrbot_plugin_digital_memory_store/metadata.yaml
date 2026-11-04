@@ -1,5 +1,5 @@
 name: astrbot_plugin_digital_memory_store
 display_name: 数字生命独立记忆库（自用版）
 desc: 默认每轮给模型有界上下文：本地 BGE 召回 + 未确认标注，不自动确认事实。
-version: 1.0.3
+version: 1.0.4
 author: DigitalLife_Local_Test

@@ -1,5 +1,17 @@
 # 变更记录
 
+## v1.0.4（2026-11-05）
+
+只改文档，不动代码：让“下载 zip → 装进 AstrBot”这条路真的能走通。
+
+### 修复
+
+- `INSTALL.md` 原来让人跑 `python scripts/install.py`，但发包 zip 里没有 `scripts/`（脚本在完整工程
+  仓库 `dev/scripts/`），照着做会直接失败——已改写为“手工安装为主、脚本指向完整工程仓库”；
+- 明确默认状态是“装好但停用”，并给出 3 个必填开关（`enabled` / `automatic_memory_enabled` /
+  `allowed_sender_ids`），补上 ModelScope 拉模型的完整命令；
+- 升级/回退改为可手工执行的备份/恢复步骤；常见问题新增“装完完全没反应”。
+
 ## v1.0.3（2026-11-04）
 
 把外围运维能力集成进 AstrBot 插件页面的可视化视图。
