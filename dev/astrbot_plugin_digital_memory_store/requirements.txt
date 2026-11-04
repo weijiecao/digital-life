@@ -1,0 +1,11 @@
+# 只有语义检索需要这些依赖；记录、查看、备份与命令路径都不需要 BGE。
+# 必须安装到「运行 AstrBot 的那个 Python 环境」，独立 venv 里装了不算。
+# 安装：pip install -r requirements.txt
+# 版本区间是 2026-11 的已知可用组合，未做全矩阵验证；Python 目标版本 3.12。
+
+torch>=2.2,<3
+sentence-transformers>=2.7,<6
+
+# 模型不随包提供，也不自动下载：
+#   model_dir 指向本机 SentenceTransformer 目录（需含 config.json / modules.json）
+# 缺依赖或目录无效时，插件启动会打印一条 [DL_MEMORY 自检] 提示，而不是静默降级。

@@ -1,0 +1,146 @@
+{
+  "model_dir": "..\\testbed\\models\\bge-small-zh-v1.5",
+  "instruction": "为这个句子生成表示以用于检索相关文章：",
+  "cases": {
+    "book-progress": {
+      "query": "之前那件事有什么安排？",
+      "expected": "原计划周六去书店寻找编程资料",
+      "no_instruction": {
+        "source_cosines": {
+          "old-book-01": 0.397,
+          "old-foot-01": 0.3575,
+          "old-movie-01": 0.3982
+        },
+        "title_cosines": {
+          "周末书店": 0.2549,
+          "周末足球": 0.2536,
+          "电影交流": 0.3456
+        },
+        "target_source": "old-book-01",
+        "target_cosine": 0.397,
+        "max_other_source": 0.3982,
+        "margin": -0.0012
+      },
+      "with_instruction": {
+        "source_cosines": {
+          "old-book-01": 0.3876,
+          "old-foot-01": 0.3222,
+          "old-movie-01": 0.3893
+        },
+        "title_cosines": {
+          "周末书店": 0.2333,
+          "周末足球": 0.2072,
+          "电影交流": 0.3068
+        },
+        "target_source": "old-book-01",
+        "target_cosine": 0.3876,
+        "max_other_source": 0.3893,
+        "margin": -0.0017
+      }
+    },
+    "foot-progress": {
+      "query": "之前约的那次呢？",
+      "expected": "计划周日足球训练，队友送了橙色护腕。",
+      "no_instruction": {
+        "source_cosines": {
+          "old-book-01": 0.344,
+          "old-foot-01": 0.3977,
+          "old-movie-01": 0.4285
+        },
+        "title_cosines": {
+          "周末书店": 0.3287,
+          "周末足球": 0.348,
+          "电影交流": 0.3728
+        },
+        "target_source": "old-foot-01",
+        "target_cosine": 0.3977,
+        "max_other_source": 0.4285,
+        "margin": -0.0308
+      },
+      "with_instruction": {
+        "source_cosines": {
+          "old-book-01": 0.2983,
+          "old-foot-01": 0.3267,
+          "old-movie-01": 0.3863
+        },
+        "title_cosines": {
+          "周末书店": 0.2711,
+          "周末足球": 0.2561,
+          "电影交流": 0.3132
+        },
+        "target_source": "old-foot-01",
+        "target_cosine": 0.3267,
+        "max_other_source": 0.3863,
+        "margin": -0.0596
+      }
+    },
+    "unknown-negative": {
+      "query": "上次去火星租飞船的事情呢？",
+      "expected": null,
+      "no_instruction": {
+        "source_cosines": {
+          "old-book-01": 0.3876,
+          "old-foot-01": 0.3635,
+          "old-movie-01": 0.3995
+        },
+        "title_cosines": {
+          "周末书店": 0.3303,
+          "周末足球": 0.3469,
+          "电影交流": 0.3019
+        },
+        "target_source": null,
+        "target_cosine": null,
+        "max_other_source": 0.3995
+      },
+      "with_instruction": {
+        "source_cosines": {
+          "old-book-01": 0.3445,
+          "old-foot-01": 0.3227,
+          "old-movie-01": 0.3494
+        },
+        "title_cosines": {
+          "周末书店": 0.2839,
+          "周末足球": 0.2921,
+          "电影交流": 0.2461
+        },
+        "target_source": null,
+        "target_cosine": null,
+        "max_other_source": 0.3494
+      }
+    },
+    "negative-nearmiss": {
+      "query": "之前去买书那次有没有订飞船？",
+      "expected": null,
+      "no_instruction": {
+        "source_cosines": {
+          "old-book-01": 0.4988,
+          "old-foot-01": 0.3665,
+          "old-movie-01": 0.3926
+        },
+        "title_cosines": {
+          "周末书店": 0.4951,
+          "周末足球": 0.3589,
+          "电影交流": 0.2674
+        },
+        "target_source": null,
+        "target_cosine": null,
+        "max_other_source": 0.4988
+      },
+      "with_instruction": {
+        "source_cosines": {
+          "old-book-01": 0.4666,
+          "old-foot-01": 0.3268,
+          "old-movie-01": 0.3581
+        },
+        "title_cosines": {
+          "周末书店": 0.4425,
+          "周末足球": 0.3054,
+          "电影交流": 0.2147
+        },
+        "target_source": null,
+        "target_cosine": null,
+        "max_other_source": 0.4666
+      }
+    }
+  }
+}

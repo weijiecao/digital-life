@@ -1,0 +1,58 @@
+{
+  "suite": "scale-5000",
+  "count": 5000,
+  "scopes": 20,
+  "model": true,
+  "seed_s": 3.83,
+  "rss_after_seed_mb": 30.1,
+  "jobs_s": 1.94,
+  "rss_after_jobs_mb": 31.2,
+  "index_load_ms": 11878.2,
+  "db_mb": 31.2,
+  "rss_mb": 526.5,
+  "queries": 50,
+  "details": [
+    {
+      "index": 2652,
+      "entity": "秋分设计",
+      "packet_chars": 118,
+      "contains": true
+    },
+    {
+      "index": 1235,
+      "entity": "白杨训练",
+      "packet_chars": 118,
+      "contains": true
+    },
+    {
+      "index": 3234,
+      "entity": "长河健身",
+      "packet_chars": 118,
+      "contains": true
+    },
+    {
+      "index": 395,
+      "entity": "赤松路演",
+      "packet_chars": 117,
+      "contains": true
+    },
+    {
+      "index": 593,
+      "entity": "金桂总结",
+      "packet_chars": 117,
+      "contains": true
+    }
+  ],
+  "target_hits": 50,
+  "latency_ms": {
+    "first": 310.61,
+    "p50": 3.99,
+    "p95": 292.58,
+    "p99": 313.59,
+    "max": 313.59
+  },
+  "target": {
+    "p95_under_ms": 2000,
+    "passed": true
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "suite": "real-qq-evidence-v1",
+  "generated_at": "2026-11-04 08:18:24",
+  "captures": {
+    "rows": 4,
+    "scopes": {
+      "manual-test:b12c7771314341c43da42372650441f6f325ee0a02b1cc4b495a13e6864df085": {
+        "rows": 2,
+        "first_at": "2026-11-03T16:17:16+00:00",
+        "first_seq": 1,
+        "last_at": "2026-11-03T16:17:29+00:00"
+      },
+      "manual-test:5f470dbeb4eb60757580d97e7fd7eaccc15b419a839ab3f933185413a6e756cc": {
+        "rows": 2,
+        "first_at": "2026-11-04T00:14:08+00:00",
+        "first_seq": 3,
+        "last_at": "2026-11-04T00:14:13+00:00"
+      }
+    },
+    "contents": [
+      "我喜欢吃苹果",
+      "你之前喜欢吃苹果吗",
+      "我喜欢吃苹果",
+      "你之前喜欢吃苹果吗"
+    ],
+    "states": [
+      "pending"
+    ],
+    "latest_scope": {
+      "scope": "manual-test:5f470dbeb4eb60757580d97e7fd7eaccc15b419a839ab3f933185413a6e756cc",
+      "rows": 2,
+      "first_at": "2026-11-04T00:14:08+00:00",
+      "first_seq": 3,
+      "last_at": "2026-11-04T00:14:13+00:00"
+    }
+  },
+  "jobs": {
+    "done": 4
+  },
+  "provider": {
+    "requests_seen": 29,
+    "injected_rounds": 4,
+    "injected_samples": [
+      {
+        "at": "2026-11-04 00:15:40",
+        "has_memory_prefix": true,
+        "injected_seq": 1,
+        "injected_original": "我喜欢吃苹果",
+        "captured_texts_in_body": [
+          "我喜欢吃苹果",
+          "你之前喜欢吃苹果吗",
+          "我喜欢吃苹果",
+          "你之前喜欢吃苹果吗"
+        ],
+        "body_chars": 10266,
+        "last_user_text": "你之前喜欢吃苹果吗<system_reminder>Current datetime: 2026-11-04 00:15 (CST), Weekday: Wednesday</system_reminder>[DL_MEMORY_V040]"
+      },
+      {
+        "at": "2026-11-04 00:17:29",
+        "has_memory_prefix": true,
+        "injected_seq": 1,
+        "injected_original": "我喜欢吃苹果",
+        "captured_texts_in_body": [
+          "我喜欢吃苹果",
+          "你之前喜欢吃苹果吗",
+          "我喜欢吃苹果",
+          "你之前喜欢吃苹果吗"
+        ],
+        "body_chars": 10266,
+        "last_user_text": "你之前喜欢吃苹果吗<system_reminder>Current datetime: 2026-11-04 00:17 (CST), Weekday: Wednesday</system_reminder>[DL_MEMORY_V040]"
+      },
+      {
+        "at": "2026-11-04 08:14:13",
+        "has_memory_prefix": true,
+        "injected_seq": 3,
+        "injected_original": "我喜欢吃苹果",
+        "captured_texts_in_body": [
+          "我喜欢吃苹果",
+          "你之前喜欢吃苹果吗",
+          "我喜欢吃苹果",
+          "你之前喜欢吃苹果吗"
+        ],
+        "body_chars": 7882,
+        "last_user_text": "你之前喜欢吃苹果吗<system_reminder>Current datetime: 2026-11-04 08:14 (CST), Weekday: Wednesday</system_reminder>[DL_MEMORY_V040]"
+      }
+    ],
+    "latest_injected": {
+      "at": "2026-11-04 08:14:13",
+      "has_memory_prefix": true,
+      "injected_seq": 3,
+      "injected_original": "我喜欢吃苹果",
+      "captured_texts_in_body": [
+        "我喜欢吃苹果",
+        "你之前喜欢吃苹果吗",
+        "我喜欢吃苹果",
+        "你之前喜欢吃苹果吗"
+      ],
+      "body_chars": 7882,
+      "last_user_text": "你之前喜欢吃苹果吗<system_reminder>Current datetime: 2026-11-04 08:14 (CST), Weekday: Wednesday</system_reminder>[DL_MEMORY_V040]"
+    }
+  }
+}

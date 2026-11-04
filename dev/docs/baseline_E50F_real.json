@@ -1,0 +1,97 @@
+{
+  "format": "digitallife-e50f-real-baseline-v1",
+  "as_of": "2026-11-03",
+  "status": "pending-remote-run",
+  "verified_real": false,
+  "evidence_grade": "none",
+  "purpose": "记录上游 E5.0-F standalone pilot 在真实 AstrBot + NapCat + 真实 BGE 上的基线运行结果。当前文件只有契约与待填字段，没有任何实机数字。",
+  "why_empty": [
+    "本机未安装 AstrBot（import astrbot 失败），也没有 NapCat 运行实例",
+    "本机未安装 torch / sentence-transformers，没有本地 BGE 模型目录，且无外网",
+    "因此所有离线结果只能作为 fixture 级证据，不能填入 verified_real 字段"
+  ],
+  "expected_run_shape": {
+    "script": "_e50f_standalone/RUN_E50F_REAL_BGE_WINDOWS.cmd <shadow_observations.sqlite3> <首条seq> 8",
+    "required_fields": {
+      "local_bge_ran": true,
+      "cosine_cutoff_unchanged": 0.55,
+      "cases": "4 个案例：书店(3)、足球(2)、负例-无关(2)、负例-近似(1)"
+    },
+    "frozen_phrases": {
+      "A_书店": ["之前那件事有什么安排？", "我记得找编程资料，跟周末行程有关。", "是十月去书店找资料那次。"],
+      "B_足球": ["之前约的那次呢？", "后来想起是踢足球，和周末有关。"],
+      "C_负例-无关": ["上次去火星租飞船的事情呢？", "飞船码头的停车规则是什么？"],
+      "D_负例-近似": ["之前去买书那次有没有订飞船？"]
+    },
+    "held_out_details_must_not_leak": ["蓝色贴纸", "橙色护腕"],
+    "config_during_run": {
+      "enable_observation": true,
+      "capture_text_opt_in": true,
+      "retention_days": 1,
+      "after_run": {"capture_text_opt_in": false, "enable_observation": false}
+    }
+  },
+  "expected_results": {
+    "A_书店": "应召回十月书店旧事；不得出现 held-out 细节「蓝色贴纸」",
+    "B_足球": "应召回踢足球旧事；不得出现「橙色护腕」",
+    "C_负例-无关": "不应提供任何相关记忆",
+    "D_负例-近似": "不应被误导成「订飞船」"
+  },
+  "pending_fields": {
+    "run_at": null,
+    "environment": {
+      "astrbot_version": null,
+      "napcat_version": null,
+      "python_version": null,
+      "bge_model": null,
+      "bge_dim": null,
+      "encode_ms_per_item": null
+    },
+    "raw_output_json": null,
+    "case_results": null,
+    "diff_vs_expected": null,
+    "conclusion": null
+  },
+  "local_surrogates_2026_11_03": {
+    "note": "下列为离线替身结果，仅用于证明管线与继承关系，不得当作实机基线。",
+    "inheritance_tests": {
+      "suite": "test_baseline_alignment.py",
+      "contracts": ["0.55 默认阈值", "4000 字采集上限", "8 条话术=4 案例", "旧来源早于新消息", "held-out 不泄漏", "单会话连续 seq 与同事务任务"]
+    },
+    "retrieval_alignment": {
+      "report": "dev/reports/baseline_retrieval.json",
+      "modes": ["plain", "plain_followup", "weak", "weak_followup", "semantic_fixture"],
+      "summary_source": "脚本生成的 summary 字段；本文件不手抄数字，避免再次漂移",
+      "interpretation": "规则路径对正例 0/2 是结构性的：上游线索刻意不提事件名，字面匹配无从下手。semantic_fixture 只证明语义管线接通，不代表真实 BGE 的准确率。"
+    },
+    "integration_probe": {
+      "report": "dev/reports/integration_chain.json",
+      "note": "假 AstrBot + 受控编码器；证明钩子契约与 ①→⑤ 链路，不是实机。"
+    }
+  },
+  "how_to_fill": [
+    "在独立测试实例执行《远程执行单_E50F基线复现.md》第 0–3 步",
+    "把第 3 步 8 条那次完整 JSON 粘贴到 pending_fields.raw_output_json",
+    "按 4 个案例逐条填 case_results，并写 diff_vs_expected（不接受只填总数）",
+    "填写 environment 与 bge_dim / encode_ms_per_item",
+    "verified_real 置 true，evidence_grade 置 real，status 置 verified",
+    "最后重跑 python dev/scripts/report.py，让 STATUS.md 引用本文件状态"
+  ],
+  "related_evidence_2026_11_04": {
+    "note": "这是下游插件的 L2 真实框架证据，不是上游 pilot 的 8 案例基线；两者不要混用。",
+    "report": "dev/docs/REAL_ENV_REPORT.md",
+    "data": "dev/reports/real_env.json",
+    "environment": {
+      "astrbot": "4.29.3",
+      "python": "3.12.10",
+      "torch": "2.15.0+cpu",
+      "sentence_transformers": "5.7.0",
+      "model": "bge-small-zh-v1.5",
+      "dimension": 512,
+      "encode_ms_per_item": 3.8
+    },
+    "platform": "AstrBot WebChat（非 NapCat/QQ）",
+    "provider": "本地 mock OpenAI 兼容服务（只验证请求体）"
+  },
+  "do_not_send": ["真实私人聊天", "QQ 号", ".local_hmac_key", "任何账号凭证"]
+}

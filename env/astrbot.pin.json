@@ -1,0 +1,9 @@
+{
+    "name":  "AstrBot",
+    "version":  "4.29.3",
+    "source":  "https://github.com/AstrBotDevs/AstrBot/archive/refs/tags/v4.29.3.zip",
+    "sha256":  "4f7187273a3fa3e9bea327e1338dcff7567af5ab095c4847da12452ad22d8508",
+    "verified":  "2026-11-04 本机实机：插件加载、钩子注册、命令过滤、WebChat 全通",
+    "python":  "3.12.10",
+    "note":  "其他 4.x 未验证；升级 AstrBot 前先跑 dev 回归与 env\\verify_env.ps1"
+}

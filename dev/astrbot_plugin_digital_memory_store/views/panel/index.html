@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>数字生命记忆库 · 控制面板</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header>
+    <h1>数字生命记忆库</h1>
+    <span class="sub">存储 / 备份 / 维护 / 归档</span>
+    <button id="refresh" class="secondary">刷新</button>
+  </header>
+
+  <section class="cards" id="cards"></section>
+  <section id="warnings" class="warnings"></section>
+
+  <section class="grid">
+    <div class="panel">
+      <h2>五年容量预估（当前每条大小）</h2>
+      <table id="projection"><thead><tr><th>条/天</th><th>库</th><th>含 11 份备份</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="panel">
+      <h2>操作</h2>
+      <div class="actions">
+        <button data-action="backup">立即备份</button>
+        <button data-action="checkpoint" class="secondary">WAL checkpoint</button>
+        <button data-action="integrity" class="secondary">完整性检查</button>
+        <button data-action="vacuum" class="danger">VACUUM</button>
+      </div>
+      <div class="inline">
+        <label>保留备份 <input id="keep" type="number" min="1" max="100" value="7" /></label>
+        <button data-action="rotate" class="secondary">轮转</button>
+      </div>
+      <div class="inline">
+        <label>归档早于 <input id="months" type="number" min="1" max="120" value="12" /> 个月</label>
+        <button data-action="archive-preview" class="secondary">预览</button>
+        <button data-action="archive-export">导出</button>
+      </div>
+      <p class="hint">归档只导出，不删除主库原话。</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>最近备份</h2>
+    <table id="backups"><thead><tr><th>文件</th><th>大小</th><th>时间</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <section class="panel">
+    <h2>输出</h2>
+    <pre id="output"></pre>
+  </section>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

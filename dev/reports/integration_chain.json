@@ -1,0 +1,111 @@
+{
+  "suite": "astrbot-integration-probe-v1",
+  "rounds": 8,
+  "contract": [
+    {
+      "method": "add_memory_context",
+      "kinds": [
+        "on_llm_request"
+      ],
+      "options": [
+        {}
+      ],
+      "parameters": [
+        "self",
+        "event",
+        "req"
+      ],
+      "async": true,
+      "async_generator": false
+    },
+    {
+      "method": "capture_private",
+      "kinds": [
+        "event_message_type"
+      ],
+      "options": [
+        {
+          "type": "PRIVATE_MESSAGE"
+        }
+      ],
+      "parameters": [
+        "self",
+        "event"
+      ],
+      "async": true,
+      "async_generator": false
+    },
+    {
+      "method": "dlm",
+      "kinds": [
+        "command",
+        "event_message_type"
+      ],
+      "options": [
+        {
+          "type": "PRIVATE_MESSAGE"
+        },
+        {
+          "name": "dlm"
+        }
+      ],
+      "parameters": [
+        "self",
+        "event"
+      ],
+      "async": false,
+      "async_generator": true
+    }
+  ],
+  "capture": {
+    "rows": 1,
+    "media_chain_skipped": true,
+    "stranger_ignored": true,
+    "group_ignored": true,
+    "gap_records": 0
+  },
+  "injection": {
+    "rounds": 8,
+    "injected": 8,
+    "rate": 1.0,
+    "prefix_present": true,
+    "temporary_parts": true,
+    "budget_respected": true
+  },
+  "latency_ms": {
+    "samples": [
+      6.81,
+      1.68,
+      1.46,
+      3.21,
+      2.49,
+      2.01,
+      1.66,
+      1.55
+    ],
+    "p50": 2.01,
+    "p95": 6.81,
+    "max": 6.81,
+    "mean": 2.61
+  },
+  "dedupe": {
+    "first_parts": 1,
+    "second_parts": 1,
+    "stable": true
+  },
+  "restart": {
+    "pending_before_restart": 8,
+    "jobs_drained_after_restart": true,
+    "pending_after_drain": 0,
+    "capture_rows_before": 9,
+    "capture_rows_after": 9,
+    "duplicate_capture": false,
+    "injection_after_restart": 1
+  },
+  "legacy_host": {
+    "raised": false,
+    "parts": 0,
+    "failed_open": true
+  },
+  "limitations": "替身平台与受控编码器；只证明链路与契约自洽，不代表真实 AstrBot / BGE / QQ 上的准确率或延迟。"
+}

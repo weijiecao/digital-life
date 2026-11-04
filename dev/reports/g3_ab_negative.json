@@ -1,0 +1,154 @@
+{
+  "suite": "g3-ab-negative-v1",
+  "note": "虚构语料；真实 DeepSeek 仅接收问题、最近原话与候选原话。",
+  "cases": 20,
+  "hits": 20,
+  "calls": 3,
+  "tokens": {
+    "in": 739,
+    "out": 80
+  },
+  "avg_judge_latency_s": 0.627,
+  "rows": [
+    {
+      "id": "negative-01",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.004,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-02",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.002,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-03",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.002,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-04",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.002,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-05",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.002,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-06",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.006,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-07",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.007,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-08",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.004,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-09",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.003,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-10",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.004,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-11",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.528,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-12",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.652,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-13",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.008,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-14",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.008,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-15",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.007,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-16",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.006,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-17",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.718,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-18",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.006,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-19",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.005,
+      "expected_empty": true
+    },
+    {
+      "id": "negative-20",
+      "injected": false,
+      "chars": 0,
+      "latency_s": 0.005,
+      "expected_empty": true
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "enabled": {
+    "description": "启用手动独立记忆测试",
+    "type": "bool",
+    "default": false
+  },
+  "allowed_sender_ids": {
+    "description": "允许测试的私聊用户ID，英文逗号分隔",
+    "type": "string",
+    "default": ""
+  },
+  "model_dir": {
+    "description": "本地 BGE SentenceTransformer 模型目录",
+    "type": "string",
+    "default": ""
+  },
+  "weak_association_enabled": {
+    "description": "允许待审整理和聊天上下文使用词组弱匹配候选（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "association_context_enabled": {
+    "description": "实验：为唯一且有较长原文重合的弱联想提供相关原话（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "semantic_source_context_enabled": {
+    "description": "实验：唯一语义候选尝试匹配原话作为未确认线索（默认关闭，需本地模型）",
+    "type": "bool",
+    "default": false
+  },
+  "pending_context_enabled": {
+    "description": "实验：允许未整理的旧待审原话作为不确定线索参与回复（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "context_enabled": {
+    "description": "在独立测试实例中启用聊天记忆上下文（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "followup_enabled": {
+    "description": "允许短指代延续上一轮明确事件（实验性，默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "capture_enabled": {
+    "description": "在独立测试实例中采集授权私聊原文到待审区（明文、默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "automatic_memory_enabled": {
+    "description": "实验：启用自动采集、整理和受限召回（默认关闭，仍需配置私聊白名单）",
+    "type": "bool",
+    "default": false
+  },
+  "auto_organize_enabled": {
+    "description": "离线试验：后台为最近原话生成未确认的自动定位候选（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "auto_model_enabled": {
+    "description": "实验：后台向指定模型发送原话判断可能关联（默认关闭，每分钟最多一次）",
+    "type": "bool",
+    "default": false
+  },
+  "auto_group_context_enabled": {
+    "description": "实验：把唯一自动分组作为未确认原话线索提供（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "auto_group_semantic_enabled": {
+    "description": "实验：用本地编码器定位近期自动组（默认关闭，需本地模型）",
+    "type": "bool",
+    "default": false
+  },
+  "auto_gap_recovery_enabled": {
+    "description": "实验：自动持久化采集缺口，并只使用缺口后的安全候选（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "model_drafts_enabled": {
+    "description": "允许主动命令向指定模型发送待审文本以生成草稿（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "draft_provider_id": {
+    "description": "整理草稿使用的 AstrBot 聊天模型提供商 ID",
+    "type": "string",
+    "default": ""
+  },
+  "model_judge_enabled": {
+    "description": "候选筛选器（G3 窄路）：本地检索没结果时，让模型只从有限候选里挑原话；会把当前问题、最近 1-2 条原话和候选原话发送给所选模型服务商。默认关闭。",
+    "type": "bool",
+    "default": false
+  },
+  "judge_provider_id": {
+    "description": "候选筛选器使用的 AstrBot 模型提供商 ID；留空则沿用 draft_provider_id。",
+    "type": "string",
+    "default": ""
+  },
+  "judge_hourly_limit": {
+    "description": "每个会话每小时最多调用候选筛选器的次数（1-100，默认 10）。",
+    "type": "int",
+    "default": 10
+  },
+  "detail_priority_enabled": {
+    "description": "实验：按问题字面线索优先选取事件原话（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "compact_context_enabled": {
+    "description": "实验：必要时精简事件上下文字段以保留更多完整原话（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "event_priority_enabled": {
+    "description": "实验：手动重要事件可小幅调整词组联想候选顺序（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "recency_rank_enabled": {
+    "description": "实验：词组联想候选可按最近记录作小幅排序调整（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "occurred_date_context_enabled": {
+    "description": "实验：明确日期时优先使用对应人工标注的事件原话（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "reviewed_brief_context_enabled": {
+    "description": "实验：原话无法装入时可使用来源绑定的人工摘要（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "segment_cache_enabled": {
+    "description": "实验：复用分段摘要结果，保存明文并可能发送给模型（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "preference_rank_enabled": {
+    "description": "实验：对重复出现的自述偏好字面线索小幅加权（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "brief_overview_priority_enabled": {
+    "description": "实验：事件概览时，来源有效且更短的审核摘要可优先（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "multi_event_context_enabled": {
+    "description": "实验：明确提及两个事件时分配预算并分别提供原话（默认关闭）",
+    "type": "bool",
+    "default": false
+  },
+  "context_budget_chars": {
+    "description": "实验：每轮记忆内容的字符预算（150至2000，默认450；不含固定提示）",
+    "type": "int",
+    "default": 450
+  },
+  "judge_timeout_ms": {
+    "description": "候选筛选器超时毫秒数（300-1300，默认 1100）；总钩子预算 1.5 秒。",
+    "type": "int",
+    "default": 1100
+  },
+  "source_similarity_percent": {
+    "description": "原话级语义相似度门槛（百分比，50-95，默认 60）。自造语料实测 60 时 R@1 64/100、误注入 0/20；55 可达 71/100 但风险更高。",
+    "type": "int",
+    "default": 60
+  },
+  "latency_metrics_enabled": {
+    "description": "每轮记录插件钩子耗时与是否注入到本机 latency.jsonl（超过 2MB 自动裁剪）；只写本机，不发网络。",
+    "type": "bool",
+    "default": true
+  },
+  "always_context_enabled": {
+    "description": "每轮都给模型一个有界上下文包：相关证据优先；没有匹配时给较早原话作背景，均标未确认。默认开（关闭后只在命中时注入）。",
+    "type": "bool",
+    "default": true
+  }
+}

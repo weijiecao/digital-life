@@ -1,0 +1,6 @@
+{
+  "enabled": true,
+  "automatic_memory_enabled": true,
+  "context_budget_chars": 450,
+  "always_context_enabled": true
+}

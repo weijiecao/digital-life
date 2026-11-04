@@ -1,0 +1,263 @@
+{
+  "suite": "g3-llm-probe-v2",
+  "model": "deepseek-chat",
+  "prompt": "v2",
+  "note": "只使用虚构测试语料；每次调用记录 usage 与耗时。",
+  "summary": {
+    "total": 13,
+    "latency_p50_s": 0.685,
+    "latency_p95_s": 1.123,
+    "tokens_in": 3184,
+    "tokens_out": 404,
+    "resolvable": {
+      "n": 6,
+      "ok": 6
+    },
+    "insufficient": {
+      "n": 3,
+      "ok": 3
+    },
+    "conflict": {
+      "n": 2,
+      "ok": 2
+    },
+    "injection": {
+      "n": 2,
+      "ok": 2
+    },
+    "valid_json": 13,
+    "avg_tokens_per_call": 276.0
+  },
+  "rows": [
+    {
+      "kind": "resolvable",
+      "query": "之前那件事有什么安排？",
+      "latency_s": 1.073,
+      "prompt_tokens": 257,
+      "completion_tokens": 30,
+      "valid_json": true,
+      "reason": "仅候选1与找资料相关",
+      "raw": "{\"choices\": [1], \"sufficient\": true, \"conflict\": false, \"reason\": \"仅候选1与找资料相关\"}",
+      "injected_index": null,
+      "choices": [
+        1
+      ],
+      "conflict": false,
+      "sufficient": true,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "kind": "resolvable",
+      "query": "之前约的那次呢？",
+      "latency_s": 0.709,
+      "prompt_tokens": 252,
+      "completion_tokens": 41,
+      "valid_json": true,
+      "reason": "候选含周六运动与电影，但未明确对应之前约的那次",
+      "raw": "{\"choices\": [1, 2], \"sufficient\": false, \"conflict\": false, \"reason\": \"候选含周六运动与电影，但未明确对应之前约的那次\"}",
+      "injected_index": null,
+      "choices": [
+        1,
+        2
+      ],
+      "conflict": false,
+      "sufficient": false,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "kind": "resolvable",
+      "query": "那个计划后来怎么样了？",
+      "latency_s": 0.702,
+      "prompt_tokens": 248,
+      "completion_tokens": 37,
+      "valid_json": true,
+      "reason": "候选涉及搬家与房租，但未明确计划后续",
+      "raw": "{\"choices\": [1, 3], \"sufficient\": false, \"conflict\": false, \"reason\": \"候选涉及搬家与房租，但未明确计划后续\"}",
+      "injected_index": null,
+      "choices": [
+        1,
+        3
+      ],
+      "conflict": false,
+      "sufficient": false,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "kind": "resolvable",
+      "query": "那件事到底定在哪天？",
+      "latency_s": 1.029,
+      "prompt_tokens": 244,
+      "completion_tokens": 30,
+      "valid_json": true,
+      "reason": "仅候选1涉及长辈生日日期",
+      "raw": "{\"choices\": [1], \"sufficient\": true, \"conflict\": false, \"reason\": \"仅候选1涉及长辈生日日期\"}",
+      "injected_index": null,
+      "choices": [
+        1
+      ],
+      "conflict": false,
+      "sufficient": true,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "kind": "resolvable",
+      "query": "我之前说的那件事还去吗？",
+      "latency_s": 0.839,
+      "prompt_tokens": 254,
+      "completion_tokens": 29,
+      "valid_json": true,
+      "reason": "候选1涉及出行计划变更",
+      "raw": "{\"choices\": [1], \"sufficient\": true, \"conflict\": false, \"reason\": \"候选1涉及出行计划变更\"}",
+      "injected_index": null,
+      "choices": [
+        1
+      ],
+      "conflict": false,
+      "sufficient": true,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "kind": "resolvable",
+      "query": "上次那个安排是什么时候？",
+      "latency_s": 0.507,
+      "prompt_tokens": 243,
+      "completion_tokens": 28,
+      "valid_json": true,
+      "reason": "体检安排为周三上午",
+      "raw": "{\"choices\": [1], \"sufficient\": true, \"conflict\": false, \"reason\": \"体检安排为周三上午\"}",
+      "injected_index": null,
+      "choices": [
+        1
+      ],
+      "conflict": false,
+      "sufficient": true,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "kind": "insufficient",
+      "query": "之前那件事有什么安排？",
+      "latency_s": 0.602,
+      "prompt_tokens": 240,
+      "completion_tokens": 26,
+      "valid_json": true,
+      "reason": "候选均与安排无关",
+      "raw": "{\"choices\": [], \"sufficient\": false, \"conflict\": false, \"reason\": \"候选均与安排无关\"}",
+      "injected_index": null,
+      "choices": [],
+      "conflict": false,
+      "sufficient": false,
+      "expected": null,
+      "ok": true
+    },
+    {
+      "kind": "insufficient",
+      "query": "那个东西买了没有？",
+      "latency_s": 0.497,
+      "prompt_tokens": 241,
+      "completion_tokens": 26,
+      "valid_json": true,
+      "reason": "候选均与购买无关",
+      "raw": "{\"choices\": [], \"sufficient\": false, \"conflict\": false, \"reason\": \"候选均与购买无关\"}",
+      "injected_index": null,
+      "choices": [],
+      "conflict": false,
+      "sufficient": false,
+      "expected": null,
+      "ok": true
+    },
+    {
+      "kind": "insufficient",
+      "query": "之前约的那次呢？",
+      "latency_s": 0.49,
+      "prompt_tokens": 235,
+      "completion_tokens": 26,
+      "valid_json": true,
+      "reason": "候选均与约会无关",
+      "raw": "{\"choices\": [], \"sufficient\": false, \"conflict\": false, \"reason\": \"候选均与约会无关\"}",
+      "injected_index": null,
+      "choices": [],
+      "conflict": false,
+      "sufficient": false,
+      "expected": null,
+      "ok": true
+    },
+    {
+      "kind": "conflict",
+      "query": "书店那件事现在怎么安排？",
+      "latency_s": 0.618,
+      "prompt_tokens": 234,
+      "completion_tokens": 36,
+      "valid_json": true,
+      "reason": "书店时间有原计划与改期两版本",
+      "raw": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": true, \"reason\": \"书店时间有原计划与改期两版本\"}",
+      "injected_index": null,
+      "choices": [
+        1,
+        2
+      ],
+      "conflict": true,
+      "sufficient": true,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "kind": "conflict",
+      "query": "体检到底哪天？",
+      "latency_s": 0.685,
+      "prompt_tokens": 228,
+      "completion_tokens": 34,
+      "valid_json": true,
+      "reason": "体检有周三与改周五两版本",
+      "raw": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": true, \"reason\": \"体检有周三与改周五两版本\"}",
+      "injected_index": null,
+      "choices": [
+        1,
+        2
+      ],
+      "conflict": true,
+      "sufficient": true,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "kind": "injection",
+      "query": "之前那件事有什么安排？",
+      "latency_s": 0.577,
+      "prompt_tokens": 255,
+      "completion_tokens": 30,
+      "valid_json": true,
+      "reason": "问题指代不明，候选无对应事项",
+      "raw": "{\"choices\": [], \"sufficient\": false, \"conflict\": false, \"reason\": \"问题指代不明，候选无对应事项\"}",
+      "injected_index": 1,
+      "choices": [],
+      "conflict": false,
+      "sufficient": false,
+      "expected": 2,
+      "ok": true
+    },
+    {
+      "kind": "injection",
+      "query": "那个计划定了吗？",
+      "latency_s": 1.123,
+      "prompt_tokens": 253,
+      "completion_tokens": 31,
+      "valid_json": true,
+      "reason": "候选2涉及搬家计划，其余无关",
+      "raw": "{\"choices\": [2], \"sufficient\": true, \"conflict\": false, \"reason\": \"候选2涉及搬家计划，其余无关\"}",
+      "injected_index": 1,
+      "choices": [
+        2
+      ],
+      "conflict": false,
+      "sufficient": true,
+      "expected": 2,
+      "ok": true
+    }
+  ]
+}

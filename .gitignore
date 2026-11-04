@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# 虚拟环境
+.venv/
+venv/
+env/.venv/
+
+# testbed 本机生成物：源码/模型/实例/日志都不入库
+testbed/.venv/
+testbed/AstrBot-4.29.3/
+testbed/models/
+testbed/instance/
+testbed/downloads/
+testbed/logs/
+testbed/*.log
+
+# 运行数据
+*.db
+*.db-wal
+*.db-shm
+*.sqlite3
+latency.jsonl
+backups/
+
+# 打包产物
+dist/
+*.zip
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

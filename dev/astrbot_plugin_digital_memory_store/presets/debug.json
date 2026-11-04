@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "automatic_memory_enabled": true,
+  "context_budget_chars": 600,
+  "weak_association_enabled": true,
+  "association_context_enabled": true,
+  "semantic_source_context_enabled": true,
+  "multi_event_context_enabled": true,
+  "detail_priority_enabled": true,
+  "compact_context_enabled": true,
+  "event_priority_enabled": true,
+  "recency_rank_enabled": true,
+  "occurred_date_context_enabled": true,
+  "reviewed_brief_context_enabled": true,
+  "segment_cache_enabled": true,
+  "preference_rank_enabled": true,
+  "brief_overview_priority_enabled": true,
+  "always_context_enabled": true
+}

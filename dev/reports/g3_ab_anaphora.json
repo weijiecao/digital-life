@@ -1,0 +1,134 @@
+{
+  "suite": "g3-ab-anaphora-v1",
+  "note": "虚构语料；真实 DeepSeek 仅接收问题、最近原话与候选原话。",
+  "cases": 15,
+  "hits": 15,
+  "calls": 15,
+  "tokens": {
+    "in": 3304,
+    "out": 462
+  },
+  "avg_judge_latency_s": 0.778,
+  "rows": [
+    {
+      "id": "followup-01",
+      "expected": "原计划周六去书店找编程资料",
+      "injected": true,
+      "hit": true,
+      "chars": 217,
+      "latency_s": 0.908
+    },
+    {
+      "id": "followup-02",
+      "expected": "下个月十五号搬到杭州西湖区",
+      "injected": true,
+      "hit": true,
+      "chars": 217,
+      "latency_s": 0.724
+    },
+    {
+      "id": "followup-03",
+      "expected": "约了周三上午做入职体检",
+      "injected": true,
+      "hit": true,
+      "chars": 215,
+      "latency_s": 0.568
+    },
+    {
+      "id": "followup-04",
+      "expected": "科目二练车定在周六早上",
+      "injected": true,
+      "hit": true,
+      "chars": 215,
+      "latency_s": 0.682
+    },
+    {
+      "id": "followup-05",
+      "expected": "周末带猫去打疫苗",
+      "injected": true,
+      "hit": true,
+      "chars": 212,
+      "latency_s": 0.729
+    },
+    {
+      "id": "followup-06",
+      "expected": "国庆去青岛看海",
+      "injected": true,
+      "hit": true,
+      "chars": 211,
+      "latency_s": 0.838
+    },
+    {
+      "id": "followup-07",
+      "expected": "客厅地面换木地板",
+      "injected": true,
+      "hit": true,
+      "chars": 212,
+      "latency_s": 0.768
+    },
+    {
+      "id": "followup-08",
+      "expected": "十月二号参加表哥婚礼",
+      "injected": true,
+      "hit": true,
+      "chars": 214,
+      "latency_s": 0.779
+    },
+    {
+      "id": "followup-09",
+      "expected": "周四下午面试后端岗位",
+      "injected": true,
+      "hit": true,
+      "chars": 214,
+      "latency_s": 0.955
+    },
+    {
+      "id": "followup-10",
+      "expected": "办了年卡每周三练腿",
+      "injected": true,
+      "hit": true,
+      "chars": 213,
+      "latency_s": 0.678
+    },
+    {
+      "id": "followup-11",
+      "expected": "车放4S店换刹车片",
+      "injected": true,
+      "hit": true,
+      "chars": 213,
+      "latency_s": 0.685
+    },
+    {
+      "id": "followup-12",
+      "expected": "月底交下季度房租六千",
+      "injected": true,
+      "hit": true,
+      "chars": 214,
+      "latency_s": 0.842
+    },
+    {
+      "id": "followup-13",
+      "expected": "爷爷下周二复查心脏",
+      "injected": true,
+      "hit": true,
+      "chars": 213,
+      "latency_s": 0.912
+    },
+    {
+      "id": "followup-14",
+      "expected": "报名了十二月的雅思考试",
+      "injected": true,
+      "hit": true,
+      "chars": 215,
+      "latency_s": 0.802
+    },
+    {
+      "id": "followup-15",
+      "expected": "周五晚上同学聚会",
+      "injected": true,
+      "hit": true,
+      "chars": 212,
+      "latency_s": 0.831
+    }
+  ]
+}

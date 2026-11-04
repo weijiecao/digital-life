@@ -1,0 +1,10 @@
+{
+  "probes": [
+    {"session": "s1", "query": "喜欢吃苹果吗",
+     "expect": ["我喜欢吃苹果"], "require_unconfirmed": true},
+    {"session": "s1", "query": "火星飞船怎么租？",
+     "forbid": ["公园跑步", "苹果"]},
+    {"session": "s2", "query": "之前搬到杭州西湖区那件事怎么样",
+     "expect": ["下个月十五号搬到杭州西湖区", "搬家改到滨江区"], "require_unconfirmed": true}
+  ]
+}

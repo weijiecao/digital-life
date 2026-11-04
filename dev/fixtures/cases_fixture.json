@@ -1,0 +1,45 @@
+{
+  "format": "digitallife-e50b-cases-v1",
+  "cases": [
+    {
+      "case_id": "book-progress",
+      "clues": [
+        "之前那件事有什么安排？",
+        "我记得找编程资料，跟周末行程有关。",
+        "是十月去书店找资料那次。"
+      ],
+      "expected_external_id": "bookstore",
+      "old_only_detail": "蓝色贴纸",
+      "expected_old_source_id": "old-book-01"
+    },
+    {
+      "case_id": "foot-progress",
+      "clues": [
+        "之前约的那次呢？",
+        "后来想起是踢足球，和周末有关。"
+      ],
+      "expected_external_id": "football",
+      "old_only_detail": "橙色护腕",
+      "expected_old_source_id": "old-foot-01"
+    },
+    {
+      "case_id": "unknown-negative",
+      "clues": [
+        "上次去火星租飞船的事情呢？",
+        "飞船码头的停车规则是什么？"
+      ],
+      "expected_external_id": null,
+      "old_only_detail": null,
+      "expected_old_source_id": null
+    },
+    {
+      "case_id": "negative-nearmiss",
+      "clues": [
+        "之前去买书那次有没有订飞船？"
+      ],
+      "expected_external_id": null,
+      "old_only_detail": null,
+      "expected_old_source_id": null
+    }
+  ]
+}
