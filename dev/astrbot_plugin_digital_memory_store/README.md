@@ -1,4 +1,4 @@
-# 数字生命独立记忆库（自用版）v1.0.7
+# 数字生命独立记忆库（自用版）v1.0.8
 
 [![Release](https://img.shields.io/github/v/release/weijiecao/astrbot_plugin_digital_memory_store?label=release)](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
 [![License](https://img.shields.io/github/license/weijiecao/astrbot_plugin_digital_memory_store)](LICENSE)
@@ -63,10 +63,18 @@ AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时�
 
 ## 常用命令
 
-`/dlm 上下文状态`、`/dlm 记忆状态`、`/dlm 备份`、`/dlm 备份校验`、`/dlm 恢复说明`、
-`/dlm 采集状态`、`/dlm 事件`、`/dlm 查看 事件名`、`/dlm 导入历史`。
+| 命令 | 作用 |
+|---|---|
+| `/dlm 上下文状态` | 本轮是否注入、预算、模型状态 |
+| `/dlm 记忆状态` | 采集数、事件数、后台任务 |
+| `/dlm 采集状态` | 采集开关、缓冲与失败计数 |
+| `/dlm 待审` | 未确认的待审原话（分页） |
+| `/dlm 事件` | 已整理出的候选事件 |
+| `/dlm 查看 标题` | 按标题查看原话与关系 |
+| `/dlm 备份` | 立即备份并校验 |
+| `/dlm 备份校验 <备份文件名>` | 校验某个已有备份 |
 
-完整命令见 `/dlm 帮助`。
+完整命令（含整理、关联、时间线、摘要缓存等）见 `/dlm 帮助`。
 
 ## 数据与隐私
 

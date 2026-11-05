@@ -5,12 +5,8 @@ import os
 import sys
 import time
 import urllib.request
-from pathlib import Path
 
-# key 文件路径可用环境变量覆盖；默认放在 testbed 实例目录下
-KEY_FILE = os.environ.get(
-    'DEEPSEEK_KEY_FILE',
-    str(Path.home() / 'Desktop' / '数字生命' / 'testbed' / 'instance' / 'data' / '.deepseek_key'))
+KEY_FILE = r'C:\Users\<you>\Desktop\数字生命\testbed\instance\data\.deepseek_key'
 BASE = 'https://api.deepseek.com/v1/chat/completions'
 
 

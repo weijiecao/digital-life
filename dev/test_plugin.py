@@ -1393,4 +1393,25 @@ class Smoke(unittest.TestCase):
             self.assertFalse(req4.extra_user_content_parts)
             await p.terminate()
         with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+
+class CommandHelp(unittest.TestCase):
+    """`/dlm 帮助` 与未知命令的提示：文档承诺的入口必须真实存在。"""
+
+    def test_help_lists_commands_and_unknown_points_to_help(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42'})
+            try:
+                text=(await run(p,'/dlm 帮助'))[0]
+                self.assertIn('常用命令',text)
+                self.assertIn('/dlm 备份校验',text)
+                self.assertIn('/dlm 上下文状态',text)
+                unknown=(await run(p,'/dlm 这条命令不存在'))[0]
+                self.assertIn('/dlm 帮助',unknown)
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+
 if __name__=='__main__':unittest.main()

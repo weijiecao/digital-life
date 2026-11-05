@@ -2,7 +2,7 @@
 
 [![Release](https://img.shields.io/github/v/release/weijiecao/digital-life?label=release)](https://github.com/weijiecao/digital-life/releases)
 [![Plugin](https://img.shields.io/github/v/release/weijiecao/astrbot_plugin_digital_memory_store?label=plugin)](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
-[![Tests](https://img.shields.io/badge/tests-336%2F336-brightgreen)](dev/STATUS.md)
+[![Tests](https://img.shields.io/badge/tests-337%2F337-brightgreen)](dev/STATUS.md)
 [![License](https://img.shields.io/github/license/weijiecao/digital-life)](LICENSE)
 [![AstrBot](https://img.shields.io/badge/AstrBot-4.29.3%20tested-blue)](https://github.com/AstrBotDevs/AstrBot)
 
@@ -84,7 +84,7 @@
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-把「私聊原话存本机、需要时以**未确认线索**回注模型」做成可验证的工程：插件本体、336 项离线回归、
+把「私聊原话存本机、需要时以**未确认线索**回注模型」做成可验证的工程：插件本体、337 项离线回归、
 真实 AstrBot/真实 BGE/真实 QQ 的实机证据，以及**换机器也能复现的环境引导**。
 
 | 入口 | 说明 |
@@ -95,13 +95,13 @@
 
 ## 这套东西是什么
 
-AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.7）：白名单账号的**私聊纯文本**落本机
+AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.8）：白名单账号的**私聊纯文本**落本机
 SQLite，自动整理成“待审线索”，每轮请求前给模型一段**有界上下文**（最多 450–600 字），
 一律标注“未确认”，不自动确认事实；默认关闭，除显式开启的候选筛选器外不联网。
 
 本仓库除了插件本体，还包含：
 
-- **336 项离线回归**（`dev/test_*.py`，含上游基线继承、备份回归、注入契约、端到端链路）；
+- **337 项离线回归**（`dev/test_*.py`，含上游基线继承、备份回归、注入契约、端到端链路）；
 - **可观测假 AstrBot**（`dev/sim_astrbot.py`）与真实链路探针（`testbed/harness/real_chain.py`）；
 - **实机环境**：AstrBot 4.29.3 + Python 3.12 + 真实 BGE（512 维）+ 本地 mock provider；
 - **一键环境引导**：`env/setup.ps1`（建 venv、拉源码、装依赖、下模型、生成实例）。
@@ -126,7 +126,7 @@ digital-life/
     README.md                版本矩阵、镜像源、已知坑（先读这个）
   dev/                       开发工作区（权威开发线）
     astrbot_plugin_digital_memory_store/   插件源码（含 install.ps1 与用户文档）
-    test_*.py                336 项回归 + 探针
+    test_*.py                337 项回归 + 探针
     scripts/                 report.py / install.py / upgrade.py / rollback.py / build_package.py
     docs/                    架构、指标口径、评估集、实机报告、上线清单…
     reports/                 探针与评估输出（可重生成）
@@ -179,7 +179,7 @@ cd ..\testbed
 
 | 项 | 结果 |
 |---|---|
-| 离线回归 | 336/336（`dev/STATUS.md` 为唯一数字来源，脚本生成） |
+| 离线回归 | 337/337（`dev/STATUS.md` 为唯一数字来源，脚本生成） |
 | 真实 AstrBot 4.29.3 | 插件加载、钩子注册（`OnLLMRequestEvent`）、命令过滤均通 |
 | 真实 BGE | 512 维；冷加载 10.9–13.1 s；3.8–4.0 ms/条 |
 | 注入可见 | mock provider 收到的请求体含 `[DL_MEMORY_V040]` 与旧原话；钩子→provider 0.13 s |

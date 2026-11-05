@@ -14,7 +14,9 @@
 
 import argparse
 import json
+import os
 import shutil
+import stat
 import sys
 import time
 from pathlib import Path
@@ -27,8 +29,26 @@ PRESETS = ('off', 'self', 'debug')
 
 
 def _ignore_pycache(directory, names):
-    return [name for name in names
-            if name == '__pycache__' or name.endswith('.pyc')]
+    """复制插件时排除缓存与版本库/编辑器目录（.git 里是只读对象，复制后删不掉）。"""
+    ignored = {'.git', '.github', '.venv', 'venv', '__pycache__',
+               '.idea', '.vscode', 'dist', '.pytest_cache'}
+    return [name for name in names if name in ignored or name.endswith('.pyc')]
+
+
+def _force_rmtree(path):
+    """Windows 下 .git 对象是只读的，先去掉只读位再删。"""
+    path = Path(path)
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            try:
+                os.chmod(os.path.join(root, name), stat.S_IWRITE)
+            except OSError:
+                pass
+        try:
+            os.chmod(root, stat.S_IWRITE)
+        except OSError:
+            pass
+    shutil.rmtree(path)
 
 
 def load_schema(plugin_dir=SOURCE):
@@ -77,7 +97,7 @@ def install(astrbot_root, preset='self', allowed_sender_ids='', model_dir='',
         if not force:
             raise FileExistsError('插件已存在：%s（升级请用 upgrade.py，或加 --force）'
                                   % paths['target'])
-        shutil.rmtree(paths['target'])
+        _force_rmtree(paths['target'])
     paths['plugins'].mkdir(parents=True, exist_ok=True)
     paths['config'].parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(source, paths['target'], ignore=_ignore_pycache)
@@ -107,7 +127,7 @@ def upgrade(astrbot_root, source=SOURCE):
     if not paths['config'].is_file():
         raise FileNotFoundError('缺少插件配置，拒绝升级以免丢配置：%s' % paths['config'])
     saved = backup(astrbot_root)
-    shutil.rmtree(paths['target'])
+    _force_rmtree(paths['target'])
     shutil.copytree(source, paths['target'], ignore=_ignore_pycache)
     return {'backup': str(saved), 'target': str(paths['target'])}
 

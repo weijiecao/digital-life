@@ -90,7 +90,7 @@ C:\AstrBot\.venv\Scripts\python.exe -c "from sentence_transformers import Senten
 | 症状 | 原因 | 处理 |
 |---|---|---|
 | 插件页没有 panel 视图 | 面板需要 AstrBot 的插件页上下文 | 从插件详情页进入；确认插件已激活 |
-| 备份按钮报错 | 磁盘空间不足或库被占用 | 看面板里的“磁盘剩余”；先 `/dlm 备份校验` |
+| 备份按钮报错 | 磁盘空间不足或库被占用 | 看面板里的“磁盘剩余”；先 `/dlm 备份校验 <备份文件名>` |
 | VACUUM 失败 | 需要临时空间（约为库大小） | 清理磁盘后重试 |
 | 想恢复备份 | 备份是 SQLite 文件 | 停 AstrBot → 用备份文件替换 `data\plugin_data\...\*.sqlite3` → 启动 |
 

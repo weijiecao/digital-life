@@ -1412,7 +1412,16 @@ class DigitalMemoryStore(Star):
             return ('备份校验通过：原话及关联来源哈希、外键和 SQLite 完整性已检查；待审/采集记录 '
                     +str(report['counts']['captured'])+' 条、写入记录 '+str(report['counts']['ingested'])+' 条'+warnings+'。')
         if arg=='备份': return '独立记忆库备份完成并已校验：'+self.store.backup()
-        return '用法：/dlm 待审；/dlm 更新线索；/dlm 事件；/dlm 时间线 记录；/dlm 关联 序号|标题；/dlm 记录 标题|内容；/dlm 检索 线索；/dlm 查看 标题；/dlm 关系 修正|较新ID|较旧ID；/dlm 备份。'
+        if arg in ('帮助','help','?'):
+            return ('数字生命记忆库 · 常用命令\n'
+                    '状态：/dlm 上下文状态、/dlm 记忆状态、/dlm 采集状态\n'
+                    '线索：/dlm 待审、/dlm 更新线索、/dlm 事件、/dlm 时间线 记录\n'
+                    '查看：/dlm 查看 标题、/dlm 摘要缓存状态\n'
+                    '记录：/dlm 记录 标题|内容、/dlm 关联 序号|标题、/dlm 关系 修正|较新ID|较旧ID\n'
+                    '维护：/dlm 备份、/dlm 备份校验 <备份文件名>\n'
+                    '整理：/dlm 整理、/dlm 检索 线索\n'
+                    '说明：所有线索均为“未确认”，不会自动确认事实。')
+        return '未知命令或参数不全。发送 /dlm 帮助 查看常用命令。'
 
     @staticmethod
     def _render_draft(draft):

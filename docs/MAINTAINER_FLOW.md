@@ -89,10 +89,11 @@ cd testbed\AstrBot-4.29.3
 ```powershell
 $src = 'C:\Users\<you>\Desktop\数字生命\dev\astrbot_plugin_digital_memory_store'
 $dst = 'C:\path\to\digital-life\dev\astrbot_plugin_digital_memory_store'
-robocopy $src $dst /E /XD __pycache__ .git .github /XF *.pyc 测试前功能清单.md 项目节点进度.md
+robocopy $src $dst /E /XD __pycache__ .git .github /XF *.pyc 测试前功能清单.md 项目节点进度.md PUBLISH_GITHUB.md
 ```
 
-`.github/`（issue 模板）只属于插件仓库，不同步；`测试前功能清单.md`、`项目节点进度.md` 是内部文档，不入库也不入包。
+`.github/`（issue 模板）只属于插件仓库，不同步；`测试前功能清单.md`、`项目节点进度.md` 是内部文档，
+`dev/docs/PUBLISH_GITHUB.md` 是本机运维笔记（含代理与本地路径），三者都不入库也不入包。
 
 `robocopy` 退出码 `0–7` 都是成功（`1` = 有文件被复制），`8+` 才是失败。
 
