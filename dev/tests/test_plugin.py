@@ -1447,4 +1447,52 @@ class CommandSurface(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
 
 
+class HistoryImportCommand(unittest.TestCase):
+    """历史导入：只吃 imports/ 下的 jsonl，导入为待审原话，并保留来源标签。"""
+
+    def _write(self, root, name, rows):
+        import json
+        from pathlib import Path
+        directory = Path(root) / 'plugin_data' / 'astrbot_plugin_digital_memory_store' / 'imports'
+        directory.mkdir(parents=True, exist_ok=True)
+        (directory / name).write_text(
+            '\n'.join(json.dumps(r, ensure_ascii=False) for r in rows) + '\n', encoding='utf-8')
+
+    def test_usage_shows_directory_and_rejects_paths(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42'})
+            try:
+                usage=(await run(p,'/dlm 导入历史'))[0]
+                self.assertIn('imports',usage)
+                self.assertIn('.jsonl',usage)
+                for bad in ('../x.jsonl','sub/x.jsonl','x.txt'):
+                    reply=(await run(p,'/dlm 导入历史 '+bad))[0]
+                    self.assertIn('不要带路径',reply,bad)
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+    def test_import_becomes_pending_with_provenance(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            self._write(root,'chat.jsonl',[
+                {'message_id':'a1','speaker':'user','content':'旧号喜欢苹果',
+                 'recorded_at':'2025-01-01T00:00:00+00:00'},
+                {'message_id':'a2','speaker':'user','content':'旧号住在城南',
+                 'recorded_at':'2025-01-02T00:00:00+00:00'}])
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42'})
+            try:
+                reply=(await run(p,'/dlm 导入历史 chat.jsonl'))[0]
+                self.assertIn('已导入 2 条',reply)
+                pending=(await run(p,'/dlm 待审'))[0]
+                self.assertIn('旧号喜欢苹果',pending)
+                self.assertIn('历史导入',pending)
+                source=(await run(p,'/dlm 导入来源 1'))[0]
+                self.assertIn('chat.jsonl',source)
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+
 if __name__=='__main__':unittest.main()

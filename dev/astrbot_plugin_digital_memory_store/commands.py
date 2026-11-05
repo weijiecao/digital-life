@@ -281,7 +281,7 @@ class CommandMixin:
         self._ensure_store()
         scope=self.store.scope(sender,origin)
         handlers=(self._cmd_state, self._cmd_pending, self._cmd_groups, self._cmd_capture,
-                  self._cmd_briefs, self._cmd_events, self._cmd_help)
+                  self._cmd_briefs, self._cmd_events, self._cmd_import, self._cmd_help)
         for handler in handlers:
             result = handler(scope, arg, sender, origin)
             if result is not None:
@@ -795,6 +795,32 @@ class CommandMixin:
         if arg=='备份': return '独立记忆库备份完成并已校验：'+self.store.backup()
         return None
 
+    def _cmd_import(self, scope, arg, sender, origin):
+        """历史导入：把 imports/ 下的 JSONL 原话导入为待审记录（不自动成为事实）。"""
+        if arg!='导入历史' and not arg.startswith('导入历史 '):return None
+        import_dir=Path(self.root)/'imports'
+        name=arg[len('导入历史'):].strip()
+        if not name:
+            try:import_dir.mkdir(parents=True,exist_ok=True)
+            except OSError:pass
+            return ('把导出的聊天记录放进：'+str(import_dir)+'\n'
+                    '格式：UTF-8 JSONL，每行 {"message_id","speaker":"user","content","recorded_at"}；'
+                    '单文件 ≤10 MB、≤1 万条，recorded_at 需带时区且不能是未来。\n'
+                    '放好后发送：/dlm 导入历史 <文件名>.jsonl\n'
+                    '导入的是“待审原话”，不会自动成为事实；同一会话里已有实时采集时会被拒绝。')
+        if name!=Path(name).name or not name.lower().endswith('.jsonl'):
+            return '只接受 imports 目录下的 .jsonl 文件名，不要带路径。'
+        path=import_dir/name
+        if not path.is_file():return '文件不存在：'+str(path)
+        try:
+            from .history_import import parse_jsonl, import_records
+            records=parse_jsonl(path)
+            result=import_records(self.store,scope,records,name)
+        except Exception as exc:
+            return '导入失败：'+str(exc)+'；未写入任何记录。'
+        return ('已导入 '+str(result['inserted'])+' 条待审原话（重复跳过 '+str(result['duplicates'])+' 条）。'
+                '它们是“未确认”来源，不会成为事实：用 /dlm 待审 查看，/dlm 导入来源 <序号> 看来源标签。')
+
     def _cmd_help(self, scope, arg, sender, origin):
         """帮助"""
         if arg in ('帮助','help','?'):
@@ -804,6 +830,7 @@ class CommandMixin:
                     '查看：/dlm 查看 标题、/dlm 摘要缓存状态\n'
                     '记录：/dlm 记录 标题|内容、/dlm 关联 序号|标题、/dlm 关系 修正|较新ID|较旧ID\n'
                     '维护：/dlm 备份、/dlm 备份校验 <备份文件名>\n'
+                    '迁移：/dlm 导入历史 <文件名>.jsonl（放 imports/ 目录）\n'
                     '整理：/dlm 整理、/dlm 检索 线索\n'
                     '说明：所有线索均为“未确认”，不会自动确认事实。')
         return None

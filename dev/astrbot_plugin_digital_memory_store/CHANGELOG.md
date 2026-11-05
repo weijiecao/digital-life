@@ -1,5 +1,28 @@
 # 变更记录
 
+## v1.0.13（2026-11-05）
+
+补上悬空的历史导入入口：`history_import` 模块一直有实现和测试，但没有 `/dlm` 命令。
+
+### 新增
+
+- `/dlm 导入历史`：显示 `imports/` 目录位置与文件格式；
+- `/dlm 导入历史 <文件名>.jsonl`：只接受 `imports/` 目录下的 `.jsonl` 文件名（拒绝路径穿越），
+  严格校验后**单事务**写 `dl_capture` + `dl_import_provenance`，只导入为**待审原话**；
+- 帮助文本新增“迁移”一行；README 命令表、`docs/QUICKSTART.md`（备份与迁移）、
+  `docs/CODE_ARCHITECTURE.md`（文件职责）同步说明。
+
+### 安全约束（沿用模块原有校验）
+
+- 同一会话里已有实时采集时拒绝导入，避免混源；重复 `message_id` 跳过；
+- 导入顺序必须晚于已有导入记录；单文件 ≤10 MB / ≤1 万条，`content` ≤400 字，
+  `recorded_at` 必须带时区且不能是未来。
+
+### 测试
+
+- 新增 `test_plugin.HistoryImportCommand` 两项：目录/格式提示与路径穿越拒绝；
+  导入后出现在 `/dlm 待审`、`/dlm 导入来源 <序号>` 能查到来源标签。
+
 ## v1.0.12（2026-11-05）
 
 只加文档：`docs/CODE_ARCHITECTURE.md`（代码架构梳理），并逐项对照代码核对过。

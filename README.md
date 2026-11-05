@@ -85,7 +85,7 @@
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-把「私聊原话存本机、需要时以**未确认线索**回注模型」做成可验证的工程：插件本体、339 项离线回归、
+把「私聊原话存本机、需要时以**未确认线索**回注模型」做成可验证的工程：插件本体、341 项离线回归、
 真实 AstrBot/真实 BGE/真实 QQ 的实机证据，以及**换机器也能复现的环境引导**。
 
 | 入口 | 说明 |
@@ -96,13 +96,13 @@
 
 ## 这套东西是什么
 
-AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.12）：白名单账号的**私聊纯文本**落本机
+AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.13）：白名单账号的**私聊纯文本**落本机
 SQLite，自动整理成“待审线索”，每轮请求前给模型一段**有界上下文**（最多 450–600 字），
 一律标注“未确认”，不自动确认事实；默认关闭，除显式开启的候选筛选器外不联网。
 
 本仓库除了插件本体，还包含：
 
-- **339 项离线回归**（`dev/test_*.py`，含上游基线继承、备份回归、注入契约、端到端链路）；
+- **341 项离线回归**（`dev/tests/`，含上游基线继承、备份回归、注入契约、端到端链路）；
 - **可观测假 AstrBot**（`dev/sim_astrbot.py`）与真实链路探针（`testbed/harness/real_chain.py`）；
 - **实机环境**：AstrBot 4.29.3 + Python 3.12 + 真实 BGE（512 维）+ 本地 mock provider；
 - **一键环境引导**：`env/setup.ps1`（建 venv、拉源码、装依赖、下模型、生成实例）。
@@ -128,7 +128,7 @@ digital-life/
     README.md                版本矩阵、镜像源、已知坑（先读这个）
   dev/                       开发工作区（权威开发线）
     astrbot_plugin_digital_memory_store/   插件源码（含 install.ps1 与用户文档）
-    tests/                   339 项回归（python -m unittest tests.test_store）
+    tests/                   341 项回归（python -m unittest tests.test_store）
     scripts/                 report.py / install.py / upgrade.py / rollback.py / build_package.py
     docs/                    架构、指标口径、评估集、实机报告、上线清单…
     reports/                 探针与评估输出（可重生成）
@@ -181,7 +181,7 @@ cd ..\testbed
 
 | 项 | 结果 |
 |---|---|
-| 离线回归 | 339/339（`dev/STATUS.md` 为唯一数字来源，脚本生成） |
+| 离线回归 | 341/341（`dev/STATUS.md` 为唯一数字来源，脚本生成） |
 | CI | GitHub Actions `tests.yml`：`windows-latest` + Python 3.12 跑同一套 337 项（无需 torch/模型，不联网） |
 | 真实 AstrBot 4.29.3 | 插件加载、钩子注册（`OnLLMRequestEvent`）、命令过滤均通 |
 | 真实 BGE | 512 维；冷加载 10.9–13.1 s；3.8–4.0 ms/条 |

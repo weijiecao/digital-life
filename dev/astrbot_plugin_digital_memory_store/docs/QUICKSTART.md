@@ -124,6 +124,19 @@ WebUI 插件页 → **panel** 视图：存储用量、7 日均量、5 年容量�
 - 换机器：停 AstrBot → 整目录拷贝 → 新机器装同版本插件 → 覆盖目录 → 启动；
 - 定期备份可用面板的一键备份，或 `/dlm 备份`。
 
+### 把旧聊天记录搬进来（可选）
+
+插件支持从 JSONL 导入历史原话，**导入后是“待审原话”，不会自动成为事实**：
+
+1. 把文件放进 `<AstrBot根>\data\plugin_data\astrbot_plugin_digital_memory_store\imports\`；
+2. 私聊发送 `/dlm 导入历史 <文件名>.jsonl`（不带路径，只认这个目录里的 `.jsonl`）。
+
+文件要求：UTF-8，每行一个对象 `{"message_id","speaker":"user","content","recorded_at"}`，
+单文件 ≤10 MB、≤1 万条，`recorded_at` 必须带时区且不能是未来，`content` ≤400 字。
+
+安全约束：同一会话里**已经有实时采集**时会被拒绝（避免混源）；重复的 `message_id` 会被跳过；
+导入顺序必须晚于已有导入记录。导入后用 `/dlm 待审` 查看，`/dlm 导入来源 <序号>` 看来源标签。
+
 ## 7. 出问题
 
 按 [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) 的“症状 → 原因 → 处理”表排查；仍解决不了请附：
