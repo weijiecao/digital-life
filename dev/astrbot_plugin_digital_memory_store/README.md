@@ -1,4 +1,4 @@
-# 数字生命独立记忆库（自用版）v1.0.4
+# 数字生命独立记忆库（自用版）v1.0.5
 
 AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时以“未确认线索”的形式回注给模型。
 默认关闭；不自动确认事实；除显式开启的可选功能外不联网。
@@ -7,13 +7,23 @@ AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时�
 
 - 从 [Releases](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
   下载 `astrbot_plugin_digital_memory_store-<version>.zip` 与同名 `.sha256`；
-- 校验：`Get-FileHash .\astrbot_plugin_digital_memory_store-1.0.4.zip -Algorithm SHA256`；
+- 校验：`Get-FileHash .\astrbot_plugin_digital_memory_store-1.0.5.zip -Algorithm SHA256`；
 - 解压后把 `astrbot_plugin_digital_memory_store/` 整个目录放进 AstrBot 的 `data/plugins/`，
   重启 AstrBot；随后按 `INSTALL.md` 配置白名单与模型目录。
 
+## 一键安装（Windows）
+
+```powershell
+# 解压后进入插件目录执行：会问你 AstrBot 路径和 QQ 号，并可选装依赖、下模型
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+# 全自动：-AstrBotRoot "C:\AstrBot" -QQ 123456 -WithDeps -WithModel
+```
+
+也可以直接在 AstrBot WebUI 的插件页上传 zip 安装（上传后仍需打开 `enabled`、填白名单）。
+
 ## 安装
 
-见 `INSTALL.md`（脚本安装/升级/回退，约 5 分钟；首次装依赖与模型另计）。
+见 `INSTALL.md`（一键脚本 / WebUI 上传 / 手工解压三条路，含升级、回退与常见问题）。
 
 ## 工作方式
 

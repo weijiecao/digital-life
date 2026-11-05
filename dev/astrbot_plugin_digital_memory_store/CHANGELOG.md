@@ -1,5 +1,22 @@
 # 变更记录
 
+## v1.0.5（2026-11-05）
+
+面向“已经在用 AstrBot 的人”：把安装收敛成一条命令。
+
+### 新增
+
+- `install.ps1`（随包分发）：自动定位 AstrBot 根 → 复制插件（旧版先备份）→ 按 `self` 预设写配置并打开
+  `enabled`/`automatic_memory_enabled` → 追加白名单 → 可选安装 torch(CPU)+sentence-transformers 到
+  AstrBot 自己的 `.venv` → 可选从 ModelScope 下载 BGE（约 92 MB）并回填 `model_dir`；
+  支持 `-WithDeps/-SkipDeps/-WithModel/-SkipModel/-ModelDir/-Preset/-Force` 全自动模式；
+- `metadata.yaml` 增加 `short_desc` 与 `repo`（AstrBot 4.29.3 的 `StarMetadata` 会读取），便于面板展示与仓库来源。
+
+### 文档
+
+- `INSTALL.md` 改为三条路：一键脚本（推荐）/ WebUI 上传 zip / 手工解压；补升级=重跑脚本、常见问题；
+- 明确“AstrBot 自动装依赖会拉 CUDA 版 torch”，省空间请用 `install.ps1`。
+
 ## v1.0.4（2026-11-05）
 
 只改文档，不动代码：让“下载 zip → 装进 AstrBot”这条路真的能走通。

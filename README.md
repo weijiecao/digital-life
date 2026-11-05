@@ -11,7 +11,7 @@
 
 ## 这套东西是什么
 
-AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.4）：白名单账号的**私聊纯文本**落本机
+AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.5）：白名单账号的**私聊纯文本**落本机
 SQLite，自动整理成“待审线索”，每轮请求前给模型一段**有界上下文**（最多 450–600 字），
 一律标注“未确认”，不自动确认事实；默认关闭，除显式开启的候选筛选器外不联网。
 
