@@ -1,5 +1,26 @@
 # 变更记录
 
+## v1.0.9（2026-11-05）
+
+纯结构重构，**行为不变**：把两个巨型单文件按领域拆开。
+
+### 重构
+
+- `storage.py`（2934 行 / 114 个方法）→ `store/` 包：
+  `base`（常量与写锁）、`embedding`、`capture`、`drafts`、`events`、`organize`、`relations`、
+  `briefs`、`context`、`backup`、`core`（组合入口）；`storage.py` 保留为 5 行兼容 shim，
+  旧导入路径（`from .storage import Store, MAX_CAPTURE_CHARS, _UPDATE_CUES`）全部照旧可用。
+- `main.py`（1520 行）→ 721 行；命令分发 `_work`、6 个 `_generate_*`、6 个 `_render_*`
+  移入 `commands.py` 的 `CommandMixin`，`DigitalMemoryStore(CommandMixin, Star)` 组合。
+  装饰过的入口（`capture_private`/`add_memory_context`/`dlm`）仍留在 main.py，AstrBot 注册不受影响。
+
+### 验证
+
+- 离线回归 **337/337**（含 `test_plugin` 的钩子与命令用例）；
+- 真实 AstrBot 4.29.3 链路复跑：插件加载 ✅、3 个钩子注册 ✅、采集 24 条 ✅、注入 2 次 ✅、
+  真实 BGE 512 维 / 冷加载 12.3 s；
+- `engine/` 与 `store/` 的调用关系、边界写在 `engine/README.md`。
+
 ## v1.0.8（2026-11-05）
 
 代码整理：补上文档承诺却不存在的东西，修正文档里“查无此命令”的部分。

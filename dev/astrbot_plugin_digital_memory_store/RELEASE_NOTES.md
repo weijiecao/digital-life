@@ -1,52 +1,49 @@
-# 发布说明 v1.0.8
+# 发布说明 v1.0.9
 
-一次**代码整理**：把文档承诺但不存在的东西补齐，把查无实据的命令删掉。
+纯结构重构，**行为不变**：`storage.py` 2934 行、`main.py` 1520 行，两个文件都到了难以阅读的规模，
+这版按领域拆开。
 
-## 新增 `/dlm 帮助`
+## 拆成什么样
 
-之前文档写“完整命令见 `/dlm 帮助`”，但根本没有这个命令——输入未知命令只会返回一行用法。
-现在：
+**`storage.py` → `store/` 包**（`storage.py` 只剩 5 行兼容 shim）
 
-```
-/dlm 帮助        （也接受 help、?）
-状态：/dlm 上下文状态、/dlm 记忆状态、/dlm 采集状态
-线索：/dlm 待审、/dlm 更新线索、/dlm 事件、/dlm 时间线 记录
-查看：/dlm 查看 标题、/dlm 摘要缓存状态
-记录：/dlm 记录 标题|内容、/dlm 关联 序号|标题、/dlm 关系 修正|较新ID|较旧ID
-维护：/dlm 备份、/dlm 备份校验 <备份文件名>
-整理：/dlm 整理、/dlm 检索 线索
-```
-
-未知命令现在提示“发送 /dlm 帮助”，不再是一行塞满分号的用法。
-
-## 文档纠错
-
-| 原来写的 | 实际 |
+| 模块 | 内容 |
 |---|---|
-| `/dlm 导入历史` | **没有这个命令**（`history_import` 模块只有 API 与测试，没有接线） |
-| `/dlm 恢复说明` | **没有这个命令** |
-| `/dlm 备份校验` | 必须带备份文件名：`/dlm 备份校验 <备份文件名>` |
-| `/dlm 查看 事件名` | 实际按事件标题查：`/dlm 查看 标题` |
+| `store/base.py` | 四个信号常量、`_RollbackBatch`、`atomic_write` 写锁装饰器 |
+| `store/embedding.py` | `embedder_ready`、`prewarm_embedder`、`_get_embedder`、`_index` |
+| `store/capture.py` | 采集、缺口、`pending`、`memory_inventory` |
+| `store/drafts.py` | 新分组/分组/对照/摘要草稿的存取与校验 |
+| `store/events.py` | 别名、优先级、偏好信号 |
+| `store/organize.py` | 弱候选、`propose`、批量整理、更新线索 |
+| `store/relations.py` | 关系、日期、时间线、摘录 |
+| `store/briefs.py` | 摘要/分段缓存 |
+| `store/context.py` | 上下文包、事件供给（最大的一块，945 行） |
+| `store/backup.py` | 备份与校验 |
+| `store/core.py` | `Store` 组合入口（`__init__`、`save`、`search`、`show`、`close`） |
 
-README 与 `docs/QUICKSTART.md` 的命令表已改成真实命令；`docs/TROUBLESHOOTING.md` 同步修正。
+**`main.py` 1520 → 721 行**
 
-## 结构化说明
+`_work`（487 行的 `/dlm` 分发）、6 个 `_generate_*`、6 个 `_render_*` 移入 `commands.py` 的
+`CommandMixin`，`class DigitalMemoryStore(CommandMixin, Star)`。
+**装饰过的入口**（`capture_private`、`add_memory_context`、`dlm`）仍留在 `main.py`，
+AstrBot 的处理器注册逻辑完全不变。
 
-新增 `engine/README.md`：`e31`、`e32`、`e417`… 是 E5.0 迭代的**实验编号**，不是版本号。
-文档给出真实调用链（`storage → e32 → e31`、`storage → e418 → e417 → lifemem`、`auto_* → e419`），
-并写清“不要按目录名猜废弃、不要为整齐改名”（测试与历史报告按名引用）。
+## 为什么这样拆而不是重写
 
-## 验收
+- 方法体原样搬移（仍用 `self`），不改变一行逻辑，`git diff` 可逐行核对；
+- `storage.py` 保留 shim，测试和脚本里的旧导入路径（`from .storage import Store, MAX_CAPTURE_CHARS,
+  _UPDATE_CUES`）全部继续有效，不需要改 30 多个调用点；
+- 拆分后用真实 AstrBot 跑过一遍，确认 `Star` 能识别继承来的方法。
 
-- 离线回归 **337/337**（新增 `test_plugin.CommandHelp` 一项）；
-- 场景评估 14/15、集成探针注入 8/8（与上一版一致）；
-- 插件 zip 通过 AstrBot 4.29.3 自带 `inspect_plugin_archive` 校验。
+## 验证
 
-## 顺带修掉的一个隐患（不在插件包里）
-
-完整工程仓库的 `dev/scripts/install.py` 复制插件时没排除 `.git`：本机装上后，
-`data/plugins/.../.git` 里是只读对象，Windows 下升级/回滚会 `PermissionError`（回归里 3 项因此失败）。
-已改为排除 `.git/.github/.venv/dist` 等目录，并在删除前清掉只读位。
+| 项 | 结果 |
+|---|---|
+| 离线回归 | **337/337** |
+| 真实 AstrBot 4.29.3 | 插件加载 ✅、钩子 3 个 ✅（`add_memory_context`/`capture_private`/`dlm`） |
+| 真实采集/注入 | 采集 24 条、注入 2 次 |
+| 真实 BGE | 512 维，冷加载 12.3 s |
+| 插件 zip | 通过 AstrBot 自带 `inspect_plugin_archive`（version=1.0.9） |
 
 ## 已知限制（不变）
 
