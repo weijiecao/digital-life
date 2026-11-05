@@ -54,6 +54,7 @@ class RareDetailEncoder:
     def encode_queries(self,texts):return [[1.,0.] for _ in texts]
 
 class TestStore(unittest.TestCase):
+    @unittest.skipUnless(hasattr(sqlite3.Connection, 'setlimit'), '需要 Python 3.11+ 的 sqlite3.Connection.setlimit')
     def test_long_capture_indexes_fully_and_splits_sql_parameters(self):
         from astrbot_plugin_digital_memory_store.auto_organize import process_jobs
         from astrbot_plugin_digital_memory_store.auto_cross_update import sync_text_index,_indexed_candidates
@@ -3249,7 +3250,7 @@ class TestStore(unittest.TestCase):
             self.assertEqual(len(a.show(s,'书店')),2)
             a.capture(s,'m2','后来不去了');seq2=a.pending(s)[0]['seq']
             snap2=a.contrast_snapshot(s,seq2,'书店')
-            old2=snap2['history'][-1]
+            old2=next(r for r in snap2['history'] if '周六' in r['content'])
             draft2=a.save_contrast_draft(s,snap2,json.dumps({'relation':'update','explanation':'有变化',
                 'old_id':old2['id'],'old_quote':'周六','new_quote':'不去'},ensure_ascii=False))
             a.save(s,'书店','额外记录')
