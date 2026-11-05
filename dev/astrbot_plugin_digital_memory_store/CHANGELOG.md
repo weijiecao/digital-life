@@ -1,5 +1,20 @@
 # 变更记录
 
+## v1.0.11（2026-11-05）
+
+命令分发拆分，行为不变：`commands.py` 里 487 行的 `_work` if 链按命令族拆成 7 个方法。
+
+### 重构
+
+- `_work` 变成 9 行分发器：按顺序调用 `_cmd_state`/`_cmd_pending`/`_cmd_groups`/`_cmd_capture`/
+  `_cmd_briefs`/`_cmd_events`/`_cmd_help`，不匹配返回 `None`，全部不中才回“未知命令”；
+- 每个 if 分支原样搬移，没有改写任何判断条件或返回文本。
+
+### 测试
+
+- 新增 `test_plugin.CommandSurface` 两项：11 条只读命令必须都有非空回复；
+  `/dlm`、空白参数、乱写参数、缺参数的 `备份校验` 不得抛异常。
+
 ## v1.0.10（2026-11-05）
 
 继续拆结构，行为不变：`store/context.py`（945 行）按职责分成三个 mixin。

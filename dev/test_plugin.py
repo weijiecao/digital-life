@@ -1414,4 +1414,37 @@ class CommandHelp(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
 
 
+class CommandSurface(unittest.TestCase):
+    """命令面冒烟：只读命令都要有非空回复。重构命令分发时的安全网。"""
+
+    READ_ONLY = ['/dlm 上下文状态', '/dlm 记忆状态', '/dlm 采集状态', '/dlm 待审',
+                 '/dlm 事件', '/dlm 时间线 记录', '/dlm 摘要缓存状态', '/dlm 帮助',
+                 '/dlm 更新线索', '/dlm 分组建议', '/dlm 备份校验 不存在.bak']
+
+    def test_read_only_commands_all_respond(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42'})
+            try:
+                for text in self.READ_ONLY:
+                    reply=(await run(p,text))[0]
+                    self.assertIsInstance(reply,str,text)
+                    self.assertTrue(reply.strip(),'命令无回复：%s' % text)
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+    def test_unknown_command_never_raises(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42'})
+            try:
+                for text in ['/dlm', '/dlm  ', '/dlm 随便写点什么', '/dlm 备份校验']:
+                    reply=(await run(p,text))[0]
+                    self.assertIsInstance(reply,str,text)
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+
 if __name__=='__main__':unittest.main()

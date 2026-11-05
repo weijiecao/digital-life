@@ -277,8 +277,28 @@ class CommandMixin:
             return self._render_model_draft(candidate)
 
     def _work(self, sender, origin, arg):
+        """`/dlm` 入口：按命令族顺序分发；每个处理器不匹配时返回 None。"""
         self._ensure_store()
         scope=self.store.scope(sender,origin)
+        handlers=(self._cmd_state, self._cmd_pending, self._cmd_groups, self._cmd_capture,
+                  self._cmd_briefs, self._cmd_events, self._cmd_help)
+        for handler in handlers:
+            result = handler(scope, arg, sender, origin)
+            if result is not None:
+                return result
+        return '未知命令或参数不全。发送 /dlm 帮助 查看常用命令。'
+
+    @staticmethod
+    def _render_draft(draft):
+        label={'CURRENT':'来源未变化','STALE':'来源已变化，摘录已过期','PENDING_UPDATE':'存在待审更新'}[draft['status']]
+        result=['原文摘录（不是自动摘要） '+draft['draft_id']+'：'+label]
+        if draft['partial']:result.append('仅包含最近5条，不代表完整历史。')
+        for row in draft['records']:
+            result.append('['+row['id']+' | '+row['recorded_at']+'] '+row['content'])
+        return '\n'.join(result)
+
+    def _cmd_state(self, scope, arg, sender, origin):
+        """状态类：记忆状态/上下文状态/上下文预览/导入来源"""
         if arg=='记忆状态':
             state=self.store.memory_inventory(scope)
             health=self.store.auto_job_health(scope)
@@ -343,6 +363,10 @@ class CommandMixin:
             return ('历史导入来源：'+item['source_label']+'；文件原时间：'+item['original_timestamp']+
                     '；保存时间（UTC）：'+item['recorded_at']+'；导入时间：'+item['imported_at']+
                     '；状态：'+item['state']+'。文件信息未经独立核验。')
+        return None
+
+    def _cmd_pending(self, scope, arg, sender, origin):
+        """待审与更新：待审/更新核对/更新线索/规则分组草稿/分组建议/整理/多轮建议/偏好"""
         if arg=='待审' or arg.startswith('待审 '):
             cursor=arg[2:].strip()
             if cursor and not cursor.isdigit():return '格式：/dlm 待审 或 /dlm 待审 上页末尾序号'
@@ -443,6 +467,10 @@ class CommandMixin:
             try:self.store.exclude_preference_rank(scope,title,excluded)
             except ValueError:return '事件不存在或来源校验失败。'
             return ('已排除此事件的偏好规则加权。' if excluded else '已恢复此事件的偏好规则检查。')+' 原话和其他排序设置保留。'
+        return None
+
+    def _cmd_groups(self, scope, arg, sender, origin):
+        """分组与关系：线索/弱联想/建议/分组草稿/确认/关系/关联"""
         if arg.startswith('线索 '):
             number=arg[len('线索 '):].strip()
             if not number.isdigit():return '格式：/dlm 线索 待审记录序号'
@@ -566,6 +594,10 @@ class CommandMixin:
                 return '格式：/dlm 关联 记录序号|事件标题'
             self.store.link_capture(scope,int(number.strip()),title.strip())
             return '已将原文关联事件；输入者审核的是关联关系，不能据此确认客观事实。'
+        return None
+
+    def _cmd_capture(self, scope, arg, sender, origin):
+        """采集与检索：采集状态/记录/检索/摘要缓存状态"""
         if arg=='采集状态':
             gaps=self.store.capture_gap_count(scope)
             active=(sender,origin) in self.capture_gaps or bool(gaps)
@@ -595,6 +627,10 @@ class CommandMixin:
             return '分段缓存'+('已开启' if self.segment_cache_enabled else '已关闭')+'；当前作用域保存 '+str(self.store.segment_cache_count(scope))+' 条（含可能已过期的条目）。'
         if arg=='清理摘要缓存':
             return '已清理当前作用域 '+str(self.store.clear_segment_cache(scope))+' 条分段缓存；原话和已保存草稿保留。'
+        return None
+
+    def _cmd_briefs(self, scope, arg, sender, origin):
+        """摘要与对照：摘要草稿/对照/摘录/优先级/别名/日期"""
         if arg.startswith('摘要草稿 '):
             fields=arg[len('摘要草稿 '):].strip().split('|')
             if len(fields)>2 or (len(fields)==2 and (not fields[1].isascii() or not fields[1].isdigit() or len(fields[1])>4)):
@@ -688,6 +724,10 @@ class CommandMixin:
             try:changed=self.store.annotate_date(scope,mid.strip(),value.strip())
             except ValueError:return '日期无效，或找不到已关联原文、原文校验失败。请使用 YYYY-MM-DD 或未知。'
             return '已保存发生日期标注；原文与记录时间保留。' if changed else '该日期标注已存在。'
+        return None
+
+    def _cmd_events(self, scope, arg, sender, origin):
+        """事件与维护：事件/时间线/查看/关系/备份/备份校验"""
         if arg=='事件' or arg.startswith('事件 '):
             value=arg[len('事件'):].strip()
             if value and (not value.isdigit() or not 1<=int(value)<=10000):return '格式：/dlm 事件 [页码]'
@@ -753,6 +793,10 @@ class CommandMixin:
             return ('备份校验通过：原话及关联来源哈希、外键和 SQLite 完整性已检查；待审/采集记录 '
                     +str(report['counts']['captured'])+' 条、写入记录 '+str(report['counts']['ingested'])+' 条'+warnings+'。')
         if arg=='备份': return '独立记忆库备份完成并已校验：'+self.store.backup()
+        return None
+
+    def _cmd_help(self, scope, arg, sender, origin):
+        """帮助"""
         if arg in ('帮助','help','?'):
             return ('数字生命记忆库 · 常用命令\n'
                     '状态：/dlm 上下文状态、/dlm 记忆状态、/dlm 采集状态\n'
@@ -762,13 +806,4 @@ class CommandMixin:
                     '维护：/dlm 备份、/dlm 备份校验 <备份文件名>\n'
                     '整理：/dlm 整理、/dlm 检索 线索\n'
                     '说明：所有线索均为“未确认”，不会自动确认事实。')
-        return '未知命令或参数不全。发送 /dlm 帮助 查看常用命令。'
-
-    @staticmethod
-    def _render_draft(draft):
-        label={'CURRENT':'来源未变化','STALE':'来源已变化，摘录已过期','PENDING_UPDATE':'存在待审更新'}[draft['status']]
-        result=['原文摘录（不是自动摘要） '+draft['draft_id']+'：'+label]
-        if draft['partial']:result.append('仅包含最近5条，不代表完整历史。')
-        for row in draft['records']:
-            result.append('['+row['id']+' | '+row['recorded_at']+'] '+row['content'])
-        return '\n'.join(result)
+        return None

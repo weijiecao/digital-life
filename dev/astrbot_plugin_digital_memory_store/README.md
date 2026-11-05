@@ -1,4 +1,4 @@
-# 数字生命独立记忆库（自用版）v1.0.10
+# 数字生命独立记忆库（自用版）v1.0.11
 
 [![Release](https://img.shields.io/github/v/release/weijiecao/astrbot_plugin_digital_memory_store?label=release)](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
 [![License](https://img.shields.io/github/license/weijiecao/astrbot_plugin_digital_memory_store)](LICENSE)

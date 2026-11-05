@@ -1,11 +1,11 @@
 # E5.0-F 工程状态（自动生成，勿手改）
 
-> 由 `python scripts/report.py` 生成于 2026-11-05T11:38:48+08:00；插件版本 `1.0.9`。
+> 由 `python scripts/report.py` 生成于 2026-11-05T11:51:54+08:00；插件版本 `1.0.10`。
 > 文档中的用例数、通过率、评估分一律引用本文件，不再手写。
 
 ## 一句话
 
-**离线用例 337/337 通过**；场景评估 14/15；集成探针注入 8/8。
+**离线用例 339/339 通过**；场景评估 14/15；集成探针注入 8/8。
 
 **真实环境**：AstrBot 4.29.3 上插件加载成功，1 轮真实请求中 1 轮看到记忆片段（平台 WebChat、provider 为本地 mock）。
 
@@ -30,26 +30,26 @@
 
 | 套件 | 用例 | 失败/错误 | 跳过 | 耗时 |
 |---|---|---|---|---|
-| `test_store` | 161 | 0 | 0 | 14.3s |
-| `test_plugin` | 65 | 0 | 0 | 5.5s |
+| `test_store` | 161 | 0 | 0 | 14.4s |
+| `test_plugin` | 67 | 0 | 0 | 5.7s |
 | `test_baseline_alignment` | 6 | 0 | 0 | 0.1s |
 | `test_preflight` | 6 | 0 | 0 | 0.0s |
 | `test_auto_jobs` | 4 | 0 | 0 | 0.2s |
 | `test_backup_regression` | 4 | 0 | 0 | 0.4s |
 | `test_prewarm` | 5 | 0 | 0 | 1.1s |
-| `test_model_judge` | 17 | 0 | 0 | 1.7s |
+| `test_model_judge` | 17 | 0 | 0 | 1.6s |
 | `test_delivery` | 13 | 0 | 0 | 1.0s |
-| `test_soak` | 11 | 0 | 0 | 2.7s |
+| `test_soak` | 11 | 0 | 0 | 2.4s |
 | `test_threshold` | 3 | 0 | 0 | 0.4s |
-| `test_correction` | 3 | 0 | 0 | 0.2s |
+| `test_correction` | 3 | 0 | 0 | 0.1s |
 | `test_metrics` | 3 | 0 | 0 | 0.2s |
-| `test_real_corpus` | 5 | 0 | 0 | 0.2s |
-| `test_background` | 6 | 0 | 0 | 0.3s |
-| `test_package` | 3 | 0 | 0 | 0.5s |
+| `test_real_corpus` | 5 | 0 | 0 | 0.1s |
+| `test_background` | 6 | 0 | 0 | 0.4s |
+| `test_package` | 3 | 0 | 0 | 0.4s |
 | `test_attribution` | 4 | 0 | 0 | 0.0s |
-| `test_panel` | 6 | 0 | 0 | 0.3s |
-| `test_integration_chain` | 12 | 0 | 0 | 0.4s |
-| **合计** | **337** | **0** | | |
+| `test_panel` | 6 | 0 | 0 | 0.5s |
+| `test_integration_chain` | 12 | 0 | 0 | 1.2s |
+| **合计** | **339** | **0** | | |
 
 ## 评估与探针
 
@@ -60,7 +60,7 @@
 | 真实 BGE 场景评估 | 13/15 | 真实编码；失败项见 BGE_CALIBRATION |
 | 上游基线检索对齐 | plain 0/2；weak 0/2；semantic_fixture 2/2 | 规则 0/2 是结构性的；semantic_fixture 仅证明管线 |
 | 集成探针·注入 | 8/8 轮 | 替身平台与受控编码器 |
-| 集成探针·钩子耗时 | P50 2.0ms / P95 7.6ms | 不含真实 BGE 编码 |
+| 集成探针·钩子耗时 | P50 3.5ms / P95 8.5ms | 不含真实 BGE 编码 |
 | 集成探针·重启 | 积压 8 → 0，重复采集=否 | 同一进程重启，非崩溃恢复 |
 | 集成探针·不兼容宿主 | 静默放行=是 | 模拟缺 extra_user_content_parts |
 
