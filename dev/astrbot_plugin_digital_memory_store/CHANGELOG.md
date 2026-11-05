@@ -1,5 +1,30 @@
 # 变更记录
 
+## v1.0.16（2026-11-05）
+
+迁移包：把“换机器”从手工对文件变成一条命令打包 + 一条命令校验。
+
+### 新增
+
+- `migration.py`：先 `PRAGMA wal_checkpoint(TRUNCATE)` 再拷贝库，保证快照自洽；zip 内含
+  `memory.sqlite3`、`plugin_config.json`（若有）、`scope_overrides.json`（若有）、
+  `manifest.json`（逐文件 sha256 + 原话/作用域/事件计数 + 插件版本）、`RESTORE.md`（恢复步骤）；
+- `/dlm 迁移包`：生成到 `exports/`，回执给出大小与计数；
+- `/dlm 迁移检查 <文件>.zip`：从 `exports/` 或 `imports/` 读取，逐文件比对 sha256、
+  对库跑 `PRAGMA integrity_check`、核对计数；未通过时列出原因（最多 8 条）。
+
+### 安全与边界
+
+- 只接受本目录下的 `.zip` 文件名，拒绝路径；
+- 包内每个非 manifest 文件都必须登记，未登记文件会被报告；
+- 校验失败时明确提示“不要用这个包恢复”；
+- **不做在线恢复**：恢复必须停服后手工替换，`RESTORE.md` 里写了步骤与 `model_dir` 注意事项。
+
+### 测试
+
+新增 `test_plugin.MigrationPack` 3 项：打包结构/manifest 计数/自检通过；路径与缺失拒绝；
+篡改一个文件后校验必须报“校验和不匹配”。全量 **350/350**。
+
 ## v1.0.15（2026-11-05）
 
 补上迁移的最后一环：**换环境后 origin 变了，怎么让旧库继续可见**。

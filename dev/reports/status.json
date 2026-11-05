@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-05T14:59:19+08:00",
-  "plugin_version": "1.0.14",
+  "generated_at": "2026-11-05T15:06:26+08:00",
+  "plugin_version": "1.0.15",
   "environment": {
-    "time": "2026-11-05T14:59:19+08:00",
+    "time": "2026-11-05T15:06:26+08:00",
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10",
     "executable": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\.venv\\Scripts\\python.exe",
@@ -28,7 +28,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 14.89,
+      "duration_s": 14.54,
       "failed": [],
       "ids": [
         "tests.test_store.TestStore.test_adjacent_model_sources_require_matching_policy_and_recheck_on_finish",
@@ -196,11 +196,11 @@
     },
     {
       "suite": "tests.test_plugin",
-      "tests": 75,
+      "tests": 78,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 5.63,
+      "duration_s": 6.63,
       "failed": [],
       "ids": [
         "tests.test_plugin.CommandHelp.test_help_lists_commands_and_unknown_points_to_help",
@@ -212,6 +212,9 @@
         "tests.test_plugin.HistoryExportCommand.test_session_info_shows_origin_and_counts",
         "tests.test_plugin.HistoryImportCommand.test_import_becomes_pending_with_provenance",
         "tests.test_plugin.HistoryImportCommand.test_usage_shows_directory_and_rejects_paths",
+        "tests.test_plugin.MigrationPack.test_build_and_check_pack",
+        "tests.test_plugin.MigrationPack.test_rejects_paths_and_missing_pack",
+        "tests.test_plugin.MigrationPack.test_tampered_pack_is_reported",
         "tests.test_plugin.ScopeClaim.test_claim_binds_old_origin_and_survives_restart",
         "tests.test_plugin.ScopeClaim.test_rejects_bad_format_and_unknown_origin",
         "tests.test_plugin.Smoke.test_acknowledging_gap_does_not_erase_new_gap",
@@ -286,7 +289,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.11,
+      "duration_s": 0.13,
       "failed": [],
       "ids": [
         "tests.test_baseline_alignment.TestBaselineAlignment.test_capture_accepts_baseline_script_in_one_scope",
@@ -303,7 +306,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.0,
+      "duration_s": 0.01,
       "failed": [],
       "ids": [
         "tests.test_preflight.TestPreflight.test_empty_model_dir_is_not_an_error",
@@ -320,7 +323,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.26,
+      "duration_s": 0.24,
       "failed": [],
       "ids": [
         "tests.test_auto_jobs.TestAutoJobFailurePolicy.test_dead_job_does_not_block_later_sources_in_same_scope",
@@ -335,7 +338,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.39,
+      "duration_s": 0.45,
       "failed": [],
       "ids": [
         "tests.test_backup_regression.TestBackupHandleRegression.test_backup_can_be_restored_to_new_directory",
@@ -350,7 +353,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 1.13,
+      "duration_s": 1.15,
       "failed": [],
       "ids": [
         "tests.test_prewarm.TestModelStateVisible.test_context_status_reports_model_state",
@@ -366,7 +369,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 1.6,
+      "duration_s": 1.56,
       "failed": [],
       "ids": [
         "tests.test_model_judge.TestGate.test_only_anaphoric_short_queries_trigger",
@@ -394,7 +397,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.96,
+      "duration_s": 0.95,
       "failed": [],
       "ids": [
         "tests.test_delivery.TestInstallUpgradeRollback.test_install_refuses_existing_without_force",
@@ -418,7 +421,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 2.5,
+      "duration_s": 2.42,
       "failed": [],
       "ids": [
         "tests.test_soak.TestSoakCollect.test_collects_db_logs_and_provider_counts",
@@ -440,7 +443,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.31,
+      "duration_s": 0.3,
       "failed": [],
       "ids": [
         "tests.test_threshold.TestPluginThresholdConfig.test_configured_percent_is_applied",
@@ -454,7 +457,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.11,
+      "duration_s": 0.1,
       "failed": [],
       "ids": [
         "tests.test_correction.TestCorrectionCancelCue.test_cancel_phrase_is_recognised",
@@ -468,7 +471,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.19,
+      "duration_s": 0.24,
       "failed": [],
       "ids": [
         "tests.test_metrics.TestLatencyMetrics.test_disabled_plugin_writes_nothing",
@@ -498,7 +501,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.33,
+      "duration_s": 0.36,
       "failed": [],
       "ids": [
         "tests.test_background.TestBackgroundContext.test_background_packet_when_no_match",
@@ -515,7 +518,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.47,
+      "duration_s": 0.46,
       "failed": [],
       "ids": [
         "tests.test_package.TestPackage.test_build_is_repeatable",
@@ -561,7 +564,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.37,
+      "duration_s": 0.47,
       "failed": [],
       "ids": [
         "tests.test_integration_chain.TestCaptureEdgeCases.test_capture_gate_rejects_bot_self_mismatch_and_oversize",
@@ -1247,19 +1250,19 @@
     },
     "latency_ms": {
       "samples": [
-        6.7,
-        1.61,
+        7.23,
+        1.65,
         1.35,
-        1.46,
-        1.36,
-        1.53,
-        2.17,
-        1.81
+        1.42,
+        2.76,
+        2.07,
+        1.6,
+        1.41
       ],
-      "p50": 1.61,
-      "p95": 6.7,
-      "max": 6.7,
-      "mean": 2.25
+      "p50": 1.65,
+      "p95": 7.23,
+      "max": 7.23,
+      "mean": 2.44
     },
     "dedupe": {
       "first_parts": 1,

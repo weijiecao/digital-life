@@ -131,6 +131,7 @@ sequenceDiagram
 | `engine/e32/cpu_model.py`、`engine/e31/local_model.py` | 离线 SentenceTransformer / BGE CPU 编码适配（不联网、不隐式用 GPU） |
 | `engine/README.md` | 实验编号（e31/e32/e417…）的调用链与边界说明 |
 | `panel.py`、`recovery.py`、`views/panel/` | 控制面板、备份检验、非覆盖式恢复 |
+| `migration.py` | 迁移包：WAL checkpoint 后打包库/配置/认领表为 zip + manifest(sha256/计数) + RESTORE.md；`inspect_pack` 校验 sha256、SQLite 完整性、计数 |
 | `scope_alias.py` | 会话认领：把发送者绑定到旧 origin（`scope_overrides.json`），入口处替换 origin，不改数据库；只接受私聊三段式 origin |
 | `export_history.py` | 导出当前会话原话：JSONL（与导入端兼容）+ Markdown（全文）+ meta（条数/时间范围/sha256），不导出派生数据 |
 | `history_import.py` | 历史 JSONL 的严格校验与整批导入：单事务写 `dl_capture` + `dl_import_provenance`，只导入为待审；由 `/dlm 导入历史 <文件名>.jsonl` 调用（文件必须位于 `imports/`） |

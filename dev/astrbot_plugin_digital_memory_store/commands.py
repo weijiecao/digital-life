@@ -282,7 +282,7 @@ class CommandMixin:
         scope=self.store.scope(sender,origin)
         handlers=(self._cmd_state, self._cmd_pending, self._cmd_groups, self._cmd_capture,
                   self._cmd_briefs, self._cmd_events, self._cmd_import, self._cmd_export,
-                  self._cmd_session, self._cmd_claim, self._cmd_help)
+                  self._cmd_session, self._cmd_claim, self._cmd_migrate, self._cmd_help)
         for handler in handlers:
             result = handler(scope, arg, sender, origin)
             if result is not None:
@@ -899,6 +899,49 @@ class CommandMixin:
                 '之后本发送者的读写都走这个 origin；绑定保存在 '+str(path)+'。\n'
                 '恢复本机 origin：/dlm 取消认领。')
 
+    def _cmd_migrate(self, scope, arg, sender, origin):
+        """迁移包：打包本机库/配置/认领表，或校验一个已有的包。"""
+        if arg!='迁移包' and arg!='迁移检查' and not arg.startswith('迁移检查 '):return None
+        from . import migration
+        if arg=='迁移包':
+            try:
+                from astrbot.core.utils.astrbot_path import get_astrbot_data_path
+                config_path=Path(get_astrbot_data_path())/'config'/'astrbot_plugin_digital_memory_store_config.json'
+                result=migration.build_pack(self.store,self.root,config_path=config_path)
+            except Exception as exc:
+                return '迁移包生成失败：'+str(exc)+'；未改动任何数据。'
+            counts=result['manifest'].get('counts') or {}
+            return ('迁移包已生成：'+result['pack']+'\n'
+                    '大小：'+('%.1f' % (result['bytes']/1024/1024))+' MB；原话 '
+                    +str(counts.get('captures'))+' 条 / 作用域 '+str(counts.get('scopes'))
+                    +' 个 / 事件 '+str(counts.get('events'))+' 个。\n'
+                    '下一步：停 AstrBot → 按包内 RESTORE.md 替换数据；到新机器后用 '
+                    '/dlm 迁移检查 <文件名> 校验（把包放进 exports/ 或 imports/）。')
+        name=arg[len('迁移检查'):].strip()
+        if not name:return '用法：/dlm 迁移检查 <迁移包文件名.zip>（放在 exports/ 或 imports/ 下）。'
+        if name!=Path(name).name or not name.lower().endswith('.zip'):
+            return '只接受 exports/ 或 imports/ 下的 .zip 文件名，不要带路径。'
+        candidates=[Path(self.root)/'exports'/name,Path(self.root)/'imports'/name]
+        path=next((item for item in candidates if item.is_file()),None)
+        if path is None:return '找不到迁移包：'+name+'（先放进 exports/ 或 imports/）。'
+        try:
+            report=migration.inspect_pack(path)
+        except Exception as exc:
+            return '校验未完成：'+str(exc)+'。'
+        manifest=report.get('manifest') or {}
+        counts=manifest.get('counts') or {}
+        if report['ok']:
+            return ('迁移包校验通过：'+name+'\n'
+                    '格式：'+str(manifest.get('format'))+'；创建于 '+str(manifest.get('created_at'))
+                    +'；插件版本 '+str(manifest.get('plugin_version'))+'\n'
+                    '原话 '+str(counts.get('captures'))+' 条 / 作用域 '+str(counts.get('scopes'))
+                    +' 个 / 事件 '+str(counts.get('events'))+' 个\n'
+                    '所有文件 sha256 匹配，SQLite 完整性检查 ok。按包内 RESTORE.md 恢复。')
+        lines=['迁移包校验未通过：'+name]+['- '+item for item in report['problems'][:8]]
+        if len(report['problems'])>8:lines.append('- …共 '+str(len(report['problems']))+' 项')
+        lines.append('请重新拷贝或重新打包；不要用这个包恢复。')
+        return '\n'.join(lines)
+
     def _cmd_help(self, scope, arg, sender, origin):
         """帮助"""
         if arg in ('帮助','help','?'):
@@ -910,6 +953,7 @@ class CommandMixin:
                     '维护：/dlm 备份、/dlm 备份校验 <备份文件名>\n'
                     '迁移：/dlm 导入历史 <文件名>.jsonl（放 imports/ 目录）\n'
                     '　　　/dlm 导出历史 [天数]、/dlm 会话信息、/dlm 会话认领 <旧 origin>\n'
+                    '　　　/dlm 迁移包、/dlm 迁移检查 <文件>.zip\n'
                     '整理：/dlm 整理、/dlm 检索 线索\n'
                     '说明：所有线索均为“未确认”，不会自动确认事实。')
         return None

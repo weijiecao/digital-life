@@ -1,4 +1,4 @@
-# 数字生命独立记忆库（自用版）v1.0.15
+# 数字生命独立记忆库（自用版）v1.0.16
 
 [![Release](https://img.shields.io/github/v/release/weijiecao/astrbot_plugin_digital_memory_store?label=release)](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
 [![License](https://img.shields.io/github/license/weijiecao/astrbot_plugin_digital_memory_store)](LICENSE)
@@ -79,6 +79,8 @@ AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时�
 | `/dlm 会话信息` | 显示本会话的 origin 与计数（迁移前必看） |
 | `/dlm 会话认领 <旧 origin>` | 换环境后把本发送者绑定回旧 origin，使旧库继续可见（只支持私聊） |
 | `/dlm 取消认领` | 解除绑定，回到本机当前 origin |
+| `/dlm 迁移包` | 打包库 + 配置 + 认领表为可校验 zip（含 RESTORE.md） |
+| `/dlm 迁移检查 <文件>.zip` | 校验迁移包：逐文件 sha256 + SQLite 完整性 + 计数 |
 
 完整命令（含整理、关联、时间线、摘要缓存等）见 `/dlm 帮助`。
 

@@ -1622,4 +1622,79 @@ class ScopeClaim(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
 
 
+class MigrationPack(unittest.TestCase):
+    """迁移包：能打包、能校验、被改动一个字节就要报错。"""
+
+    def _exports(self, root):
+        from pathlib import Path
+        return sorted((Path(root) / 'plugin_data' / 'astrbot_plugin_digital_memory_store' / 'exports').glob('migrate-*.zip'))
+
+    async def _capture(self, p, text, message_id):
+        event=Event(text);event.message_obj.message_id=message_id
+        event.message_obj.message=[Plain(event.message_str)]
+        await p.capture_private(event)
+
+    def test_build_and_check_pack(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42','automatic_memory_enabled':True})
+            try:
+                await self._capture(p,'旧号喜欢苹果','m1')
+                reply=(await run(p,'/dlm 迁移包'))[0]
+                self.assertIn('迁移包已生成',reply)
+                packs=self._exports(root)
+                self.assertTrue(packs)
+                import json, zipfile
+                with zipfile.ZipFile(packs[0]) as archive:
+                    names=set(archive.namelist())
+                    self.assertIn('manifest.json',names)
+                    self.assertIn('memory.sqlite3',names)
+                    self.assertIn('RESTORE.md',names)
+                    manifest=json.loads(archive.read('manifest.json').decode('utf-8'))
+                    self.assertEqual(manifest['format'],'digital-life-migration/1')
+                    self.assertGreaterEqual(manifest['counts']['captures'],1)
+                check=(await run(p,'/dlm 迁移检查 '+packs[0].name))[0]
+                self.assertIn('校验通过',check)
+                self.assertIn('SQLite 完整性检查 ok',check)
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+    def test_rejects_paths_and_missing_pack(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42'})
+            try:
+                self.assertIn('不要带路径',(await run(p,'/dlm 迁移检查 ../x.zip'))[0])
+                self.assertIn('找不到迁移包',(await run(p,'/dlm 迁移检查 nope.zip'))[0])
+                self.assertIn('用法',(await run(p,'/dlm 迁移检查'))[0])
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+    def test_tampered_pack_is_reported(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42','automatic_memory_enabled':True})
+            try:
+                await self._capture(p,'旧号喜欢苹果','m1')
+                self.assertIn('迁移包已生成',(await run(p,'/dlm 迁移包'))[0])
+                import zipfile
+                from pathlib import Path
+                pack=self._exports(root)[0]
+                bad=pack.with_name('tampered.zip')
+                with zipfile.ZipFile(pack) as src, zipfile.ZipFile(bad,'w',zipfile.ZIP_DEFLATED) as dst:
+                    for item in src.infolist():
+                        data=src.read(item.filename)
+                        if item.filename=='memory.sqlite3':
+                            data=data[:-4]+b'XXXX'
+                        dst.writestr(item,data)
+                check=(await run(p,'/dlm 迁移检查 tampered.zip'))[0]
+                self.assertIn('未通过',check)
+                self.assertIn('校验和不匹配',check)
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+
 if __name__=='__main__':unittest.main()
