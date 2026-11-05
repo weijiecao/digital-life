@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'dev/**'
+      - 'testbed/**'
       - '.github/workflows/tests.yml'
   pull_request:
   workflow_dispatch:

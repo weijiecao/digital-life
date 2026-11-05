@@ -15,11 +15,26 @@
 
 import argparse
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 TESTBED = HERE.parent
+
+
+def emit(text):
+    """把中文安全写到终端：英文 Windows 的控制台是 cp1252，直接 print 会 UnicodeEncodeError。"""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        buffer = getattr(sys.stdout, 'buffer', None)
+        payload = (text + '\n')
+        if buffer is not None:
+            buffer.write(payload.encode('utf-8', 'replace'))
+            buffer.flush()
+        else:
+            sys.stdout.write(payload.encode('ascii', 'replace').decode('ascii'))
 DEFAULT_LOG = TESTBED / 'logs' / 'llm_requests.jsonl'
 
 MARKERS = ('[DL_MEMORY_V040]', '背景上下文', '待审记录序号', '未确认的联想', '候选筛选')
@@ -140,7 +155,7 @@ def main(argv=None):
             continue
     since = datetime.fromisoformat(args.since) if args.since else None
     summary, details = analyse(rows, args.secret, since)
-    print(render(summary))
+    emit(render(summary))
     if args.json:
         Path(args.json).write_text(json.dumps({'summary': summary, 'details': details},
                                               ensure_ascii=False, indent=2), encoding='utf-8')
