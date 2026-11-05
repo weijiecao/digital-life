@@ -1,60 +1,50 @@
-# 发布说明 v1.0.11
+# 发布说明 v1.0.12
 
-最后一块“一屏看不完”的地方：`commands.py` 里 487 行的 `_work` if 链。行为不变，只改结构。
+新增 [`docs/CODE_ARCHITECTURE.md`](docs/CODE_ARCHITECTURE.md)：代码架构梳理。不改任何代码。
 
-## 拆成什么样
+## 文档内容
 
-`_work` 现在只有 9 行：
+- **系统架构图**（数据流、异步任务/线程、记忆处理、SQLite 中“来源”与“派生”两类数据）；
+- **两条链路**：消息写入（白名单校验 → 队列 → 单事务写 `dl_capture` + `dl_auto_jobs` → 自动整理轮询）、
+  模型请求读取（开关/缺口检查 → 1.5 秒超时取记忆包 → 临时 `TextPart` 注入）；
+- **数据表按信任等级分组**：原始采集 / 已审核来源与事件 / 自动整理候选 / 字面与语义索引 / 状态与任务 / 候选草稿；
+- **文件职责表** + 重构后的代码规模；
+- **静态审查结论**：6 条需要重点验证的边界（单线程池争用、仅纯文本、背景兜底噪声、双轨信任、
+  显式启用才会外发、人工命令与自动化需分别验收）。
 
-```python
-def _work(self, sender, origin, arg):
-    self._ensure_store()
-    scope = self.store.scope(sender, origin)
-    handlers = (self._cmd_state, self._cmd_pending, self._cmd_groups, self._cmd_capture,
-                self._cmd_briefs, self._cmd_events, self._cmd_help)
-    for handler in handlers:
-        result = handler(scope, arg, sender, origin)
-        if result is not None:
-            return result
-    return '未知命令或参数不全。发送 /dlm 帮助 查看常用命令。'
-```
+## 与代码的核对
 
-七个命令族：
+这份文档不是照抄：逐项对过代码。
 
-| 方法 | 覆盖命令 |
+| 项 | 结论 |
 |---|---|
-| `_cmd_state` | 记忆状态、上下文状态、上下文预览、导入来源 |
-| `_cmd_pending` | 待审、更新核对、更新线索、规则分组草稿、分组建议、整理、多轮建议、偏好线索/排除/恢复 |
-| `_cmd_groups` | 线索、弱联想、建议、新分组草稿、确认新分组、分组草稿、确认分组、待确认关系、关联更新、批量关联、关联 |
-| `_cmd_capture` | 采集状态、记录、检索、摘要缓存状态、清理摘要缓存 |
-| `_cmd_briefs` | 摘要草稿/确认、人工摘要、摘录、模型草稿、对照、优先级、别名、日期 |
-| `_cmd_events` | 事件、时间线、查看、关系、备份、备份校验 |
-| `_cmd_help` | 帮助 |
+| 表名（22 个） | 全部存在，已核对 `store/`、`lexical_index.py`、`pending_index.py`、`engine/e419/dynamic_index.py` 的 `CREATE TABLE` |
+| `asyncio.Queue(maxsize=100)` | ✅ |
+| `ThreadPoolExecutor(max_workers=1)` | ✅ |
+| 检索超时 1.5 秒 | ✅ |
+| 自动整理 2 秒周期 | ✅ |
+| 注入方式 | ✅ `extra_user_content_parts` + `TextPart(...).mark_as_temp()` |
+| 采集同事务写任务 | ✅ `dl_capture` 与 `dl_auto_jobs` 同一事务 |
 
-**每个 if 分支原样搬移**：判断条件、返回文本、`scope`/`sender`/`origin` 的用法一字未改。
-分发顺序与原来严格一致；不匹配返回 `None`，全部不中才落到“未知命令”。
+## 修正的过时内容
 
-## 先补安全网，再动刀
+原文基于 v1.0.7 的静态阅读，有四处与现在的代码不符：
 
-拆分前先加了两项测试（`test_plugin.CommandSurface`）：
-
-1. **11 条只读命令**（上下文状态、记忆状态、采集状态、待审、事件、时间线、摘要缓存状态、帮助、
-   更新线索、分组建议、备份校验）必须都返回非空字符串；
-2. `/dlm`、`/dlm  `、乱写参数、缺参数的 `备份校验` —— **不得抛异常**。
-
-这两项先在旧代码上跑通，再用同一套验证新代码，避免“拆完才发现某条命令悄悄失效”。
+1. 版本号 1.0.7 → **1.0.12**；
+2. `storage.py` “约 2800 多行、职责过多，建议拆分” → 已拆分完成：`storage.py` 5 行兼容层 +
+   `store/` 15 个模块（v1.0.9–v1.0.11），该条从“待办”改为“已消项”；
+3. `main.py` 职责里的“命令” → 已移至 `commands.py`（`_work` 9 行 + 7 个命令族）；
+4. 原文引用的 `digital_life_architecture.png` 不存在 → 删除该引用，保留 GitHub 可直接渲染的 mermaid 图。
 
 ## 验证
 
 | 项 | 结果 |
 |---|---|
-| 离线回归 | **339/339**（新增 2 项） |
-| 命令测试 | `test_plugin` 67 项全过 |
-| GitHub Actions | windows-latest / Python 3.12 跑同一套 |
-| 插件 zip | 通过 AstrBot 自带 `inspect_plugin_archive`（version=1.0.11） |
+| 离线回归 | 339/339（本版未改代码） |
+| CI | windows-latest / Python 3.12 同套通过 |
+| 插件 zip | 通过 `inspect_plugin_archive`（version=1.0.12） |
 
-## 已知限制（不变）
+## 审查边界
 
-- 只支持私聊纯文本；群聊/图片/语音/多设备不支持。
-- 语义阈值基于自造语料，真实分布下可能下降。
-- 指代追问默认接不住；开启候选筛选器会外发原话。
+文档是**静态源码 + 离线回归**的结论，不代表生产环境性能认证；真实链路证据见
+`dev/docs/REAL_ENV_REPORT.md` 与 `dev/reports/`。文档与代码不一致时以代码为准。

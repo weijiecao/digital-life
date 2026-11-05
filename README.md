@@ -96,7 +96,7 @@
 
 ## 这套东西是什么
 
-AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.11）：白名单账号的**私聊纯文本**落本机
+AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.12）：白名单账号的**私聊纯文本**落本机
 SQLite，自动整理成“待审线索”，每轮请求前给模型一段**有界上下文**（最多 450–600 字），
 一律标注“未确认”，不自动确认事实；默认关闭，除显式开启的候选筛选器外不联网。
 
@@ -114,6 +114,7 @@ SQLite，自动整理成“待审线索”，每轮请求前给模型一段**有
 | 想装插件的 AstrBot 用户 | [插件仓库](https://github.com/weijiecao/astrbot_plugin_digital_memory_store) 的 `docs/QUICKSTART.md` | `INSTALL.md`（参数）、`docs/TROUBLESHOOTING.md`（排错） |
 | 想复现环境 / 跑回归 | 本文件下面「快速开始」 | [`env/README.md`](env/README.md)（版本矩阵、镜像源、坑） |
 | 要改代码 / 发版 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | [`docs/MAINTAINER_FLOW.md`](docs/MAINTAINER_FLOW.md)（打包、双仓同步、发版、回滚） |
+| 想先看懂代码怎么组织 | [`dev/astrbot_plugin_digital_memory_store/docs/CODE_ARCHITECTURE.md`](dev/astrbot_plugin_digital_memory_store/docs/CODE_ARCHITECTURE.md)（数据流、符号链路、表分组） | [`engine/README.md`](dev/astrbot_plugin_digital_memory_store/engine/README.md)（实验编号模块） |
 | 想核对“真的能跑吗” | [`dev/docs/REAL_ENV_REPORT.md`](dev/docs/REAL_ENV_REPORT.md) | `dev/reports/`（探针原始输出） |
 
 ## 目录

@@ -1,4 +1,4 @@
-# 数字生命独立记忆库（自用版）v1.0.11
+# 数字生命独立记忆库（自用版）v1.0.12
 
 [![Release](https://img.shields.io/github/v/release/weijiecao/astrbot_plugin_digital_memory_store?label=release)](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
 [![License](https://img.shields.io/github/license/weijiecao/astrbot_plugin_digital_memory_store)](LICENSE)
@@ -38,6 +38,7 @@ AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时�
 | [docs/QUICKSTART.md](docs/QUICKSTART.md) | 用户流程：安装 → 4 个验证检查点 → 日常使用 → 更新 → 停用/卸载 → 备份迁移 |
 | [INSTALL.md](INSTALL.md) | 三种安装方式细节、配置项、升级与回退、常见问题 |
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | 症状 → 原因 → 处理；提 issue 需要带什么 |
+| [docs/CODE_ARCHITECTURE.md](docs/CODE_ARCHITECTURE.md) | 代码架构：数据流、写入/读取链、数据表分组、文件职责、静态审查结论 |
 | [CHANGELOG.md](CHANGELOG.md) / [RELEASE_NOTES.md](RELEASE_NOTES.md) | 版本变更与发布说明 |
 
 ## 工作方式

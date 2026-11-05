@@ -1,5 +1,25 @@
 # 变更记录
 
+## v1.0.12（2026-11-05）
+
+只加文档：`docs/CODE_ARCHITECTURE.md`（代码架构梳理），并逐项对照代码核对过。
+
+### 新增
+
+- 架构数据流图、消息写入链、模型请求与记忆读取链（mermaid，GitHub 可直接渲染）；
+- 数据表按“信任等级”分组（原始采集 / 已审核 / 自动候选 / 索引 / 状态 / 草稿）；
+- 文件职责表与重构后的代码规模；
+- 静态审查结论：6 条需要重点验证的边界 + 1 条已消项（`storage.py` 拆分已完成）。
+
+### 核对结果（对照代码，非照抄）
+
+- 表名逐条核对 `store/`、`lexical_index.py`、`pending_index.py`、`engine/e419/dynamic_index.py` 的
+  `CREATE TABLE`；
+- 参数核对：`asyncio.Queue(maxsize=100)`、`ThreadPoolExecutor(max_workers=1)`、检索 `1.5` 秒超时、
+  自动整理 `2` 秒周期、`TextPart(...).mark_as_temp()` 注入；
+- 修正原文过时处：版本 1.0.7 → 1.0.12、`storage.py` 2800 行的描述 → 5 行兼容层 + `store/` 15 个模块、
+  `main.py` 职责中的“命令” → 已移至 `commands.py`；删掉指向不存在图片的引用。
+
 ## v1.0.11（2026-11-05）
 
 命令分发拆分，行为不变：`commands.py` 里 487 行的 `_work` if 链按命令族拆成 7 个方法。
