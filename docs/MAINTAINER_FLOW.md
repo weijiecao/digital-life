@@ -41,17 +41,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\env\verify_env.ps1   # 应
 
 ```powershell
 cd dev
-# 快跑（12 个用例，约 1 秒）
-..\testbed\.venv\Scripts\python.exe -m unittest -q test_metrics test_threshold test_preflight
+# 快跑（12 个用例，约 1 秒）；测试在 dev/tests/ 下，用包名调用
+..\testbed\.venv\Scripts\python.exe -m unittest -q tests.test_metrics tests.test_threshold tests.test_preflight
 
-# 全量（19 个 suite / 336 项，约 30 秒），并刷新 STATUS.md 与 reports/status.json
+# 全量（19 个 suite / 339 项，约 30 秒），并刷新 STATUS.md 与 reports/status.json
 ..\testbed\.venv\Scripts\python.exe scripts\report.py
 
 # 手动等价写法（不想用 report.py 时）
-..\testbed\.venv\Scripts\python.exe -m unittest -q test_store test_plugin test_baseline_alignment `
-  test_preflight test_auto_jobs test_backup_regression test_prewarm test_model_judge test_delivery `
-  test_soak test_threshold test_correction test_metrics test_real_corpus test_background `
-  test_package test_attribution test_panel test_integration_chain
+..\testbed\.venv\Scripts\python.exe -m unittest -q tests.test_store tests.test_plugin tests.test_baseline_alignment `
+  tests.test_preflight tests.test_auto_jobs tests.test_backup_regression tests.test_prewarm tests.test_model_judge tests.test_delivery `
+  tests.test_soak tests.test_threshold tests.test_correction tests.test_metrics tests.test_real_corpus tests.test_background `
+  tests.test_package tests.test_attribution tests.test_panel tests.test_integration_chain
 ```
 
 > 用 `unittest`，不是 `pytest`（仓库测试是 unittest 风格，环境里也没装 pytest）。
@@ -59,7 +59,7 @@ cd dev
 
 ### CI（GitHub Actions）
 
-`.github/workflows/tests.yml` 在 `windows-latest` + Python 3.12 上跑同一套 337 项，push 到 `main`
+`.github/workflows/tests.yml` 在 `windows-latest` + Python 3.12 上跑同一套 339 项，push 到 `main`
 或开 PR 即触发。它**不需要 torch/模型、不联网**：测试全部用替身（stub 的 AstrBot、假编码器）。
 
 注意边界：CI 证明的是“逻辑没坏”，不能替代 `testbed/` 的真实链路验证（真实 AstrBot + BGE 必须本机跑）。

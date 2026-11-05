@@ -34,12 +34,12 @@ jobs:
           python --version
           Write-Host '测试全部用替身（stub AstrBot、假编码器），不需要 torch/模型，也不联网。'
 
-      - name: 离线回归 337 项
+      - name: 离线回归 339 项
         working-directory: dev
         run: |
           python -m unittest -q `
-            test_store test_plugin test_baseline_alignment test_preflight `
-            test_auto_jobs test_backup_regression test_prewarm test_model_judge `
-            test_delivery test_soak test_threshold test_correction test_metrics `
-            test_real_corpus test_background test_package test_attribution `
-            test_panel test_integration_chain
+            tests.test_store tests.test_plugin tests.test_baseline_alignment tests.test_preflight `
+            tests.test_auto_jobs tests.test_backup_regression tests.test_prewarm tests.test_model_judge `
+            tests.test_delivery tests.test_soak tests.test_threshold tests.test_correction tests.test_metrics `
+            tests.test_real_corpus tests.test_background tests.test_package tests.test_attribution `
+            tests.test_panel tests.test_integration_chain

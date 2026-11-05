@@ -12,22 +12,26 @@
 
 ```
 dev/
-  astrbot_plugin_digital_memory_store/   插件源码（P0 修复、自检、死信策略）
-  test_store.py / test_plugin.py          原有 225 项回归
-  test_baseline_alignment.py              6 项：上游基线继承
-  test_preflight.py                       6 项：依赖/模型自检提示
-  test_auto_jobs.py                       4 项：重试上限与死信不阻塞后续
-  test_backup_regression.py               4 项：备份可删除/可恢复（P0 回归）
-  test_prewarm.py                         5 项：模型预热不阻塞采集/整理（F1）
-  test_model_judge.py                     17 项：候选筛选器（G3 窄路，默认关闭）
-  test_soak.py                            11 项：L0 soak 采集/增量/汇总/报告
-  test_delivery.py                        12 项：配置预设 + 安装/升级/回退 + 安装自检
-  test_metrics.py                         3 项：每轮耗时/注入埋点
-  test_real_corpus.py                     5 项：真实语料导入 + 探针评分
-  test_integration_chain.py               12 项：钩子契约 + ①→⑤ 端到端
-  sim_astrbot.py                          可观测假 AstrBot（钩子契约探针）
+  astrbot_plugin_digital_memory_store/   插件源码（含 store/ 包、commands.py、docs/）
+  tests/                                  全部回归用例（339 项）
+    test_store.py / test_plugin.py        主体回归（存储、插件钩子、命令面、帮助）
+    test_baseline_alignment.py            6 项：上游基线继承
+    test_preflight.py                     6 项：依赖/模型自检提示
+    test_auto_jobs.py                     4 项：重试上限与死信不阻塞后续
+    test_backup_regression.py             4 项：备份可删除/可恢复（P0 回归）
+    test_prewarm.py                       5 项：模型预热不阻塞采集/整理（F1）
+    test_model_judge.py                   17 项：候选筛选器（G3 窄路，默认关闭）
+    test_soak.py                          11 项：L0 soak 采集/增量/汇总/报告
+    test_delivery.py                      12 项：配置预设 + 安装/升级/回退 + 安装自检
+    test_metrics.py                       3 项：每轮耗时/注入埋点
+    test_real_corpus.py                   5 项：真实语料导入 + 探针评分
+    test_integration_chain.py             12 项：钩子契约 + 端到端
+    test_package.py                       3 项：zip 结构/校验和/可重复构建
+    test_attribution.py / test_threshold.py / test_panel.py / test_background.py 等
+  sim_astrbot.py                          可观测假 AstrBot（tests/ 从 dev 根导入）
   integration_probe.py                    端到端探针 → reports/integration_chain.json
   eval_baseline_retrieval.py              4 案例检索对齐（规则/语义双路径）
+  _schema.py / _dbg_*.py                  一次性调试脚本（可删）
   evaluation/                             原有 15 项场景评估
   fixtures/                               上游冻结语料（8 条话术 + 3 条旧来源）
   scripts/report.py                       唯一数字来源 → STATUS.md / reports/status.json
@@ -35,25 +39,12 @@ dev/
   scripts/install.py / upgrade.py / rollback.py   安装、升级、回退
   scripts/build_package.py                生成 dist/*.zip + SHA256
   scripts/verify_install.py               安装后自检
-  test_package.py                         3 项：zip 结构/校验和/可重复构建
-  astrbot_plugin_digital_memory_store/INSTALL.md  面向使用者的安装/隐私/限制
-  astrbot_plugin_digital_memory_store/presets/    配置预设（off/self/debug）
-  docs/METRICS.md                         五个指标口径
-  docs/REAL_ENV_REPORT.md                 实机验收报告 #1（AstrBot 4.29.3 + 真实 BGE + 真实 QQ）
-  docs/BGE_CALIBRATION.md                 真实 BGE 阈值校准（M3 第一步）
-  docs/EVAL_SET.md                        M2 评估集与基线（120 条自造分层语料）
-  docs/G3_LLM_DECISION.md                 G3 预研：是否换 LLM 判定（含实测成本/延迟/隐私）
-  docs/READINESS.md                       上线就绪度评估（距 L0/L1/L2 还差什么）
-  docs/REAL_CORPUS.md                     真实语料导入/标注/评分
-  docs/ATTRIBUTION.md                     插件上下文 vs AstrBot 自带的归因
-  docs/LLM_IMPACT.md                      大模型介入对忠实记录/上下文/规模的影响
-  docs/CAPACITY.md                        3–5 年存储与本地算力评估
-  docs/ARCHITECTURE.md                    当前版本架构图与简介（v1.0.3）
-  docs/LAUNCH_CHECKLIST.md                上线 Go/No-Go 清单与回滚判定
-  docs/L0_ACCEPTANCE.md                   L0 验收记录模板与判定规则（3 天 soak）
-  docs/baseline_E50F_real.json            实机基线待填契约（上游 8 案例，仍待外部回传）
+  docs/                                   指标口径、实机报告、评估集、上线清单等
   reports/                                评估/探针/状态输出（含 real_env.json / qq_real.json / bge_*.json）
 ```
+
+`tests/` 里的模块用包名调用：`python -m unittest -q tests.test_store`（在 `dev/` 下执行），
+或直接 `python scripts/report.py` 跑全量并刷新 `STATUS.md`。
 
 ## 本轮（M0 收尾 + M1 离线层）做了什么
 
@@ -69,7 +60,7 @@ dev/
 
 ## 当前状态
 
-**v1.0.3：离线用例全绿（336 项），真实 AstrBot + 真实 QQ 链路跑通，交付最小闭环已就绪。**
+**v1.0.12：离线用例全绿（339 项），真实 AstrBot + 真实 QQ 链路跑通，交付最小闭环已就绪。**
 
 - 新增 26 项用例（6 自检 + 4 死信 + 4 备份回归 + 12 集成），原 231 项不受影响；
 - 集成探针：注入 8/8、同一请求不重复注入、重启续跑无重复采集、不兼容宿主静默放行；
@@ -129,7 +120,7 @@ dev/
 ```powershell
 cd dev
 python scripts/report.py            # 跑全量 + 生成 STATUS.md（约 30 s）
-python -m unittest -q test_store test_plugin test_baseline_alignment test_preflight test_auto_jobs test_backup_regression test_prewarm test_model_judge test_integration_chain
+python -m unittest -q tests.test_store tests.test_plugin tests.test_baseline_alignment tests.test_preflight tests.test_auto_jobs tests.test_backup_regression tests.test_prewarm tests.test_model_judge tests.test_integration_chain
 python scripts/preflight.py --model-dir "<本机模型目录>"
 
 # 真实环境（先按 testbed/README.md 启动 mock provider）

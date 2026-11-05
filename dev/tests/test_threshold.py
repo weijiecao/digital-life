@@ -4,8 +4,8 @@ import asyncio
 import tempfile
 import unittest
 
-from test_plugin import m
-from test_store import FakeEncoder
+from .test_plugin import m
+from .test_store import FakeEncoder
 
 from astrbot_plugin_digital_memory_store.storage import Store
 

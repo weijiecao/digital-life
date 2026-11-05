@@ -6,7 +6,7 @@ import time
 import types
 import unittest
 
-from test_plugin import Event, m
+from .test_plugin import Event, m
 
 from astrbot_plugin_digital_memory_store.model_judge import (
     build_prompt, format_hint, parse_reply)
@@ -188,7 +188,7 @@ class TestJudgeIntegration(unittest.TestCase):
 
 class TestJudgeCandidates(unittest.TestCase):
     def test_ranks_overlap_and_caps(self):
-        from test_store import FakeEncoder
+        from .test_store import FakeEncoder
         from astrbot_plugin_digital_memory_store.storage import Store
         with tempfile.TemporaryDirectory() as d:
             store = Store(d, '', FakeEncoder)

@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-DEV_ROOT = Path(__file__).resolve().parent
+DEV_ROOT = Path(__file__).resolve().parent.parent
 PLUGIN = DEV_ROOT / 'astrbot_plugin_digital_memory_store'
 SCHEMA = json.loads((PLUGIN / '_conf_schema.json').read_text(encoding='utf-8'))
 PRESETS = ('off', 'self', 'debug')

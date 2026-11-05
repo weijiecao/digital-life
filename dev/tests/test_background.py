@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 import sim_astrbot as sim
-from test_store import FakeEncoder
+from .test_store import FakeEncoder
 
 from astrbot_plugin_digital_memory_store.storage import Store
 

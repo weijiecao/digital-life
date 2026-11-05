@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-DEV_ROOT = Path(__file__).resolve().parent
+DEV_ROOT = Path(__file__).resolve().parent.parent
 TESTBED = DEV_ROOT.parent / 'testbed'
 
 

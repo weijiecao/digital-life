@@ -17,7 +17,7 @@ from pathlib import Path
 from astrbot_plugin_digital_memory_store.storage import Store, MAX_CAPTURE_CHARS
 from astrbot_plugin_digital_memory_store.engine.e419.dynamic_index import attach_dynamic_index
 
-FIXTURES = Path(__file__).with_name('fixtures')
+FIXTURES = Path(__file__).resolve().parent.parent / 'fixtures'
 CASES = FIXTURES / 'cases_fixture.json'
 SNAPSHOT = FIXTURES / 'reviewed_fixture.json'
 BASE = datetime(2026, 11, 3, 10, 0, tzinfo=timezone.utc)

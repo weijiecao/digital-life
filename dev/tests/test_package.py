@@ -8,7 +8,7 @@ import unittest
 import zipfile
 from pathlib import Path
 
-DEV_ROOT = Path(__file__).resolve().parent
+DEV_ROOT = Path(__file__).resolve().parent.parent
 PLUGIN = DEV_ROOT / 'astrbot_plugin_digital_memory_store'
 
 

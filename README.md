@@ -128,7 +128,7 @@ digital-life/
     README.md                版本矩阵、镜像源、已知坑（先读这个）
   dev/                       开发工作区（权威开发线）
     astrbot_plugin_digital_memory_store/   插件源码（含 install.ps1 与用户文档）
-    test_*.py                339 项回归 + 探针
+    tests/                   339 项回归（python -m unittest tests.test_store）
     scripts/                 report.py / install.py / upgrade.py / rollback.py / build_package.py
     docs/                    架构、指标口径、评估集、实机报告、上线清单…
     reports/                 探针与评估输出（可重生成）

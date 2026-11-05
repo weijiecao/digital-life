@@ -5,7 +5,7 @@ import tempfile
 import threading
 import types
 import unittest
-from test_store import FakeEncoder
+from .test_store import FakeEncoder
 
 class Filter:
     class EventMessageType: PRIVATE_MESSAGE=1

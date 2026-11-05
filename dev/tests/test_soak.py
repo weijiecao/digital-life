@@ -6,9 +6,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from test_store import FakeEncoder
+from .test_store import FakeEncoder
 
-DEV_ROOT = Path(__file__).resolve().parent
+DEV_ROOT = Path(__file__).resolve().parent.parent
 TESTBED = DEV_ROOT.parent / 'testbed'
 
 

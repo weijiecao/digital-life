@@ -3,7 +3,7 @@
 import tempfile
 import unittest
 
-from test_store import FakeEncoder
+from .test_store import FakeEncoder
 
 from astrbot_plugin_digital_memory_store.auto_organize import process_jobs
 from astrbot_plugin_digital_memory_store.storage import Store

@@ -11,7 +11,7 @@ import unittest
 from unittest.mock import patch
 
 import sim_astrbot as sim
-from test_store import FakeEncoder
+from .test_store import FakeEncoder
 
 from astrbot_plugin_digital_memory_store.auto_organize import (
     MAX_JOB_ATTEMPTS, organize_recent, process_jobs)

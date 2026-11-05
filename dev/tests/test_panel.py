@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from test_store import FakeEncoder
+from .test_store import FakeEncoder
 
 from astrbot_plugin_digital_memory_store import panel
 from astrbot_plugin_digital_memory_store.storage import Store
@@ -65,7 +65,7 @@ class TestPanel(unittest.TestCase):
 
 class TestRegistration(unittest.TestCase):
     def test_panel_web_apis_registered(self):
-        from test_plugin import m
+        from .test_plugin import m
 
         class FakeContext:
             def __init__(self):

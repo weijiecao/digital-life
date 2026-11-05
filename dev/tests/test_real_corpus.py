@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-DEV_ROOT = Path(__file__).resolve().parent
+DEV_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(DEV_ROOT / 'evaluation'))
 
 from real_corpus_eval import evaluate, load_probes  # noqa: E402

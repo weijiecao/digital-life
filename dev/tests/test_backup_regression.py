@@ -12,7 +12,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from test_store import FakeEncoder
+from .test_store import FakeEncoder
 
 from astrbot_plugin_digital_memory_store.recovery import restore_to_new_directory
 from astrbot_plugin_digital_memory_store.storage import Store
