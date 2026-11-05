@@ -1,29 +1,36 @@
-# 数字生命独立记忆库（自用版）v1.0.5
+# 数字生命独立记忆库（自用版）v1.0.6
 
 AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时以“未确认线索”的形式回注给模型。
 默认关闭；不自动确认事实；除显式开启的可选功能外不联网。
 
-## 下载
+## 快速开始（约 5 分钟）
 
-- 从 [Releases](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
-  下载 `astrbot_plugin_digital_memory_store-<version>.zip` 与同名 `.sha256`；
-- 校验：`Get-FileHash .\astrbot_plugin_digital_memory_store-1.0.5.zip -Algorithm SHA256`；
-- 解压后把 `astrbot_plugin_digital_memory_store/` 整个目录放进 AstrBot 的 `data/plugins/`，
-  重启 AstrBot；随后按 `INSTALL.md` 配置白名单与模型目录。
+下载 → 安装 → 验证 → 使用：
 
-## 一键安装（Windows）
+1. 从 [Releases](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
+   下载 `astrbot_plugin_digital_memory_store-<version>.zip`，用同名 `.sha256` 校验：
+   `Get-FileHash .\astrbot_plugin_digital_memory_store-1.0.6.zip -Algorithm SHA256`；
+2. 解压后进入插件目录，跑一键安装（会问 AstrBot 根目录与白名单 QQ，可选装依赖/模型）：
 
-```powershell
-# 解压后进入插件目录执行：会问你 AstrBot 路径和 QQ 号，并可选装依赖、下模型
-powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
-# 全自动：-AstrBotRoot "C:\AstrBot" -QQ 123456 -WithDeps -WithModel
-```
+   ```powershell
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+   # 全自动：-AstrBotRoot "C:\AstrBot" -QQ 123456 -WithDeps -WithModel
+   ```
+
+3. 重启 AstrBot，用白名单号私聊 `/dlm 上下文状态`；
+4. 想确认“注入真的生效”，逐条走 [docs/QUICKSTART.md](docs/QUICKSTART.md) 的 4 个检查点。
 
 也可以直接在 AstrBot WebUI 的插件页上传 zip 安装（上传后仍需打开 `enabled`、填白名单）。
+三条安装路径的差异与全部参数见 [INSTALL.md](INSTALL.md)。
 
-## 安装
+## 文档
 
-见 `INSTALL.md`（一键脚本 / WebUI 上传 / 手工解压三条路，含升级、回退与常见问题）。
+| 文档 | 内容 |
+|---|---|
+| [docs/QUICKSTART.md](docs/QUICKSTART.md) | 用户流程：安装 → 4 个验证检查点 → 日常使用 → 更新 → 停用/卸载 → 备份迁移 |
+| [INSTALL.md](INSTALL.md) | 三种安装方式细节、配置项、升级与回退、常见问题 |
+| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | 症状 → 原因 → 处理；提 issue 需要带什么 |
+| [CHANGELOG.md](CHANGELOG.md) / [RELEASE_NOTES.md](RELEASE_NOTES.md) | 版本变更与发布说明 |
 
 ## 工作方式
 
