@@ -1,0 +1,44 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dev/**'
+      - '.github/workflows/tests.yml'
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unittest:
+    name: 离线回归（${{ matrix.python-version }}）
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 说明
+        run: |
+          python --version
+          Write-Host '测试全部用替身（stub AstrBot、假编码器），不需要 torch/模型，也不联网。'
+
+      - name: 离线回归 337 项
+        working-directory: dev
+        run: |
+          python -m unittest -q `
+            test_store test_plugin test_baseline_alignment test_preflight `
+            test_auto_jobs test_backup_regression test_prewarm test_model_judge `
+            test_delivery test_soak test_threshold test_correction test_metrics `
+            test_real_corpus test_background test_package test_attribution `
+            test_panel test_integration_chain

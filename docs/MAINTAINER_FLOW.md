@@ -57,6 +57,13 @@ cd dev
 > 用 `unittest`，不是 `pytest`（仓库测试是 unittest 风格，环境里也没装 pytest）。
 > `STATUS.md` 是脚本生成物，**不要手改**；它是唯一数字来源。
 
+### CI（GitHub Actions）
+
+`.github/workflows/tests.yml` 在 `windows-latest` + Python 3.12 上跑同一套 337 项，push 到 `main`
+或开 PR 即触发。它**不需要 torch/模型、不联网**：测试全部用替身（stub 的 AstrBot、假编码器）。
+
+注意边界：CI 证明的是“逻辑没坏”，不能替代 `testbed/` 的真实链路验证（真实 AstrBot + BGE 必须本机跑）。
+
 ## 4. 打包
 
 ```powershell

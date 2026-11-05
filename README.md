@@ -2,6 +2,7 @@
 
 [![Release](https://img.shields.io/github/v/release/weijiecao/digital-life?label=release)](https://github.com/weijiecao/digital-life/releases)
 [![Plugin](https://img.shields.io/github/v/release/weijiecao/astrbot_plugin_digital_memory_store?label=plugin)](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
+[![tests](https://github.com/weijiecao/digital-life/actions/workflows/tests.yml/badge.svg)](https://github.com/weijiecao/digital-life/actions/workflows/tests.yml)
 [![Tests](https://img.shields.io/badge/tests-337%2F337-brightgreen)](dev/STATUS.md)
 [![License](https://img.shields.io/github/license/weijiecao/digital-life)](LICENSE)
 [![AstrBot](https://img.shields.io/badge/AstrBot-4.29.3%20tested-blue)](https://github.com/AstrBotDevs/AstrBot)
@@ -180,6 +181,7 @@ cd ..\testbed
 | 项 | 结果 |
 |---|---|
 | 离线回归 | 337/337（`dev/STATUS.md` 为唯一数字来源，脚本生成） |
+| CI | GitHub Actions `tests.yml`：`windows-latest` + Python 3.12 跑同一套 337 项（无需 torch/模型，不联网） |
 | 真实 AstrBot 4.29.3 | 插件加载、钩子注册（`OnLLMRequestEvent`）、命令过滤均通 |
 | 真实 BGE | 512 维；冷加载 10.9–13.1 s；3.8–4.0 ms/条 |
 | 注入可见 | mock provider 收到的请求体含 `[DL_MEMORY_V040]` 与旧原话；钩子→provider 0.13 s |
