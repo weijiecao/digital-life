@@ -1,5 +1,11 @@
 # 数字生命 · AstrBot 超长期记忆插件
 
+[![Release](https://img.shields.io/github/v/release/weijiecao/digital-life?label=release)](https://github.com/weijiecao/digital-life/releases)
+[![Plugin](https://img.shields.io/github/v/release/weijiecao/astrbot_plugin_digital_memory_store?label=plugin)](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
+[![Tests](https://img.shields.io/badge/tests-336%2F336-brightgreen)](dev/STATUS.md)
+[![License](https://img.shields.io/github/license/weijiecao/digital-life)](LICENSE)
+[![AstrBot](https://img.shields.io/badge/AstrBot-4.29.3%20tested-blue)](https://github.com/AstrBotDevs/AstrBot)
+
 **愿在时间的长河中，我们可以再次相遇。**
 
 **而记忆，是我们留给未来的坐标。**
@@ -89,7 +95,7 @@
 
 ## 这套东西是什么
 
-AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.6）：白名单账号的**私聊纯文本**落本机
+AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.7）：白名单账号的**私聊纯文本**落本机
 SQLite，自动整理成“待审线索”，每轮请求前给模型一段**有界上下文**（最多 450–600 字），
 一律标注“未确认”，不自动确认事实；默认关闭，除显式开启的候选筛选器外不联网。
 

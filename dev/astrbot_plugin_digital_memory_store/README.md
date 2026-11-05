@@ -1,7 +1,15 @@
-# 数字生命独立记忆库（自用版）v1.0.6
+# 数字生命独立记忆库（自用版）v1.0.7
+
+[![Release](https://img.shields.io/github/v/release/weijiecao/astrbot_plugin_digital_memory_store?label=release)](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
+[![License](https://img.shields.io/github/license/weijiecao/astrbot_plugin_digital_memory_store)](LICENSE)
+[![AstrBot](https://img.shields.io/badge/AstrBot-4.29.3%20tested-blue)](https://github.com/AstrBotDevs/AstrBot)
+[![Python](https://img.shields.io/badge/Python-3.12%20tested-3776AB)](https://www.python.org/)
 
 AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时以“未确认线索”的形式回注给模型。
 默认关闭；不自动确认事实；除显式开启的可选功能外不联网。
+
+> **兼容性**：AstrBot **4.29.3**（+ Python 3.12）实测通过；4.x 其他版本**未验证**。
+> 在别的版本上用之前，请按 [docs/QUICKSTART.md](docs/QUICKSTART.md) 的 4 个检查点自测，别假设它一定兼容。
 
 ## 快速开始（约 5 分钟）
 
@@ -9,7 +17,7 @@ AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时�
 
 1. 从 [Releases](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
    下载 `astrbot_plugin_digital_memory_store-<version>.zip`，用同名 `.sha256` 校验：
-   `Get-FileHash .\astrbot_plugin_digital_memory_store-1.0.6.zip -Algorithm SHA256`；
+   `Get-FileHash .\astrbot_plugin_digital_memory_store-1.0.7.zip -Algorithm SHA256`；
 2. 解压后进入插件目录，跑一键安装（会问 AstrBot 根目录与白名单 QQ，可选装依赖/模型）：
 
    ```powershell

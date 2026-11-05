@@ -51,7 +51,7 @@ AstrBot 4.x 插件页 → 安装插件 → 上传 zip。包结构能被 AstrBot 
 ### 方式 C：手工解压
 
 ```powershell
-Expand-Archive .\astrbot_plugin_digital_memory_store-1.0.6.zip -DestinationPath "$env:TEMP\dlm"
+Expand-Archive .\astrbot_plugin_digital_memory_store-1.0.7.zip -DestinationPath "$env:TEMP\dlm"
 Copy-Item "$env:TEMP\dlm\astrbot_plugin_digital_memory_store" "C:\AstrBot\data\plugins\" -Recurse -Force
 ```
 
