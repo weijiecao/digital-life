@@ -282,7 +282,7 @@ class CommandMixin:
         scope=self.store.scope(sender,origin)
         handlers=(self._cmd_state, self._cmd_pending, self._cmd_groups, self._cmd_capture,
                   self._cmd_briefs, self._cmd_events, self._cmd_import, self._cmd_export,
-                  self._cmd_session, self._cmd_help)
+                  self._cmd_session, self._cmd_claim, self._cmd_help)
         for handler in handlers:
             result = handler(scope, arg, sender, origin)
             if result is not None:
@@ -858,7 +858,46 @@ class CommandMixin:
                 '已审核来源：'+str(inv['reviewed_sources'])+' 条；事件：'+str(inv['events'])+' 个；摘要版本：'
                 +str(inv['brief_versions'])+'\n'
                 '说明：本插件用「发送者 + origin」算作用域；换环境后 origin 变了，旧库会查不到，'
-                '迁移前请保留这一行。')
+                '迁移前请保留这一行。\n'
+                '认领状态：'+('已认领 → '+self.scope_overrides.get(str(sender),'')
+                              if self.scope_overrides.get(str(sender)) else '未认领（使用本机 origin）'))
+
+    def _cmd_claim(self, scope, arg, sender, origin):
+        """会话认领：把本发送者绑定回旧 origin，让旧库在新环境下继续可见。"""
+        from . import scope_alias
+        if arg!='会话认领' and arg!='取消认领' and not arg.startswith('会话认领 '):return None
+        mapping=scope_alias.load(self.root)
+        bound=mapping.get(str(sender))
+        if arg=='取消认领':
+            if not bound:return '当前没有认领记录。'
+            mapping.pop(str(sender),None);scope_alias.save(self.root,mapping)
+            self.scope_overrides=mapping
+            return '已取消认领。之后的读写回到本机当前 origin：'+origin
+        target=arg[len('会话认领'):].strip()
+        if not target:
+            lines=['会话认领：把本发送者绑定到旧机器的 origin，使旧库在新环境下继续可读。',
+                   '发送者：'+((sender[:3]+'***'+sender[-2:]) if len(sender)>6 else '***'),
+                   '当前 origin：'+origin,
+                   '当前状态：'+('已认领 → '+bound if bound else '未认领（使用本机 origin）'),
+                   '用法：/dlm 会话认领 <旧 origin>；例如 /dlm 会话认领 aiocqhttp:FriendMessage:123456',
+                   '取消：/dlm 取消认领。只支持私聊（FriendMessage）。']
+            return '\n'.join(lines)
+        if not scope_alias.valid_origin(target):
+            return '格式应为 platform:消息类型:会话ID，且消息类型必须是 FriendMessage（只支持私聊）。'
+        candidate=self.store.scope(str(sender),target)
+        inv=self.store.memory_inventory(candidate)
+        if not inv['captured'] and not inv['reviewed_sources']:
+            return '这个 origin 下没有可认领的数据，请核对是否抄错（不会写入任何绑定）。'
+        if target==origin:
+            return '当前 origin 已经是这个值，无需认领。'
+        mapping[str(sender)]=target
+        path=scope_alias.save(self.root,mapping)
+        self.scope_overrides=mapping
+        return ('已认领：'+target+'\n'
+                '该会话现有原话 '+str(inv['captured'])+' 条、已审核来源 '+str(inv['reviewed_sources'])
+                +' 条、事件 '+str(inv['events'])+' 个。\n'
+                '之后本发送者的读写都走这个 origin；绑定保存在 '+str(path)+'。\n'
+                '恢复本机 origin：/dlm 取消认领。')
 
     def _cmd_help(self, scope, arg, sender, origin):
         """帮助"""
@@ -870,7 +909,7 @@ class CommandMixin:
                     '记录：/dlm 记录 标题|内容、/dlm 关联 序号|标题、/dlm 关系 修正|较新ID|较旧ID\n'
                     '维护：/dlm 备份、/dlm 备份校验 <备份文件名>\n'
                     '迁移：/dlm 导入历史 <文件名>.jsonl（放 imports/ 目录）\n'
-                    '　　　/dlm 导出历史 [天数]、/dlm 会话信息\n'
+                    '　　　/dlm 导出历史 [天数]、/dlm 会话信息、/dlm 会话认领 <旧 origin>\n'
                     '整理：/dlm 整理、/dlm 检索 线索\n'
                     '说明：所有线索均为“未确认”，不会自动确认事实。')
         return None

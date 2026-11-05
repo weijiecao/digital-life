@@ -1574,4 +1574,52 @@ class HistoryExportCommand(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
 
 
+class ScopeClaim(unittest.TestCase):
+    """会话认领：换环境后把旧 origin 绑回来，旧库继续可见，且重启后仍生效。"""
+
+    def test_rejects_bad_format_and_unknown_origin(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42'})
+            try:
+                self.assertIn('格式',(await run(p,'/dlm 会话认领 aiocqhttp:FriendMessage'))[0])
+                self.assertIn('只支持私聊',(await run(p,'/dlm 会话认领 aiocqhttp:GroupMessage:999'))[0])
+                self.assertIn('没有可认领的数据',(await run(p,'/dlm 会话认领 aiocqhttp:FriendMessage:999'))[0])
+                usage=(await run(p,'/dlm 会话认领'))[0]
+                self.assertIn('当前 origin',usage)
+                self.assertIn('未认领',usage)
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+    def test_claim_binds_old_origin_and_survives_restart(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            old='aiocqhttp:FriendMessage:42'
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42','automatic_memory_enabled':True})
+            try:
+                event=Event('旧号喜欢苹果');event.unified_msg_origin=old
+                event.message_obj.message_id='h1';event.message_obj.message=[Plain('旧号喜欢苹果')]
+                await p.capture_private(event)
+                reply=(await run(p,'/dlm 会话认领 '+old))[0]
+                self.assertIn('已认领',reply)
+                self.assertIn('1 条',reply)
+                info=(await run(p,'/dlm 会话信息'))[0]
+                self.assertIn('aiocqhttp:FriendMessage:42',info)
+                self.assertIn('已认领',info)
+                self.assertIn('原话：1 条',info)
+            finally:
+                await p.terminate()
+            q=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42'})
+            try:
+                info2=(await run(q,'/dlm 会话信息'))[0]
+                self.assertIn('aiocqhttp:FriendMessage:42',info2)
+                self.assertIn('原话：1 条',info2)
+                self.assertIn('已取消',(await run(q,'/dlm 取消认领'))[0])
+                self.assertIn('未认领',(await run(q,'/dlm 会话信息'))[0])
+            finally:
+                await q.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+
 if __name__=='__main__':unittest.main()

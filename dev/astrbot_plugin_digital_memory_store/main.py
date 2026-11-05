@@ -17,6 +17,7 @@ except Exception:
     _logger=_logging.getLogger(__name__)
 from .storage import Store,MAX_CAPTURE_CHARS
 from . import panel
+from . import scope_alias
 from .preflight import check_environment
 from .commands import CommandMixin
 from .model_drafts import make_prompt,make_contrast_prompt,make_brief_prompt,make_segment_merge_prompt,validate_brief_output
@@ -90,6 +91,7 @@ class DigitalMemoryStore(CommandMixin, Star):
         self.auto_model_policy=hashlib.sha256(json.dumps([sorted(self.allow),self.draft_provider],ensure_ascii=False).encode()).hexdigest()
         self.model_draft_lock=asyncio.Lock()
         self.root=Path(get_astrbot_data_path())/'plugin_data'/'astrbot_plugin_digital_memory_store'
+        self.scope_overrides=scope_alias.load(self.root)
         self.environment=None
         self.pool=ThreadPoolExecutor(max_workers=1,thread_name_prefix='dlmemory')
         self.store=None
@@ -710,6 +712,9 @@ class DigitalMemoryStore(CommandMixin, Star):
         if group is not None and str(group).strip() not in ('','0'): return None
         bot=getattr(obj,'self_id',None)
         if bot is not None and str(bot)==str(sender): return None
+        # 会话认领：把本发送者的 origin 换成用户认领的旧值，使旧库继续可见（见 scope_alias.py）
+        override=self.scope_overrides.get(str(sender))
+        if override: origin=override
         if len(str(sender))>128 or len(str(origin))>512:return None
         return str(sender),str(origin)
 

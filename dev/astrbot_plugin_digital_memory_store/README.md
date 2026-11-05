@@ -1,4 +1,4 @@
-# 数字生命独立记忆库（自用版）v1.0.14
+# 数字生命独立记忆库（自用版）v1.0.15
 
 [![Release](https://img.shields.io/github/v/release/weijiecao/astrbot_plugin_digital_memory_store?label=release)](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
 [![License](https://img.shields.io/github/license/weijiecao/astrbot_plugin_digital_memory_store)](LICENSE)
@@ -77,6 +77,8 @@ AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时�
 | `/dlm 导入历史 <文件名>.jsonl` | 把旧聊天记录导入为**待审原话**（文件放 `imports/`，不会自动成为事实） |
 | `/dlm 导出历史 [天数]` | 导出本会话原话：JSONL（可回灌）+ Markdown（人读）+ 元数据 |
 | `/dlm 会话信息` | 显示本会话的 origin 与计数（迁移前必看） |
+| `/dlm 会话认领 <旧 origin>` | 换环境后把本发送者绑定回旧 origin，使旧库继续可见（只支持私聊） |
+| `/dlm 取消认领` | 解除绑定，回到本机当前 origin |
 
 完整命令（含整理、关联、时间线、摘要缓存等）见 `/dlm 帮助`。
 
