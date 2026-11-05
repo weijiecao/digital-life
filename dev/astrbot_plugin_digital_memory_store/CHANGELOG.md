@@ -1,5 +1,24 @@
 # 变更记录
 
+## v1.0.10（2026-11-05）
+
+继续拆结构，行为不变：`store/context.py`（945 行）按职责分成三个 mixin。
+
+### 重构
+
+- `store/context.py` 945 行 → 7 行组合入口，拆成
+  `context_sources.py`（事件准备、语义分组、主题与向量同步，475 行）、
+  `context_packet.py`（待审/多事件/背景拼装与预算，367 行）、
+  `context_followup.py`（追问与上一轮衔接，153 行）；
+- `ContextMixin` 由三者组合，`Store` 的 MRO 与调用方式不变。
+
+### 工程
+
+- 新增 GitHub Actions `tests.yml`（windows-latest + Python 3.12）跑同一套 337 项，
+  不需要 torch/模型、不联网；
+- CI 首跑发现并修复：`testbed/harness/attribution.py` 在英文 Windows 控制台（cp1252）
+  打印中文会 `UnicodeEncodeError`；新增 `emit()` 在 print 失败时改写 UTF-8 字节。
+
 ## v1.0.9（2026-11-05）
 
 纯结构重构，**行为不变**：把两个巨型单文件按领域拆开。

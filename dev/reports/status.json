@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-05T11:28:59+08:00",
-  "plugin_version": "1.0.8",
+  "generated_at": "2026-11-05T11:38:48+08:00",
+  "plugin_version": "1.0.9",
   "environment": {
-    "time": "2026-11-05T11:28:59+08:00",
+    "time": "2026-11-05T11:38:48+08:00",
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10",
     "executable": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\.venv\\Scripts\\python.exe",
@@ -28,7 +28,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 14.54,
+      "duration_s": 14.33,
       "failed": [],
       "ids": [
         "test_store.TestStore.test_adjacent_model_sources_require_matching_policy_and_recheck_on_finish",
@@ -200,7 +200,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 5.59,
+      "duration_s": 5.5,
       "failed": [],
       "ids": [
         "test_plugin.CommandHelp.test_help_lists_commands_and_unknown_points_to_help",
@@ -276,7 +276,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.14,
+      "duration_s": 0.13,
       "failed": [],
       "ids": [
         "test_baseline_alignment.TestBaselineAlignment.test_capture_accepts_baseline_script_in_one_scope",
@@ -310,7 +310,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.24,
+      "duration_s": 0.23,
       "failed": [],
       "ids": [
         "test_auto_jobs.TestAutoJobFailurePolicy.test_dead_job_does_not_block_later_sources_in_same_scope",
@@ -325,7 +325,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.38,
+      "duration_s": 0.42,
       "failed": [],
       "ids": [
         "test_backup_regression.TestBackupHandleRegression.test_backup_can_be_restored_to_new_directory",
@@ -340,7 +340,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 1.17,
+      "duration_s": 1.15,
       "failed": [],
       "ids": [
         "test_prewarm.TestModelStateVisible.test_context_status_reports_model_state",
@@ -356,7 +356,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 1.71,
+      "duration_s": 1.68,
       "failed": [],
       "ids": [
         "test_model_judge.TestGate.test_only_anaphoric_short_queries_trigger",
@@ -384,7 +384,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.91,
+      "duration_s": 1.01,
       "failed": [],
       "ids": [
         "test_delivery.TestInstallUpgradeRollback.test_install_refuses_existing_without_force",
@@ -408,7 +408,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 2.56,
+      "duration_s": 2.66,
       "failed": [],
       "ids": [
         "test_soak.TestSoakCollect.test_collects_db_logs_and_provider_counts",
@@ -430,7 +430,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.45,
+      "duration_s": 0.42,
       "failed": [],
       "ids": [
         "test_threshold.TestPluginThresholdConfig.test_configured_percent_is_applied",
@@ -444,7 +444,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.13,
+      "duration_s": 0.24,
       "failed": [],
       "ids": [
         "test_correction.TestCorrectionCancelCue.test_cancel_phrase_is_recognised",
@@ -458,7 +458,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.21,
+      "duration_s": 0.23,
       "failed": [],
       "ids": [
         "test_metrics.TestLatencyMetrics.test_disabled_plugin_writes_nothing",
@@ -472,7 +472,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.13,
+      "duration_s": 0.18,
       "failed": [],
       "ids": [
         "test_real_corpus.TestEvaluate.test_hits_correction_and_negative",
@@ -488,7 +488,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.33,
+      "duration_s": 0.32,
       "failed": [],
       "ids": [
         "test_background.TestBackgroundContext.test_background_packet_when_no_match",
@@ -505,7 +505,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.38,
+      "duration_s": 0.5,
       "failed": [],
       "ids": [
         "test_package.TestPackage.test_build_is_repeatable",
@@ -534,7 +534,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.3,
+      "duration_s": 0.31,
       "failed": [],
       "ids": [
         "test_panel.TestPanel.test_archive_preview_and_export",
@@ -551,7 +551,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.43,
+      "duration_s": 0.36,
       "failed": [],
       "ids": [
         "test_integration_chain.TestCaptureEdgeCases.test_capture_gate_rejects_bot_self_mismatch_and_oversize",
@@ -1237,19 +1237,19 @@
     },
     "latency_ms": {
       "samples": [
-        7.31,
-        1.38,
-        1.33,
-        1.36,
-        2.75,
-        2.17,
-        1.59,
-        1.41
+        7.61,
+        1.99,
+        1.37,
+        1.39,
+        1.39,
+        3.13,
+        2.05,
+        1.52
       ],
-      "p50": 1.59,
-      "p95": 7.31,
-      "max": 7.31,
-      "mean": 2.41
+      "p50": 1.99,
+      "p95": 7.61,
+      "max": 7.61,
+      "mean": 2.56
     },
     "dedupe": {
       "first_parts": 1,

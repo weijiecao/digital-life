@@ -1,6 +1,6 @@
 # E5.0-F 工程状态（自动生成，勿手改）
 
-> 由 `python scripts/report.py` 生成于 2026-11-05T11:28:59+08:00；插件版本 `1.0.8`。
+> 由 `python scripts/report.py` 生成于 2026-11-05T11:38:48+08:00；插件版本 `1.0.9`。
 > 文档中的用例数、通过率、评估分一律引用本文件，不再手写。
 
 ## 一句话
@@ -30,22 +30,22 @@
 
 | 套件 | 用例 | 失败/错误 | 跳过 | 耗时 |
 |---|---|---|---|---|
-| `test_store` | 161 | 0 | 0 | 14.5s |
-| `test_plugin` | 65 | 0 | 0 | 5.6s |
+| `test_store` | 161 | 0 | 0 | 14.3s |
+| `test_plugin` | 65 | 0 | 0 | 5.5s |
 | `test_baseline_alignment` | 6 | 0 | 0 | 0.1s |
 | `test_preflight` | 6 | 0 | 0 | 0.0s |
 | `test_auto_jobs` | 4 | 0 | 0 | 0.2s |
 | `test_backup_regression` | 4 | 0 | 0 | 0.4s |
-| `test_prewarm` | 5 | 0 | 0 | 1.2s |
+| `test_prewarm` | 5 | 0 | 0 | 1.1s |
 | `test_model_judge` | 17 | 0 | 0 | 1.7s |
-| `test_delivery` | 13 | 0 | 0 | 0.9s |
-| `test_soak` | 11 | 0 | 0 | 2.6s |
-| `test_threshold` | 3 | 0 | 0 | 0.5s |
-| `test_correction` | 3 | 0 | 0 | 0.1s |
+| `test_delivery` | 13 | 0 | 0 | 1.0s |
+| `test_soak` | 11 | 0 | 0 | 2.7s |
+| `test_threshold` | 3 | 0 | 0 | 0.4s |
+| `test_correction` | 3 | 0 | 0 | 0.2s |
 | `test_metrics` | 3 | 0 | 0 | 0.2s |
-| `test_real_corpus` | 5 | 0 | 0 | 0.1s |
+| `test_real_corpus` | 5 | 0 | 0 | 0.2s |
 | `test_background` | 6 | 0 | 0 | 0.3s |
-| `test_package` | 3 | 0 | 0 | 0.4s |
+| `test_package` | 3 | 0 | 0 | 0.5s |
 | `test_attribution` | 4 | 0 | 0 | 0.0s |
 | `test_panel` | 6 | 0 | 0 | 0.3s |
 | `test_integration_chain` | 12 | 0 | 0 | 0.4s |
@@ -60,7 +60,7 @@
 | 真实 BGE 场景评估 | 13/15 | 真实编码；失败项见 BGE_CALIBRATION |
 | 上游基线检索对齐 | plain 0/2；weak 0/2；semantic_fixture 2/2 | 规则 0/2 是结构性的；semantic_fixture 仅证明管线 |
 | 集成探针·注入 | 8/8 轮 | 替身平台与受控编码器 |
-| 集成探针·钩子耗时 | P50 1.6ms / P95 7.3ms | 不含真实 BGE 编码 |
+| 集成探针·钩子耗时 | P50 2.0ms / P95 7.6ms | 不含真实 BGE 编码 |
 | 集成探针·重启 | 积压 8 → 0，重复采集=否 | 同一进程重启，非崩溃恢复 |
 | 集成探针·不兼容宿主 | 静默放行=是 | 模拟缺 extra_user_content_parts |
 
@@ -188,7 +188,7 @@
 |---|---|---|---|
 | 采集成功率（真实私聊 3 天） | ≥99% | 无实机数据 | 未测 |
 | 注入生效 | ≥95% | 100%（替身） | 仅替身证据 |
-| P95 钩子耗时 | <1.5s | 7ms（替身，无 BGE 编码） | 仅替身证据 |
+| P95 钩子耗时 | <1.5s | 8ms（替身，无 BGE 编码） | 仅替身证据 |
 | 备份可生成/校验/恢复/删除 | 全部通过 | 通过 | 单测通过 |
 | 重启续跑、无重复注入 | 通过 | 通过 | 探针通过（替身） |
 | 真实框架注入（AstrBot 4.29.3） | 可见 | 1/1 轮 / 0.09s | real（WebChat+mock） |
