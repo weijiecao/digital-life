@@ -281,7 +281,8 @@ class CommandMixin:
         self._ensure_store()
         scope=self.store.scope(sender,origin)
         handlers=(self._cmd_state, self._cmd_pending, self._cmd_groups, self._cmd_capture,
-                  self._cmd_briefs, self._cmd_events, self._cmd_import, self._cmd_help)
+                  self._cmd_briefs, self._cmd_events, self._cmd_import, self._cmd_export,
+                  self._cmd_session, self._cmd_help)
         for handler in handlers:
             result = handler(scope, arg, sender, origin)
             if result is not None:
@@ -821,6 +822,44 @@ class CommandMixin:
         return ('已导入 '+str(result['inserted'])+' 条待审原话（重复跳过 '+str(result['duplicates'])+' 条）。'
                 '它们是“未确认”来源，不会成为事实：用 /dlm 待审 查看，/dlm 导入来源 <序号> 看来源标签。')
 
+    def _cmd_export(self, scope, arg, sender, origin):
+        """导出当前会话原话：JSONL（可回灌）+ Markdown（人读）。"""
+        if arg!='导出历史' and not arg.startswith('导出历史 '):return None
+        value=arg[len('导出历史'):].strip()
+        if value and (not value.isascii() or not value.isdigit() or not 1<=int(value)<=3650):
+            return '格式：/dlm 导出历史 [天数]，天数范围 1–3650。'
+        try:
+            from .export_history import export_scope
+            result=export_scope(self.store,scope,days=int(value) if value else 0)
+        except Exception as exc:
+            return '导出失败：'+str(exc)+'；未生成文件。'
+        if not result['count'] and not result['skipped']:
+            return '这个会话还没有可导出的原话。'
+        lines=['已导出 '+str(result['rows'])+' 条原话：',
+               result['jsonl']+'（JSONL，'+str(result['count'])+' 条，可直接 /dlm 导入历史 回灌）',
+               result['md']+'（Markdown，人读全文）']
+        if result['skipped']:
+            lines.append('其中 '+str(result['skipped'])+' 条超过 400 字，只写进 Markdown（导入端不接受超长单条）。')
+        lines.append('元数据：'+result['meta'])
+        lines.append('注意：只导出原话，不含已确认的事件与关系；换机器迁移时请一并记下 /dlm 会话信息 里的 origin。')
+        return '\n'.join(lines)
+
+    def _cmd_session(self, scope, arg, sender, origin):
+        """会话信息：给迁移用的来源字符串与计数（不导出原话）。"""
+        if arg!='会话信息':return None
+        inv=self.store.memory_inventory(scope)
+        masked=(sender[:3]+'***'+sender[-2:]) if len(sender)>6 else '***'
+        return ('会话信息（迁移时请整段记下）\n'
+                '发送者：'+masked+'\n'
+                '来源串 origin：'+origin+'\n'
+                '作用域指纹：'+hashlib.sha256(scope.encode('utf-8')).hexdigest()[:12]+'\n'
+                '原话：'+str(inv['captured'])+' 条（待审 '+str(inv['pending'])+'，已关联 '
+                +str(inv['linked_captures'])+'，历史导入 '+str(inv['imported'])+'）\n'
+                '已审核来源：'+str(inv['reviewed_sources'])+' 条；事件：'+str(inv['events'])+' 个；摘要版本：'
+                +str(inv['brief_versions'])+'\n'
+                '说明：本插件用「发送者 + origin」算作用域；换环境后 origin 变了，旧库会查不到，'
+                '迁移前请保留这一行。')
+
     def _cmd_help(self, scope, arg, sender, origin):
         """帮助"""
         if arg in ('帮助','help','?'):
@@ -831,6 +870,7 @@ class CommandMixin:
                     '记录：/dlm 记录 标题|内容、/dlm 关联 序号|标题、/dlm 关系 修正|较新ID|较旧ID\n'
                     '维护：/dlm 备份、/dlm 备份校验 <备份文件名>\n'
                     '迁移：/dlm 导入历史 <文件名>.jsonl（放 imports/ 目录）\n'
+                    '　　　/dlm 导出历史 [天数]、/dlm 会话信息\n'
                     '整理：/dlm 整理、/dlm 检索 线索\n'
                     '说明：所有线索均为“未确认”，不会自动确认事实。')
         return None

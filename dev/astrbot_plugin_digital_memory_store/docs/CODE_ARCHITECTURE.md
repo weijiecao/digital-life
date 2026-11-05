@@ -131,6 +131,7 @@ sequenceDiagram
 | `engine/e32/cpu_model.py`、`engine/e31/local_model.py` | 离线 SentenceTransformer / BGE CPU 编码适配（不联网、不隐式用 GPU） |
 | `engine/README.md` | 实验编号（e31/e32/e417…）的调用链与边界说明 |
 | `panel.py`、`recovery.py`、`views/panel/` | 控制面板、备份检验、非覆盖式恢复 |
+| `export_history.py` | 导出当前会话原话：JSONL（与导入端兼容）+ Markdown（全文）+ meta（条数/时间范围/sha256），不导出派生数据 |
 | `history_import.py` | 历史 JSONL 的严格校验与整批导入：单事务写 `dl_capture` + `dl_import_provenance`，只导入为待审；由 `/dlm 导入历史 <文件名>.jsonl` 调用（文件必须位于 `imports/`） |
 | `preflight.py` | 启动自检：缺依赖/缺模型/目录错误 → 一条可复制的提示 |
 | `docs/` | 给使用者的快速开始、排错、本架构说明 |

@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-05T14:22:29+08:00",
-  "plugin_version": "1.0.12",
+  "generated_at": "2026-11-05T14:51:29+08:00",
+  "plugin_version": "1.0.13",
   "environment": {
-    "time": "2026-11-05T14:22:29+08:00",
+    "time": "2026-11-05T14:51:29+08:00",
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10",
     "executable": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\.venv\\Scripts\\python.exe",
@@ -28,7 +28,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 13.04,
+      "duration_s": 14.93,
       "failed": [],
       "ids": [
         "tests.test_store.TestStore.test_adjacent_model_sources_require_matching_policy_and_recheck_on_finish",
@@ -196,16 +196,20 @@
     },
     {
       "suite": "tests.test_plugin",
-      "tests": 69,
+      "tests": 73,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 5.84,
+      "duration_s": 6.27,
       "failed": [],
       "ids": [
         "tests.test_plugin.CommandHelp.test_help_lists_commands_and_unknown_points_to_help",
         "tests.test_plugin.CommandSurface.test_read_only_commands_all_respond",
         "tests.test_plugin.CommandSurface.test_unknown_command_never_raises",
+        "tests.test_plugin.HistoryExportCommand.test_empty_scope_reports_and_writes_nothing",
+        "tests.test_plugin.HistoryExportCommand.test_export_writes_jsonl_markdown_and_meta",
+        "tests.test_plugin.HistoryExportCommand.test_long_message_only_in_markdown",
+        "tests.test_plugin.HistoryExportCommand.test_session_info_shows_origin_and_counts",
         "tests.test_plugin.HistoryImportCommand.test_import_becomes_pending_with_provenance",
         "tests.test_plugin.HistoryImportCommand.test_usage_shows_directory_and_rejects_paths",
         "tests.test_plugin.Smoke.test_acknowledging_gap_does_not_erase_new_gap",
@@ -280,7 +284,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.16,
+      "duration_s": 0.14,
       "failed": [],
       "ids": [
         "tests.test_baseline_alignment.TestBaselineAlignment.test_capture_accepts_baseline_script_in_one_scope",
@@ -297,7 +301,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.0,
+      "duration_s": 0.01,
       "failed": [],
       "ids": [
         "tests.test_preflight.TestPreflight.test_empty_model_dir_is_not_an_error",
@@ -314,7 +318,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.21,
+      "duration_s": 0.24,
       "failed": [],
       "ids": [
         "tests.test_auto_jobs.TestAutoJobFailurePolicy.test_dead_job_does_not_block_later_sources_in_same_scope",
@@ -329,7 +333,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.35,
+      "duration_s": 0.42,
       "failed": [],
       "ids": [
         "tests.test_backup_regression.TestBackupHandleRegression.test_backup_can_be_restored_to_new_directory",
@@ -344,7 +348,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 1.15,
+      "duration_s": 1.08,
       "failed": [],
       "ids": [
         "tests.test_prewarm.TestModelStateVisible.test_context_status_reports_model_state",
@@ -360,7 +364,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 1.6,
+      "duration_s": 1.53,
       "failed": [],
       "ids": [
         "tests.test_model_judge.TestGate.test_only_anaphoric_short_queries_trigger",
@@ -388,7 +392,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.93,
+      "duration_s": 1.0,
       "failed": [],
       "ids": [
         "tests.test_delivery.TestInstallUpgradeRollback.test_install_refuses_existing_without_force",
@@ -412,7 +416,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 2.09,
+      "duration_s": 2.72,
       "failed": [],
       "ids": [
         "tests.test_soak.TestSoakCollect.test_collects_db_logs_and_provider_counts",
@@ -434,7 +438,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.31,
+      "duration_s": 0.33,
       "failed": [],
       "ids": [
         "tests.test_threshold.TestPluginThresholdConfig.test_configured_percent_is_applied",
@@ -448,7 +452,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.11,
+      "duration_s": 0.15,
       "failed": [],
       "ids": [
         "tests.test_correction.TestCorrectionCancelCue.test_cancel_phrase_is_recognised",
@@ -476,7 +480,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.19,
+      "duration_s": 0.13,
       "failed": [],
       "ids": [
         "tests.test_real_corpus.TestEvaluate.test_hits_correction_and_negative",
@@ -492,7 +496,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.37,
+      "duration_s": 0.4,
       "failed": [],
       "ids": [
         "tests.test_background.TestBackgroundContext.test_background_packet_when_no_match",
@@ -509,7 +513,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.38,
+      "duration_s": 0.51,
       "failed": [],
       "ids": [
         "tests.test_package.TestPackage.test_build_is_repeatable",
@@ -538,7 +542,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.26,
+      "duration_s": 0.32,
       "failed": [],
       "ids": [
         "tests.test_panel.TestPanel.test_archive_preview_and_export",
@@ -555,7 +559,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.39,
+      "duration_s": 0.36,
       "failed": [],
       "ids": [
         "tests.test_integration_chain.TestCaptureEdgeCases.test_capture_gate_rejects_bot_self_mismatch_and_oversize",
@@ -1241,19 +1245,19 @@
     },
     "latency_ms": {
       "samples": [
-        13.2,
-        5.52,
-        5.43,
-        5.6,
-        5.82,
-        6.28,
-        3.7,
-        4.0
+        12.85,
+        1.55,
+        1.37,
+        2.98,
+        1.67,
+        1.68,
+        1.65,
+        1.58
       ],
-      "p50": 5.6,
-      "p95": 13.2,
-      "max": 13.2,
-      "mean": 6.19
+      "p50": 1.67,
+      "p95": 12.85,
+      "max": 12.85,
+      "mean": 3.17
     },
     "dedupe": {
       "first_parts": 1,

@@ -1495,4 +1495,83 @@ class HistoryImportCommand(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
 
 
+class HistoryExportCommand(unittest.TestCase):
+    """导出：JSONL 必须能被导入端接受，Markdown 保留全文，超长单条只进 Markdown。"""
+
+    def _exports(self, root):
+        from pathlib import Path
+        return sorted((Path(root) / 'plugin_data' / 'astrbot_plugin_digital_memory_store' / 'exports').glob('export-*'))
+
+    async def _capture(self, p, text, message_id):
+        event=Event(text);event.message_obj.message_id=message_id
+        event.message_obj.message=[Plain(event.message_str)]
+        await p.capture_private(event)
+
+    def test_export_writes_jsonl_markdown_and_meta(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42','automatic_memory_enabled':True})
+            try:
+                await self._capture(p,'旧号喜欢苹果','m1')
+                reply=(await run(p,'/dlm 导出历史'))[0]
+                self.assertIn('已导出',reply)
+                files=self._exports(root)
+                self.assertTrue(files)
+                import json
+                from astrbot_plugin_digital_memory_store.history_import import parse_jsonl
+                jsonl=[f for f in files if f.suffix=='.jsonl'][0]
+                records=parse_jsonl(jsonl)
+                self.assertEqual([r['content'] for r in records],['旧号喜欢苹果'])
+                md=[f for f in files if f.suffix=='.md'][0]
+                self.assertIn('旧号喜欢苹果',md.read_text(encoding='utf-8'))
+                meta=[f for f in files if f.name.endswith('.meta.json')][0]
+                self.assertEqual(json.loads(meta.read_text(encoding='utf-8'))['jsonl_records'],1)
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+    def test_empty_scope_reports_and_writes_nothing(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42'})
+            try:
+                reply=(await run(p,'/dlm 导出历史'))[0]
+                self.assertIn('还没有可导出的原话',reply)
+                self.assertEqual(self._exports(root),[])
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+    def test_long_message_only_in_markdown(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42','automatic_memory_enabled':True})
+            try:
+                await self._capture(p,'长'*500,'m-long')
+                reply=(await run(p,'/dlm 导出历史'))[0]
+                self.assertIn('超过 400 字',reply)
+                files=self._exports(root)
+                jsonl=[f for f in files if f.suffix=='.jsonl'][0]
+                self.assertEqual(jsonl.read_text(encoding='utf-8').strip(),'')
+                md=[f for f in files if f.suffix=='.md'][0]
+                self.assertIn('长'*500,md.read_text(encoding='utf-8'))
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+    def test_session_info_shows_origin_and_counts(self):
+        async def go(root):
+            m.get_astrbot_data_path=lambda:root
+            p=m.DigitalMemoryStore(None,{'enabled':True,'allowed_sender_ids':'42','automatic_memory_enabled':True})
+            try:
+                await self._capture(p,'旧号住在城南','m1')
+                reply=(await run(p,'/dlm 会话信息'))[0]
+                self.assertIn('test:FriendMessage:42',reply)
+                self.assertIn('原话：1 条',reply)
+                self.assertIn('发送者：***',reply)  # 短号整体打码；origin 保留完整（迁移要用）
+            finally:
+                await p.terminate()
+        with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
+
+
 if __name__=='__main__':unittest.main()
