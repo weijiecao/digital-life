@@ -34,7 +34,7 @@ jobs:
           python --version
           Write-Host '测试全部用替身（stub AstrBot、假编码器），不需要 torch/模型，也不联网。'
 
-      - name: 离线回归 339 项
+      - name: Offline regression
         working-directory: dev
         run: |
           python -m unittest -q `
