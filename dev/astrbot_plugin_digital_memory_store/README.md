@@ -1,4 +1,4 @@
-# 数字生命独立记忆库（自用版）v1.0.16
+# 数字生命独立记忆库（静默版）v1.0.18
 
 [![Release](https://img.shields.io/github/v/release/weijiecao/astrbot_plugin_digital_memory_store?label=release)](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/releases)
 [![License](https://img.shields.io/github/license/weijiecao/astrbot_plugin_digital_memory_store)](LICENSE)
@@ -25,8 +25,9 @@ AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时�
    # 全自动：-AstrBotRoot "C:\AstrBot" -QQ 123456 -WithDeps -WithModel
    ```
 
-3. 重启 AstrBot，用白名单号私聊 `/dlm 上下文状态`；
-4. 想确认“注入真的生效”，逐条走 [docs/QUICKSTART.md](docs/QUICKSTART.md) 的 4 个检查点。
+3. 重启 AstrBot；**不要**让用户发 `/dlm`，v1.0.18 起聊天里没有这个命令；
+4. 想确认“注入真的生效”，看 AstrBot 启动日志、WebUI panel 统计，或 provider 请求体中的
+   `[DL_MEMORY_V040]`，不要把记忆内容回显给用户。
 
 也可以直接在 AstrBot WebUI 的插件页上传 zip 安装（上传后仍需打开 `enabled`、填白名单）。
 三条安装路径的差异与全部参数见 [INSTALL.md](INSTALL.md)。
@@ -45,8 +46,8 @@ AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时�
 
 1. 白名单账号的私聊文本被采集到本机 SQLite；
 2. 自动整理（字面分组、短句变化成组、可选本地语义）生成“待审线索”；
-3. 每轮请求前，按“明确事件 → 待审原话/变化链 → 本地语义”依次尝试；**默认即使没有匹配，也会给一段较早原话作背景**（均标未确认），最多 450–600 字；
-4. 注入内容始终标注“未确认/可能无关”，模型不得把它当作已确认事实。
+3. 每轮请求前，按“待审原话/自动分组/旧事件只读 → 本地语义”依次尝试；**默认即使没有匹配，也会给一段较早原话作背景**（均标未确认），最多 450–600 字；
+4. 注入内容始终标注“未确认/可能无关”，并要求模型不得向用户提及记忆系统。
 
 ## 配置
 
@@ -62,27 +63,15 @@ AstrBot 插件：把**私聊纯文本**里的原话保存在本机，需要时�
 存储用量、7 日均量、5 年容量预估、备份列表、磁盘剩余、钩子 P95；
 一键备份/轮转/checkpoint/完整性检查/归档导出/VACUUM。
 
-## 常用命令
+## 管理员入口（不在聊天里）
 
-| 命令 | 作用 |
-|---|---|
-| `/dlm 上下文状态` | 本轮是否注入、预算、模型状态 |
-| `/dlm 记忆状态` | 采集数、事件数、后台任务 |
-| `/dlm 采集状态` | 采集开关、缓冲与失败计数 |
-| `/dlm 待审` | 未确认的待审原话（分页） |
-| `/dlm 事件` | 已整理出的候选事件 |
-| `/dlm 查看 标题` | 按标题查看原话与关系 |
-| `/dlm 备份` | 立即备份并校验 |
-| `/dlm 备份校验 <备份文件名>` | 校验某个已有备份 |
-| `/dlm 导入历史 <文件名>.jsonl` | 把旧聊天记录导入为**待审原话**（文件放 `imports/`，不会自动成为事实） |
-| `/dlm 导出历史 [天数]` | 导出本会话原话：JSONL（可回灌）+ Markdown（人读）+ 元数据 |
-| `/dlm 会话信息` | 显示本会话的 origin 与计数（迁移前必看） |
-| `/dlm 会话认领 <旧 origin>` | 换环境后把本发送者绑定回旧 origin，使旧库继续可见（只支持私聊） |
-| `/dlm 取消认领` | 解除绑定，回到本机当前 origin |
-| `/dlm 迁移包` | 打包库 + 配置 + 认领表为可校验 zip（含 RESTORE.md） |
-| `/dlm 迁移检查 <文件>.zip` | 校验迁移包：逐文件 sha256 + SQLite 完整性 + 计数 |
+v1.0.18 起 `/dlm` 不再注册为聊天命令。管理只在 WebUI：
 
-完整命令（含整理、关联、时间线、摘要缓存等）见 `/dlm 帮助`。
+- **panel**：存储统计、备份/轮转/checkpoint/完整性/归档/VACUUM；
+- **panel API**：管理员删除（`POST .../panel/delete`，需 `scope` + `seq` 或 `all=true`）；
+- **配置文件**：`enabled`、`automatic_memory_enabled`、`allowed_sender_ids`、`model_dir`。
+
+普通用户不应看到待审、关联、删除、备份或状态提示。
 
 ## 数据与隐私
 

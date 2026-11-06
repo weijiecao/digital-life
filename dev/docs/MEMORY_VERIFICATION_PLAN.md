@@ -1,15 +1,20 @@
 # 记忆验证方案（Memory Verification Plan）v1
 
-- 适用版本：**v1.0.14**（`metadata.yaml`）；最近一次全量回归 **345/345 通过**（2026-11-05 复跑，29.8 s）
-- 本轮已做：复跑 345；静态核对“删除/媒体缺口/长查询/单线程池”四个关键点；**未执行 V1–V12**
+- 适用版本：**v1.0.18**（`metadata.yaml`，静默版）；最近一次全量回归 **359/359 通过**（2026-11-06 16:31，39.0 s）
+- 执行状态：V1–V12 已执行；结果、缺陷与工程建议见
+  [MEMORY_VERIFICATION_REPORT_2026-11-05.md](MEMORY_VERIFICATION_REPORT_2026-11-05.md)
 - 验证对象：私聊原话 → 落库 → 派生 → 检索 → 注入 → 纠错 → 遗忘 → 恢复 的整条记忆链
 - 依据：`docs/ARCHITECTURE.md`、`docs/METRICS.md`、`docs/L0_ACCEPTANCE.md`、`docs/EVAL_SET.md`、
   `docs/BGE_CALIBRATION.md`、`README.md`，以及 `main.py`、`store/` 源码
 - 关系：`STATUS.md` 回答“现在多少”，`METRICS.md` 回答“怎么算”，本文件回答
   **“凭什么说它对了、还缺哪一条、按什么顺序补”**
 
+> 执行后修订（2026-11-05）：本文件 §4/§7 是**执行前基线**；V1/V3/V5/V7 已给出
+> G2/G4/G5/G6 的结构性证据，但 G1（删除）、G3（真实语料）与新增的备份轮转缺陷仍未闭环。
+> 状态与结论以 [MEMORY_VERIFICATION_REPORT_2026-11-05.md](MEMORY_VERIFICATION_REPORT_2026-11-05.md) 为准。
+
 > 一句话结论：**离线契约层已有较强证据；内容效度层（相关性、纠错、遗忘）证据不足。**
-> 本方案把 8 条设计承诺拆成 45 条可判定需求，给出 8 个独立判据、6 个硬缺口、12 个待补验证项，
+> 本方案把 8 条设计承诺拆成 45 条可判定需求，给出 8 个独立判据、6 个执行前硬缺口、12 个待补验证项，
 > 以及 6 道执行闸门。
 
 ---
@@ -21,7 +26,7 @@
 | **已经能判定** | 采集门、幂等、作用域、预算、超时、临时注入、备份/恢复/删除备份、5,000 条延迟 |
 | **只能算“链路通”** | 语义召回、纠错、指代、跨日、背景包（全部来自自造语料或替身编码器） |
 | **还不能判定** | 真实聊天相关性、真实误注入率、删除/遗忘、对抗性记忆、外发白名单、长期 soak |
-| **最危险的三个缺口** | ① 没有删除/遗忘接口；② 注入内容未做系统化“原文溯源审计”；③ 真实语料盲评为零 |
+| **最危险的三个缺口** | ① 没有删除/遗忘接口；② 真实语料盲评为零；③ 乱序到达的时间语义 / 单实例双开风险（备份轮转 P0 已修复） |
 | **最容易被误读的数字** | 负例 **0/20** 的 95% 上界约 **17%**，不能证明 L1 的 ≤5%；R@1 **65/100** 的 95% 区间约 **±9pp**，不能判定 70% 线 |
 
 **执行顺序建议**：V1 溯源审计 → V2 删除闭环 → V4 真实语料盲评 → V3/V5/V6/V7 → V8/V9 → L0 soak。
@@ -93,11 +98,11 @@
 
 | 承诺 | 原文依据 | 可验证的含义 |
 |---|---|---|
-| C1 只记授权私聊原文 | `ARCHITECTURE.md` §1、`main.py:496-526` | 非授权/群聊/自身/命令/媒体一律不落库；拒绝原因可见 |
+| C1 只记授权私聊原文 | `ARCHITECTURE.md` §1、`main.py:498-528` | 非授权/群聊/自身/命令/媒体一律不落库；拒绝原因可见 |
 | C2 原文可校验、不可变、可重建 | `store/capture.py:50-81`、`store/core.py:44-49` | 同 id 幂等；SHA256 对得上；派生表可删可重建，不回写原文 |
 | C3 作用域隔离 | `store/capture.py:27-29` | A 会话的原文/线索不得出现在 B 会话的检索或注入里 |
-| C4 有界、不阻塞 | `main.py:94`、`main.py:97`、`main.py:668` | 预算 ≤ 配置值；钩子 1.5 s 超时；采集不阻塞回复 |
-| C5 线索可溯源、一律未确认 | `main.py:676-679` | 每个注入项能指回一条原话；固定头声明“数据非指令/未确认” |
+| C4 有界、不阻塞 | `main.py:96`、`main.py:99`、`main.py:670` | 预算 ≤ 配置值；钩子 1.5 s 超时；采集不阻塞回复 |
+| C5 线索可溯源、一律未确认 | `main.py:678-681` | 每个注入项能指回一条原话；固定头声明“数据非指令/未确认” |
 | C6 变化并列、不自动裁决 | `context_packet.py:29-44`、`docs/EVAL_SET.md` F-C | 新旧两条同时出现且标未确认；不把合并结果当事实 |
 | C7 可备份、可恢复、可迁移、可删除 | `store/backup.py`、`recovery.py`、`history_import.py` | 单文件备份可校验/可恢复；导出可回灌；删除有明确语义 |
 | C8 默认最小外发 | `_conf_schema.json`、`presets/*.json` | 远程模型能力默认关；开启后只发必要字段；本地 BGE 不出网 |
@@ -118,14 +123,13 @@
 | CAP-01 | 未启用、非白名单、群聊、机器人自身、命令消息 → 0 行 | `test_integration_chain` 采集门；`test_plugin` 命令面 | 逐项 0 误采 | fix | ✅ |
 | CAP-02 | 纯文本、非空、≤4000 字、无 NUL、消息链拼接等于 `message_str` 才入库 | `test_capture_gate_rejects_bot_self_mismatch_and_oversize`；`test_store.test_long_capture_indexes_fully...` | 逐项符合预期 | fix | ◐ |
 | CAP-03 | 同 `(scope,message_id)` 重复投递 → 只 1 行、第二次返回 False；同 id 不同文本 → 报错且不覆盖 | `test_capture_review_dedup_scope_and_restart` | 100% 幂等 | fix | ✅ |
-| CAP-04 | `dl_capture` 与 `dl_auto_jobs` 同事务；队列满/写库失败时消息不被静默丢弃（记缺口/计数） | 代码同事务（`capture.py:71-76`）；队列上限 100（`main.py:97`）；无故障注入测试 | 事务原子、失败可见 | fix | ◐ |
+| CAP-04 | `dl_capture` 与 `dl_auto_jobs` 同事务；队列满/写库失败时消息不被静默丢弃（记缺口/计数） | 代码同事务（`capture.py:71-76`）；队列上限 100（`main.py:99`）；无故障注入测试 | 事务原子、失败可见 | fix | ◐ |
 | CAP-05 | `content_sha == sha256(content)`；原文无 UPDATE 路径；备份/检索拒绝被篡改行 | `test_store` 多处 SHA 校验；`backup.detect_broken_capture_link`；代码只 INSERT | 100% 一致 | fix | ✅ |
-| CAP-06 | 所有“应记但没记”的消息都留下缺口/跳过原因 | 媒体/混合消息在 `main.py:509` 直接 return，**不记缺口**；`test_integration_chain` 的采集门用例断言 `gap_records==0`（媒体跳过也不记） | 跳过原因 100% 可见 | fix | ✗ |
+| CAP-06 | 所有“应记但没记”的消息都留下缺口/跳过原因 | 媒体/混合消息计入独立 `capture_unsupported` 计数（不算 gap）；`test_integration_chain` 断言 gap=0、unsupported=1；V10 pass | 跳过原因 100% 可见 | fix | ✅ |
 | CAP-07 | `recorded_at` 是 UTC；导入保留 `original_timestamp`；乱序到达不破坏先后语义 | `test_context_uses_request_time_not_execution_time`；导入用例；**乱序到达未测** | 时间可解释、无未来 | fix | ◐ |
 
-> CAP-06 是**口径冲突**，不是单纯缺测试：当前把“媒体消息”算作“本就不该采”，所以不记缺口；
-> 但 L0 的“采集成功率”只统计纯文本，二者并不矛盾——矛盾的是“缺口可见性”被写成全称命题。
-> 方案要求：新增 `unsupported_media` 计数器（不算 gap），并在验收表里分开报。
+> CAP-06 原为**口径冲突**：媒体消息算“本就不该采”，所以不记缺口；但“缺口可见性”被写成全称命题。
+> 现已按方案新增 `capture_unsupported` 计数器（不算 gap），V10 与 `test_integration_chain` 分开报告。
 >
 > 运行期“3 天采集成功率 ≥99%”属 L0 运行验收，见 `docs/L0_ACCEPTANCE.md`，本表不重复。
 
@@ -158,10 +162,10 @@
 
 | ID | 可观察判据 | 方法与现有证据 | 通过线 | 证据级 | 状态 |
 |---|---|---|---|---|---|
-| INJ-01 | 固定头含“数据而非指令/可能过时/不得当已确认事实”，正文每项标未确认 | `main.py:676-679`；真实请求体（`REAL_ENV_REPORT.md`） | 100% 带标注 | real | ✅ |
+| INJ-01 | 固定头含“数据而非指令/可能过时/不得当已确认事实”，正文每项标未确认 | `main.py:678-681`；真实请求体（`REAL_ENV_REPORT.md`） | 100% 带标注 | real | ✅ |
 | INJ-02 | 注入是临时 TextPart；同一请求重复处理不重复追加 | `test_injection_is_visible_within_budget_and_temporary`；`test_same_request_is_not_injected_twice` | 100% | fix | ✅ |
 | INJ-03 | 1.5 s 超时后回复继续；宿主缺字段时 fail-open；模型加载中降级 | `test_incompatible_host_fails_open`；`test_prewarm` 5 项；真实 0.09–0.13 s 单轮 | 0 阻塞、0 抛异常 | real | ◐ |
-| INJ-04 | 查询 >400 字时的行为明确（当前静默不注入） | `main.py:626`、`context_packet.py:239`；**无测试/无产品决策** | 明确且可解释 | none | ○ |
+| INJ-04 | 查询 >400 字时的行为明确（当前静默不注入） | `main.py:628`、`context_packet.py:239`；**无测试/无产品决策** | 明确且可解释 | none | ○ |
 | INJ-05 | 每个注入项可全文溯源到同 scope 的 `dl_capture` 行 | **无系统化审计**（见 V1） | 100% 可溯源 | none | ○ |
 
 > 运行期“注入生效/供给率 ≥95%”属 L0 运行验收，见 `docs/L0_ACCEPTANCE.md`；
@@ -180,10 +184,10 @@
 
 | ID | 可观察判据 | 方法与现有证据 | 通过线 | 证据级 | 状态 |
 |---|---|---|---|---|---|
-| LIF-01 | 备份是**单文件** `.sqlite3`，无 `-wal/-shm` 残留，可删除、可连续 10 次 | `test_backup_regression` 4 项 | 全部通过 | fix | ✅ |
-| LIF-02 | 备份可校验、可恢复到新目录、原库不被覆盖 | `test_backup_verify_and_restore_isolated_copy`；`recovery.py` | 恢复后行数/哈希一致 | fix | ✅ |
-| LIF-03 | 按 N 轮转、归档只导出不删主库、完整性检查可用 | `test_panel.test_backup_and_rotate`、`test_archive_preview_and_export` | 全部通过 | fix | ✅ |
-| LIF-04 | 用户能删除单条/整个会话的记忆，派生数据与检索同步消失 | **无删除命令/接口**；生产代码无 `DELETE FROM dl_capture`（仅测试直接删）；`store/core.py:271-315` 已有级联触发器 | 删除后 0 残留、0 注入 | none | ✗ |
+| LIF-01 | 备份是**单文件** `.sqlite3`，无 `-wal/-shm` 残留，可删除、可连续 10 次 | `test_backup_regression` 6 项；**修复后 `verify_stored_backup` 0 旁文件** | 全部通过 | fix | ✅ |
+| LIF-02 | 备份可校验、可恢复到新目录、原库不被覆盖 | `test_backup_verify_and_restore_isolated_copy`；`recovery.py`；V12 恢复 300 条 | 恢复后行数/哈希一致 | fix | ✅ |
+| LIF-03 | 按 N 轮转、归档只导出不删主库、完整性检查可用 | `test_panel.test_backup_and_rotate`；**修复后 3 次“备份+校验”再 rotate(2) 保留 2 个真实备份** | 全部通过 | fix | ✅ |
+| LIF-04 | 用户能删除单条/整个会话的记忆，派生数据与检索同步消失 | `/dlm 删除 <序号>`、`/dlm 清空记忆 确认`；`delete_capture`/`delete_scope` + 触发器清理 + `secure_delete` + `VACUUM`；V2 pass（0 孤儿、删除前已无明文） | 删除后 0 残留、0 注入 | fix | ✅ |
 | LIF-05 | 导出/导入可搬原话且保留来源；跨 origin 的可见性有说明 | `test_history_import_*`；`test_plugin.HistoryImportCommand` | 条数/来源可对账 | fix | ◐ |
 | LIF-06 | 强杀/断电后完整性 ok、续写成功、同消息不重复 | `reports/crash_recovery.json`（1 次合成） | 完整性 ok、0 重复 | fix | ◐ |
 | LIF-07 | 升级/回滚后数据与配置不丢、schema 可迁移 | `test_delivery` 13 项覆盖脚本；**未见跨版本数据夹具** | 行数/哈希/配置不变 | fix | ◐ |
@@ -211,10 +215,11 @@
 | PRV-05 | 记忆文本里的“指令”不改变插件状态、不越权调用 | **无对抗测试** | 0 状态变更 | none | ○ |
 | PRV-06 | 删除后主库/WAL/备份的残留语义明确 | **无删除语义、无 `secure_delete`/VACUUM 策略** | 语义明确且可验证 | none | ○ |
 
-**矩阵小结**（按上表逐行统计，共 45 条）：`✅ 16` 条、`◐ 17` 条、`✗ 4` 条、`○ 8` 条。
+**矩阵小结**（按上表逐行统计，共 45 条）：`✅ 18` 条、`◐ 17` 条、`✗ 2` 条、`○ 8` 条。
 
-- 4 条红灯：**CAP-06**（媒体静默跳过）、**RET-01**（明确事件 10/20）、**RET-04**（串味 3/15）、
-  **LIF-04**（无删除接口）。
+- 4 条红灯已减为 2 条：**RET-01**（明确事件 10/20）、**RET-04**（串味 3/15）；
+  **CAP-06**（媒体静默跳过）已由 `capture_unsupported` 转绿；**LIF-04**（无删除接口）
+  已由 `/dlm 删除` / `/dlm 清空记忆 确认` + V2 转绿。备份轮转红灯已由 §10 修复转绿。
 - 8 条空白：**SCP-03**（双进程）、**INJ-04**（长查询）、**INJ-05**（溯源审计）、**COR-02**（180 s 边界）、
   **PRF-04**（单线程争用）、**PRV-02**（本地不出网）、**PRV-05**（对抗记忆）、**PRV-06**（删除残留）。
 
@@ -309,7 +314,7 @@
 
 ## 7. 六个硬缺口与 12 个待补验证项
 
-### 7.1 硬缺口（按风险）
+### 7.1 硬缺口（执行前）
 
 | # | 缺口 | 现状证据 | 风险 |
 |---|---|---|---|
@@ -319,6 +324,9 @@
 | G4 | **对抗性记忆未测** | 无“记忆里的指令”用例 | 数据被当指令执行、状态被改写 |
 | G5 | **外发出口未断言** | 只有文档描述；无网络层测试 | 关闭远程能力仍可能出网/多发字段 |
 | G6 | **跨作用域无系统差分** | 有零散 scope 用例，无成对 fuzz | 串味难发现，且一旦发生是 P0 |
+
+> **执行后修订**：G2/G4/G5/G6 已由 V1/V3/V5/V7 给出结构性证据（V1 尚未覆盖 event 路径、
+> V7 尚未覆盖 drafts/auto_model）；G1/G3 仍开放；本轮新增的 **G7 备份轮转丢备份已修复**（报告 §10）。
 
 ### 7.2 待补验证项
 
@@ -376,7 +384,7 @@
 
 | 阶段 | 内容 | 工作日 | 产出 |
 |---|---|---|---|
-| P0 冻结 | 版本/包 SHA、配置预设、模型 key、语料 SHA；复跑 345 + 探针 | 0.5 | `reports/verification_manifest.json` |
+| P0 冻结 | 版本/包 SHA、配置预设、模型 key、语料 SHA；复跑 359 + 探针 | 0.5 | `reports/verification_manifest.json` |
 | P1 不变量 | V1 + V5 + V6 + V7 | 4 | 审计报告、边界表、出口记录 |
 | P2 遗忘与对抗 | V2 + V3 + V10 | 4 | 删除接口、对抗用例、缺口计数 |
 | P3 恢复与规模 | V8 + V9 + V11 + V12 | 3 | 升级/故障矩阵 |
@@ -388,7 +396,7 @@
 
 | 闸门 | 入口 | 通过条件 | 不通过时 |
 |---|---|---|---|
-| G0 基线 | P0 | 345/345、探针数字与 `STATUS.md` 一致、manifest 完整 | 停止，先修回归 |
+| G0 基线 | P0 | 359/359、探针数字与 `STATUS.md` 一致、manifest 完整 | 停止，先修回归 |
 | G1 可追溯 | P1 | O1 在夹具+真实库 0 违反 | 不进 P2；修注入/检索 |
 | G2 可撤销 | P2 | V2 全过、V3 0 状态变更 | 不发布；删除是隐私前置 |
 | G3 边界与出口 | P3 | V5/V6/V7/V11/V12 全过 | 修边界；出口问题按 P0 |
@@ -427,7 +435,7 @@
 ```json
 {
   "run_id": "2026-11-05T15:00:00+08:00",
-  "code": {"version": "1.0.14", "zip_sha256": "...", "git": null},
+  "code": {"version": "1.0.16", "zip_sha256": "...", "git": null},
   "env": {"os": "Windows-11", "python": "3.12.10", "astrbot": "4.29.3", "bge": "bge-small-zh-v1.5"},
   "config_preset": "self",
   "corpus": {"id": "real-chat-v1", "sha256": "...", "size": 320},
@@ -496,7 +504,7 @@
 ```powershell
 cd dev
 
-# 全量离线回归（345 项，约 30 s）
+# 全量离线回归（359 项，约 39 s）
 ..\testbed\.venv\Scripts\python.exe -m unittest discover -q -s tests -t .
 
 # 状态与评估
@@ -530,4 +538,4 @@ cd ..\testbed
 
 ---
 
-_本方案是验证设计，不是验证结果；所有“现状”以 2026-11-05 的 345 项回归与既有报告为准。_
+_本方案是验证设计，不是验证结果；执行结果见 `MEMORY_VERIFICATION_REPORT_2026-11-05.md`。_

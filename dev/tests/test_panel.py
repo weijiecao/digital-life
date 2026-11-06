@@ -78,9 +78,10 @@ class TestRegistration(unittest.TestCase):
         plugin = m.DigitalMemoryStore(context, {'enabled': True})
         try:
             routes = dict(context.routes)
-            self.assertEqual(len(routes), 7)
+            self.assertEqual(len(routes), 8)
             self.assertEqual(routes['/astrbot_plugin_digital_memory_store/panel/stats'], ('GET',))
             self.assertEqual(routes['/astrbot_plugin_digital_memory_store/panel/backup'], ('POST',))
+            self.assertEqual(routes['/astrbot_plugin_digital_memory_store/panel/delete'], ('POST',))
         finally:
             plugin.pool.shutdown(wait=False)
 

@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-05T15:06:26+08:00",
-  "plugin_version": "1.0.15",
+  "generated_at": "2026-11-06T16:31:40+08:00",
+  "plugin_version": "1.0.18",
   "environment": {
-    "time": "2026-11-05T15:06:26+08:00",
+    "time": "2026-11-06T16:31:40+08:00",
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10",
-    "executable": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\.venv\\Scripts\\python.exe",
+    "executable": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\.venv\\Scripts\\python.exe",
     "torch": true,
     "sentence_transformers": true,
     "astrbot": false,
@@ -24,11 +24,11 @@
   "suites": [
     {
       "suite": "tests.test_store",
-      "tests": 161,
+      "tests": 162,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 14.54,
+      "duration_s": 14.56,
       "failed": [],
       "ids": [
         "tests.test_store.TestStore.test_adjacent_model_sources_require_matching_policy_and_recheck_on_finish",
@@ -79,6 +79,7 @@
         "tests.test_store.TestStore.test_cross_topic_update_supplies_both_sources_and_preserves_uncertainty",
         "tests.test_store.TestStore.test_cross_update_guard_does_not_block_large_history_without_changes",
         "tests.test_store.TestStore.test_cross_update_scans_beyond_5000_sources",
+        "tests.test_store.TestStore.test_delete_capture_and_scope_remove_plaintext",
         "tests.test_store.TestStore.test_detail_priority_retains_correction_and_time_selection",
         "tests.test_store.TestStore.test_event_alias_recall_ambiguity_and_focus_invalidation",
         "tests.test_store.TestStore.test_extended_brief_complete_sources_and_legacy_origin",
@@ -200,7 +201,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 6.63,
+      "duration_s": 6.56,
       "failed": [],
       "ids": [
         "tests.test_plugin.CommandHelp.test_help_lists_commands_and_unknown_points_to_help",
@@ -289,7 +290,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.13,
+      "duration_s": 0.12,
       "failed": [],
       "ids": [
         "tests.test_baseline_alignment.TestBaselineAlignment.test_capture_accepts_baseline_script_in_one_scope",
@@ -306,7 +307,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.01,
+      "duration_s": 0.0,
       "failed": [],
       "ids": [
         "tests.test_preflight.TestPreflight.test_empty_model_dir_is_not_an_error",
@@ -323,7 +324,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.24,
+      "duration_s": 0.23,
       "failed": [],
       "ids": [
         "tests.test_auto_jobs.TestAutoJobFailurePolicy.test_dead_job_does_not_block_later_sources_in_same_scope",
@@ -334,17 +335,19 @@
     },
     {
       "suite": "tests.test_backup_regression",
-      "tests": 4,
+      "tests": 6,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.45,
+      "duration_s": 0.57,
       "failed": [],
       "ids": [
         "tests.test_backup_regression.TestBackupHandleRegression.test_backup_can_be_restored_to_new_directory",
         "tests.test_backup_regression.TestBackupHandleRegression.test_backup_file_is_deletable_after_close",
         "tests.test_backup_regression.TestBackupHandleRegression.test_backup_folder_removable_while_store_is_open",
-        "tests.test_backup_regression.TestBackupHandleRegression.test_ten_consecutive_backups_are_all_deletable"
+        "tests.test_backup_regression.TestBackupHandleRegression.test_rotate_after_verify_keeps_real_backups",
+        "tests.test_backup_regression.TestBackupHandleRegression.test_ten_consecutive_backups_are_all_deletable",
+        "tests.test_backup_regression.TestBackupHandleRegression.test_verify_stored_backup_leaves_no_sidecars"
       ]
     },
     {
@@ -365,21 +368,27 @@
     },
     {
       "suite": "tests.test_model_judge",
-      "tests": 17,
+      "tests": 23,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 1.56,
+      "duration_s": 2.06,
       "failed": [],
       "ids": [
         "tests.test_model_judge.TestGate.test_only_anaphoric_short_queries_trigger",
         "tests.test_model_judge.TestGate.test_selection_must_share_text_unless_pure_anaphor",
+        "tests.test_model_judge.TestJudgeCandidates.test_approved_event_sources_are_candidates",
+        "tests.test_model_judge.TestJudgeCandidates.test_event_line_reaches_older_event_source",
         "tests.test_model_judge.TestJudgeCandidates.test_ranks_overlap_and_caps",
+        "tests.test_model_judge.TestJudgeIntegration.test_background_only_triggers_judge",
+        "tests.test_model_judge.TestJudgeIntegration.test_background_without_anaphora_skips_judge",
         "tests.test_model_judge.TestJudgeIntegration.test_disabled_by_default_never_calls_model",
         "tests.test_model_judge.TestJudgeIntegration.test_enabled_injects_candidates_with_unconfirmed_mark",
         "tests.test_model_judge.TestJudgeIntegration.test_hourly_limit_respected",
+        "tests.test_model_judge.TestJudgeIntegration.test_loading_keeps_background_without_calling_judge",
         "tests.test_model_judge.TestJudgeIntegration.test_local_hit_skips_judge",
         "tests.test_model_judge.TestJudgeIntegration.test_non_overlapping_selection_is_rejected",
+        "tests.test_model_judge.TestJudgeIntegration.test_recent_buffer_cap_and_anchor",
         "tests.test_model_judge.TestJudgeIntegration.test_timeout_falls_back_silently",
         "tests.test_model_judge.TestParseReply.test_accepts_json_inside_prose",
         "tests.test_model_judge.TestParseReply.test_accepts_valid_schema",
@@ -397,7 +406,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.95,
+      "duration_s": 0.97,
       "failed": [],
       "ids": [
         "tests.test_delivery.TestInstallUpgradeRollback.test_install_refuses_existing_without_force",
@@ -421,7 +430,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 2.42,
+      "duration_s": 10.38,
       "failed": [],
       "ids": [
         "tests.test_soak.TestSoakCollect.test_collects_db_logs_and_provider_counts",
@@ -443,7 +452,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.3,
+      "duration_s": 0.37,
       "failed": [],
       "ids": [
         "tests.test_threshold.TestPluginThresholdConfig.test_configured_percent_is_applied",
@@ -457,7 +466,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.1,
+      "duration_s": 0.14,
       "failed": [],
       "ids": [
         "tests.test_correction.TestCorrectionCancelCue.test_cancel_phrase_is_recognised",
@@ -471,7 +480,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.24,
+      "duration_s": 0.23,
       "failed": [],
       "ids": [
         "tests.test_metrics.TestLatencyMetrics.test_disabled_plugin_writes_nothing",
@@ -501,7 +510,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.36,
+      "duration_s": 0.35,
       "failed": [],
       "ids": [
         "tests.test_background.TestBackgroundContext.test_background_packet_when_no_match",
@@ -547,7 +556,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.31,
+      "duration_s": 0.28,
       "failed": [],
       "ids": [
         "tests.test_panel.TestPanel.test_archive_preview_and_export",
@@ -564,7 +573,7 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "duration_s": 0.47,
+      "duration_s": 0.44,
       "failed": [],
       "ids": [
         "tests.test_integration_chain.TestCaptureEdgeCases.test_capture_gate_rejects_bot_self_mismatch_and_oversize",
@@ -1210,27 +1219,6 @@
         ],
         "async": true,
         "async_generator": false
-      },
-      {
-        "method": "dlm",
-        "kinds": [
-          "command",
-          "event_message_type"
-        ],
-        "options": [
-          {
-            "type": "PRIVATE_MESSAGE"
-          },
-          {
-            "name": "dlm"
-          }
-        ],
-        "parameters": [
-          "self",
-          "event"
-        ],
-        "async": false,
-        "async_generator": true
       }
     ],
     "capture": {
@@ -1238,7 +1226,8 @@
       "media_chain_skipped": true,
       "stranger_ignored": true,
       "group_ignored": true,
-      "gap_records": 0
+      "gap_records": 0,
+      "unsupported": 1
     },
     "injection": {
       "rounds": 8,
@@ -1250,19 +1239,19 @@
     },
     "latency_ms": {
       "samples": [
-        7.23,
-        1.65,
-        1.35,
-        1.42,
-        2.76,
+        5.63,
+        1.41,
+        2.12,
         2.07,
-        1.6,
-        1.41
+        2.33,
+        1.5,
+        1.54,
+        1.44
       ],
-      "p50": 1.65,
-      "p95": 7.23,
-      "max": 7.23,
-      "mean": 2.44
+      "p50": 2.07,
+      "p95": 5.63,
+      "max": 5.63,
+      "mean": 2.25
     },
     "dedupe": {
       "first_parts": 1,
@@ -1287,8 +1276,8 @@
   },
   "real_env": {
     "suite": "real-astrbot-chain-v1",
-    "astrbot_root": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\instance",
-    "model_dir": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\models\\bge-small-zh-v1.5",
+    "astrbot_root": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\instance",
+    "model_dir": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\models\\bge-small-zh-v1.5",
     "user": "tester",
     "conversation": "dlm-real-084010",
     "astrbot_version": "4.29.3",
@@ -1323,7 +1312,7 @@
       "context_enabled": true,
       "followup_enabled": true,
       "automatic_memory_enabled": true,
-      "model_dir": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\models\\bge-small-zh-v1.5",
+      "model_dir": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\models\\bge-small-zh-v1.5",
       "context_budget_chars": 450,
       "auto_gap_recovery_enabled": true
     },
@@ -8188,7 +8177,7 @@
     }
   },
   "crash": {
-    "ts": "2026-11-04T10:06:50",
+    "ts": "2026-11-05T15:20:03",
     "integrity": "ok",
     "killed_after_marker": 20,
     "rows_after_kill": 20,
@@ -8261,7 +8250,9 @@
         "tests.test_backup_regression.TestBackupHandleRegression.test_backup_can_be_restored_to_new_directory",
         "tests.test_backup_regression.TestBackupHandleRegression.test_backup_file_is_deletable_after_close",
         "tests.test_backup_regression.TestBackupHandleRegression.test_backup_folder_removable_while_store_is_open",
-        "tests.test_backup_regression.TestBackupHandleRegression.test_ten_consecutive_backups_are_all_deletable"
+        "tests.test_backup_regression.TestBackupHandleRegression.test_rotate_after_verify_keeps_real_backups",
+        "tests.test_backup_regression.TestBackupHandleRegression.test_ten_consecutive_backups_are_all_deletable",
+        "tests.test_backup_regression.TestBackupHandleRegression.test_verify_stored_backup_leaves_no_sidecars"
       ]
     },
     "备份校验与隔离恢复": {

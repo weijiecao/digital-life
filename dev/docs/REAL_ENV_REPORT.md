@@ -22,7 +22,7 @@
 | 模型加载 | **12.8 s**（冷启动，4 线程） | 同上 |
 | 单条编码 | **4.0 ms**（batch=8，预热后） | 同上 |
 | 平台适配器 | WebChat + **NapCat/QQ**（反向 WS 127.0.0.1:6201） | `aiocqhttp_platform_adapter.py` |
-| NapCat / QQ | NapCat.Core 4.18.41 / QQNT 9.9.36；小号 `1000000001`，聊天主号 `1000000002` | NapCat 控制台 |
+| NapCat / QQ | NapCat.Core 4.18.41 / QQNT 9.9.36；小号 `3266206281`，聊天主号 `1508236662` | NapCat 控制台 |
 | 模型服务 | 本地 mock OpenAI 兼容服务（记录完整请求体） | `harness/mock_openai.py` |
 
 > 为什么不用本机已运行的生产实例：它在 `C:\ProgramData\NapCatQQ Desktop\...`，接真实 QQ 与 deepseek，
@@ -101,13 +101,13 @@ AstrBot 的 `data_v4.db` 保存对话历史，探针每次使用独立会话 ID�
 
 | 项 | 结果 | 证据 |
 |---|---|---|
-| 小号登录 | `1000000001` 扫码登录便携 NapCat（NapCat.Core 4.18.41 / QQNT 9.9.36） | NapCat 控制台 + `onebot11_1000000001.json` |
+| 小号登录 | `3266206281` 扫码登录便携 NapCat（NapCat.Core 4.18.41 / QQNT 9.9.36） | NapCat 控制台 + `onebot11_3266206281.json` |
 | 反向 WS | `ws://127.0.0.1:6201/ws` 已连接 | AstrBot 日志 `aiocqhttp(OneBot v11) 事件 websocket 已连接` |
 | 私聊采集 | 2 条，落在**独立于 WebChat 的作用域**（seq 3 / 4） | `dl_capture`；`reports/qq_real.json` |
 | 后台整理 | 4 条任务全部 `done` | `dl_auto_jobs` |
 | 注入 | 第 2 条消息的请求体含 `[DL_MEMORY_V040]`，引用**待审序号 3**「我喜欢吃苹果」 | mock 请求体；请求 7.9 KB |
 | 回复 | 经 QQ 正常送达（mock 固定文本「好的，这是测试回复。」） | AstrBot 日志 `respond.stage` |
-| 主号 | `1000000002` 的私聊被白名单接受，作用域与其它 QQ 隔离 | 插件 `allowed_sender_ids` |
+| 主号 | `1508236662` 的私聊被白名单接受，作用域与其它 QQ 隔离 | 插件 `allowed_sender_ids` |
 
 复跑 QQ 取证：
 

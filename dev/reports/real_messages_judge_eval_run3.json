@@ -1,0 +1,216 @@
+{
+  "suite": "real-messages-judge-eval-v1",
+  "source_db": "..\\testbed\\instance\\data\\plugin_data\\astrbot_plugin_digital_memory_store\\manual_test_memory.sqlite3",
+  "scope": "manual-test:5f470dbeb4eb60757580d97e7fd7eaccc15b419a839ab3f933185413a6e756cc",
+  "model": "deepseek-chat",
+  "scenarios": 10,
+  "baseline_accuracy": "5/10",
+  "judge_accuracy": "9/10",
+  "judge_calls": 5,
+  "baseline_misses": 5,
+  "recovered": 4,
+  "records": [
+    {
+      "id": "move_area",
+      "query": "我搬家到哪个区？",
+      "targets": [
+        "滨江区",
+        "西湖区"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "搬家改到滨江区"
+      ],
+      "model_reply": "{\"choices\": [1], \"sufficient\": true, \"conflict\": false, \"reason\": \"候选1提到搬家到滨江区\"}",
+      "usage": {
+        "prompt_tokens": 262,
+        "completion_tokens": 30,
+        "total_tokens": 292,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 134
+      },
+      "elapsed_s": 0.811
+    },
+    {
+      "id": "blue_code",
+      "query": "蓝鲸的暗号是什么？",
+      "targets": [
+        "蓝鲸7391"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "记住一个暗号：蓝鲸7391"
+      ],
+      "model_reply": "{\"choices\": [2], \"sufficient\": true, \"conflict\": false, \"reason\": \"候选2提到蓝鲸暗号7391\"}",
+      "usage": {
+        "prompt_tokens": 272,
+        "completion_tokens": 32,
+        "total_tokens": 304,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 144
+      },
+      "elapsed_s": 1.05
+    },
+    {
+      "id": "lime_code",
+      "query": "青柠计划的门禁暗号？",
+      "targets": [
+        "7391"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "记住：青柠计划的门禁暗号是7391",
+        "记住一个暗号：蓝鲸7391"
+      ],
+      "model_reply": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": true, \"reason\": \"两条暗号版本不同\"}",
+      "usage": {
+        "prompt_tokens": 273,
+        "completion_tokens": 31,
+        "total_tokens": 304,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 145
+      },
+      "elapsed_s": 0.54
+    },
+    {
+      "id": "lunch",
+      "query": "我明天吃什么？",
+      "targets": [
+        "内牛五方",
+        "麦当劳"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.002
+    },
+    {
+      "id": "later",
+      "query": "后来呢？",
+      "targets": [
+        "滨江区",
+        "西湖区",
+        "内牛五方"
+      ],
+      "baseline_hit": false,
+      "judge_hit": false,
+      "judge_called": true,
+      "selected": [],
+      "model_reply": "{\"choices\": [], \"sufficient\": false, \"conflict\": false, \"reason\": \"候选均与门禁暗号后续无关\"}",
+      "usage": {
+        "prompt_tokens": 256,
+        "completion_tokens": 30,
+        "total_tokens": 286,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 256
+      },
+      "elapsed_s": 1.02
+    },
+    {
+      "id": "that_thing",
+      "query": "之前那件事怎么样了？",
+      "targets": [
+        "滨江区",
+        "西湖区",
+        "内牛五方"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.002
+    },
+    {
+      "id": "fruit",
+      "query": "我喜欢吃什么水果？",
+      "targets": [
+        "苹果"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.002
+    },
+    {
+      "id": "code_what",
+      "query": "门禁暗号是多少？",
+      "targets": [
+        "7391"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "记住：青柠计划的门禁暗号是7391",
+        "记住一个暗号：蓝鲸7391"
+      ],
+      "model_reply": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": true, \"reason\": \"两条暗号版本不同\"}",
+      "usage": {
+        "prompt_tokens": 271,
+        "completion_tokens": 31,
+        "total_tokens": 302,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 143
+      },
+      "elapsed_s": 0.889
+    },
+    {
+      "id": "drink",
+      "query": "我更喜欢喝什么？",
+      "targets": [
+        "蜜雪冰城"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.001
+    },
+    {
+      "id": "thursday",
+      "query": "明天疯狂星期四吃什么？",
+      "targets": [
+        "麦当劳",
+        "内牛五方"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.001
+    }
+  ]
+}

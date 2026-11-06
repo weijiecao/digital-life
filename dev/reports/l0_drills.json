@@ -1,7 +1,7 @@
 {
   "backup_drill": {
     "ts": "2026-11-04T09:34:43",
-    "live_db": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\instance\\data\\plugin_data\\astrbot_plugin_digital_memory_store\\manual_test_memory.sqlite3",
+    "live_db": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\instance\\data\\plugin_data\\astrbot_plugin_digital_memory_store\\manual_test_memory.sqlite3",
     "ok": true,
     "captures_before": 9,
     "captures_after_restore": 9,

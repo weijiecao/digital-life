@@ -9,11 +9,13 @@
 
 import os
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
 from .test_store import FakeEncoder
 
+from astrbot_plugin_digital_memory_store.panel import rotate_backups
 from astrbot_plugin_digital_memory_store.recovery import restore_to_new_directory
 from astrbot_plugin_digital_memory_store.storage import Store
 
@@ -85,6 +87,41 @@ class TestBackupHandleRegression(unittest.TestCase):
                 # 主库仍打开时能删掉备份目录，说明备份连接没有残留句柄。
                 os.rmdir(folder)
                 self.assertFalse(folder.exists())
+            finally:
+                store.close()
+
+    def test_verify_stored_backup_leaves_no_sidecars(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = make_store(d)
+            try:
+                name = store.backup()
+                result = store.verify_stored_backup(name)
+                self.assertTrue(result['ok'], result['errors'])
+                folder = Path(d) / 'backups'
+                # 校验可以读，但不能在备份目录留下 -wal/-shm。
+                self.assertEqual(sorted(p.name for p in folder.iterdir()), [name])
+            finally:
+                store.close()
+
+    def test_rotate_after_verify_keeps_real_backups(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = make_store(d)
+            names = []
+            try:
+                for _ in range(3):
+                    name = store.backup()
+                    names.append(name)
+                    self.assertTrue(store.verify_stored_backup(name)['ok'])
+                    time.sleep(0.01)
+                result = rotate_backups(d, keep=2)
+                folder = Path(d) / 'backups'
+                files = sorted(p.name for p in folder.iterdir())
+                real = [name for name in files if name.endswith('.sqlite3')]
+                sidecars = [name for name in files if name.endswith(('-wal', '-shm', '-journal'))]
+                self.assertEqual(sidecars, [])
+                self.assertEqual(len(real), 2, '轮转必须保留 2 个真实备份，不能被旁文件挤掉')
+                self.assertTrue(set(real).issubset(set(names)))
+                self.assertEqual(result['remaining'], 2)
             finally:
                 store.close()
 

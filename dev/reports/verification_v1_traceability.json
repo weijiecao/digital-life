@@ -1,0 +1,47 @@
+{
+  "suite": "v1-traceability",
+  "config": {
+    "scopes": 50,
+    "messages": 5,
+    "queries": 20,
+    "captures": 250,
+    "packets": 1000,
+    "empty_packets": 0
+  },
+  "elapsed_s": 2.72,
+  "database": {
+    "errors": [],
+    "warnings": [],
+    "info": [
+      {
+        "check": "capture_rows",
+        "count": 250
+      },
+      {
+        "check": "jobs",
+        "by_status": {
+          "done": 250
+        }
+      },
+      {
+        "check": "scopes",
+        "count": 50
+      }
+    ]
+  },
+  "packets": {
+    "packets": 1000,
+    "quotes": 5000,
+    "titles": 0,
+    "seq_refs": 6000,
+    "errors": 0,
+    "warnings": 0,
+    "cross_scope": 0,
+    "unclassified": 0,
+    "future": 0,
+    "seq_missing": 0,
+    "excerpt": 0,
+    "samples": []
+  },
+  "pass": true
+}

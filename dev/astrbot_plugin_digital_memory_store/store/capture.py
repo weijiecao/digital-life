@@ -104,22 +104,167 @@ class CaptureMixin:
         counts={row[0]:row[1] for row in rows}
         return {'pending':counts.get('pending',0),'done':counts.get('done',0),'dead':counts.get('dead',0)}
 
+    def _judge_event_candidates(self,scope,query,pairs,limit=2):
+        """事件线：按事件标题/别名与 query 的重合选事件，再取该事件最近+最早来源。"""
+        if limit<=0:return []
+        db=self.flow.db
+        try:
+            events=db.execute('''SELECT e.id,e.title,MAX(m.recorded_at) AS last_at
+                FROM events e
+                LEFT JOIN membership mm ON mm.scope=e.scope AND mm.event_id=e.id
+                LEFT JOIN messages m ON m.scope=mm.scope AND m.id=mm.message_id
+                    AND m.speaker='user' AND m.kind='user_message'
+                WHERE e.scope=?
+                GROUP BY e.id,e.title
+                HAVING MAX(m.recorded_at) IS NOT NULL
+                ORDER BY last_at DESC LIMIT 30''',(scope,)).fetchall()
+        except sqlite3.DatabaseError:
+            return []
+        aliases={}
+        try:
+            for row in db.execute('SELECT event_id,alias FROM dl_event_alias WHERE scope=?',(scope,)):
+                aliases.setdefault(row['event_id'],[]).append(row['alias'] or '')
+        except sqlite3.DatabaseError:
+            aliases={}
+        scored=[]
+        for event in events:
+            title=event['title'] or ''
+            names=[title]+aliases.get(event['id'],[])
+            overlap=sum(1 for pair in pairs if any(pair in name for name in names))
+            scored.append((overlap,event['last_at'] or '',event))
+        scored.sort(key=lambda entry:entry[1],reverse=True)
+        scored.sort(key=lambda entry:-entry[0])
+        out=[];seen=set()
+        for _,_,event in scored:
+            if len(out)>=limit:break
+            try:
+                rows=db.execute('''SELECT m.id,m.content,m.recorded_at
+                    FROM messages m JOIN membership mm
+                      ON mm.scope=m.scope AND mm.message_id=m.id
+                    WHERE mm.scope=? AND mm.event_id=? AND m.speaker='user'
+                      AND m.kind='user_message'
+                    ORDER BY m.recorded_at DESC LIMIT 2''',(scope,event['id'])).fetchall()
+                first=db.execute('''SELECT m.id,m.content,m.recorded_at
+                    FROM messages m JOIN membership mm
+                      ON mm.scope=m.scope AND mm.message_id=m.id
+                    WHERE mm.scope=? AND mm.event_id=? AND m.speaker='user'
+                      AND m.kind='user_message'
+                    ORDER BY m.recorded_at ASC LIMIT 1''',(scope,event['id'])).fetchall()
+            except sqlite3.DatabaseError:
+                continue
+            for row in list(rows)+list(first):
+                content=row['content']
+                if not content or content in seen:continue
+                seen.add(content)
+                out.append({'kind':'approved','line':'event','seq':None,
+                            'content':content,'recorded_at':row['recorded_at'],
+                            'source_id':row['id'],'event_title':event['title']})
+                if len(out)>=limit:break
+        return out
+
     def judge_candidates(self,scope,query,limit=5):
-        """给 LLM 候选筛选器准备有限候选：按字面重合排序，无重合时退回最近记录。"""
+        """给 LLM 候选筛选器准备有限候选：待审原话 + 已审核事件来源，按字面重合排序。"""
         if type(limit) is not int or not 1<=limit<=5:raise ValueError('invalid limit')
         pairs=self._character_pairs(query) if isinstance(query,str) else set()
-        rows=self.flow.db.execute('''SELECT seq,content,content_sha,recorded_at FROM dl_capture
-            WHERE scope=? AND state='pending' ORDER BY seq DESC LIMIT 50''',(scope,)).fetchall()
-        scored=[]
+        candidates=[]
+        try:
+            rows=self.flow.db.execute('''SELECT seq,content,content_sha,recorded_at FROM dl_capture
+                WHERE scope=? AND state='pending' ORDER BY seq DESC LIMIT 50''',(scope,)).fetchall()
+        except sqlite3.DatabaseError:
+            rows=[]
         for row in rows:
             if hashlib.sha256(row['content'].encode('utf-8')).hexdigest()!=row['content_sha']:continue
-            overlap=sum(1 for pair in pairs if pair in row['content'])
-            scored.append((overlap,row['seq'],row))
-        scored.sort(key=lambda item:(-item[0],-item[1]))
-        chosen=[row for _,_,row in scored[:limit]]
-        chosen.sort(key=lambda row:row['seq'])
-        return [{'seq':row['seq'],'content':row['content'],'recorded_at':row['recorded_at']}
-                for row in chosen]
+            candidates.append({'kind':'pending','line':'time','seq':row['seq'],'content':row['content'],
+                               'recorded_at':row['recorded_at'],'source_id':None,'event_title':None})
+        # 本地语义没命中时，相关来源可能已经在已审核事件里；只读候选，不改变事实。
+        try:
+            approved=self.flow.db.execute('''SELECT m.id AS source_id,m.content,m.recorded_at,
+                    e.id AS event_id,e.title AS event_title
+                FROM messages m
+                JOIN membership mm ON mm.scope=m.scope AND mm.message_id=m.id
+                JOIN events e ON e.scope=mm.scope AND e.id=mm.event_id
+                WHERE m.scope=? AND m.speaker='user' AND m.kind='user_message'
+                ORDER BY m.recorded_at DESC LIMIT 100''',(scope,)).fetchall()
+        except sqlite3.DatabaseError:
+            approved=[]
+        for row in approved:
+            if not row['content']:continue
+            candidates.append({'kind':'approved','line':'time','seq':None,'content':row['content'],
+                               'recorded_at':row['recorded_at'],'source_id':row['source_id'],
+                               'event_title':row['event_title']})
+        seen=set();unique=[]
+        for item in candidates:
+            key=item['content']
+            if key in seen:continue
+            seen.add(key);unique.append(item)
+        scored=[]
+        for item in unique:
+            overlap=sum(1 for pair in pairs if pair in item['content'])
+            scored.append((overlap,item['recorded_at'],item))
+        scored.sort(key=lambda entry:entry[1],reverse=True)
+        scored.sort(key=lambda entry:-entry[0])
+        # 时间线只取最近 N 条；事件线单独取“旧但属于相关事件”的来源，避免只看最近。
+        time_quota=min(3,limit)
+        time_chosen=[item for _,_,item in scored[:time_quota]]
+        time_chosen.sort(key=lambda item:item['recorded_at'])
+        event_chosen=self._judge_event_candidates(scope,query,pairs,limit-time_quota)
+        selected=[];picked=set()
+        for item in time_chosen+event_chosen:
+            content=item['content']
+            if content in picked:continue
+            picked.add(content);selected.append(item)
+            if len(selected)>=limit:break
+        # 事件线不足时用剩余时间候选补齐；反之亦然。
+        for item in [entry[2] for entry in scored]:
+            if len(selected)>=limit:break
+            if item['content'] in picked:continue
+            picked.add(item['content']);selected.append(item)
+        return selected[:limit]
+
+    def delete_capture(self,scope,seq,purge=True):
+        """删除单条原话及其派生行；purge=True 时 checkpoint + VACUUM 清空自由页。"""
+        if type(seq) is not int or seq<1:raise ValueError('invalid sequence')
+        db=self.flow.db
+        row=db.execute('SELECT seq FROM dl_capture WHERE scope=? AND seq=?',(scope,seq)).fetchone()
+        if not row:return False
+        deps=(('dl_suggestions','capture_seq'),('dl_new_title_suggestions','capture_seq'),
+              ('dl_contrast_drafts','capture_seq'),('dl_auto_model_jobs','seq'),
+              ('dl_auto_jobs','seq'),('dl_import_provenance','seq'),
+              ('dl_auto_localization','seq'),('dl_pending_dirty','seq'))
+        with db:
+            for table,column in deps:
+                try:db.execute('DELETE FROM %s WHERE scope=? AND %s=?'%(table,column),(scope,seq))
+                except sqlite3.DatabaseError:pass
+            # dl_capture 的 AFTER DELETE 触发器会清理文本/向量/主题派生表。
+            db.execute('DELETE FROM dl_capture WHERE scope=? AND seq=?',(scope,seq))
+        if purge:self._purge_deleted()
+        return True
+
+    def delete_scope(self,scope,purge=True):
+        """删除整个 scope 的记忆与派生数据；返回删除的原话条数。"""
+        db=self.flow.db
+        count=db.execute('SELECT COUNT(*) FROM dl_capture WHERE scope=?',(scope,)).fetchone()[0]
+        tables=[r['name'] for r in db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")]
+        db.execute('PRAGMA foreign_keys=OFF')
+        try:
+            with db:
+                for table in tables:
+                    try:columns={r['name'] for r in db.execute('PRAGMA table_info(%s)'%table)}
+                    except sqlite3.DatabaseError:continue
+                    if 'scope' not in columns:continue
+                    db.execute('DELETE FROM %s WHERE scope=?'%table,(scope,))
+        finally:
+            db.execute('PRAGMA foreign_keys=ON')
+        if purge:self._purge_deleted()
+        return count
+
+    def _purge_deleted(self):
+        db=self.flow.db
+        try:db.execute('PRAGMA wal_checkpoint(TRUNCATE)')
+        except sqlite3.DatabaseError:pass
+        try:db.execute('VACUUM')
+        except sqlite3.DatabaseError:pass
 
     def pending(self,scope,after=0):
         if type(after) is not int or after<0:raise ValueError('invalid cursor')

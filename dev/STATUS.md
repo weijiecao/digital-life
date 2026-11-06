@@ -1,11 +1,11 @@
 # E5.0-F 工程状态（自动生成，勿手改）
 
-> 由 `python scripts/report.py` 生成于 2026-11-05T15:06:26+08:00；插件版本 `1.0.15`。
+> 由 `python scripts/report.py` 生成于 2026-11-06T16:31:40+08:00；插件版本 `1.0.18`。
 > 文档中的用例数、通过率、评估分一律引用本文件，不再手写。
 
 ## 一句话
 
-**离线用例 350/350 通过**；场景评估 14/15；集成探针注入 8/8。
+**离线用例 359/359 通过**；场景评估 14/15；集成探针注入 8/8。
 
 **真实环境**：AstrBot 4.29.3 上插件加载成功，1 轮真实请求中 1 轮看到记忆片段（平台 WebChat、provider 为本地 mock）。
 
@@ -18,7 +18,7 @@
 | 项 | 值 |
 |---|---|
 | 操作系统 | Windows-11-10.0.26200-SP0 |
-| 离线回归解释器 | Python 3.12.10（C:\Users\<you>\Desktop\数字生命\testbed\.venv\Scripts\python.exe） |
+| 离线回归解释器 | Python 3.12.10（C:\Users\205\Desktop\数字生命\testbed\.venv\Scripts\python.exe） |
 | 离线环境 torch / sentence-transformers | 已安装 / 已安装 |
 | 离线环境 AstrBot | 未安装（用例用替身） |
 | 真实环境 | AstrBot 4.29.3 / Python 3.12.10 / torch 2.15.0+cpu / sentence-transformers 5.7.0 |
@@ -30,26 +30,26 @@
 
 | 套件 | 用例 | 失败/错误 | 跳过 | 耗时 |
 |---|---|---|---|---|
-| `tests.test_store` | 161 | 0 | 0 | 14.5s |
+| `tests.test_store` | 162 | 0 | 0 | 14.6s |
 | `tests.test_plugin` | 78 | 0 | 0 | 6.6s |
 | `tests.test_baseline_alignment` | 6 | 0 | 0 | 0.1s |
 | `tests.test_preflight` | 6 | 0 | 0 | 0.0s |
 | `tests.test_auto_jobs` | 4 | 0 | 0 | 0.2s |
-| `tests.test_backup_regression` | 4 | 0 | 0 | 0.5s |
+| `tests.test_backup_regression` | 6 | 0 | 0 | 0.6s |
 | `tests.test_prewarm` | 5 | 0 | 0 | 1.1s |
-| `tests.test_model_judge` | 17 | 0 | 0 | 1.6s |
-| `tests.test_delivery` | 13 | 0 | 0 | 0.9s |
-| `tests.test_soak` | 11 | 0 | 0 | 2.4s |
-| `tests.test_threshold` | 3 | 0 | 0 | 0.3s |
+| `tests.test_model_judge` | 23 | 0 | 0 | 2.1s |
+| `tests.test_delivery` | 13 | 0 | 0 | 1.0s |
+| `tests.test_soak` | 11 | 0 | 0 | 10.4s |
+| `tests.test_threshold` | 3 | 0 | 0 | 0.4s |
 | `tests.test_correction` | 3 | 0 | 0 | 0.1s |
 | `tests.test_metrics` | 3 | 0 | 0 | 0.2s |
 | `tests.test_real_corpus` | 5 | 0 | 0 | 0.2s |
-| `tests.test_background` | 6 | 0 | 0 | 0.4s |
+| `tests.test_background` | 6 | 0 | 0 | 0.3s |
 | `tests.test_package` | 3 | 0 | 0 | 0.5s |
 | `tests.test_attribution` | 4 | 0 | 0 | 0.0s |
 | `tests.test_panel` | 6 | 0 | 0 | 0.3s |
-| `tests.test_integration_chain` | 12 | 0 | 0 | 0.5s |
-| **合计** | **350** | **0** | | |
+| `tests.test_integration_chain` | 12 | 0 | 0 | 0.4s |
+| **合计** | **359** | **0** | | |
 
 ## 评估与探针
 
@@ -60,7 +60,7 @@
 | 真实 BGE 场景评估 | 13/15 | 真实编码；失败项见 BGE_CALIBRATION |
 | 上游基线检索对齐 | plain 0/2；weak 0/2；semantic_fixture 2/2 | 规则 0/2 是结构性的；semantic_fixture 仅证明管线 |
 | 集成探针·注入 | 8/8 轮 | 替身平台与受控编码器 |
-| 集成探针·钩子耗时 | P50 1.6ms / P95 7.2ms | 不含真实 BGE 编码 |
+| 集成探针·钩子耗时 | P50 2.1ms / P95 5.6ms | 不含真实 BGE 编码 |
 | 集成探针·重启 | 积压 8 → 0，重复采集=否 | 同一进程重启，非崩溃恢复 |
 | 集成探针·不兼容宿主 | 静默放行=是 | 模拟缺 extra_user_content_parts |
 
@@ -175,7 +175,7 @@
 
 | 能力 | 状态 | 覆盖测试数 |
 |---|---|---|
-| 备份可删除/可恢复（Windows 回归） | 通过 | 4 |
+| 备份可删除/可恢复（Windows 回归） | 通过 | 6 |
 | 备份校验与隔离恢复 | 通过 | 2 |
 | 重启续跑且不重复注入 | 通过 | 2 |
 | 钩子契约（模拟宿主） | 通过 | 1 |
@@ -188,7 +188,7 @@
 |---|---|---|---|
 | 采集成功率（真实私聊 3 天） | ≥99% | 无实机数据 | 未测 |
 | 注入生效 | ≥95% | 100%（替身） | 仅替身证据 |
-| P95 钩子耗时 | <1.5s | 7ms（替身，无 BGE 编码） | 仅替身证据 |
+| P95 钩子耗时 | <1.5s | 6ms（替身，无 BGE 编码） | 仅替身证据 |
 | 备份可生成/校验/恢复/删除 | 全部通过 | 通过 | 单测通过 |
 | 重启续跑、无重复注入 | 通过 | 通过 | 探针通过（替身） |
 | 真实框架注入（AstrBot 4.29.3） | 可见 | 1/1 轮 / 0.09s | real（WebChat+mock） |

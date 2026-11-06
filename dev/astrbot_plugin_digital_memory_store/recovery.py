@@ -27,11 +27,31 @@ _OPTIONAL={'dl_import_provenance','dl_source_briefs','dl_brief_model_drafts',
 def _open_readonly(path):
     path=Path(path).resolve(strict=True)
     if not path.is_file():raise ValueError('backup is not a file')
-    conn=sqlite3.connect(path.as_uri()+'?mode=ro',uri=True,timeout=5)
+    # `immutable=1`：备份是单文件快照，不需要 WAL；同时避免只读打开时生成
+    # `-wal/-shm` 旁文件（否则校验会污染备份目录，轮转可能把旁文件当备份）。
+    conn=sqlite3.connect(path.as_uri()+'?mode=ro&immutable=1',uri=True,timeout=5)
     conn.row_factory=sqlite3.Row
     conn.execute('PRAGMA query_only=ON')
     conn.execute('PRAGMA trusted_schema=OFF')
     return conn
+
+
+SIDECAR_SUFFIXES=('-wal','-shm','-journal')
+
+
+def cleanup_sidecars(path):
+    """删除指定备份旁的 -wal/-shm/-journal；返回实际删除的文件名。"""
+    removed=[]
+    for suffix in SIDECAR_SUFFIXES:
+        candidate=Path(str(path)+suffix)
+        try:
+            candidate.unlink()
+            removed.append(candidate.name)
+        except FileNotFoundError:
+            continue
+        except OSError:
+            continue
+    return removed
 
 
 def verify_connection(conn):
@@ -134,7 +154,9 @@ def restore_to_new_directory(source,target_dir):
                 if partial.exists():partial.unlink()
             target_dir.rmdir()
         raise
-    finally:src.close()
+    finally:
+        src.close()
+        cleanup_sidecars(source)
 
 
 def main(argv=None):
@@ -146,6 +168,7 @@ def main(argv=None):
     args=parser.parse_args(argv)
     try:
         result=verify_backup(args.backup) if args.command=='verify' else restore_to_new_directory(args.backup,args.target_dir)
+        if args.command=='verify':cleanup_sidecars(args.backup)
         print(json.dumps(result,ensure_ascii=False));return 0 if result['ok'] else 2
     except (ValueError,OSError,sqlite3.Error) as exc:
         print('操作未完成：'+str(exc),file=sys.stderr);return 2

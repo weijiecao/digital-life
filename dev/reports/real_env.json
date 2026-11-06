@@ -1,7 +1,7 @@
 {
   "suite": "real-astrbot-chain-v1",
-  "astrbot_root": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\instance",
-  "model_dir": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\models\\bge-small-zh-v1.5",
+  "astrbot_root": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\instance",
+  "model_dir": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\models\\bge-small-zh-v1.5",
   "user": "tester",
   "conversation": "dlm-real-084010",
   "astrbot_version": "4.29.3",
@@ -36,7 +36,7 @@
     "context_enabled": true,
     "followup_enabled": true,
     "automatic_memory_enabled": true,
-    "model_dir": "C:\\Users\\<you>\\Desktop\\数字生命\\testbed\\models\\bge-small-zh-v1.5",
+    "model_dir": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\models\\bge-small-zh-v1.5",
     "context_budget_chars": 450,
     "auto_gap_recovery_enabled": true
   },

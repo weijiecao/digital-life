@@ -3,7 +3,7 @@
 > 基线：`E5.0-F_0.15.116_工程包`（未改动原件，本目录是可写的开发副本）
 > 上游：`_e50f_standalone`（已实机验证的 pilot 基线，与桌面 E50F 目录同源）
 > 真源清单：`../MANIFEST.md`　进度看板：`STATUS.md`　指标口径：`docs/METRICS.md`
-> 更新：2026-11-03
+> 更新：2026-11-06（v1.0.18 静默版：移除 /dlm 聊天命令，不新建正式事件）
 
 ## 这个目录是什么
 
@@ -13,7 +13,7 @@
 ```
 dev/
   astrbot_plugin_digital_memory_store/   插件源码（含 store/ 包、commands.py、docs/）
-  tests/                                  全部回归用例（339 项）
+  tests/                                  全部回归用例（359 项）
     test_store.py / test_plugin.py        主体回归（存储、插件钩子、命令面、帮助）
     test_baseline_alignment.py            6 项：上游基线继承
     test_preflight.py                     6 项：依赖/模型自检提示
@@ -54,20 +54,20 @@ dev/
 | 2 | `test_backup_regression` 4 项 | P0 修复此前**没有**回归锁：可删除、连续 10 次、可恢复、可删目录 |
 | 3 | `requirements.txt` 版本区间 + `preflight.py` 自检 + 启动单条提示 | P1-3：依赖未声明，缺依赖时静默降级 |
 | 4 | `sim_astrbot.py` + `test_integration_chain` + `integration_probe.py` | M1 L1：把①层"接口假设"变成可执行断言，并量出钩子耗时/重启行为 |
-| 5 | 后台任务 `MAX_JOB_ATTEMPTS=8` + `dead` 状态 + `/dlm 记忆状态` 报数 | P2-7：无上限重试导致每 5 分钟空转 |
+| 5 | 后台任务 `MAX_JOB_ATTEMPTS=8` + `dead` 状态 + panel 报数 | P2-7：无上限重试导致每 5 分钟空转 |
 | 6 | `scripts/report.py` → `STATUS.md` | P1-2：用例数 177/142/225 三次漂移 |
 | 7 | `MANIFEST.md`、`docs/METRICS.md`、`docs/baseline_E50F_real.json` | M0 真源清单、指标口径、实机证据记账 |
 
 ## 当前状态
 
-**v1.0.12：离线用例全绿（339 项），真实 AstrBot + 真实 QQ 链路跑通，交付最小闭环已就绪。**
+**v1.0.18：359 项离线用例全绿；用户聊天面静默（无 /dlm），不新建正式事件；管理走 WebUI panel。**
 
 - 新增 26 项用例（6 自检 + 4 死信 + 4 备份回归 + 12 集成），原 231 项不受影响；
 - 集成探针：注入 8/8、同一请求不重复注入、重启续跑无重复采集、不兼容宿主静默放行；
 - **真实环境（`testbed/`）**：AstrBot 4.29.3 + Python 3.12 + 真实 BGE（512 维）；
   插件加载成功、钩子以 `OnLLMRequestEvent` 注册、注入片段出现在真实 provider 请求体里
-  （钩子→provider 0.13 s）；`/dlm 记忆状态` 在真实命令过滤器下可用。详见 `docs/REAL_ENV_REPORT.md`；
-- **真实 QQ 私聊**（2026-11-04 08:14）：小号 `1000000001` 经 NapCat 接入，主号 `1000000002` 的两条私聊
+  （钩子→provider 0.13 s）；v1.0.18 起 `/dlm` 不再注册，管理看 panel。详见 `docs/REAL_ENV_REPORT.md`；
+- **真实 QQ 私聊**（2026-11-04 08:14）：小号 `3266206281` 经 NapCat 接入，主号 `1508236662` 的两条私聊
   被采集（独立作用域），第二条请求体引用待审序号 3「我喜欢吃苹果」——QQ 段注入可见。
   provider 仍是本地 mock，回复为固定文本；
 - 固定场景评估仍是 14/15，`paraphrase_book`（自然改写）未找回，保留不自欺。

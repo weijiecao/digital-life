@@ -21,8 +21,9 @@ class PendingIndex:
             INSERT OR IGNORE INTO dl_pending_dirty VALUES(OLD.scope,OLD.seq);
             INSERT OR IGNORE INTO dl_pending_dirty VALUES(NEW.scope,NEW.seq);
         END;
-        CREATE TRIGGER IF NOT EXISTS dl_pending_capture_delete AFTER DELETE ON dl_capture BEGIN
-            INSERT OR IGNORE INTO dl_pending_dirty VALUES(OLD.scope,OLD.seq);
+        DROP TRIGGER IF EXISTS dl_pending_capture_delete;
+        CREATE TRIGGER dl_pending_capture_delete AFTER DELETE ON dl_capture BEGIN
+            DELETE FROM dl_pending_dirty WHERE scope=OLD.scope AND seq=OLD.seq;
         END;
         INSERT OR IGNORE INTO dl_pending_dirty
             SELECT c.scope,c.seq FROM dl_capture c WHERE c.state='pending'

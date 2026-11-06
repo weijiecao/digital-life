@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "version": "1.0.16",
+  "checks": {
+    "plugin_dir": true,
+    "files": true,
+    "version": "1.0.16",
+    "schema_keys": 36,
+    "config_file": true,
+    "presets": [
+      "off",
+      "self",
+      "debug"
+    ],
+    "model_dir": true
+  },
+  "problems": [],
+  "root": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\instance"
+}

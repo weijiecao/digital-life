@@ -1,0 +1,186 @@
+{
+  "suite": "local-install-test-2026-11-05",
+  "version": "1.0.16",
+  "package": {
+    "zip": "C:\\Users\\205\\Desktop\\数字生命\\dist-test-install-20261105_170126\\astrbot_plugin_digital_memory_store-1.0.16.zip",
+    "sha256": "AF19032D4F250B3FB3F0CC3701C74DFB401DE82545009B1B907C4CF98110644A",
+    "stage": "C:\\Users\\205\\Desktop\\数字生命\\dist-test-install-20261105_170126"
+  },
+  "test_a": {
+    "stage": "C:\\Users\\205\\Desktop\\数字生命\\dist-test-install-20261105_170126",
+    "zip": "C:\\Users\\205\\Desktop\\数字生命\\dist-test-install-20261105_170126\\astrbot_plugin_digital_memory_store-1.0.16.zip",
+    "sha": "AF19032D4F250B3FB3F0CC3701C74DFB401DE82545009B1B907C4CF98110644A",
+    "root": "C:\\Users\\205\\AppData\\Local\\Temp\\DLM-InstallTest-20261105_170132",
+    "self_ok": true,
+    "self_version": "1.0.16",
+    "self_schema_keys": 36,
+    "self_config": {
+      "enabled": true,
+      "automatic": true,
+      "ids": "123456",
+      "budget": 450,
+      "threshold": 60
+    },
+    "off_ok": true,
+    "off_enabled": false,
+    "off_always": false,
+    "backups": "astrbot_plugin_digital_memory_store_20261105T170135",
+    "rollback_ok": true,
+    "rollback_problems": []
+  },
+  "test_b": {
+    "install_verify": {
+      "ok": true,
+      "version": "1.0.16",
+      "checks": {
+        "plugin_dir": true,
+        "files": true,
+        "version": "1.0.16",
+        "schema_keys": 36,
+        "config_file": true,
+        "presets": [
+          "off",
+          "self",
+          "debug"
+        ],
+        "model_dir": true
+      },
+      "problems": [],
+      "root": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\instance_installtest"
+    },
+    "real_chain": {
+      "astrbot_version": "4.29.3",
+      "plugin_loaded": true,
+      "handlers": [
+        {
+          "name": "add_memory_context",
+          "event": "OnLLMRequestEvent"
+        },
+        {
+          "name": "capture_private",
+          "event": "AdapterMessageEvent"
+        },
+        {
+          "name": "dlm",
+          "event": "AdapterMessageEvent"
+        }
+      ],
+      "capture_after_seed": {
+        "rows": 1,
+        "contents": [
+          "我喜欢吃苹果"
+        ],
+        "seqs": [
+          1
+        ]
+      },
+      "injection_attempts": [
+        {
+          "attempt": 1,
+          "reply": {
+            "text": "好的，这是测试回复。好的，这是测试回复。",
+            "ttfb_s": 0.007,
+            "total_s": 0.332
+          },
+          "hook_to_provider_s": 0.343,
+          "found": true,
+          "contains_memory_prefix": true,
+          "contains_seed_text": true,
+          "contains_query_text": true,
+          "request_chars": 10718,
+          "message_roles": [
+            "system",
+            "user",
+            "assistant",
+            "user",
+            "assistant",
+            "user"
+          ]
+        }
+      ],
+      "command_text_present": true,
+      "bge": {
+        "ok": true,
+        "dimension": 512,
+        "load_seconds": 11.74,
+        "encode_ms_per_item": 4.1,
+        "batch_size": 4,
+        "threads": 4,
+        "max_seq_length": 512,
+        "model_key": "local-cpu-sbert:67f337e115b817a01c997d43e292871e",
+        "torch_version": "2.15.0+cpu",
+        "sentence_transformers_version": "5.7.0"
+      }
+    },
+    "audit": {
+      "db": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\instance_installtest\\data\\plugin_data\\astrbot_plugin_digital_memory_store\\manual_test_memory.sqlite3",
+      "errors": [],
+      "warnings": [],
+      "info": [
+        {
+          "check": "capture_rows",
+          "count": 3
+        },
+        {
+          "check": "duplicate_content",
+          "count": 1,
+          "sample": [
+            {
+              "scope": "manual-test:af60dd88f6ff665553d001b51c2c6abf6e956a3d041759f42bcd1a543b05f178",
+              "count": 2,
+              "content": "你之前喜欢吃苹果吗"
+            }
+          ]
+        },
+        {
+          "check": "jobs",
+          "by_status": {
+            "done": 2,
+            "pending": 1
+          }
+        },
+        {
+          "check": "scopes",
+          "count": 1
+        }
+      ]
+    },
+    "backup": {
+      "names": [
+        "memory_20261105T090452_e60a8551.sqlite3",
+        "memory_20261105T090452_f9282488.sqlite3",
+        "memory_20261105T090452_d9ec053f.sqlite3"
+      ],
+      "real": [
+        "memory_20261105T090452_d9ec053f.sqlite3",
+        "memory_20261105T090452_f9282488.sqlite3"
+      ],
+      "sidecar": [],
+      "rotate": {
+        "kept": 2,
+        "removed": [
+          "memory_20261105T090452_e60a8551.sqlite3"
+        ],
+        "cleaned": [],
+        "remaining": 2
+      },
+      "pass": true
+    }
+  },
+  "checks": {
+    "A_self_ok": true,
+    "A_off_disabled": true,
+    "A_rollback_ok": true,
+    "B_install_ok": true,
+    "B_plugin_loaded": true,
+    "B_handlers": true,
+    "B_capture": true,
+    "B_injection": true,
+    "B_command": true,
+    "B_bge": true,
+    "B_audit": true,
+    "B_backup_rotation": true
+  },
+  "pass": true,
+  "note": "B 使用 testbed/instance 的隔离副本 instance_installtest（6201/9101 被既有服务占用），真实 AstrBot/真实 BGE/WebChat/mock 未降级。"
+}

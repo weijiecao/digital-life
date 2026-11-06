@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
   一键把本插件装进 AstrBot：复制插件 → 写配置 → （可选）装语义依赖 → （可选）下载模型。
 
@@ -266,8 +266,8 @@ Ok "配置已写入：$configPath"
 Write-Host ''
 Write-Host '=== 装好了，下一步 ===' -ForegroundColor Cyan
 Write-Host '  1) 重启 AstrBot（必须，否则插件不会重新加载）'
-Write-Host '  2) 用白名单号私聊发送：/dlm 上下文状态'
-Write-Host '     看到“本地模型：就绪/未配置”且采集计数增长，即正常'
+Write-Host '  2) 重启后打开 WebUI 插件页 → 数字生命记忆库 → panel 查看采集/备份'
+Write-Host '     v1.0.18 起聊天里没有 /dlm 命令；不要向用户暴露记忆系统'
 Write-Host '  3) WebUI 插件页 → 数字生命记忆库 → panel：存储/备份/容量'
 Write-Host ''
 Write-Host "  配置：$configPath"

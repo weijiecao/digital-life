@@ -127,8 +127,8 @@ class TestModelStateVisible(unittest.TestCase):
             runtime = sim.SimRuntime(root, {'enabled': True, 'allowed_sender_ids': '42'})
             await runtime.plugin.initialize()
             try:
-                event = await runtime.command('/dlm 上下文状态')
-                return list(event.results)
+                event = await runtime.receive('/dlm 上下文状态')
+                return [item async for item in runtime.plugin.dlm(event)]
             finally:
                 await runtime.stop()
 

@@ -34,27 +34,6 @@
       ],
       "async": true,
       "async_generator": false
-    },
-    {
-      "method": "dlm",
-      "kinds": [
-        "command",
-        "event_message_type"
-      ],
-      "options": [
-        {
-          "type": "PRIVATE_MESSAGE"
-        },
-        {
-          "name": "dlm"
-        }
-      ],
-      "parameters": [
-        "self",
-        "event"
-      ],
-      "async": false,
-      "async_generator": true
     }
   ],
   "capture": {
@@ -62,7 +41,8 @@
     "media_chain_skipped": true,
     "stranger_ignored": true,
     "group_ignored": true,
-    "gap_records": 0
+    "gap_records": 0,
+    "unsupported": 1
   },
   "injection": {
     "rounds": 8,
@@ -74,19 +54,19 @@
   },
   "latency_ms": {
     "samples": [
-      7.23,
-      1.65,
-      1.35,
-      1.42,
-      2.76,
+      5.63,
+      1.41,
+      2.12,
       2.07,
-      1.6,
-      1.41
+      2.33,
+      1.5,
+      1.54,
+      1.44
     ],
-    "p50": 1.65,
-    "p95": 7.23,
-    "max": 7.23,
-    "mean": 2.44
+    "p50": 2.07,
+    "p95": 5.63,
+    "max": 5.63,
+    "mean": 2.25
   },
   "dedupe": {
     "first_parts": 1,

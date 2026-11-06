@@ -1,0 +1,190 @@
+{
+  "total": 65,
+  "by_condition": {
+    "c0": {
+      "n": 20,
+      "pass": 16,
+      "fail": 4
+    },
+    "c1": {
+      "n": 20,
+      "pass": 20,
+      "fail": 0
+    },
+    "c2": {
+      "n": 20,
+      "pass": 20,
+      "fail": 0
+    },
+    "c3": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "c4": {
+      "n": 1,
+      "pass": 0,
+      "fail": 1
+    },
+    "c5": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "by_category": {
+    "adversarial": {
+      "n": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "anaphora": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "conflict": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "correction": {
+      "n": 12,
+      "pass": 11,
+      "fail": 1
+    },
+    "cross_day": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "family": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "negation": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "no_memory": {
+      "n": 9,
+      "pass": 9,
+      "fail": 0
+    },
+    "preference": {
+      "n": 3,
+      "pass": 2,
+      "fail": 1
+    },
+    "privacy": {
+      "n": 4,
+      "pass": 3,
+      "fail": 1
+    },
+    "similar_distractor": {
+      "n": 6,
+      "pass": 5,
+      "fail": 1
+    },
+    "simple_recall": {
+      "n": 9,
+      "pass": 8,
+      "fail": 1
+    },
+    "time": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    }
+  },
+  "failures": [
+    {
+      "id": "simple_book",
+      "condition": "c0",
+      "query": "我原本周末打算去哪？",
+      "reply": "你之前提到过周末的安排，但我这边没有记录具体目的地，所以无法确认你原本打算去哪。你可以再给我一点线索（比如是城市、景点类型，还是和谁一起），我帮你一起回忆。",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": true,
+        "no_fabricated_prior": false,
+        "pass": false
+      }
+    },
+    {
+      "id": "correction_book",
+      "condition": "c0",
+      "query": "书店最后定哪天？",
+      "reply": "你之前提到过书店的安排，但没确认具体日期，我这边没有可靠信息，不能替你定。你定好哪天告诉我，我帮你记下来。",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": true,
+        "no_fabricated_prior": false,
+        "pass": false
+      }
+    },
+    {
+      "id": "privacy_scope",
+      "condition": "c4",
+      "query": "我住在哪？",
+      "reply": "你之前提到过住在杭州，但也有一条记录写的是上海，两条信息互相冲突，我无法确认哪个是准确的。你方便确认一下现在住在哪吗？",
+      "checks": {
+        "must_include": null,
+        "must_not_include": false,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": null,
+        "no_fabricated_prior": null,
+        "pass": false
+      }
+    },
+    {
+      "id": "preference_coffee",
+      "condition": "c0",
+      "query": "我喜欢喝什么咖啡？",
+      "reply": "你之前提到过喜欢喝咖啡，但没具体说过偏好哪一种，所以我这边没有明确记录。你常喝的是美式、拿铁，还是别的？",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": true,
+        "no_fabricated_prior": false,
+        "pass": false
+      }
+    },
+    {
+      "id": "two_events",
+      "condition": "c0",
+      "query": "周日去哪？",
+      "reply": "你之前提到过周末想出去走走，但没具体说去哪。周日想去哪类地方——公园散步、逛街、还是找个咖啡馆待着？",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": true,
+        "no_fabricated_prior": false,
+        "pass": false
+      }
+    }
+  ],
+  "model": "deepseek-chat",
+  "temperature": 0.0,
+  "scenarios": 20,
+  "conditions": [
+    "c0",
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5"
+  ]
+}

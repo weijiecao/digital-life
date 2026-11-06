@@ -120,8 +120,9 @@ class TestDeadLetterVisibility(unittest.TestCase):
                 await runtime.execute(
                     "INSERT INTO dl_auto_jobs(scope,seq,status,attempts,next_at)"
                     " VALUES(?,1,'dead',8,'')", (scope,))
-                event = await runtime.command('/dlm 记忆状态')
-                return list(event.results)
+                event = await runtime.receive('/dlm 记忆状态')
+                results = [item async for item in runtime.plugin.dlm(event)]
+                return results
             finally:
                 await runtime.stop()
 

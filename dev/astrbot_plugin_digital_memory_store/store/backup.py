@@ -29,8 +29,12 @@ class BackupMixin:
             raise ValueError('invalid backup name')
         path=self.root/'backups'/name
         if path.is_symlink() or not path.is_file():raise ValueError('backup missing')
-        from ..recovery import verify_backup
-        return verify_backup(path)
+        from ..recovery import cleanup_sidecars, verify_backup
+        try:
+            return verify_backup(path)
+        finally:
+            # 校验本身不应改变备份目录；旧版本残留的旁文件也在这里清掉。
+            cleanup_sidecars(path)
 
     def backup(self):
         folder=self.root/'backups';folder.mkdir(exist_ok=True)
@@ -48,13 +52,12 @@ class BackupMixin:
                     raise ValueError('backup integrity failed')
             finally:
                 out.close()
-            from ..recovery import verify_backup
+            from ..recovery import cleanup_sidecars, verify_backup
             verification=verify_backup(target)
             if not verification['ok']:raise ValueError('backup verification failed: '+','.join(verification['errors']))
-            # 备份产物只应是一个文件：校验用的只读连接会留下 -wal/-shm，
-            # 它们不含未落盘数据，留在 backups 目录会被误当成备份或干扰轮转。
-            for suffix in ('-wal','-shm','-journal'):
-                Path(str(target)+suffix).unlink(missing_ok=True)
+            # 备份产物只应是一个文件；`immutable=1` 已避免新旁文件，
+            # 这里仍清一次兼容旧行为/旧文件。
+            cleanup_sidecars(target)
         except Exception:
             for suffix in ('','-wal','-shm','-journal'):
                 Path(str(target)+suffix).unlink(missing_ok=True)

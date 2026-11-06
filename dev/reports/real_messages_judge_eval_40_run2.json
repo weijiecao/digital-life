@@ -1,0 +1,887 @@
+{
+  "suite": "real-messages-judge-eval-v1",
+  "source_db": "..\\testbed\\instance\\data\\plugin_data\\astrbot_plugin_digital_memory_store\\manual_test_memory.sqlite3",
+  "scope": "manual-test:5f470dbeb4eb60757580d97e7fd7eaccc15b419a839ab3f933185413a6e756cc",
+  "model": "deepseek-chat",
+  "scenarios": 40,
+  "baseline_accuracy": "14/40",
+  "judge_accuracy": "33/40",
+  "judge_calls": 26,
+  "baseline_misses": 26,
+  "recovered": 19,
+  "records": [
+    {
+      "id": "weekday",
+      "query": "今天星期几？",
+      "targets": [
+        "星期三"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.001
+    },
+    {
+      "id": "thursday_plan",
+      "query": "明天疯狂星期四要不要吃麦当劳？",
+      "targets": [
+        "麦当劳"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.001
+    },
+    {
+      "id": "chocolate_pork",
+      "query": "明天吃什么锅包肉？",
+      "targets": [
+        "巧克力锅包肉"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "行 那明天吃巧克力锅包肉",
+        "明天疯狂星期四要不要吃麦当劳",
+        "好 那明天还是去吃麦当劳的内牛五方吧",
+        "行 明天你先去蜜雪冰城买一杯星冰乐"
+      ],
+      "model_reply": "{\"choices\": [1, 2, 3, 4], \"sufficient\": false, \"conflict\": true, \"reason\": \"多个明天饮食版本，含锅包肉与麦当劳等\"}",
+      "usage": {
+        "prompt_tokens": 271,
+        "completion_tokens": 45,
+        "total_tokens": 316,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 143
+      },
+      "elapsed_s": 0.93
+    },
+    {
+      "id": "delivery_or_store",
+      "query": "明天点外卖还是到店吃？",
+      "targets": [
+        "外卖",
+        "到店"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.001
+    },
+    {
+      "id": "mixue_buy",
+      "query": "明天去蜜雪冰城买什么？",
+      "targets": [
+        "星冰乐"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "行 明天你先去蜜雪冰城买一杯星冰乐",
+        "我更喜欢蜜雪冰城的披萨 你呢"
+      ],
+      "model_reply": "{\"choices\": [1, 3], \"sufficient\": false, \"conflict\": false, \"reason\": \"仅1、3涉及蜜雪冰城，无购买结论\"}",
+      "usage": {
+        "prompt_tokens": 275,
+        "completion_tokens": 39,
+        "total_tokens": 314,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 147
+      },
+      "elapsed_s": 0.805
+    },
+    {
+      "id": "tomorrow_eat",
+      "query": "明天吃什么？",
+      "targets": [
+        "内牛五方"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "行 那明天吃巧克力锅包肉",
+        "明天疯狂星期四要不要吃麦当劳",
+        "好 那明天还是去吃麦当劳的内牛五方吧",
+        "行 明天你先去蜜雪冰城买一杯星冰乐"
+      ],
+      "model_reply": "{\"choices\": [1, 2, 3, 4], \"sufficient\": true, \"conflict\": true, \"reason\": \"多个明天饮食版本，含改选\"}",
+      "usage": {
+        "prompt_tokens": 268,
+        "completion_tokens": 40,
+        "total_tokens": 308,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 140
+      },
+      "elapsed_s": 0.922
+    },
+    {
+      "id": "niuwu",
+      "query": "麦当劳的内牛五方还是别的？",
+      "targets": [
+        "内牛五方"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "明天疯狂星期四要不要吃麦当劳",
+        "好 那明天还是去吃麦当劳的内牛五方吧"
+      ],
+      "model_reply": "{\"choices\": [2, 3], \"sufficient\": true, \"conflict\": false, \"reason\": \"候选含麦当劳内牛五方相关原话\"}",
+      "usage": {
+        "prompt_tokens": 266,
+        "completion_tokens": 37,
+        "total_tokens": 303,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 138
+      },
+      "elapsed_s": 1.045
+    },
+    {
+      "id": "blue_code",
+      "query": "蓝鲸的暗号是什么？",
+      "targets": [
+        "蓝鲸7391"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "记住一个暗号：蓝鲸7391"
+      ],
+      "model_reply": "{\"choices\": [2], \"sufficient\": true, \"conflict\": false, \"reason\": \"候选2直接给出蓝鲸暗号\"}",
+      "usage": {
+        "prompt_tokens": 272,
+        "completion_tokens": 31,
+        "total_tokens": 303,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 144
+      },
+      "elapsed_s": 1.091
+    },
+    {
+      "id": "code_short",
+      "query": "暗号是多少？",
+      "targets": [
+        "7391"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "记住：青柠计划的门禁暗号是7391",
+        "记住一个暗号：蓝鲸7391"
+      ],
+      "model_reply": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": true, \"reason\": \"两条暗号版本不同\"}",
+      "usage": {
+        "prompt_tokens": 269,
+        "completion_tokens": 31,
+        "total_tokens": 300,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 141
+      },
+      "elapsed_s": 1.159
+    },
+    {
+      "id": "fruit",
+      "query": "我喜欢吃什么水果？",
+      "targets": [
+        "苹果"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.002
+    },
+    {
+      "id": "apple_yes",
+      "query": "我喜欢吃苹果吗？",
+      "targets": [
+        "苹果"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "我喜欢吃苹果",
+        "喜欢吃苹果吗"
+      ],
+      "model_reply": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": false, \"reason\": \"候选1、2涉及是否喜欢苹果\"}",
+      "usage": {
+        "prompt_tokens": 255,
+        "completion_tokens": 34,
+        "total_tokens": 289,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 255
+      },
+      "elapsed_s": 0.873
+    },
+    {
+      "id": "move_when",
+      "query": "我什么时候搬家？",
+      "targets": [
+        "下个月十五号"
+      ],
+      "baseline_hit": false,
+      "judge_hit": false,
+      "judge_called": true,
+      "selected": [
+        "搬家改到滨江区"
+      ],
+      "model_reply": "{\"choices\": [1], \"sufficient\": false, \"conflict\": false, \"reason\": \"仅一条搬家相关，无具体时间\"}",
+      "usage": {
+        "prompt_tokens": 260,
+        "completion_tokens": 31,
+        "total_tokens": 291,
+        "prompt_tokens_details": {
+          "cached_tokens": 126
+        },
+        "prompt_cache_hit_tokens": 126,
+        "prompt_cache_miss_tokens": 134
+      },
+      "elapsed_s": 0.798
+    },
+    {
+      "id": "move_where",
+      "query": "我搬到哪里？",
+      "targets": [
+        "西湖区",
+        "滨江区"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "下个月十五号搬到杭州西湖区",
+        "之前搬到杭州西湖区那件事怎么样"
+      ],
+      "model_reply": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": false, \"reason\": \"候选1、2涉及搬家地点\"}",
+      "usage": {
+        "prompt_tokens": 264,
+        "completion_tokens": 33,
+        "total_tokens": 297,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 136
+      },
+      "elapsed_s": 0.76
+    },
+    {
+      "id": "move_binjiang",
+      "query": "搬家改到哪个区？",
+      "targets": [
+        "滨江区"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.001
+    },
+    {
+      "id": "move_old_thing",
+      "query": "之前搬到杭州西湖区那件事怎么样？",
+      "targets": [
+        "西湖区",
+        "滨江区"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "下个月十五号搬到杭州西湖区"
+      ],
+      "model_reply": "{\"choices\": [1], \"sufficient\": true, \"conflict\": false, \"reason\": \"候选1涉及搬杭州西湖区\"}",
+      "usage": {
+        "prompt_tokens": 269,
+        "completion_tokens": 30,
+        "total_tokens": 299,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 141
+      },
+      "elapsed_s": 1.067
+    },
+    {
+      "id": "move_final",
+      "query": "搬家最后定在哪？",
+      "targets": [
+        "滨江区"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "搬家改到滨江区"
+      ],
+      "model_reply": "{\"choices\": [1], \"sufficient\": false, \"conflict\": false, \"reason\": \"仅一条搬家地点候选，无最终确认\"}",
+      "usage": {
+        "prompt_tokens": 261,
+        "completion_tokens": 32,
+        "total_tokens": 293,
+        "prompt_tokens_details": {
+          "cached_tokens": 127
+        },
+        "prompt_cache_hit_tokens": 127,
+        "prompt_cache_miss_tokens": 134
+      },
+      "elapsed_s": 1.287
+    },
+    {
+      "id": "later_mix",
+      "query": "后来呢？",
+      "targets": [
+        "滨江区",
+        "7391",
+        "内牛五方"
+      ],
+      "baseline_hit": false,
+      "judge_hit": false,
+      "judge_called": true,
+      "selected": [],
+      "model_reply": "{\"choices\": [], \"sufficient\": false, \"conflict\": false, \"reason\": \"候选均与门禁暗号后续无关\"}",
+      "usage": {
+        "prompt_tokens": 256,
+        "completion_tokens": 30,
+        "total_tokens": 286,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 256
+      },
+      "elapsed_s": 0.997
+    },
+    {
+      "id": "that_thing",
+      "query": "那件事后来怎么样了？",
+      "targets": [
+        "滨江区",
+        "西湖区",
+        "内牛五方"
+      ],
+      "baseline_hit": false,
+      "judge_hit": false,
+      "judge_called": true,
+      "selected": [],
+      "model_reply": "{\"choices\": [], \"sufficient\": false, \"conflict\": false, \"reason\": \"候选均未涉及所问事项\"}",
+      "usage": {
+        "prompt_tokens": 264,
+        "completion_tokens": 28,
+        "total_tokens": 292,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 136
+      },
+      "elapsed_s": 0.887
+    },
+    {
+      "id": "that_thing_2",
+      "query": "之前那件事呢？",
+      "targets": [
+        "滨江区",
+        "西湖区",
+        "内牛五方"
+      ],
+      "baseline_hit": false,
+      "judge_hit": false,
+      "judge_called": true,
+      "selected": [],
+      "model_reply": "{\"choices\": [], \"sufficient\": false, \"conflict\": false, \"reason\": \"无候选对应之前那件事\"}",
+      "usage": {
+        "prompt_tokens": 264,
+        "completion_tokens": 27,
+        "total_tokens": 291,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 136
+      },
+      "elapsed_s": 0.984
+    },
+    {
+      "id": "pizza",
+      "query": "我更喜欢吃蜜雪冰城的什么？",
+      "targets": [
+        "披萨"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "行 明天你先去蜜雪冰城买一杯星冰乐",
+        "我更喜欢蜜雪冰城的披萨 你呢"
+      ],
+      "model_reply": "{\"choices\": [1, 3], \"sufficient\": false, \"conflict\": false, \"reason\": \"候选提及蜜雪冰城但非明确喜好\"}",
+      "usage": {
+        "prompt_tokens": 260,
+        "completion_tokens": 36,
+        "total_tokens": 296,
+        "prompt_tokens_details": {
+          "cached_tokens": 126
+        },
+        "prompt_cache_hit_tokens": 126,
+        "prompt_cache_miss_tokens": 134
+      },
+      "elapsed_s": 0.899
+    },
+    {
+      "id": "mixue_or_mcd",
+      "query": "我喜欢蜜雪冰城还是麦当劳？",
+      "targets": [
+        "蜜雪冰城",
+        "麦当劳"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.002
+    },
+    {
+      "id": "lime_code",
+      "query": "青柠计划的门禁暗号是什么？",
+      "targets": [
+        "7391"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.001
+    },
+    {
+      "id": "lime_code_short",
+      "query": "青柠计划的暗号是多少？",
+      "targets": [
+        "7391"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "记住：青柠计划的门禁暗号是7391",
+        "记住一个暗号：蓝鲸7391"
+      ],
+      "model_reply": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": true, \"reason\": \"两条暗号版本不同\"}",
+      "usage": {
+        "prompt_tokens": 272,
+        "completion_tokens": 31,
+        "total_tokens": 303,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 144
+      },
+      "elapsed_s": 1.205
+    },
+    {
+      "id": "code_what",
+      "query": "门禁暗号是多少？",
+      "targets": [
+        "7391"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "记住：青柠计划的门禁暗号是7391",
+        "记住一个暗号：蓝鲸7391"
+      ],
+      "model_reply": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": true, \"reason\": \"两条暗号版本不同\"}",
+      "usage": {
+        "prompt_tokens": 271,
+        "completion_tokens": 31,
+        "total_tokens": 302,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 143
+      },
+      "elapsed_s": 1.082
+    },
+    {
+      "id": "thursday_eat",
+      "query": "疯狂星期四吃什么？",
+      "targets": [
+        "麦当劳"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.002
+    },
+    {
+      "id": "tomorrow_drink",
+      "query": "明天喝什么？",
+      "targets": [
+        "星冰乐"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "行 明天你先去蜜雪冰城买一杯星冰乐",
+        "明天疯狂星期四要不要吃麦当劳",
+        "好 那明天还是去吃麦当劳的内牛五方吧",
+        "行 那明天吃巧克力锅包肉"
+      ],
+      "model_reply": "{\"choices\": [1, 2, 3, 4], \"sufficient\": false, \"conflict\": true, \"reason\": \"多个明天饮食版本并存\"}",
+      "usage": {
+        "prompt_tokens": 269,
+        "completion_tokens": 37,
+        "total_tokens": 306,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 141
+      },
+      "elapsed_s": 0.986
+    },
+    {
+      "id": "pork_flavor",
+      "query": "锅包肉是什么口味？",
+      "targets": [
+        "巧克力"
+      ],
+      "baseline_hit": false,
+      "judge_hit": false,
+      "judge_called": true,
+      "selected": [],
+      "model_reply": "{\"choices\": [], \"sufficient\": false, \"conflict\": false, \"reason\": \"无候选涉及锅包肉口味\"}",
+      "usage": {
+        "prompt_tokens": 266,
+        "completion_tokens": 28,
+        "total_tokens": 294,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 138
+      },
+      "elapsed_s": 1.106
+    },
+    {
+      "id": "fifteenth_plan",
+      "query": "我下个月十五号做什么？",
+      "targets": [
+        "搬家"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.002
+    },
+    {
+      "id": "blue_what",
+      "query": "蓝鲸7391是什么？",
+      "targets": [
+        "暗号",
+        "7391"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.001
+    },
+    {
+      "id": "apple_past",
+      "query": "我之前说喜欢吃什么？",
+      "targets": [
+        "苹果"
+      ],
+      "baseline_hit": false,
+      "judge_hit": false,
+      "judge_called": true,
+      "selected": [],
+      "model_reply": "{\"choices\": [1, 2, 3, 5], \"sufficient\": true, \"conflict\": true, \"reason\": \"多条饮食偏好，含不同版本\"}",
+      "usage": {
+        "prompt_tokens": 255,
+        "completion_tokens": 39,
+        "total_tokens": 294,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 255
+      },
+      "elapsed_s": 1.001
+    },
+    {
+      "id": "pizza_shop",
+      "query": "我更喜欢的披萨是哪家的？",
+      "targets": [
+        "蜜雪冰城"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.001
+    },
+    {
+      "id": "niuwu_shop",
+      "query": "内牛五方是哪家店的？",
+      "targets": [
+        "麦当劳"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.002
+    },
+    {
+      "id": "move_hangzhou",
+      "query": "我搬家到杭州哪个区？",
+      "targets": [
+        "西湖区"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "下个月十五号搬到杭州西湖区",
+        "搬家改到滨江区",
+        "之前搬到杭州西湖区那件事怎么样"
+      ],
+      "model_reply": "{\"choices\": [1, 2, 3], \"sufficient\": true, \"conflict\": true, \"reason\": \"西湖区与滨江区版本并存\"}",
+      "usage": {
+        "prompt_tokens": 259,
+        "completion_tokens": 36,
+        "total_tokens": 295,
+        "prompt_tokens_details": {
+          "cached_tokens": 125
+        },
+        "prompt_cache_hit_tokens": 125,
+        "prompt_cache_miss_tokens": 134
+      },
+      "elapsed_s": 0.986
+    },
+    {
+      "id": "move_binjiang_yes",
+      "query": "我搬家到滨江区了吗？",
+      "targets": [
+        "滨江区"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.001
+    },
+    {
+      "id": "buy_first",
+      "query": "明天先买什么？",
+      "targets": [
+        "星冰乐"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "行 明天你先去蜜雪冰城买一杯星冰乐",
+        "明天疯狂星期四要不要吃麦当劳",
+        "好 那明天还是去吃麦当劳的内牛五方吧",
+        "行 那明天吃巧克力锅包肉"
+      ],
+      "model_reply": "{\"choices\": [1, 2, 3, 4], \"sufficient\": false, \"conflict\": true, \"reason\": \"多个明天饮食版本并存\"}",
+      "usage": {
+        "prompt_tokens": 270,
+        "completion_tokens": 37,
+        "total_tokens": 307,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 142
+      },
+      "elapsed_s": 1.04
+    },
+    {
+      "id": "delivery_again",
+      "query": "到店吃还是点外卖？",
+      "targets": [
+        "外卖",
+        "到店"
+      ],
+      "baseline_hit": false,
+      "judge_hit": false,
+      "judge_called": true,
+      "selected": [],
+      "model_reply": "{\"choices\": [1, 2, 5], \"sufficient\": false, \"conflict\": false, \"reason\": \"候选涉及外卖或到店及麦当劳，但无明确结论\"}",
+      "usage": {
+        "prompt_tokens": 264,
+        "completion_tokens": 43,
+        "total_tokens": 307,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 136
+      },
+      "elapsed_s": 1.062
+    },
+    {
+      "id": "blue_short",
+      "query": "暗号蓝鲸是多少？",
+      "targets": [
+        "7391",
+        "蓝鲸7391"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "记住一个暗号：蓝鲸7391"
+      ],
+      "model_reply": "{\"choices\": [2], \"sufficient\": true, \"conflict\": false, \"reason\": \"候选2直接给出蓝鲸暗号7391\"}",
+      "usage": {
+        "prompt_tokens": 271,
+        "completion_tokens": 33,
+        "total_tokens": 304,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 143
+      },
+      "elapsed_s": 0.606
+    },
+    {
+      "id": "code_before",
+      "query": "之前说的门禁暗号？",
+      "targets": [
+        "7391"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "记住：青柠计划的门禁暗号是7391",
+        "记住一个暗号：蓝鲸7391"
+      ],
+      "model_reply": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": true, \"reason\": \"两条暗号版本不同\"}",
+      "usage": {
+        "prompt_tokens": 272,
+        "completion_tokens": 31,
+        "total_tokens": 303,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 144
+      },
+      "elapsed_s": 0.647
+    },
+    {
+      "id": "move_old_where",
+      "query": "之前搬家到哪个区？",
+      "targets": [
+        "西湖区",
+        "滨江区"
+      ],
+      "baseline_hit": false,
+      "judge_hit": true,
+      "judge_called": true,
+      "selected": [
+        "搬家改到滨江区",
+        "之前搬到杭州西湖区那件事怎么样"
+      ],
+      "model_reply": "{\"choices\": [1, 2], \"sufficient\": true, \"conflict\": true, \"reason\": \"两候选对搬家区说法不同\"}",
+      "usage": {
+        "prompt_tokens": 263,
+        "completion_tokens": 33,
+        "total_tokens": 296,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 135
+      },
+      "elapsed_s": 1.218
+    },
+    {
+      "id": "food_tomorrow",
+      "query": "我明天到底吃什么？",
+      "targets": [
+        "内牛五方",
+        "麦当劳"
+      ],
+      "baseline_hit": true,
+      "judge_hit": true,
+      "judge_called": false,
+      "selected": [],
+      "model_reply": "",
+      "usage": null,
+      "elapsed_s": 0.002
+    }
+  ]
+}

@@ -31,10 +31,7 @@ class TestHookContract(unittest.TestCase):
         self.assertEqual(self.registry.entries['capture_private'][0]['options'],
                          {'type': 'PRIVATE_MESSAGE'})
         self.assertEqual(self.registry.kinds('add_memory_context'), ['on_llm_request'])
-        self.assertEqual(self.registry.kinds('dlm'), ['command', 'event_message_type'])
-        commands = [entry for entry in self.registry.entries['dlm']
-                    if entry['kind'] == 'command']
-        self.assertEqual(commands[0]['options'], {'name': 'dlm'})
+        self.assertEqual(self.registry.kinds('dlm'), [], 'v1.0.18 起 /dlm 不再注册为聊天命令')
 
     def test_hook_signatures_match_astrbot_calling_convention(self):
         cls = self.module.DigitalMemoryStore
@@ -69,7 +66,8 @@ class TestIntegrationChain(unittest.TestCase):
         self.assertTrue(capture['media_chain_skipped'], '非文本链必须被拒且不猜测')
         self.assertTrue(capture['stranger_ignored'], '非白名单发送者必须被拒')
         self.assertTrue(capture['group_ignored'], '群聊消息必须被拒')
-        self.assertEqual(capture['gap_records'], 0, '纯文本被拒不应误报缺口')
+        self.assertEqual(capture['gap_records'], 0, '非纯文本跳过不应伪装成采集缺口')
+        self.assertEqual(capture['unsupported'], 1, '非纯文本必须计入独立的 skipped/unsupported 计数')
 
     def test_injection_is_visible_within_budget_and_temporary(self):
         injection = self.facts['injection']
@@ -107,7 +105,7 @@ class TestIntegrationChain(unittest.TestCase):
 
     def test_contract_snapshot_is_part_of_the_evidence(self):
         methods = {row['method'] for row in self.facts['contract']}
-        self.assertEqual(methods, {'capture_private', 'add_memory_context', 'dlm'})
+        self.assertEqual(methods, {'capture_private', 'add_memory_context'})
 
 
 class TestCaptureEdgeCases(unittest.TestCase):

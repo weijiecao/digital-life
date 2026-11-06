@@ -58,6 +58,19 @@ def accept_selection(query, selected):
     return all(shares_pair(query, item['content']) for item in selected)
 
 
+def filter_selection(query, selected):
+    """多选时逐条过滤：保留有字面关联的候选，避免一条无关拖垮整组。"""
+    if is_pure_anaphor(query):
+        return list(selected)
+    return [item for item in selected if shares_pair(query, item['content'])]
+
+
+def _candidate_label(item):
+    """事件线候选带事件标题；时间线候选不带，避免把联想说成事件归属。"""
+    title = item.get('event_title') if isinstance(item, dict) else None
+    return ('[%s] ' % title) if title else ''
+
+
 def build_prompt(query, turns, candidates):
     """拼一个单字符串提示（AstrBot 的 llm_generate 只接受 prompt）。"""
     lines = [SYSTEM_RULES, '', '当前问题：' + str(query), '最近对话：']
@@ -67,7 +80,7 @@ def build_prompt(query, turns, candidates):
         lines.append('-（无）')
     lines.append('候选记忆：')
     for index, item in enumerate(candidates, 1):
-        lines.append('%d. %s' % (index, item['content']))
+        lines.append('%d. %s%s' % (index, _candidate_label(item), item['content']))
     return '\n'.join(lines)
 
 
@@ -128,7 +141,8 @@ def format_hint(selected, conflict):
         return ''
     lines = ['[LLM_JUDGE_CANDIDATES] 以下是可能相关的未关联原话（系统候选筛选，未确认）：']
     for index, item in enumerate(selected, 1):
-        lines.append('%d. %s（记录时间：%s）' % (index, item['content'], item.get('recorded_at', '未知')))
+        lines.append('%d. %s%s（记录时间：%s）' % (
+            index, _candidate_label(item), item['content'], item.get('recorded_at', '未知')))
     if conflict:
         lines.append('注意：候选之间存在改动或冲突，新旧关系与当前状态均未确认。')
     else:

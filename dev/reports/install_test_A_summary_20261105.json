@@ -1,0 +1,24 @@
+﻿{
+    "stage":  "C:\\Users\\205\\Desktop\\数字生命\\dist-test-install-20261105_170126",
+    "zip":  "C:\\Users\\205\\Desktop\\数字生命\\dist-test-install-20261105_170126\\astrbot_plugin_digital_memory_store-1.0.16.zip",
+    "sha":  "AF19032D4F250B3FB3F0CC3701C74DFB401DE82545009B1B907C4CF98110644A",
+    "root":  "C:\\Users\\205\\AppData\\Local\\Temp\\DLM-InstallTest-20261105_170132",
+    "self_ok":  true,
+    "self_version":  "1.0.16",
+    "self_schema_keys":  36,
+    "self_config":  {
+                        "enabled":  true,
+                        "automatic":  true,
+                        "ids":  "123456",
+                        "budget":  450,
+                        "threshold":  60
+                    },
+    "off_ok":  true,
+    "off_enabled":  false,
+    "off_always":  false,
+    "backups":  "astrbot_plugin_digital_memory_store_20261105T170135",
+    "rollback_ok":  true,
+    "rollback_problems":  [
+
+                          ]
+}

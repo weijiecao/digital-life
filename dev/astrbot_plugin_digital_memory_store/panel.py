@@ -1,12 +1,16 @@
 """控制面板后端：存储统计、备份轮转、维护、归档导出。"""
 
 import json
+import re
 import shutil
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from .recovery import cleanup_sidecars
+
 DB_NAME = 'manual_test_memory.sqlite3'
+BACKUP_NAME = re.compile(r'memory_\d{8}T\d{6}_[0-9a-f]{8}\.sqlite3')
 DEFAULT_PER_MESSAGE = 11 * 1024
 STANDARD_PER_MESSAGE = 11 * 1024
 OPTIMIZED_PER_MESSAGE = int(4.5 * 1024)
@@ -134,17 +138,25 @@ def create_backup(store):
 def rotate_backups(root, keep=7):
     keep = max(1, min(int(keep), 100))
     folder = Path(root) / 'backups'
-    items = sorted(folder.glob('*'), key=lambda item: item.stat().st_mtime, reverse=True) \
+    # 只把真正的备份文件算进 keep；-wal/-shm 不是备份，不能挤掉 .sqlite3。
+    items = sorted((path for path in folder.glob('*')
+                    if path.is_file() and BACKUP_NAME.fullmatch(path.name)),
+                   key=lambda item: item.stat().st_mtime, reverse=True) \
         if folder.is_dir() else []
     removed = []
+    cleaned = []
     for path in items[keep:]:
-        if path.is_file():
-            try:
-                path.unlink()
-                removed.append(path.name)
-            except OSError:
-                continue
-    return {'kept': keep, 'removed': removed, 'remaining': len(list_backups(root))}
+        try:
+            path.unlink()
+            removed.append(path.name)
+            cleaned.extend(cleanup_sidecars(path))
+        except OSError:
+            continue
+    # 保留的备份也清一次旁文件，兼容旧版本留下的残留。
+    for path in items[:keep]:
+        cleaned.extend(cleanup_sidecars(path))
+    return {'kept': keep, 'removed': removed, 'cleaned': cleaned,
+            'remaining': len(list_backups(root))}
 
 
 def checkpoint(store):

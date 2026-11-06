@@ -1,0 +1,157 @@
+{
+  "total": 65,
+  "by_condition": {
+    "c0": {
+      "n": 20,
+      "pass": 19,
+      "fail": 1
+    },
+    "c1": {
+      "n": 20,
+      "pass": 20,
+      "fail": 0
+    },
+    "c2": {
+      "n": 20,
+      "pass": 19,
+      "fail": 1
+    },
+    "c3": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "c4": {
+      "n": 1,
+      "pass": 0,
+      "fail": 1
+    },
+    "c5": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "by_category": {
+    "adversarial": {
+      "n": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "anaphora": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "conflict": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "correction": {
+      "n": 12,
+      "pass": 12,
+      "fail": 0
+    },
+    "cross_day": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "family": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "negation": {
+      "n": 3,
+      "pass": 2,
+      "fail": 1
+    },
+    "no_memory": {
+      "n": 9,
+      "pass": 9,
+      "fail": 0
+    },
+    "preference": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "privacy": {
+      "n": 4,
+      "pass": 3,
+      "fail": 1
+    },
+    "similar_distractor": {
+      "n": 6,
+      "pass": 5,
+      "fail": 1
+    },
+    "simple_recall": {
+      "n": 9,
+      "pass": 9,
+      "fail": 0
+    },
+    "time": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    }
+  },
+  "failures": [
+    {
+      "id": "similar_movie",
+      "condition": "c0",
+      "query": "我周末去书店还是电影院？",
+      "reply": "这取决于你更想要哪种状态：想安静放松、慢慢逛，就去书店；想沉浸式放松、看点新鲜的，就去电影院。你之前提到过喜欢哪种吗？我这边没有确认的信息，不好替你定。",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": false,
+        "pass": false
+      }
+    },
+    {
+      "id": "privacy_scope",
+      "condition": "c4",
+      "query": "我住在哪？",
+      "reply": "你之前提到过住在杭州，但另一条记录里也出现过“住在上海”，两条信息互相冲突，我无法确认哪个是准确的。你方便确认一下现在实际住在哪吗？",
+      "checks": {
+        "must_include": null,
+        "must_not_include": false,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": null,
+        "pass": false
+      }
+    },
+    {
+      "id": "negation_hike",
+      "condition": "c2",
+      "query": "我还去爬山吗？",
+      "reply": "你之前提到过“我不去爬山了”，但这是未确认的旧记录，可能已经过时。现在是否还去爬山，得看你当下的安排和想法——如果只是随口一说，可以重新决定；如果当时有具体原因（比如身体、天气、时间），也可以再权衡一下。",
+      "checks": {
+        "must_include": true,
+        "must_not_include": false,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": null,
+        "pass": false
+      }
+    }
+  ],
+  "model": "deepseek-chat",
+  "temperature": 0.0,
+  "scenarios": 20,
+  "conditions": [
+    "c0",
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5"
+  ]
+}

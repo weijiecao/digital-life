@@ -1,0 +1,100 @@
+{
+  "total": 20,
+  "by_condition": {
+    "c0": {
+      "n": 20,
+      "pass": 19,
+      "fail": 1
+    }
+  },
+  "by_category": {
+    "adversarial": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "anaphora": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "conflict": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "correction": {
+      "n": 3,
+      "pass": 2,
+      "fail": 1
+    },
+    "cross_day": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "family": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "negation": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "no_memory": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "preference": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "privacy": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    "similar_distractor": {
+      "n": 2,
+      "pass": 2,
+      "fail": 0
+    },
+    "simple_recall": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "time": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "failures": [
+    {
+      "id": "cancel_hike",
+      "condition": "c0",
+      "query": "周六还去爬山吗？",
+      "reply": "我这边没有你之前提到过爬山安排的记录，所以不确定你指的是哪次。你原计划是哪个周六、去哪座山？告诉我细节，我可以帮你一起确认。",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": true,
+        "no_fabricated_prior": false,
+        "pass": false
+      }
+    }
+  ],
+  "model": "deepseek-chat",
+  "temperature": 0.0,
+  "scenarios": 20,
+  "conditions": [
+    "c0"
+  ]
+}

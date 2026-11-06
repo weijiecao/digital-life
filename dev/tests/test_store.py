@@ -3456,4 +3456,19 @@ class TestStore(unittest.TestCase):
             self.assertEqual(b.show(s,'周日')[0]['content'],' 周日 ')
             self.assertFalse(b.pending(s));b.close()
 
+    def test_delete_capture_and_scope_remove_plaintext(self):
+        with tempfile.TemporaryDirectory() as d:
+            a=Store(d,'',FakeEncoder);s=a.scope('1','s')
+            self.assertTrue(a.capture(s,'m1','alpha secret'))
+            self.assertTrue(a.capture(s,'m2','beta secret'))
+            self.assertTrue(a.delete_capture(s,1))
+            self.assertEqual(a.flow.db.execute(
+                'SELECT COUNT(*) FROM dl_capture WHERE scope=?',(s,)).fetchone()[0],1)
+            self.assertNotIn(b'alpha secret', (Path(d)/'manual_test_memory.sqlite3').read_bytes())
+            self.assertEqual(a.delete_scope(s),1)
+            self.assertEqual(a.flow.db.execute(
+                'SELECT COUNT(*) FROM dl_capture WHERE scope=?',(s,)).fetchone()[0],0)
+            self.assertNotIn(b'beta secret', (Path(d)/'manual_test_memory.sqlite3').read_bytes())
+            a.close()
+
 if __name__=='__main__': unittest.main()

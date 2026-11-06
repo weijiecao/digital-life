@@ -9,7 +9,7 @@ import unittest
 from .test_plugin import Event, m
 
 from astrbot_plugin_digital_memory_store.model_judge import (
-    build_prompt, format_hint, parse_reply)
+    build_prompt, filter_selection, format_hint, parse_reply)
 
 
 class FakeContext:
@@ -97,10 +97,12 @@ class TestGate(unittest.TestCase):
         self.assertFalse(accept_selection('之前那件事有什么安排？', [candidates[1]]))
         self.assertTrue(accept_selection('后来呢？', [candidates[1]]))
         self.assertFalse(accept_selection('后来呢？', []))
+        filtered = filter_selection('青岛那边怎么安排？', [candidates[0], candidates[1]])
+        self.assertEqual(filtered, [candidates[0]], '多选时逐条过滤，保留有字面关联的')
 
 
 class TestJudgeIntegration(unittest.TestCase):
-    def _run(self, cfg, context, text, preload=True, second_query=None):
+    def _run(self, cfg, context, text, preload=True, second_query=None, store_state=None):
         async def go(root):
             m.get_astrbot_data_path = lambda: root
             p = m.DigitalMemoryStore(None, cfg)
@@ -114,6 +116,8 @@ class TestJudgeIntegration(unittest.TestCase):
                     p.pool, p._capture_work, '42', 'test:FriendMessage:42', '2',
                     '周末在家整理书架', '2025-01-02T12:00:00+00:00')
                 await loop.run_in_executor(p.pool, p._auto_work)
+            if store_state and p.store is not None:
+                p.store.embedder_state = store_state
             event = Event(text)
             event.message_obj.message_id = 'q1'
             request = types.SimpleNamespace(extra_user_content_parts=[])
@@ -166,6 +170,50 @@ class TestJudgeIntegration(unittest.TestCase):
         self.assertEqual(context.calls, [], '本地有结果时不得调用模型')
         self.assertTrue(parts)
 
+    def test_background_only_triggers_judge(self):
+        context = FakeContext('{"choices":[1],"sufficient":true,"conflict":false,"reason":"匹配"}')
+        parts, _ = self._run(
+            _cfg(always_context_enabled=True, model_judge_enabled=True,
+                 judge_provider_id='test'),
+            context, '后来呢？')
+        self.assertEqual(len(context.calls), 1, '背景包不是本地命中，应允许模型介入')
+        self.assertTrue(parts)
+        self.assertIn('计划去青岛海边散步', parts[0])
+        self.assertNotIn('背景上下文', parts[0], '命中候选后应替换背景包')
+
+    def test_background_without_anaphora_skips_judge(self):
+        context = FakeContext('{"choices":[1],"sufficient":true,"conflict":false,"reason":"x"}')
+        parts, _ = self._run(
+            _cfg(always_context_enabled=True, model_judge_enabled=True,
+                 judge_provider_id='test'),
+            context, '今天天气怎么样')
+        self.assertEqual(context.calls, [], '非短指代追问不得因为背景包而调用模型')
+        self.assertTrue(parts, '模型未介入时应保留背景包')
+
+    def test_loading_keeps_background_without_calling_judge(self):
+        context = FakeContext('{"choices":[1],"sufficient":true,"conflict":false,"reason":"x"}')
+        parts, _ = self._run(
+            _cfg(always_context_enabled=True, model_judge_enabled=True,
+                 judge_provider_id='test'),
+            context, '后来呢？', store_state='loading')
+        self.assertEqual(context.calls, [], '本地模型加载中不应改走远程模型')
+        self.assertTrue(parts, '加载中应保留背景包')
+
+    def test_recent_buffer_cap_and_anchor(self):
+        p = m.DigitalMemoryStore(None, _cfg())
+        identity = ('42', 'test:FriendMessage:42')
+        try:
+            for index in range(12):
+                p._remember(identity, '第%d条有内容的消息' % index, 'm%d' % index)
+            self.assertEqual(len(p.recent_messages[identity]), 10)
+            self.assertEqual(p._anchor_for(identity, 'm12', '后来呢？'),
+                             '第11条有内容的消息')
+            turns = p._recent_turns(identity, 'm12', '后来呢？', limit=8)
+            self.assertEqual(len(turns), 8)
+            self.assertEqual(turns[-1], '第11条有内容的消息')
+        finally:
+            p.pool.shutdown(wait=False)
+
     def test_timeout_falls_back_silently(self):
         context = FakeContext('{"choices":[1],"sufficient":true,"conflict":false,"reason":"x"}',
                               delay=3.0)
@@ -203,6 +251,66 @@ class TestJudgeCandidates(unittest.TestCase):
                 self.assertEqual(len(rows), 3)
                 self.assertIn('青岛', rows[-1]['content'], '字面重合的原话应排在前面')
                 self.assertTrue(all('seq' in row and 'content' in row for row in rows))
+            finally:
+                store.close()
+
+    def test_approved_event_sources_are_candidates(self):
+        from .test_store import FakeEncoder
+        from astrbot_plugin_digital_memory_store.storage import Store
+        with tempfile.TemporaryDirectory() as d:
+            store = Store(d, '', FakeEncoder)
+            try:
+                scope = store.scope('1', 's')
+                with store.flow.db as db:
+                    db.execute("INSERT INTO events(scope,id,title) VALUES(?,?,?)",
+                               (scope, 'ev-1', '青岛旅行'))
+                    db.execute("INSERT INTO messages(scope,id,origin,speaker,kind,content,recorded_at) "
+                               "VALUES(?,?,?,?,?,?,?)",
+                               (scope, 'src-1', 'test:approved:1', 'user', 'user_message',
+                                '青岛海边散步的安排', '2025-02-01T12:00:00+00:00'))
+                    db.execute("INSERT INTO membership(scope,event_id,message_id) VALUES(?,?,?)",
+                               (scope, 'ev-1', 'src-1'))
+                rows = store.judge_candidates(scope, '青岛海边散步怎么样？', limit=5)
+                self.assertTrue(any(row.get('kind') == 'approved' and '青岛' in row['content']
+                                    for row in rows))
+                approved = [row for row in rows if row.get('kind') == 'approved'][0]
+                self.assertEqual(approved['event_title'], '青岛旅行')
+                self.assertEqual(approved['source_id'], 'src-1')
+            finally:
+                store.close()
+
+    def test_event_line_reaches_older_event_source(self):
+        from .test_store import FakeEncoder
+        from astrbot_plugin_digital_memory_store.storage import Store
+        with tempfile.TemporaryDirectory() as d:
+            store = Store(d, '', FakeEncoder)
+            try:
+                scope = store.scope('1', 's')
+                with store.flow.db as db:
+                    db.execute("INSERT INTO events(scope,id,title) VALUES(?,?,?)",
+                               (scope, 'ev-old', '旅行计划'))
+                    db.execute("INSERT INTO dl_event_alias(scope,alias,event_id) VALUES(?,?,?)",
+                               (scope, '青岛行程', 'ev-old'))
+                    db.execute("INSERT INTO messages(scope,id,origin,speaker,kind,content,recorded_at) "
+                               "VALUES(?,?,?,?,?,?,?)",
+                               (scope, 'src-old', 'test:old:1', 'user', 'user_message',
+                                '青岛海边散步的旧安排', '2020-01-01T12:00:00+00:00'))
+                    db.execute("INSERT INTO membership(scope,event_id,message_id) VALUES(?,?,?)",
+                               (scope, 'ev-old', 'src-old'))
+                    db.execute("INSERT INTO events(scope,id,title) VALUES(?,?,?)",
+                               (scope, 'ev-recent', '近期事件'))
+                    rows = []
+                    for index in range(105):
+                        rows.append((scope, 'src-r%d' % index, 'test:recent:%d' % index,
+                                     'user', 'user_message', '近期普通内容 %d' % index,
+                                     '2025-03-%02dT12:00:00+00:00' % (index % 28 + 1)))
+                    db.executemany("INSERT INTO messages(scope,id,origin,speaker,kind,content,recorded_at) "
+                                   "VALUES(?,?,?,?,?,?,?)", rows)
+                    db.executemany("INSERT INTO membership(scope,event_id,message_id) VALUES(?,?,?)",
+                                   [(scope, 'ev-recent', 'src-r%d' % index) for index in range(105)])
+                rows = store.judge_candidates(scope, '青岛行程怎么样？', limit=5)
+                self.assertTrue(any(row.get('line') == 'event' and '旧安排' in row['content']
+                                    for row in rows), rows)
             finally:
                 store.close()
 

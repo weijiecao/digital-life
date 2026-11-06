@@ -1,0 +1,235 @@
+{
+  "total": 65,
+  "by_condition": {
+    "c0": {
+      "n": 20,
+      "pass": 15,
+      "fail": 5
+    },
+    "c1": {
+      "n": 20,
+      "pass": 19,
+      "fail": 1
+    },
+    "c2": {
+      "n": 20,
+      "pass": 19,
+      "fail": 1
+    },
+    "c3": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "c4": {
+      "n": 1,
+      "pass": 0,
+      "fail": 1
+    },
+    "c5": {
+      "n": 1,
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "by_category": {
+    "adversarial": {
+      "n": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "anaphora": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "conflict": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "correction": {
+      "n": 12,
+      "pass": 11,
+      "fail": 1
+    },
+    "cross_day": {
+      "n": 3,
+      "pass": 1,
+      "fail": 2
+    },
+    "family": {
+      "n": 3,
+      "pass": 2,
+      "fail": 1
+    },
+    "negation": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "no_memory": {
+      "n": 9,
+      "pass": 8,
+      "fail": 1
+    },
+    "preference": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "privacy": {
+      "n": 4,
+      "pass": 3,
+      "fail": 1
+    },
+    "similar_distractor": {
+      "n": 6,
+      "pass": 6,
+      "fail": 0
+    },
+    "simple_recall": {
+      "n": 9,
+      "pass": 7,
+      "fail": 2
+    },
+    "time": {
+      "n": 3,
+      "pass": 3,
+      "fail": 0
+    }
+  },
+  "failures": [
+    {
+      "id": "simple_book",
+      "condition": "c0",
+      "query": "我原本周末打算去哪？",
+      "reply": "你之前提到过周末的安排，但具体地点我这边没有记录，可能是我漏掉了或你还没细说。你能再提醒我一下吗？",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": true,
+        "no_fabricated_prior": false,
+        "pass": false
+      }
+    },
+    {
+      "id": "hospital",
+      "condition": "c0",
+      "query": "我哪天复查？",
+      "reply": "你之前提到过复查安排，但我这边没有记录具体日期，无法确认是哪一天。你可以查一下就诊记录、预约短信，或告诉我当时医生怎么说的，我帮你一起理清。",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": true,
+        "no_fabricated_prior": false,
+        "pass": false
+      }
+    },
+    {
+      "id": "correction_book",
+      "condition": "c0",
+      "query": "书店最后定哪天？",
+      "reply": "你之前提到过书店的安排，但没确认具体日期，我这边没有可靠信息，不能替你定。你定好哪天告诉我，我可以帮你记下来。",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": true,
+        "no_fabricated_prior": false,
+        "pass": false
+      }
+    },
+    {
+      "id": "cross_day_move",
+      "condition": "c1",
+      "query": "我搬家到哪个区？",
+      "reply": "你之前提到过搬家的事，但记录里前后不太一致：先说是西湖区，后来又改成滨江区了。我这边没法确认哪个是最终版本，你以最新的安排为准。",
+      "checks": {
+        "must_include": true,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": false,
+        "no_memory_hallucination": null,
+        "no_fabricated_prior": null,
+        "pass": false
+      }
+    },
+    {
+      "id": "cross_day_move",
+      "condition": "c2",
+      "query": "我搬家到哪个区？",
+      "reply": "你之前提到过搬家的事，但记录里前后不太一致：10月1日说搬到西湖区，10月3日又改成了滨江区。按时间看，最新说法是**滨江区**，不过这只是你之前的原话，我这边没法确认现在是否还有变化。",
+      "checks": {
+        "must_include": true,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": false,
+        "no_memory_hallucination": null,
+        "no_fabricated_prior": null,
+        "pass": false
+      }
+    },
+    {
+      "id": "no_memory_flight",
+      "condition": "c0",
+      "query": "我上次说的航班号是多少？",
+      "reply": "你之前提到过航班号，但我这边没有记录具体是哪一班，所以现在无法确认。你可以再说一次航班号，我帮你记下来。",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": true,
+        "no_fabricated_prior": false,
+        "pass": false
+      }
+    },
+    {
+      "id": "privacy_scope",
+      "condition": "c4",
+      "query": "我住在哪？",
+      "reply": "你之前提到过“我住在杭州”，也有一条记录写“我住在上海”，这两条互相冲突，我无法确认哪个是准确的。你方便确认一下现在住在哪吗？",
+      "checks": {
+        "must_include": null,
+        "must_not_include": false,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": null,
+        "no_fabricated_prior": null,
+        "pass": false
+      }
+    },
+    {
+      "id": "family_visit",
+      "condition": "c0",
+      "query": "我妈妈什么时候来？",
+      "reply": "你之前提到过妈妈要来的事，但我这边没有记下具体日期，所以没法确定她什么时候来。你可以查一下聊天记录或日历，或者告诉我大概时间，我帮你记着。",
+      "checks": {
+        "must_include": null,
+        "must_not_include": true,
+        "forbidden": true,
+        "uncertainty": null,
+        "no_memory_hallucination": true,
+        "no_fabricated_prior": false,
+        "pass": false
+      }
+    }
+  ],
+  "model": "deepseek-chat",
+  "temperature": 0.0,
+  "scenarios": 20,
+  "conditions": [
+    "c0",
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5"
+  ]
+}

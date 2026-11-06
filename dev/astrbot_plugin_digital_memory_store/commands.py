@@ -599,18 +599,30 @@ class CommandMixin:
 
     def _cmd_capture(self, scope, arg, sender, origin):
         """采集与检索：采集状态/记录/检索/摘要缓存状态"""
+        if arg.startswith('删除 '):
+            try:seq=int(arg[3:].strip())
+            except ValueError:return '格式：/dlm 删除 序号'
+            if not self.store.delete_capture(scope,seq):return '没有找到该序号的原话。'
+            return '已删除序号 %d 的原话及其派生记忆；备份文件不自动删除。'%seq
+        if arg=='清空记忆':
+            return '这会删除本会话全部原话和派生记忆，且不可撤销。确认请发：/dlm 清空记忆 确认'
+        if arg=='清空记忆 确认':
+            count=self.store.delete_scope(scope)
+            return '已清空本会话记忆：删除 %d 条原话及其派生数据；备份文件不自动删除。'%count
         if arg=='采集状态':
             gaps=self.store.capture_gap_count(scope)
             active=(sender,origin) in self.capture_gaps or bool(gaps)
             if self.auto_gap_recovery_enabled:
                 return ('采集开关：'+('开启' if self.capture_enabled else '关闭')+'；本次运行检测到的采集失败：'+str(self.capture_skipped)+
+                    '；不支持/跳过的非纯文本：'+str(self.capture_unsupported)+
                     ('；缺口标记正在保存，暂不注入记忆' if (sender,origin) in self.capture_gaps else
                      '；历史存在缺口，仅尝试使用缺口后的原话' if self.store.capture_gap_boundary(scope) else '；未发现缺口')+
                     '。缺失原话无法自动恢复，未发现缺口不代表采集完整。')
             return ('采集开关：'+('开启' if self.capture_enabled else '关闭')+'；缓冲等待数：'+str(self.capture_queue.qsize())+
                     '；本次运行缓冲满或写入失败数：'+str(self.capture_skipped)+
+                    '；不支持/跳过的非纯文本：'+str(self.capture_unsupported)+
                     '；本会话未核对缺口：'+str(gaps)+('（记忆注入已暂停）' if active else '（未发现缺口）')+
-                    '。只覆盖已检测的缓冲满和写入异常，不代表采集完整。')
+                    '。只覆盖已检测的缓冲满/写入异常与非纯文本跳过，不代表采集完整。')
         if arg.startswith('记录 '):
             rest=arg[3:]; title,sep,content=rest.partition('|')
             if not sep: return '格式：/dlm 记录 事件标题|记录内容'
@@ -950,7 +962,8 @@ class CommandMixin:
                     '线索：/dlm 待审、/dlm 更新线索、/dlm 事件、/dlm 时间线 记录\n'
                     '查看：/dlm 查看 标题、/dlm 摘要缓存状态\n'
                     '记录：/dlm 记录 标题|内容、/dlm 关联 序号|标题、/dlm 关系 修正|较新ID|较旧ID\n'
-                    '维护：/dlm 备份、/dlm 备份校验 <备份文件名>\n'
+                    '维护：/dlm 备份、/dlm 备份校验 <备份文件名>、/dlm 删除 <序号>\n'
+                    '　　　/dlm 清空记忆 确认（不可撤销；备份不自动删除）\n'
                     '迁移：/dlm 导入历史 <文件名>.jsonl（放 imports/ 目录）\n'
                     '　　　/dlm 导出历史 [天数]、/dlm 会话信息、/dlm 会话认领 <旧 origin>\n'
                     '　　　/dlm 迁移包、/dlm 迁移检查 <文件>.zip\n'

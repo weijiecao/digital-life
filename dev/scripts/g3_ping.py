@@ -6,7 +6,7 @@ import sys
 import time
 import urllib.request
 
-KEY_FILE = r'C:\Users\<you>\Desktop\数字生命\testbed\instance\data\.deepseek_key'
+KEY_FILE = r'C:\Users\205\Desktop\数字生命\testbed\instance\data\.deepseek_key'
 BASE = 'https://api.deepseek.com/v1/chat/completions'
 
 

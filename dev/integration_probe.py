@@ -84,6 +84,7 @@ async def run_probe(root, rounds=ROUNDS):
             'stranger_ignored': rows == 1,
             'group_ignored': rows == 1,
             'gap_records': await _gaps(runtime),
+            'unsupported': runtime.plugin.capture_unsupported,
         }
 
         # --- injection：8 轮真实钩子调用，记录耗时与预算；首轮顺带验证"同一请求不重复注入" ---

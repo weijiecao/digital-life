@@ -1,0 +1,45 @@
+{
+  "suite": "v9-concurrency",
+  "two_processes": {
+    "rows": 400,
+    "distinct_hashes": 400,
+    "jobs": 400,
+    "integrity": "ok",
+    "duplicate_groups": 0,
+    "workers": [
+      {
+        "rc": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "rc": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "pass": true
+  },
+  "crash_recovery": {
+    "returncode": 0,
+    "elapsed_s": 0.66,
+    "stderr_tail": "",
+    "report": {
+      "ts": "2026-11-05T15:20:03",
+      "integrity": "ok",
+      "killed_after_marker": 20,
+      "rows_after_kill": 20,
+      "rows_with_sha": 20,
+      "rows_before_reopen": 20,
+      "resume_capture_ok": true,
+      "duplicate_rows_for_same_message": 1,
+      "jobs": {
+        "done": 10,
+        "pending": 11
+      },
+      "ok": true
+    },
+    "pass": true
+  },
+  "pass": true
+}

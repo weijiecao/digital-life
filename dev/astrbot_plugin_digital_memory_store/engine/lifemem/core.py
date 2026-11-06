@@ -25,6 +25,7 @@ class MemoryCore:
         self._deferred_writes=False
         self.db.row_factory = sqlite3.Row
         self.db.execute('PRAGMA foreign_keys=ON')
+        self.db.execute('PRAGMA secure_delete=ON')
         # An independent prototype must not silently treat a legacy plugin DB as its own.
         app_id = self.db.execute('PRAGMA application_id').fetchone()[0]
         existing = self.db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").fetchall()
