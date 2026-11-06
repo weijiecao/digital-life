@@ -39,3 +39,15 @@ Thumbs.db
 
 # 本机运维笔记（含代理/路径），不入库
 dev/docs/PUBLISH_GITHUB.md
+
+# 一次性运行日志 / stdout / 构建输出；最终证据 JSON 仍入库
+dev/reports/*.log
+dev/reports/*_stdout.txt
+dev/reports/build_*.txt
+dev/reports/report_*.txt
+dev/reports/verification_regression*.txt
+dev/reports/verification_report_*.txt
+dev/reports/v2_after*.txt
+dev/reports/v10_after*.txt
+dev/reports/reply_quality_*.jsonl
+dev/reports/real_messages_judge_eval_run*.json
