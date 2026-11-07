@@ -33,6 +33,7 @@ class JudgmentResult:
     target_event_id: str | None = None
     issues: list[str] = field(default_factory=list)
     raw: str = ""
+    request_id: str = ""
 
     @property
     def ok(self) -> bool:
@@ -66,7 +67,7 @@ class RelationJudge:
             data = _extract_json(result.text)
         except Exception as exc:
             return JudgmentResult(source_seq=source.source_seq, issues=["json:" + type(exc).__name__],
-                                  raw=result.text)
+                                  raw=result.text, request_id=prepared.request_id)
         allowed_ids = {str(item["event_id"]) for item in candidates}
         proposals: list[RelationProposal] = []
         issues: list[str] = []
@@ -100,4 +101,5 @@ class RelationJudge:
         return JudgmentResult(source_seq=source.source_seq, proposals=proposals,
                               suggested_action=action,
                               target_event_id=str(target) if target else None,
-                              issues=issues, raw=result.text)
+                              issues=issues, raw=result.text,
+                              request_id=prepared.request_id)

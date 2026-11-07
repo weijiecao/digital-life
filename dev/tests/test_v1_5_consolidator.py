@@ -11,6 +11,8 @@ from v1_5_consolidator.candidate_retriever import (EventAnchor,
 from v1_5_consolidator.engine import Consolidator, ProposalValidator, _digest, _merge_followups
 from v1_5_consolidator.gateway import ContextGateway
 from v1_5_consolidator.relation_judge import RelationJudge
+from v1_5_consolidator.resolver import ConstrainedResolver
+from v1_5_consolidator.relation_judge import JudgmentResult, RelationProposal
 from v1_5_consolidator.contracts import ProposalOperation, SourceEnvelope
 from v1_5_consolidator.gateway import MockProvider
 from v1_5_consolidator.store import V15Store
@@ -41,6 +43,18 @@ class FakeRelationProvider:
     def generate(self, prepared):
         return type("Result", (), {"text": self.text, "model": "fake",
                                    "tokens_in": 1, "tokens_out": 1})()
+
+
+def seed_event(store, event_id, scope="scope-a"):
+    now = "2026-11-07T10:00:00+00:00"
+    store.db.execute("""INSERT INTO event_candidate
+        (event_id,scope_id,event_type,title,state,current_revision,created_at,updated_at)
+        VALUES(?,?,?,?,'provisional',1,?,?)""",
+        (event_id, scope, "plan", event_id, now, now))
+    store.db.execute("""INSERT INTO event_revision
+        (event_id,rev,summary,status,modality,created_at)
+        VALUES(?,1,?,?,?,?)""", (event_id, event_id, "planned", "planned", now))
+    store.db.commit()
 
 
 class TestV15Consolidator(unittest.TestCase):
@@ -202,6 +216,48 @@ class TestV15Consolidator(unittest.TestCase):
             self.assertFalse(result.ok)
             self.assertTrue(any("candidate:" in issue for issue in result.issues))
             self.assertTrue(any("missing:" in issue for issue in result.issues))
+            store.close()
+
+    def test_resolver_attaches_same_event_and_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            seed_event(store, "evt_a")
+            resolver = ConstrainedResolver(store)
+            source = SourceEnvelope("scope-a", 1, "sha", "t", "酒店订在市南区")
+            judgment = JudgmentResult(source_seq=1, proposals=[
+                RelationProposal("evt_a", "SAME_EVENT")], suggested_action="ATTACH_EXISTING")
+            first = resolver.resolve("scope-a", source, judgment)
+            second = resolver.resolve("scope-a", source, judgment)
+            self.assertEqual(first.attached, 1)
+            self.assertEqual(second.already_attached, 1)
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0], 1)
+            store.close()
+
+    def test_resolver_blocks_cannot_link_conflict(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            seed_event(store, "evt_a")
+            seed_event(store, "evt_b")
+            store.add_cannot_link("scope-a", "evt_a", "evt_b", 1)
+            source = SourceEnvelope("scope-a", 1, "sha", "t", "酒店")
+            store.attach_source("scope-a", source, "evt_b", "prop_seed")
+            resolver = ConstrainedResolver(store)
+            result = resolver.resolve("scope-a", source, JudgmentResult(
+                source_seq=1, proposals=[RelationProposal("evt_a", "SAME_EVENT")]))
+            self.assertEqual(result.conflicts, 1)
+            self.assertEqual(result.attached, 0)
+            store.close()
+
+    def test_resolver_related_does_not_attach(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            seed_event(store, "evt_a")
+            resolver = ConstrainedResolver(store)
+            result = resolver.resolve("scope-a", SourceEnvelope("scope-a", 1, "sha", "t", "同一主题"),
+                                      JudgmentResult(source_seq=1, proposals=[
+                                          RelationProposal("evt_a", "RELATED_CONTEXT")]))
+            self.assertEqual(result.related, 1)
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0], 0)
             store.close()
 
     def test_tombstone_invalidates_evidence(self):

@@ -72,6 +72,20 @@ class V15Store:
           id INTEGER PRIMARY KEY AUTOINCREMENT, scope_id TEXT NOT NULL,
           from_event TEXT NOT NULL, to_event TEXT NOT NULL, relation_type TEXT NOT NULL,
           status TEXT NOT NULL, source_seq INTEGER, created_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS event_link_proposal(
+          proposal_id TEXT PRIMARY KEY, scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL,
+          candidate_event_id TEXT NOT NULL, label TEXT NOT NULL, reason_codes_json TEXT NOT NULL,
+          model_version TEXT NOT NULL DEFAULT '', request_id TEXT NOT NULL DEFAULT '',
+          created_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS event_link_decision(
+          decision_id TEXT PRIMARY KEY, proposal_id TEXT NOT NULL, scope_id TEXT NOT NULL,
+          source_seq INTEGER NOT NULL, event_id TEXT, decision TEXT NOT NULL,
+          reason TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL,
+          UNIQUE(proposal_id, decision));
+        CREATE TABLE IF NOT EXISTS event_cannot_link(
+          id INTEGER PRIMARY KEY AUTOINCREMENT, scope_id TEXT NOT NULL,
+          event_a TEXT NOT NULL, event_b TEXT NOT NULL, source_seq INTEGER,
+          created_at TEXT NOT NULL, UNIQUE(scope_id, event_a, event_b));
         CREATE TABLE IF NOT EXISTS provider_usage(
           job_id TEXT NOT NULL, provider TEXT NOT NULL, tokens_in INTEGER NOT NULL DEFAULT 0,
           tokens_out INTEGER NOT NULL DEFAULT 0, outcome TEXT NOT NULL, created_at TEXT NOT NULL);
@@ -248,6 +262,82 @@ class V15Store:
                     self.db.execute("""INSERT INTO validation_issue
                         (job_id,op_index,code,detail,created_at) VALUES(?,?,?,?,?)""",
                         (job_id, index, issue.code, issue.detail[:200], _now()))
+
+    def events_for_source(self, scope_id: str, source_seq: int) -> list[str]:
+        rows = self.db.execute("""SELECT DISTINCT e.event_id FROM event_evidence e
+            JOIN event_candidate c ON c.event_id=e.event_id
+            WHERE e.scope_id=? AND e.source_seq=? AND e.valid=1 AND c.scope_id=?
+            ORDER BY e.event_id""", (scope_id, source_seq, scope_id)).fetchall()
+        return [row[0] for row in rows]
+
+    def cannot_link_exists(self, scope_id: str, event_a: str, event_b: str) -> bool:
+        a, b = sorted((event_a, event_b))
+        row = self.db.execute("""SELECT 1 FROM event_cannot_link
+            WHERE scope_id=? AND event_a=? AND event_b=?""", (scope_id, a, b)).fetchone()
+        return row is not None
+
+    def add_cannot_link(self, scope_id: str, event_a: str, event_b: str,
+                        source_seq: int) -> None:
+        if event_a == event_b:
+            return
+        a, b = sorted((event_a, event_b))
+        with self.db:
+            self.db.execute("""INSERT OR IGNORE INTO event_cannot_link
+                (scope_id,event_a,event_b,source_seq,created_at) VALUES(?,?,?,?,?)""",
+                (scope_id, a, b, source_seq, _now()))
+
+    def record_link_proposal(self, scope_id: str, source_seq: int, candidate_event_id: str,
+                             label: str, reason_codes: list[str], model_version: str,
+                             request_id: str) -> str:
+        proposal_id = "prop_" + uuid.uuid4().hex
+        with self.db:
+            self.db.execute("""INSERT INTO event_link_proposal
+                (proposal_id,scope_id,source_seq,candidate_event_id,label,reason_codes_json,
+                 model_version,request_id,created_at) VALUES(?,?,?,?,?,?,?,?,?)""",
+                (proposal_id, scope_id, source_seq, candidate_event_id, label,
+                 json.dumps(reason_codes, ensure_ascii=False), model_version, request_id, _now()))
+        return proposal_id
+
+    def record_link_decision(self, proposal_id: str, scope_id: str, source_seq: int,
+                             event_id: str | None, decision: str, reason: str = "") -> str:
+        decision_id = "dec_" + uuid.uuid4().hex
+        with self.db:
+            self.db.execute("""INSERT OR IGNORE INTO event_link_decision
+                (decision_id,proposal_id,scope_id,source_seq,event_id,decision,reason,created_at)
+                VALUES(?,?,?,?,?,?,?,?)""",
+                (decision_id, proposal_id, scope_id, source_seq, event_id, decision,
+                 reason[:300], _now()))
+        row = self.db.execute("""SELECT decision_id FROM event_link_decision
+            WHERE proposal_id=? AND decision=?""", (proposal_id, decision)).fetchone()
+        return row[0] if row else decision_id
+
+    def attach_source(self, scope_id: str, source: Any, event_id: str,
+                      proposal_id: str) -> bool:
+        """Attach a source to an existing event; append-only evidence/decision."""
+        row = self.db.execute("""SELECT current_revision FROM event_candidate
+            WHERE event_id=? AND scope_id=? AND state!='withdrawn'""",
+            (event_id, scope_id)).fetchone()
+        if not row:
+            return False
+        revision = int(row[0])
+        with self.db:
+            self.db.execute("""INSERT INTO source_ref(scope_id,source_seq,source_hash,recorded_at)
+                VALUES(?,?,?,?) ON CONFLICT(scope_id,source_seq) DO UPDATE SET
+                source_hash=excluded.source_hash,recorded_at=excluded.recorded_at""",
+                (scope_id, source.source_seq, source.source_hash, source.recorded_at))
+            before = self.db.total_changes
+            self.db.execute("""INSERT OR IGNORE INTO event_evidence
+                (event_id,rev,scope_id,source_seq,quote,valid) VALUES(?,?,?,?,?,1)""",
+                (event_id, revision, scope_id, source.source_seq, source.text))
+            inserted = self.db.total_changes > before
+            self.db.execute("UPDATE event_candidate SET updated_at=? WHERE event_id=?",
+                            (_now(), event_id))
+            self.db.execute("""INSERT OR IGNORE INTO event_link_decision
+                (decision_id,proposal_id,scope_id,source_seq,event_id,decision,reason,created_at)
+                VALUES(?,?,?,?,?,?,?,?)""",
+                ("dec_" + uuid.uuid4().hex, proposal_id, scope_id, source.source_seq,
+                 event_id, "ATTACHED" if inserted else "ALREADY_ATTACHED", "", _now()))
+        return inserted
 
     def audit(self, request_id: str, purpose: str, scope_id: str, policy_version: str,
               decision: str, refs: list[dict[str, Any]]) -> None:
