@@ -2,6 +2,7 @@
 
 > 状态：**实现中/离线 Alpha**，独立于 V1 插件；只读 V1 原话，只写独立 SQLite。
 > 不创建 V1 正式事件，不向聊天用户暴露。
+> 工程验证报告：[`reports/V1_5_VALIDATION_REPORT_2026-11-07.md`](../reports/V1_5_VALIDATION_REPORT_2026-11-07.md)
 
 ## 1. 定位
 
