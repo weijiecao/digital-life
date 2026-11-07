@@ -1,0 +1,1 @@
+{"scope_id":"<匿名作用域ID>","source_id":"<去标识的稳定消息ID>","recorded_at":"<ISO8601时间或null>","speaker":"<user|assistant|other>","text":"<经授权脱敏的原始文本>","gold_event_id":"<标注事件ID或null>","event_type":"<plan|experience|state_change|narrative|unknown>","annotation_status":"<confirmed|ambiguous|needs_review>","annotator_notes":"<只记录判定依据，不推断未明确的事实>"}

@@ -1,0 +1,12 @@
+{"expected_outcome": "第二次返回 ALREADY_ATTACHED；证据数不变", "input_condition": "再次提交同一 source_id", "is_synthetic": true, "name": "restart_idempotence", "scenario_id": "R01"}
+{"expected_outcome": "全部 CONFLICT；0 attach", "input_condition": "对同一消息返回两个不同 event_id 的 SAME_EVENT", "is_synthetic": true, "name": "multiple_same_conflict", "scenario_id": "R02"}
+{"expected_outcome": "不能在重启后 attach 冲突事件", "input_condition": "已持久化 cannot-link 后停止并重启服务", "is_synthetic": true, "name": "cannot_link_restart", "scenario_id": "R03"}
+{"expected_outcome": "不执行 SAME_EVENT attach", "input_condition": "模型输出 RELATED", "is_synthetic": true, "name": "related_no_attach", "scenario_id": "R04"}
+{"expected_outcome": "被 scope 校验拒绝；0 attach", "input_condition": "跨 scope 的候选作为 SAME_EVENT 提交", "is_synthetic": true, "name": "cross_scope_injection", "scenario_id": "R05"}
+{"expected_outcome": "来源失效；关联事件重新计算有效性，cannot-link 复核", "input_condition": "删除一条证据来源并触发 source inventory", "is_synthetic": true, "name": "deleted_source", "scenario_id": "R06"}
+{"expected_outcome": "重启后无半写入；任务可重新执行", "input_condition": "事件关联事务提交前强制终止进程", "is_synthetic": true, "name": "kill_before_commit", "scenario_id": "R07"}
+{"expected_outcome": "重新执行幂等；不存在重复关系/丢处理", "input_condition": "提交后、游标更新前模拟终止（取决于事务设计）", "is_synthetic": true, "name": "kill_after_commit_before_cursor", "scenario_id": "R08"}
+{"expected_outcome": "任务可重试；游标不提前推进；V1 回复不受影响", "input_condition": "模拟 LLM 返回 503 和超时", "is_synthetic": true, "name": "provider_503", "scenario_id": "R09"}
+{"expected_outcome": "不得调用外部模型；延期处理和记录原因", "input_condition": "超过上下文与每日预算", "is_synthetic": true, "name": "token_budget", "scenario_id": "R10"}
+{"expected_outcome": "禁止将虚构角色经历作为用户事实", "input_condition": "虚构故事的登山与真实登山事件同时出现", "is_synthetic": true, "name": "story_reality", "scenario_id": "R11"}
+{"expected_outcome": "比较端到端召回、误合并、覆盖率和幂等性", "input_condition": "分别按8、20、40条切批处理同一交错流", "is_synthetic": true, "name": "batch_boundary", "scenario_id": "R12"}

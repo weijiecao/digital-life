@@ -1,0 +1,62 @@
+{
+  "suite": "v1.5b-b4-pair",
+  "model": "deepseek-chat",
+  "pairs": 610,
+  "tp": 200,
+  "fp": 7,
+  "fn": 0,
+  "tn": 353,
+  "invalid": 0,
+  "precision": 0.9662,
+  "recall": 1.0,
+  "f1": 0.9828,
+  "labels": {
+    "SAME_EVENT": 207,
+    "DIFFERENT_EVENT": 300,
+    "UNCERTAIN": 53
+  },
+  "errors": [
+    {
+      "pair_id": "P0054",
+      "gold": "UNRESOLVED",
+      "predicted": "SAME_EVENT",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0115",
+      "gold": "UNRESOLVED",
+      "predicted": "SAME_EVENT",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0176",
+      "gold": "UNRESOLVED",
+      "predicted": "SAME_EVENT",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0298",
+      "gold": "UNRESOLVED",
+      "predicted": "SAME_EVENT",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0359",
+      "gold": "UNRESOLVED",
+      "predicted": "SAME_EVENT",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0542",
+      "gold": "UNRESOLVED",
+      "predicted": "SAME_EVENT",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0603",
+      "gold": "UNRESOLVED",
+      "predicted": "SAME_EVENT",
+      "difficulty": "ambiguous_reference"
+    }
+  ]
+}

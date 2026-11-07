@@ -30,6 +30,7 @@ SUITES = (
     'tests.test_plugin',
     'tests.test_data_safety',
     'tests.test_v1_5_consolidator',
+    'tests.test_b4_fixture',
     'tests.test_baseline_alignment',
     'tests.test_preflight',
     'tests.test_auto_jobs',

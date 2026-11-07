@@ -1,0 +1,33 @@
+{
+  "dataset_name": "Digital Life B4 Synthetic Event Identity v1.0",
+  "date": "2026-11-08",
+  "synthetic": true,
+  "real_chat_records": 0,
+  "scope_count": 10,
+  "message_count_interleaved": 340,
+  "message_count_contiguous": 340,
+  "event_count": 80,
+  "pair_count": 610,
+  "pair_relations": {
+    "SAME_EVENT": 200,
+    "RELATED": 150,
+    "DIFFERENT_EVENT": 200,
+    "UNRESOLVED": 60
+  },
+  "pair_difficulties": {
+    "cross_batch_positive": 160,
+    "long_gap_positive": 40,
+    "hard_negative_related": 150,
+    "hard_negative_different": 150,
+    "ambiguous_reference": 60,
+    "cross_scope_negative": 50
+  },
+  "query_count": 180,
+  "query_expected": {
+    "ATTACH_EXISTING": 160,
+    "ABSTAIN": 20
+  },
+  "reliability_scenarios": 12,
+  "source_commits": "standalone synthetic fixture; no access to private chat logs",
+  "answer_leakage_protection": "opaque source IDs and separate input/gold files"
+}

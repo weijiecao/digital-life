@@ -1,0 +1,15 @@
+{
+  "suite": "v1.5b-b4-retrieval",
+  "method": "lexical",
+  "dataset": "synthetic_b4_v1",
+  "scope_count": 10,
+  "queries_attach": 160,
+  "abstain_expected": 20,
+  "recall": {
+    "1": 0.7812,
+    "5": 1.0,
+    "10": 1.0
+  },
+  "mrr": 0.8891,
+  "errors": []
+}
