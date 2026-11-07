@@ -39,6 +39,9 @@ def evaluate_round(v1_db: str, scope: str, labels: dict, provider) -> dict:
             WHERE valid=1 ORDER BY source_seq""").fetchall()
         issues = {row[0]: row[1] for row in db.execute(
             "SELECT code,COUNT(*) FROM validation_issue GROUP BY code")}
+        issue_details = [{"code": row[0], "detail": row[1]}
+                         for row in db.execute(
+                             "SELECT code,detail FROM validation_issue ORDER BY id")]
         db.close()
     mapping = {int(seq): event_id for seq, event_id in rows}
     groups = labels["groups"]
@@ -66,6 +69,7 @@ def evaluate_round(v1_db: str, scope: str, labels: dict, provider) -> dict:
             "gold_pairs": len(gold_pairs), "pred_pairs": len(pred_pairs),
             "tp": tp, "false_merges": false_merges,
             "validation_issues": issues,
+            "validation_details": issue_details,
             "clusters": sorted((sorted(seqs) for seqs in clusters.values()),
                                key=lambda item: item[0])}
 

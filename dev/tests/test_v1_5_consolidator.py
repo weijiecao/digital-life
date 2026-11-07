@@ -4,8 +4,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from v1_5_consolidator.engine import Consolidator, ProposalValidator, _digest
-from v1_5_consolidator.contracts import SourceEnvelope
+from v1_5_consolidator.engine import Consolidator, ProposalValidator, _digest, _merge_followups
+from v1_5_consolidator.contracts import ProposalOperation, SourceEnvelope
 from v1_5_consolidator.gateway import MockProvider
 from v1_5_consolidator.store import V15Store
 
@@ -75,6 +75,21 @@ class TestV15Consolidator(unittest.TestCase):
             "summary": "x", "modality": "planned", "status_proposal": "planned"}]})
         self.assertEqual(len(result.accepted), 0)
         self.assertEqual(len(result.rejected), 1)
+
+    def test_followup_source_is_merged_into_existing_event(self):
+        sources = [
+            SourceEnvelope("a", 1, "sha1", "t", "下个月十五号搬到杭州西湖区"),
+            SourceEnvelope("a", 2, "sha2", "t", "之前搬家到杭州西湖区那件事怎么样"),
+        ]
+        first = ProposalOperation(action="create", event_type="plan",
+                                  title="搬家计划", summary="搬家到杭州西湖区",
+                                  source_refs=[{"source_seq": 1, "quote": sources[0].text}])
+        follow = ProposalOperation(action="create", event_type="unknown",
+                                   title="之前搬家", summary="回顾",
+                                   source_refs=[{"source_seq": 2, "quote": sources[1].text}])
+        merged = _merge_followups([first, follow], sources)
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(len(merged[0].source_refs), 2)
 
     def test_tombstone_invalidates_evidence(self):
         with tempfile.TemporaryDirectory() as d:

@@ -22,6 +22,56 @@ def _digest(sources: list[SourceEnvelope]) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
+def _bigrams(text: str) -> set[str]:
+    chars = [ch for ch in text if "\u4e00" <= ch <= "\u9fff"]
+    return {chars[i] + chars[i + 1] for i in range(len(chars) - 1)}
+
+
+def _merge_followups(operations: list[ProposalOperation],
+                     sources: list[SourceEnvelope]) -> list[ProposalOperation]:
+    """Attach a lone follow-up/回顾 source to the most likely same-batch event.
+
+    This is deliberately conservative: it only runs for a single-source
+    ``create`` containing a follow-up cue, and only when one other operation has
+    at least three shared CJK bigrams. Ambiguous ties are left untouched.
+    """
+    cues = ("之前", "后来", "上次", "那件事", "怎么样了", "然后呢")
+    source_by_seq = {s.source_seq: s for s in sources}
+    result = list(operations)
+    for op in list(result):
+        if op.action != "create" or len(op.source_refs) != 1:
+            continue
+        ref = op.source_refs[0]
+        source = source_by_seq.get(ref.get("source_seq"))
+        if source is None or not any(cue in source.text for cue in cues):
+            continue
+        pairs = _bigrams(source.text)
+        scored = []
+        for other in result:
+            if other is op:
+                continue
+            texts = [other.title, other.summary]
+            for other_ref in other.source_refs:
+                s = source_by_seq.get(other_ref.get("source_seq"))
+                if s is not None:
+                    texts.append(s.text)
+            score = sum(1 for pair in pairs if any(pair in text for text in texts if text))
+            if score:
+                scored.append((score, other))
+        if not scored:
+            continue
+        scored.sort(key=lambda item: item[0], reverse=True)
+        if len(scored) > 1 and scored[0][0] == scored[1][0]:
+            continue
+        if scored[0][0] < 3:
+            continue
+        target = scored[0][1]
+        if ref not in target.source_refs:
+            target.source_refs.append(ref)
+        result.remove(op)
+    return result
+
+
 def _extract_json(text: str) -> dict[str, Any]:
     text = (text or "").strip()
     if text.startswith("```"):
@@ -51,13 +101,13 @@ class ProposalValidator:
             modality = str(raw.get("modality", "unknown"))
             status = str(raw.get("status_proposal", "unknown"))
             if action not in ACTIONS:
-                issues.append(ValidationIssue("action", "非法 action"))
+                issues.append(ValidationIssue("action", "非法 action: %r" % action))
             if event_type not in EVENT_TYPES:
-                issues.append(ValidationIssue("event_type", "非法 event_type"))
+                issues.append(ValidationIssue("event_type", "非法 event_type: %r" % event_type))
             if modality not in MODALITIES:
-                issues.append(ValidationIssue("modality", "非法 modality"))
+                issues.append(ValidationIssue("modality", "非法 modality: %r" % modality))
             if status not in STATUS:
-                issues.append(ValidationIssue("status", "非法 status"))
+                issues.append(ValidationIssue("status", "非法 status: %r" % status))
             refs = raw.get("source_refs")
             if not isinstance(refs, list) or not refs:
                 issues.append(ValidationIssue("source_refs", "缺少来源"))
@@ -154,9 +204,10 @@ class Consolidator:
                 summary.rejected += len(validation.rejected)
                 if validation.rejected:
                     self.store.record_validation_issues(job_id, validation.rejected)
-                if validation.accepted:
+                accepted = _merge_followups(validation.accepted, sources)
+                if accepted:
                     created = self.store.commit(
-                        scope_id, sources, validation.accepted, job_id,
+                        scope_id, sources, accepted, job_id,
                         model_version=result.model, prompt_version=self.gateway.policy_version,
                         input_digest=digest)
                     summary.events_created += created

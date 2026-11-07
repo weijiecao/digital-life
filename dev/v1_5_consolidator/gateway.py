@@ -47,7 +47,7 @@ class ContextGateway:
             "无法判断时使用 unknown/defer，不要编造时间或来源。",
             "输出结构：",
             '{"schema_version":"1.0","operations":[{"action":"create|update|link|defer",'
-            '"event_type":"plan|experience|state_change|narrative","title":"...",'
+            '"event_type":"plan|experience|state_change|narrative|unknown","title":"...",'
             '"summary":"...","modality":"completed|planned|possible|quoted|narrative|unknown",'
             '"status_proposal":"planned|possibly_postponed|cancelled|completed|ongoing|uncertain|withdrawn|unknown",'
             '"candidate_event_id":null,"occurred_at":null,"time_expression_raw":null,'

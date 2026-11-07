@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-EVENT_TYPES = {"plan", "experience", "state_change", "narrative"}
+EVENT_TYPES = {"plan", "experience", "state_change", "narrative", "unknown"}
 MODALITIES = {"completed", "planned", "possible", "quoted", "narrative", "unknown"}
 ACTIONS = {"create", "update", "link", "defer"}
 STATUS = {"planned", "possibly_postponed", "cancelled", "completed", "ongoing",
