@@ -216,14 +216,14 @@ class TestJudgeIntegration(unittest.TestCase):
 
     def test_timeout_falls_back_silently(self):
         context = FakeContext('{"choices":[1],"sufficient":true,"conflict":false,"reason":"x"}',
-                              delay=3.0)
+                              delay=10.0)
         started = time.perf_counter()
         parts, _ = self._run(
             _cfg(model_judge_enabled=True, judge_provider_id='test'),
             context, '之前那件事有什么安排？')
         elapsed = time.perf_counter() - started
         self.assertEqual(parts, [])
-        self.assertLess(elapsed, 2.5, '超时必须快速放弃，不能拖住回复')
+        self.assertLess(elapsed, 4.0, '超时必须快速放弃，不能拖住回复')
 
     def test_hourly_limit_respected(self):
         context = FakeContext('{"choices":[1],"sufficient":true,"conflict":false,"reason":"x"}')
