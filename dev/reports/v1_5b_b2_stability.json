@@ -1,0 +1,57 @@
+{
+  "suite": "v1.5b-b2-stability",
+  "runs": [
+    {
+      "scopes": 10,
+      "pairs": 320,
+      "precision": 1.0,
+      "recall": 0.675,
+      "f1": 0.806,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "SAME_EVENT": 54,
+        "DIFFERENT_EVENT": 245,
+        "RELATED_CONTEXT": 21
+      }
+    },
+    {
+      "scopes": 10,
+      "pairs": 320,
+      "precision": 1.0,
+      "recall": 0.6375,
+      "f1": 0.7786,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "SAME_EVENT": 51,
+        "DIFFERENT_EVENT": 245,
+        "RELATED_CONTEXT": 24
+      }
+    },
+    {
+      "scopes": 10,
+      "pairs": 320,
+      "precision": 1.0,
+      "recall": 0.65,
+      "f1": 0.7879,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "SAME_EVENT": 52,
+        "DIFFERENT_EVENT": 247,
+        "RELATED_CONTEXT": 21
+      }
+    }
+  ],
+  "mean_recall": 0.6542,
+  "mean_f1": 0.7908,
+  "recall_range": [
+    0.6375,
+    0.675
+  ],
+  "precision_range": [
+    1.0,
+    1.0
+  ]
+}
