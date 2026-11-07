@@ -85,10 +85,10 @@
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-把「私聊原话存本机、需要时以**未确认线索**回注模型」做成可验证的工程：插件本体、**359 项离线回归**、
+把「私聊原话存本机、需要时以**未确认线索**回注模型」做成可验证的工程：插件本体、**363 项离线回归**、
 真实 AstrBot/真实 BGE/真实 QQ 的实机证据，以及**换机器也能复现的环境引导**。
 
-> **v1.0.18 静默版**：用户聊天里没有 `/dlm` 命令；不新建正式事件；管理只在 WebUI panel / 配置文件 /
+> **v1.0.19 静默版**：用户聊天里没有 `/dlm` 命令；不新建正式事件；管理只在 WebUI panel / 配置文件 /
 > 本地脚本。旧版 1.0.17 及以前仍有命令面，不要混用。
 
 | 入口 | 说明 |
@@ -99,21 +99,30 @@
 
 ## 这套东西是什么
 
-AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.18 静默版）：白名单账号的**私聊纯文本**落本机
+AstrBot 插件 `astrbot_plugin_digital_memory_store`（v1.0.19 静默版）：白名单账号的**私聊纯文本**落本机
 SQLite，自动整理成“待审线索”，每轮请求前给模型一段**有界上下文**（最多 450–600 字），
 一律标注“未确认”，不自动确认事实；默认关闭，除显式开启的候选筛选器外不联网。
-v1.0.18 起聊天里**不注册 `/dlm`**；管理在 WebUI panel，用户零感知；不新建正式事件。
+v1.0.19 起聊天里**不注册 `/dlm`**；管理在 WebUI panel，用户零感知；不新建正式事件。
 
 本仓库除了插件本体，还包含：
 
-- **359 项离线回归**（`dev/tests/`，含上游基线继承、备份回归、注入契约、端到端链路）；
+- **363 项离线回归**（`dev/tests/`，含上游基线继承、备份回归、注入契约、端到端链路）；
 - **可观测假 AstrBot**（`dev/sim_astrbot.py`）与真实链路探针（`testbed/harness/real_chain.py`）；
 - **实机环境**：AstrBot 4.29.3 + Python 3.12 + 真实 BGE（512 维）+ 本地 mock provider；
 - **一键环境引导**：`env/setup.ps1`（建 venv、拉源码、装依赖、下模型、生成实例）。
 
-### v1.0.18 静默版怎么用
+### v1.0.19 数据安全层
 
-1. 安装 1.0.18 包，重启 AstrBot；
+- `install.ps1` / `scripts/install.py upgrade` 在替换插件前备份整个 `plugin_data`；
+- 数据库带 `dl_meta.schema_version`，库比代码新时拒绝写入；
+- 打开既有库前执行 `PRAGMA quick_check`；
+- 旧库/无 `dl_meta` 的库在首次迁移前自动生成 `backups/memory_*.sqlite3`；
+- `.memory.lock` 单实例锁，第二个实例停用记忆但不影响正常回复；
+- 记忆库打不开时只停用记忆，不覆盖数据库。
+
+### v1.0.19 静默版怎么用
+
+1. 安装 1.0.19 包，重启 AstrBot；
 2. 普通用户只正常聊天，**没有 `/dlm`**；
 3. 管理员在 WebUI 插件页 → **panel** 看统计、备份、轮转、完整性、VACUUM；
 4. 管理员删除走 panel API：`POST .../panel/delete`，`scope` + `seq` 或 `all=true`；
@@ -125,7 +134,7 @@ v1.0.18 起聊天里**不注册 `/dlm`**；管理在 WebUI panel，用户零感�
 
 | 你是 | 先看 | 再看 |
 |---|---|---|
-| 想装插件的 AstrBot 用户 | [`dev/INSTALL_SILENT_v1.0.18.md`](dev/INSTALL_SILENT_v1.0.18.md)（静默版，无 `/dlm`） | `INSTALL.md`（参数）、`docs/TROUBLESHOOTING.md`（排错） |
+| 想装插件的 AstrBot 用户 | [`dev/INSTALL_SILENT_v1.0.19.md`](dev/INSTALL_SILENT_v1.0.19.md)（静默版，无 `/dlm`） | `INSTALL.md`（参数）、`docs/TROUBLESHOOTING.md`（排错） |
 | 想复现环境 / 跑回归 | 本文件下面「快速开始」 | [`env/README.md`](env/README.md)（版本矩阵、镜像源、坑） |
 | 要改代码 / 发版 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | [`docs/MAINTAINER_FLOW.md`](docs/MAINTAINER_FLOW.md)（打包、双仓同步、发版、回滚） |
 | 想先看懂代码怎么组织 | [`dev/astrbot_plugin_digital_memory_store/docs/CODE_ARCHITECTURE.md`](dev/astrbot_plugin_digital_memory_store/docs/CODE_ARCHITECTURE.md)（数据流、符号链路、表分组） | [`engine/README.md`](dev/astrbot_plugin_digital_memory_store/engine/README.md)（实验编号模块） |
@@ -142,7 +151,7 @@ digital-life/
     README.md                版本矩阵、镜像源、已知坑（先读这个）
   dev/                       开发工作区（权威开发线）
     astrbot_plugin_digital_memory_store/   插件源码（含 install.ps1 与用户文档）
-    tests/                   359 项回归（python -m unittest tests.test_store）
+    tests/                   363 项回归（python -m unittest tests.test_store）
     scripts/                 report.py / install.py / upgrade.py / rollback.py / build_package.py
     docs/                    架构、指标口径、评估集、实机报告、上线清单…
     reports/                 探针与评估输出（可重生成）
@@ -195,14 +204,15 @@ cd ..\testbed
 
 | 项 | 结果 |
 |---|---|
-| 离线回归 | **359/359**（`dev/STATUS.md` 为唯一数字来源，脚本生成） |
+| 离线回归 | **363/363**（`dev/STATUS.md` 为唯一数字来源，脚本生成） |
 | CI | GitHub Actions `tests.yml`：`windows-latest` + Python 3.10 / 3.11 / 3.12，三版本全绿 |
-| 真实 AstrBot 4.29.3 | 插件加载、注入钩子注册、panel API 通；**v1.0.18 不再注册 `/dlm`** |
+| 真实 AstrBot 4.29.3 | 插件加载、注入钩子注册、panel API 通；**v1.0.19 不再注册 `/dlm`** |
 | 真实 BGE | 512 维；冷加载 10.9–13.1 s；3.8–4.0 ms/条 |
 | 注入可见 | mock provider 收到的请求体含 `[DL_MEMORY_V040]` 与旧原话；钩子→provider 0.13 s |
 | 真实 QQ 私聊 | 小号经 NapCat 反向 WS 接入，主号两条私聊被采集并注入（账号已脱敏） |
 | 冷启动 | 预热线程修复后首条回复 TTFB 8.0 s → 0.017 s |
 | 真实消息检索 | 80 探针（21 条真实消息构造）：baseline 27/80 → judge **70–71/80（87.5–88.75%）**；10 负例 0 误选 |
+| 数据安全 | v1.0.19：升级前 `plugin_data` 备份、schema 栅栏、`quick_check`、迁移前备份、单实例锁；4 项回归通过 |
 | 正式验收 | **仍不通过**：RET-01 明确事件 10/20、RET-04 相似事件串味 3/15；缺 300–500 条独立真实语料与 3 天 soak |
 | L0 三天连续运行 | **未完成**（soak 工具已就绪） |
 

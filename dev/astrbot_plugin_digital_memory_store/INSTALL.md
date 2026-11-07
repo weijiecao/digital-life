@@ -1,8 +1,8 @@
-# 安装 / 升级 / 回退（v1.0.18 静默版）
+# 安装 / 升级 / 回退（v1.0.19 静默版）
 
 > 适用：AstrBot 4.29.3（其他 4.x 未验证）+ Python 3.10–3.12 + Windows。
 >
-> **重要：v1.0.18 起，聊天里没有 `/dlm` 命令。**
+> **重要：v1.0.18 起聊天里没有 `/dlm` 命令；v1.0.19 增加升级前数据备份、schema 栅栏和单实例锁。**
 > 普通用户看不到记忆系统；管理只在 WebUI panel、配置文件和本地脚本里进行。
 
 ## 0. 一键安装
@@ -107,6 +107,11 @@ Content-Type: application/json
 ## 5. 升级与回退
 
 再跑一次 `install.ps1` 即为升级；旧插件目录会移到 `data\plugins_backup\`，配置保留。
+v1.0.19 起还会先把整个 `data\plugin_data\astrbot_plugin_digital_memory_store` 复制到
+`data\plugins_backup\dlm_data_<时间>`；**不要只备份插件目录**。
+
+升级/热重载时只允许一个实例写同一个数据目录：`.memory.lock` 被占用时，第二个实例会停用记忆，
+正常回复不受影响。库的 `schema_version` 比代码新时也会拒绝写入，而不是尝试迁移。
 
 手工回退：
 

@@ -3,7 +3,7 @@
 > 基线：`E5.0-F_0.15.116_工程包`（未改动原件，本目录是可写的开发副本）
 > 上游：`_e50f_standalone`（已实机验证的 pilot 基线，与桌面 E50F 目录同源）
 > 真源清单：`../MANIFEST.md`　进度看板：`STATUS.md`　指标口径：`docs/METRICS.md`
-> 更新：2026-11-06（v1.0.18 静默版：移除 /dlm 聊天命令，不新建正式事件）
+> 更新：2026-11-06（v1.0.19 静默版：移除 /dlm 聊天命令，不新建正式事件）
 
 ## 这个目录是什么
 
@@ -13,7 +13,7 @@
 ```
 dev/
   astrbot_plugin_digital_memory_store/   插件源码（含 store/ 包、commands.py、docs/）
-  tests/                                  全部回归用例（359 项）
+  tests/                                  全部回归用例（363 项）
     test_store.py / test_plugin.py        主体回归（存储、插件钩子、命令面、帮助）
     test_baseline_alignment.py            6 项：上游基线继承
     test_preflight.py                     6 项：依赖/模型自检提示
@@ -60,13 +60,13 @@ dev/
 
 ## 当前状态
 
-**v1.0.18：359 项离线用例全绿；用户聊天面静默（无 /dlm），不新建正式事件；管理走 WebUI panel。**
+**v1.0.19：363 项离线用例全绿；用户聊天面静默（无 /dlm），不新建正式事件；管理走 WebUI panel。**
 
 - 新增 26 项用例（6 自检 + 4 死信 + 4 备份回归 + 12 集成），原 231 项不受影响；
 - 集成探针：注入 8/8、同一请求不重复注入、重启续跑无重复采集、不兼容宿主静默放行；
 - **真实环境（`testbed/`）**：AstrBot 4.29.3 + Python 3.12 + 真实 BGE（512 维）；
   插件加载成功、钩子以 `OnLLMRequestEvent` 注册、注入片段出现在真实 provider 请求体里
-  （钩子→provider 0.13 s）；v1.0.18 起 `/dlm` 不再注册，管理看 panel。详见 `docs/REAL_ENV_REPORT.md`；
+  （钩子→provider 0.13 s）；v1.0.19 起 `/dlm` 不再注册，管理看 panel。详见 `docs/REAL_ENV_REPORT.md`；
 - **真实 QQ 私聊**（2026-11-04 08:14）：小号 `3266206281` 经 NapCat 接入，主号 `1508236662` 的两条私聊
   被采集（独立作用域），第二条请求体引用待审序号 3「我喜欢吃苹果」——QQ 段注入可见。
   provider 仍是本地 mock，回复为固定文本；

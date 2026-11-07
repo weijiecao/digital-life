@@ -32,6 +32,8 @@ from .briefs import BriefMixin
 from .context import ContextMixin
 from .backup import BackupMixin
 from .embedding import EmbeddingMixin
+from .safety import (APP_VERSION, SCHEMA_VERSION, SchemaTooNewError, StoreLock,
+                     backup_before_migration, inspect_existing)
 
 
 class Store(CaptureMixin, DraftMixin, EventMixin, OrganizeMixin, RelationMixin, BriefMixin, ContextMixin, BackupMixin, EmbeddingMixin):
@@ -40,7 +42,21 @@ class Store(CaptureMixin, DraftMixin, EventMixin, OrganizeMixin, RelationMixin, 
         root.mkdir(parents=True, exist_ok=True)
         self.root=root
         self.path=root/'manual_test_memory.sqlite3'
-        self.flow=UnifiedMemoryEngine(self.path)
+        self.schema_version=SCHEMA_VERSION
+        self.lock=StoreLock(root/'.memory.lock')
+        self.lock.acquire()
+        try:
+            existing=inspect_existing(self.path)
+            if existing is not None and existing>SCHEMA_VERSION:
+                raise SchemaTooNewError(
+                    '记忆数据库 schema %d 比当前代码 %d 新；拒绝写入，请升级插件或从备份恢复'
+                    % (existing,SCHEMA_VERSION))
+            if self.path.exists() and existing!=SCHEMA_VERSION:
+                backup_before_migration(self.path,root/'backups')
+            self.flow=UnifiedMemoryEngine(self.path)
+        except Exception:
+            self.lock.release()
+            raise
         self.flow.db.execute('''CREATE TABLE IF NOT EXISTS dl_capture (
             seq INTEGER PRIMARY KEY AUTOINCREMENT, scope TEXT NOT NULL,
             event_hash TEXT NOT NULL, content TEXT NOT NULL, content_sha TEXT NOT NULL,
@@ -315,6 +331,12 @@ class Store(CaptureMixin, DraftMixin, EventMixin, OrganizeMixin, RelationMixin, 
             DELETE FROM dl_auto_vector_chunks WHERE scope=OLD.scope AND seq=OLD.seq; END''')
         self.flow.db.execute('CREATE INDEX IF NOT EXISTS dl_auto_job_ready ON dl_auto_jobs(status,next_at,seq)')
         self.flow.db.execute('CREATE INDEX IF NOT EXISTS dl_auto_job_scope_order ON dl_auto_jobs(scope,status,seq)')
+        self.flow.db.execute('''CREATE TABLE IF NOT EXISTS dl_meta (
+            key TEXT PRIMARY KEY, value TEXT NOT NULL)''')
+        self.flow.db.execute("INSERT OR REPLACE INTO dl_meta(key,value) VALUES('schema_version',?)",
+                             (str(SCHEMA_VERSION),))
+        self.flow.db.execute("INSERT OR REPLACE INTO dl_meta(key,value) VALUES('app_version',?)",
+                             (APP_VERSION,))
         self.flow.db.commit()
         self.embedder=None
         self.index=None
@@ -410,4 +432,5 @@ class Store(CaptureMixin, DraftMixin, EventMixin, OrganizeMixin, RelationMixin, 
 
     def close(self):
         self.semantic_source_vectors.clear()
-        self.flow.close()
+        try:self.flow.close()
+        finally:self.lock.release()

@@ -95,6 +95,8 @@ class DigitalMemoryStore(CommandMixin, Star):
         self.environment=None
         self.pool=ThreadPoolExecutor(max_workers=1,thread_name_prefix='dlmemory')
         self.store=None
+        self.store_error=None
+        self.store_disabled=False
         self.pending_context=None
         self.capture_queue=asyncio.Queue(maxsize=100)
         self.capture_task=None
@@ -133,7 +135,7 @@ class DigitalMemoryStore(CommandMixin, Star):
             except Exception:pass
 
     def _panel_call(self,func):
-        self._ensure_store()
+        if not self._ensure_store():raise RuntimeError(self.store_error or '记忆库不可用')
         return func()
 
     async def _panel_stats(self):
@@ -233,7 +235,17 @@ class DigitalMemoryStore(CommandMixin, Star):
             return error_response('VACUUM 失败：%s'%exc)
 
     def _ensure_store(self):
-        if self.store is None:self.store=Store(self.root,self.model_dir)
+        if self.store_disabled:return False
+        if self.store is None:
+            try:self.store=Store(self.root,self.model_dir)
+            except Exception as exc:
+                self.store_error=str(exc)
+                self.store_disabled=True
+                logger=getattr(self,'logger',None)
+                if logger is not None:
+                    try:logger.warning('记忆库未打开，记忆功能停用：%s',exc)
+                    except Exception:pass
+                return False
         # 原话级语义门槛由配置下发（默认 75，实验可降到 55–60）。
         self.store.source_min_cosine=self.source_percent/100.0
         self.store.always_context_enabled=self.always_context_enabled
@@ -257,14 +269,15 @@ class DigitalMemoryStore(CommandMixin, Star):
         self.store.occurred_date_context_enabled=self.occurred_date_context_enabled
         self.store.reviewed_brief_context_enabled=self.reviewed_brief_context_enabled
         self.store.brief_overview_priority_enabled=self.brief_overview_priority_enabled
+        return True
 
     def _capture_work(self,sender,origin,message_id,text,received_at):
-        self._ensure_store()
+        if not self._ensure_store():return False
         scope=self.store.scope(sender,origin)
         return self.store.capture(scope,message_id,text,recorded_at=received_at)
 
     def _auto_work(self):
-        self._ensure_store()
+        if not self._ensure_store():return
         from .auto_organize import process_jobs
         count=process_jobs(self.store.flow.db)
         # 模型仍在后台加载时跳过语义同步：否则懒加载会占住单线程池，导致整理积压。
@@ -603,7 +616,7 @@ class DigitalMemoryStore(CommandMixin, Star):
                 self.capture_queue.task_done()
 
     def _context_work(self,sender,origin,query,focus=None,excluded=None,current_message_id=None,as_of=None,anchor=None):
-        self._ensure_store()
+        if not self._ensure_store():return self._context_result('',None,None)
         scope=self.store.scope(sender,origin)
         lookup_query=(query+' '+anchor)[:400] if anchor and is_anaphoric(query) else query
         if self.auto_gap_recovery_enabled:

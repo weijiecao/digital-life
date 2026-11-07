@@ -85,6 +85,7 @@ def plugin_paths(astrbot_root):
         'target': root / 'data' / 'plugins' / PLUGIN_NAME,
         'config': root / 'data' / 'config' / (PLUGIN_NAME + '_config.json'),
         'backup_root': root / 'data' / 'plugins_backup',
+        'data': root / 'data' / 'plugin_data' / PLUGIN_NAME,
     }
 
 
@@ -127,9 +128,14 @@ def upgrade(astrbot_root, source=SOURCE):
     if not paths['config'].is_file():
         raise FileNotFoundError('缺少插件配置，拒绝升级以免丢配置：%s' % paths['config'])
     saved = backup(astrbot_root)
+    data_saved = None
+    if paths['data'].is_dir():
+        data_saved = paths['backup_root'] / ('dlm_data_%s' % time.strftime('%Y%m%dT%H%M%S'))
+        shutil.copytree(paths['data'], data_saved)
     _force_rmtree(paths['target'])
     shutil.copytree(source, paths['target'], ignore=_ignore_pycache)
-    return {'backup': str(saved), 'target': str(paths['target'])}
+    return {'backup': str(saved), 'data_backup': str(data_saved) if data_saved else None,
+            'target': str(paths['target'])}
 
 
 def rollback(astrbot_root, backup_name=None):

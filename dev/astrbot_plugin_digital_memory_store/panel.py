@@ -62,6 +62,13 @@ def _latency(root, limit=500):
 
 
 def stats(root, store):
+    lock_path = Path(root) / '.memory.lock'
+    lock_owner = ''
+    if lock_path.is_file():
+        try:
+            lock_owner = lock_path.read_text(encoding='utf-8', errors='replace').strip()
+        except OSError:
+            lock_owner = ''
     path = db_path(root)
     captures = 0
     pending = 0
@@ -118,7 +125,9 @@ def stats(root, store):
         warnings.append('磁盘剩余不足 20%')
     return {
         'db': {'path': str(path), 'bytes': db_bytes, 'mb': round(db_bytes / 1024 ** 2, 2),
-               'wal_mb': round(wal_bytes / 1024 ** 2, 2), 'shm_mb': round(shm_bytes / 1024 ** 2, 2)},
+               'wal_mb': round(wal_bytes / 1024 ** 2, 2), 'shm_mb': round(shm_bytes / 1024 ** 2, 2),
+               'schema_version': getattr(store, 'schema_version', None),
+               'lock_owner': lock_owner},
         'captures': captures, 'pending': pending, 'events': events, 'oldest': oldest,
         'daily_7d': daily, 'per_message_bytes': round(per_message),
         'projections_5y': projections,

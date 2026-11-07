@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   一键把本插件装进 AstrBot：复制插件 → 写配置 → （可选）装语义依赖 → （可选）下载模型。
 
@@ -156,13 +156,21 @@ if (-not $SkipModel) {
 # ---------- 4. 复制插件 ----------
 $pluginsDir = Join-Path $AstrBotRoot 'data\plugins'
 $target = Join-Path $pluginsDir $PluginName
+$backupRoot = Join-Path $AstrBotRoot 'data\plugins_backup'
 if (-not (Test-Path $pluginsDir)) { New-Item -ItemType Directory -Force -Path $pluginsDir | Out-Null }
 if (Test-Path $target) {
-    $backupRoot = Join-Path $AstrBotRoot 'data\plugins_backup'
     New-Item -ItemType Directory -Force -Path $backupRoot | Out-Null
     $backup = Join-Path $backupRoot ("{0}_{1}" -f $PluginName, (Get-Date -Format 'yyyyMMdd_HHmmss'))
     Move-Item $target $backup
     Note "旧版本已备份：$backup"
+}
+# 升级前同时备份数据目录；数据库与插件目录分离，不能只备份插件。
+$dataDir = Join-Path $AstrBotRoot ("data\plugin_data\$PluginName")
+if (Test-Path $dataDir) {
+    New-Item -ItemType Directory -Force -Path $backupRoot | Out-Null
+    $dataBackup = Join-Path $backupRoot ("dlm_data_{0}" -f (Get-Date -Format 'yyyyMMdd_HHmmss'))
+    Copy-Item $dataDir $dataBackup -Recurse -Force
+    Note "数据目录已备份：$dataBackup（请保留到升级验证完成）"
 }
 New-Item -ItemType Directory -Force -Path $target | Out-Null
 Get-ChildItem $Source -Recurse -File |

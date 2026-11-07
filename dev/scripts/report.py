@@ -28,6 +28,7 @@ sys.path.insert(0, str(ROOT))
 SUITES = (
     'tests.test_store',
     'tests.test_plugin',
+    'tests.test_data_safety',
     'tests.test_baseline_alignment',
     'tests.test_preflight',
     'tests.test_auto_jobs',
