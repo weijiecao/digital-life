@@ -1,11 +1,11 @@
 {
   "scope": "manual-test:5f470dbeb4eb60757580d97e7fd7eaccc15b419a839ab3f933185413a6e756cc",
-  "note": "人工按 testbed 真实话术标注的同一事件组；seq 10/11/17/18/21 不参与 pairwise 主指标。",
+  "note": "人工按 testbed 真实话术标注的同一事件组。seq 4 是日期上下文，不是事件；10/11/17/18/21 是噪声、独立暗号、查询/歧义/偏好，不参与 pairwise 主指标。",
   "groups": [
-    {"id": "thursday_food", "seqs": [4, 5, 6, 7, 8, 9, 19, 20]},
+    {"id": "thursday_food", "seqs": [5, 6, 7, 8, 9, 19, 20]},
     {"id": "lime_gate_code", "seqs": [22, 23]},
     {"id": "apple_preference", "seqs": [12, 15]},
     {"id": "move_plan", "seqs": [13, 14, 16]}
   ],
-  "excluded": [10, 11, 17, 18, 21]
+  "excluded": [4, 10, 11, 17, 18, 21]
 }

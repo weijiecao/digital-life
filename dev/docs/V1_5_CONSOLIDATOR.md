@@ -65,19 +65,24 @@ cd dev
 - 单元测试：`tests.test_v1_5_consolidator` 4 项；
 - 真实 testbed 库（3 scope / 27 条）mock 冒烟：3 个事件、27 条证据；
 - 真实 DeepSeek 冒烟（20 条单 scope）：7–8 个事件、18–19 条证据；
-- **小规模事件划分评测**（4 个标注组 / 15 条消息 / 33 个正对，3 轮）：
+- **小规模事件划分评测**（4 个标注组 / 14 条消息 / 26 个正对，3 轮；seq 4 为日期上下文，已排除）：
 
 | 指标 | 均值 |
 |---|---:|
-| pairwise precision | 0.9855 |
-| pairwise recall | 0.6970 |
-| pairwise F1 | 0.8164 |
-| false merge rate | 0.0101 |
-| source coverage | 0.8667 |
-| events created | 3–7 |
+| pairwise precision | 1.0000 |
+| pairwise recall | 0.9231 |
+| pairwise F1 | 0.9600 |
+| false merge rate | 0.0000 |
+| source coverage | 1.0000 |
+| events created | 7–8 |
 
-  **判读**：precision 高、误合并低，但 recall 偏低，说明当前 LLM 倾向把同一事件拆开或漏掉部分消息；
-  与 `later`/`叙事` 的标注边界也有关。样本只有 33 个正对，不能当发布准确率。
+  **判读**：在 26 个正对上 precision/recall 都高，但 `seq 16`（“之前搬家那件事”）仍被单独拆出，
+  少 2 个正对；另有 1–3 个 `event_type` 非法候选被 Validator 拒绝。
+  这是小样本、单 scope、单模型结果，不能当发布准确率。
+
+- 早期 33 正对标签把“日期上下文”和“饮食计划”混在一起，recall 只有 0.70；
+  修正标签并加入“追问应归入已有事件”约束后，recall 提升到 0.9231。这个提升包含标签口径修正，
+  不是纯模型提升，不能直接对外宣传。
 
 - 首次真实运行曾因 `max_tokens=1200` 截断 JSON；已提高到 4000。
 

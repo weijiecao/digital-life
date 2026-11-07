@@ -37,6 +37,8 @@ def evaluate_round(v1_db: str, scope: str, labels: dict, provider) -> dict:
         db = sqlite3.connect(v15)
         rows = db.execute("""SELECT source_seq,event_id FROM event_evidence
             WHERE valid=1 ORDER BY source_seq""").fetchall()
+        issues = {row[0]: row[1] for row in db.execute(
+            "SELECT code,COUNT(*) FROM validation_issue GROUP BY code")}
         db.close()
     mapping = {int(seq): event_id for seq, event_id in rows}
     groups = labels["groups"]
@@ -53,12 +55,19 @@ def evaluate_round(v1_db: str, scope: str, labels: dict, provider) -> dict:
     false_merges = len(pred_pairs - gold_pairs)
     false_merge_rate = false_merges / len(gold_pairs) if gold_pairs else 0.0
     coverage = sum(1 for seq in allowed if predicted[seq]) / len(allowed) if allowed else 0.0
+    clusters: dict[str, list[int]] = {}
+    for seq, event_id in mapping.items():
+        if event_id and seq in allowed:
+            clusters.setdefault(event_id, []).append(seq)
     return {"round": None, "events_created": summary.events_created,
             "rejected": summary.rejected, "coverage": round(coverage, 4),
             "pair_precision": round(precision, 4), "pair_recall": round(recall, 4),
             "pair_f1": round(f1, 4), "false_merge_rate": round(false_merge_rate, 4),
             "gold_pairs": len(gold_pairs), "pred_pairs": len(pred_pairs),
-            "tp": tp, "false_merges": false_merges}
+            "tp": tp, "false_merges": false_merges,
+            "validation_issues": issues,
+            "clusters": sorted((sorted(seqs) for seqs in clusters.values()),
+                               key=lambda item: item[0])}
 
 
 def main(argv=None) -> int:
