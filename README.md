@@ -85,7 +85,7 @@
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-把「私聊原话存本机、需要时以**未确认线索**回注模型」做成可验证的工程：插件本体、**363 项离线回归**、
+把「私聊原话存本机、需要时以**未确认线索**回注模型」做成可验证的工程：插件本体、**367 项离线回归**、
 真实 AstrBot/真实 BGE/真实 QQ 的实机证据，以及**换机器也能复现的环境引导**。
 
 > **v1.0.19 静默版**：用户聊天里没有 `/dlm` 命令；不新建正式事件；管理只在 WebUI panel / 配置文件 /
@@ -106,7 +106,7 @@ v1.0.19 起聊天里**不注册 `/dlm`**；管理在 WebUI panel，用户零感�
 
 本仓库除了插件本体，还包含：
 
-- **363 项离线回归**（`dev/tests/`，含上游基线继承、备份回归、注入契约、端到端链路）；
+- **367 项离线回归**（`dev/tests/`，含上游基线继承、备份回归、注入契约、端到端链路）；
 - **可观测假 AstrBot**（`dev/sim_astrbot.py`）与真实链路探针（`testbed/harness/real_chain.py`）；
 - **实机环境**：AstrBot 4.29.3 + Python 3.12 + 真实 BGE（512 维）+ 本地 mock provider；
 - **一键环境引导**：`env/setup.ps1`（建 venv、拉源码、装依赖、下模型、生成实例）。
@@ -119,6 +119,20 @@ v1.0.19 起聊天里**不注册 `/dlm`**；管理在 WebUI panel，用户零感�
 - 旧库/无 `dl_meta` 的库在首次迁移前自动生成 `backups/memory_*.sqlite3`；
 - `.memory.lock` 单实例锁，第二个实例停用记忆但不影响正常回复；
 - 记忆库打不开时只停用记忆，不覆盖数据库。
+
+### V1.5 定时事件候选归纳（独立服务，影子）
+
+`dev/v1_5_consolidator/` 是独立的只读服务，不写 V1 正式事件：
+
+- 按 scope 读取 V1 原话；
+- 定时/手动调用 LLM 生成事件划分候选；
+- 确定性 Validator 校验 source/quote/scope/候选 ID；
+- 写独立 SQLite（`event_candidate / event_revision / event_evidence`）；
+- 删除 V1 原话后对账 tombstone，证据失效、事件转 `ambiguous`；
+- 默认 mock，不调用外部模型；真实 LLM 需显式 `--allow-external`。
+
+当前只有 Alpha 骨架和 4 项测试，详见
+[`dev/docs/V1_5_CONSOLIDATOR.md`](dev/docs/V1_5_CONSOLIDATOR.md)。
 
 ### v1.0.19 静默版怎么用
 
@@ -151,7 +165,7 @@ digital-life/
     README.md                版本矩阵、镜像源、已知坑（先读这个）
   dev/                       开发工作区（权威开发线）
     astrbot_plugin_digital_memory_store/   插件源码（含 install.ps1 与用户文档）
-    tests/                   363 项回归（python -m unittest tests.test_store）
+    tests/                   367 项回归（python -m unittest tests.test_store）
     scripts/                 report.py / install.py / upgrade.py / rollback.py / build_package.py
     docs/                    架构、指标口径、评估集、实机报告、上线清单…
     reports/                 探针与评估输出（可重生成）
@@ -204,7 +218,7 @@ cd ..\testbed
 
 | 项 | 结果 |
 |---|---|
-| 离线回归 | **363/363**（`dev/STATUS.md` 为唯一数字来源，脚本生成） |
+| 离线回归 | **367/367**（`dev/STATUS.md` 为唯一数字来源，脚本生成） |
 | CI | GitHub Actions `tests.yml`：`windows-latest` + Python 3.10 / 3.11 / 3.12，三版本全绿 |
 | 真实 AstrBot 4.29.3 | 插件加载、注入钩子注册、panel API 通；**v1.0.19 不再注册 `/dlm`** |
 | 真实 BGE | 512 维；冷加载 10.9–13.1 s；3.8–4.0 ms/条 |

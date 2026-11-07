@@ -1,0 +1,17 @@
+{
+  "suite": "v1.5-real-llm-smoke",
+  "date": "2026-11-07",
+  "source": "testbed manual_test_memory.sqlite3",
+  "scope": "largest scope",
+  "messages": 20,
+  "events_created": 8,
+  "evidence": 19,
+  "rejected_operations": 0,
+  "provider": "deepseek-chat",
+  "notes": [
+    "首次运行 max_tokens=1200 导致 JSON 截断；提高到 4000 后通过。",
+    "一版提示词产生 20 个事件（每条一个）；加“同主题合并”约束后为 7–8 个事件。",
+    "最新一轮：8 个事件、19 条证据、0 个校验失败；20 条原话中 1 条未归入事件。",
+    "单次冒烟，不构成准确率结论。"
+  ]
+}
