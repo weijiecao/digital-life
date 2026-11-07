@@ -4,6 +4,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from v1_5_consolidator.candidate_retriever import (EventAnchor,
+                                                   LexicalCandidateIndex,
+                                                   build_anchors_from_groups)
 from v1_5_consolidator.engine import Consolidator, ProposalValidator, _digest, _merge_followups
 from v1_5_consolidator.contracts import ProposalOperation, SourceEnvelope
 from v1_5_consolidator.gateway import MockProvider
@@ -128,6 +131,29 @@ class TestV15Consolidator(unittest.TestCase):
         merged = _merge_followups([first, follow], sources)
         self.assertEqual(len(merged), 1)
         self.assertEqual(len(merged[0].source_refs), 2)
+
+    def test_lexical_candidate_index_ranks_same_event(self):
+        index = LexicalCandidateIndex()
+        index.add(EventAnchor("evt_trip", "scope-a", canonical_title="十月去青岛",
+                              anchor_text="十月去青岛玩"))
+        index.add(EventAnchor("evt_move", "scope-a", canonical_title="搬家到杭州",
+                              anchor_text="搬家到杭州西湖区"))
+        candidates = index.search("scope-a", "青岛的酒店", k=2)
+        self.assertTrue(candidates)
+        self.assertEqual(candidates[0].event_id, "evt_trip")
+
+    def test_lexical_candidate_index_is_scope_isolated(self):
+        index = LexicalCandidateIndex()
+        index.add(EventAnchor("evt_other", "scope-b", canonical_title="搬家",
+                              anchor_text="搬家到杭州"))
+        self.assertEqual(index.search("scope-a", "搬家", k=10), [])
+
+    def test_build_anchors_uses_first_group_message(self):
+        anchors = build_anchors_from_groups(
+            [{"id": "evt_1", "seqs": [3, 4]}], "scope-a", {3: "第一条", 4: "第二条"})
+        self.assertEqual(len(anchors), 1)
+        self.assertEqual(anchors[0].evidence_refs, [3])
+        self.assertEqual(anchors[0].anchor_text, "第一条")
 
     def test_tombstone_invalidates_evidence(self):
         with tempfile.TemporaryDirectory() as d:

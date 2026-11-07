@@ -1,0 +1,125 @@
+{
+  "suite": "v1.5-candidate-recall",
+  "method": "lexical-bm25-char-bigram",
+  "scopes": 10,
+  "queries": 80,
+  "recall": {
+    "1": 0.0,
+    "3": 0.0,
+    "5": 0.0,
+    "10": 0.0
+  },
+  "mrr": 0.0,
+  "results": [
+    {
+      "scope": "synthetic-heldout-00",
+      "queries": 8,
+      "recall": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0
+    },
+    {
+      "scope": "synthetic-heldout-01",
+      "queries": 8,
+      "recall": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0
+    },
+    {
+      "scope": "synthetic-heldout-02",
+      "queries": 8,
+      "recall": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0
+    },
+    {
+      "scope": "synthetic-heldout-03",
+      "queries": 8,
+      "recall": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0
+    },
+    {
+      "scope": "synthetic-heldout-04",
+      "queries": 8,
+      "recall": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0
+    },
+    {
+      "scope": "synthetic-heldout-05",
+      "queries": 8,
+      "recall": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0
+    },
+    {
+      "scope": "synthetic-heldout-06",
+      "queries": 8,
+      "recall": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0
+    },
+    {
+      "scope": "synthetic-heldout-07",
+      "queries": 8,
+      "recall": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0
+    },
+    {
+      "scope": "synthetic-heldout-08",
+      "queries": 8,
+      "recall": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0
+    },
+    {
+      "scope": "synthetic-heldout-09",
+      "queries": 8,
+      "recall": {
+        "1": 0.0,
+        "3": 0.0,
+        "5": 0.0,
+        "10": 0.0
+      },
+      "mrr": 0.0
+    }
+  ]
+}

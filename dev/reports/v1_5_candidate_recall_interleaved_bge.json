@@ -1,0 +1,125 @@
+{
+  "suite": "v1.5-candidate-recall",
+  "method": "bm25+bge",
+  "scopes": 10,
+  "queries": 80,
+  "recall": {
+    "1": 0.3125,
+    "3": 0.975,
+    "5": 1.0,
+    "10": 1.0
+  },
+  "mrr": 0.5958,
+  "results": [
+    {
+      "scope": "synthetic-heldout-00",
+      "queries": 8,
+      "recall": {
+        "1": 0.375,
+        "3": 1.0,
+        "5": 1.0,
+        "10": 1.0
+      },
+      "mrr": 0.625
+    },
+    {
+      "scope": "synthetic-heldout-01",
+      "queries": 8,
+      "recall": {
+        "1": 0.375,
+        "3": 1.0,
+        "5": 1.0,
+        "10": 1.0
+      },
+      "mrr": 0.6458
+    },
+    {
+      "scope": "synthetic-heldout-02",
+      "queries": 8,
+      "recall": {
+        "1": 0.25,
+        "3": 1.0,
+        "5": 1.0,
+        "10": 1.0
+      },
+      "mrr": 0.5833
+    },
+    {
+      "scope": "synthetic-heldout-03",
+      "queries": 8,
+      "recall": {
+        "1": 0.375,
+        "3": 0.875,
+        "5": 1.0,
+        "10": 1.0
+      },
+      "mrr": 0.6146
+    },
+    {
+      "scope": "synthetic-heldout-04",
+      "queries": 8,
+      "recall": {
+        "1": 0.25,
+        "3": 1.0,
+        "5": 1.0,
+        "10": 1.0
+      },
+      "mrr": 0.5625
+    },
+    {
+      "scope": "synthetic-heldout-05",
+      "queries": 8,
+      "recall": {
+        "1": 0.25,
+        "3": 0.875,
+        "5": 1.0,
+        "10": 1.0
+      },
+      "mrr": 0.5521
+    },
+    {
+      "scope": "synthetic-heldout-06",
+      "queries": 8,
+      "recall": {
+        "1": 0.375,
+        "3": 1.0,
+        "5": 1.0,
+        "10": 1.0
+      },
+      "mrr": 0.5833
+    },
+    {
+      "scope": "synthetic-heldout-07",
+      "queries": 8,
+      "recall": {
+        "1": 0.25,
+        "3": 1.0,
+        "5": 1.0,
+        "10": 1.0
+      },
+      "mrr": 0.5833
+    },
+    {
+      "scope": "synthetic-heldout-08",
+      "queries": 8,
+      "recall": {
+        "1": 0.25,
+        "3": 1.0,
+        "5": 1.0,
+        "10": 1.0
+      },
+      "mrr": 0.5833
+    },
+    {
+      "scope": "synthetic-heldout-09",
+      "queries": 8,
+      "recall": {
+        "1": 0.375,
+        "3": 1.0,
+        "5": 1.0,
+        "10": 1.0
+      },
+      "mrr": 0.625
+    }
+  ]
+}
