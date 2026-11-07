@@ -1,4 +1,5 @@
 import hashlib
+import json
 import sqlite3
 import tempfile
 import unittest
@@ -8,6 +9,8 @@ from v1_5_consolidator.candidate_retriever import (EventAnchor,
                                                    LexicalCandidateIndex,
                                                    build_anchors_from_groups)
 from v1_5_consolidator.engine import Consolidator, ProposalValidator, _digest, _merge_followups
+from v1_5_consolidator.gateway import ContextGateway
+from v1_5_consolidator.relation_judge import RelationJudge
 from v1_5_consolidator.contracts import ProposalOperation, SourceEnvelope
 from v1_5_consolidator.gateway import MockProvider
 from v1_5_consolidator.store import V15Store
@@ -27,6 +30,17 @@ def make_v1(path: Path, rows):
                     "2026-11-07T10:00:00+00:00", "pending"))
     db.commit()
     db.close()
+
+
+class FakeRelationProvider:
+    external = False
+
+    def __init__(self, text):
+        self.text = text
+
+    def generate(self, prepared):
+        return type("Result", (), {"text": self.text, "model": "fake",
+                                   "tokens_in": 1, "tokens_out": 1})()
 
 
 class TestV15Consolidator(unittest.TestCase):
@@ -154,6 +168,41 @@ class TestV15Consolidator(unittest.TestCase):
         self.assertEqual(len(anchors), 1)
         self.assertEqual(anchors[0].evidence_refs, [3])
         self.assertEqual(anchors[0].anchor_text, "第一条")
+
+    def test_relation_judge_parses_all_candidates(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            gateway = ContextGateway(store, deny_external=False)
+            response = json.dumps({"relations": [
+                {"candidate_event_id": "evt_a", "label": "SAME_EVENT", "reason_codes": ["same"]},
+                {"candidate_event_id": "evt_b", "label": "DIFFERENT_EVENT", "reason_codes": ["different"]},
+            ], "suggested_action": "ATTACH_EXISTING", "target_event_id": "evt_a"})
+            judge = RelationJudge(gateway, FakeRelationProvider(response))
+            source = SourceEnvelope("scope-a", 2, "sha", "t", "之前那件事怎么样")
+            result = judge.judge("scope-a", source, [
+                {"event_id": "evt_a", "event_type": "plan", "title": "A", "anchor_text": "A"},
+                {"event_id": "evt_b", "event_type": "plan", "title": "B", "anchor_text": "B"},
+            ])
+            self.assertTrue(result.ok)
+            self.assertEqual(result.target_event_id, "evt_a")
+            self.assertEqual(len(result.proposals), 2)
+            store.close()
+
+    def test_relation_judge_rejects_unknown_or_missing_candidates(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            gateway = ContextGateway(store, deny_external=False)
+            response = json.dumps({"relations": [
+                {"candidate_event_id": "evt_x", "label": "SAME_EVENT"},
+            ], "suggested_action": "DEFER"})
+            judge = RelationJudge(gateway, FakeRelationProvider(response))
+            result = judge.judge("scope-a", SourceEnvelope("scope-a", 2, "sha", "t", "Q"), [
+                {"event_id": "evt_a", "event_type": "plan", "title": "A", "anchor_text": "A"},
+            ])
+            self.assertFalse(result.ok)
+            self.assertTrue(any("candidate:" in issue for issue in result.issues))
+            self.assertTrue(any("missing:" in issue for issue in result.issues))
+            store.close()
 
     def test_tombstone_invalidates_evidence(self):
         with tempfile.TemporaryDirectory() as d:

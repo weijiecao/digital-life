@@ -20,6 +20,16 @@ class PreparedContext:
     policy_version: str
 
 
+@dataclass
+class PreparedRelationContext:
+    request_id: str
+    scope_id: str
+    source: SourceEnvelope
+    prompt: str
+    candidates: list[dict[str, Any]]
+    policy_version: str
+
+
 class ContextGateway:
     def __init__(self, store, policy_version: str = "v1.5-consolidation-1",
                  max_chars: int = 6000, deny_external: bool = True):
@@ -38,6 +48,8 @@ class ContextGateway:
             "不要每条消息创建一个事件。只有主体、主题或时间明显不同才 create 新事件。",
             "同一次外出/计划中的日期、星期、购买、餐饮、地点补充，即使句子本身是独立陈述，"
             "只要明显服务于同一计划，也应归入同一事件；不要把上下文句拆成单独事件。",
+            "同一目的地的不同月份/日期是不同事件；不能仅因目的地相同就合并。"
+            "如果原话中的明确日期/时间互相冲突，必须拆成不同事件。",
             "“之前那件事/后来呢/上次那个”等追问或回顾，如果指向本批次或候选中的事件，"
             "应 update/link 该事件，不要单独 create。",
             "重复或补充说明应放入同一个 create 的 source_refs，或对已有候选 update；"
@@ -72,6 +84,55 @@ class ContextGateway:
         return PreparedContext(request_id=request_id, scope_id=scope_id, prompt=prompt,
                                sources=sources, candidates=candidates,
                                policy_version=self.policy_version)
+
+    def prepare_relation(self, scope_id: str, source: SourceEnvelope,
+                         candidates: list[dict[str, Any]],
+                         purpose: str = "relation_judge",
+                         context: list[SourceEnvelope] | None = None) -> PreparedRelationContext:
+        context = context or []
+        lines = [
+            "你是事件关系判别器，不是事实生成器。",
+            "只判断当前原话与每个候选事件是否同一具体事件；只输出 JSON。",
+            "标签只能用：SAME_EVENT（同一具体事件/持续计划）、DIFFERENT_EVENT（不同事件）、"
+            "RELATED_CONTEXT（同主题/相关但不足以同一事件）、UNCERTAIN（证据不足）。",
+            "同目的地但不同日期/不同次出行不能标 SAME_EVENT；叙述/转述不能当作本人经历。",
+            "同一旅行/计划的酒店、预算、日期、地点、行程补充属于 SAME_EVENT；"
+            "只有同主题但不同次出行/不同目标才用 RELATED_CONTEXT 或 DIFFERENT_EVENT。"
+            "不要因为原话简短或只是补充细节就降级为 RELATED_CONTEXT。",
+            "必须为每个候选返回一条 relation；不要新增候选 ID；reason_codes 只是理由声明。",
+            "输出结构：",
+            '{"schema_version":"v1.5b.1","relations":[{"candidate_event_id":"evt_x",'
+            '"label":"SAME_EVENT|DIFFERENT_EVENT|RELATED_CONTEXT|UNCERTAIN",'
+            '"reason_codes":["..."]}],"suggested_action":"ATTACH_EXISTING|NEW_EVENT|DEFER",'
+            '"target_event_id":null}',
+            "",
+            "scope: " + scope_id,
+            "当前原话 [%d]: %s" % (source.source_seq, source.text),
+            "最近上下文（仅用于判断指代，不得当作新事实）：",
+        ]
+        if context:
+            for item in context:
+                lines.append("[%d] %s" % (item.source_seq, item.text))
+        else:
+            lines.append("（无）")
+        lines.append("候选事件：")
+        for item in candidates:
+            lines.append("- %s | %s | %s" % (
+                item["event_id"], item.get("event_type", "unknown"),
+                item.get("title") or item.get("canonical_title") or ""))
+            anchor = item.get("anchor_text") or ""
+            if anchor:
+                lines.append("  anchor: " + anchor[:500])
+        prompt = "\n".join(lines)
+        if len(prompt) > self.max_chars:
+            raise ValueError("关系判别超过 ContextGateway 字符预算：%d > %d" % (len(prompt), self.max_chars))
+        request_id = "ctx_rel_" + uuid.uuid4().hex
+        self.store.audit(request_id, purpose, scope_id, self.policy_version, "prepared",
+                         [source.ref()] + [item.ref() for item in context])
+        return PreparedRelationContext(request_id=request_id, scope_id=scope_id,
+                                       source=source, prompt=prompt,
+                                       candidates=candidates,
+                                       policy_version=self.policy_version)
 
 
 @dataclass

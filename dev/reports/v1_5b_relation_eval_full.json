@@ -1,0 +1,161 @@
+{
+  "suite": "v1.5b-relation-judge-gold-candidates",
+  "model": "deepseek-chat",
+  "scopes": 10,
+  "pairs": 320,
+  "tp": 54,
+  "fp": 0,
+  "fn": 26,
+  "tn": 240,
+  "abstain": 0,
+  "invalid": 0,
+  "precision": 1.0,
+  "recall": 0.675,
+  "f1": 0.806,
+  "labels": {
+    "SAME_EVENT": 54,
+    "DIFFERENT_EVENT": 247,
+    "RELATED_CONTEXT": 19
+  },
+  "results": [
+    {
+      "scope": "synthetic-heldout-00",
+      "tp": 7,
+      "fp": 0,
+      "fn": 1,
+      "tn": 24,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "SAME_EVENT": 7,
+        "DIFFERENT_EVENT": 24,
+        "RELATED_CONTEXT": 1
+      }
+    },
+    {
+      "scope": "synthetic-heldout-01",
+      "tp": 4,
+      "fp": 0,
+      "fn": 4,
+      "tn": 24,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "DIFFERENT_EVENT": 25,
+        "SAME_EVENT": 4,
+        "RELATED_CONTEXT": 3
+      }
+    },
+    {
+      "scope": "synthetic-heldout-02",
+      "tp": 5,
+      "fp": 0,
+      "fn": 3,
+      "tn": 24,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "DIFFERENT_EVENT": 25,
+        "SAME_EVENT": 5,
+        "RELATED_CONTEXT": 2
+      }
+    },
+    {
+      "scope": "synthetic-heldout-03",
+      "tp": 3,
+      "fp": 0,
+      "fn": 5,
+      "tn": 24,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "DIFFERENT_EVENT": 25,
+        "SAME_EVENT": 3,
+        "RELATED_CONTEXT": 4
+      }
+    },
+    {
+      "scope": "synthetic-heldout-04",
+      "tp": 5,
+      "fp": 0,
+      "fn": 3,
+      "tn": 24,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "DIFFERENT_EVENT": 25,
+        "SAME_EVENT": 5,
+        "RELATED_CONTEXT": 2
+      }
+    },
+    {
+      "scope": "synthetic-heldout-05",
+      "tp": 7,
+      "fp": 0,
+      "fn": 1,
+      "tn": 24,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "DIFFERENT_EVENT": 25,
+        "SAME_EVENT": 7
+      }
+    },
+    {
+      "scope": "synthetic-heldout-06",
+      "tp": 5,
+      "fp": 0,
+      "fn": 3,
+      "tn": 24,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "DIFFERENT_EVENT": 25,
+        "SAME_EVENT": 5,
+        "RELATED_CONTEXT": 2
+      }
+    },
+    {
+      "scope": "synthetic-heldout-07",
+      "tp": 7,
+      "fp": 0,
+      "fn": 1,
+      "tn": 24,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "SAME_EVENT": 7,
+        "DIFFERENT_EVENT": 24,
+        "RELATED_CONTEXT": 1
+      }
+    },
+    {
+      "scope": "synthetic-heldout-08",
+      "tp": 4,
+      "fp": 0,
+      "fn": 4,
+      "tn": 24,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "DIFFERENT_EVENT": 25,
+        "SAME_EVENT": 4,
+        "RELATED_CONTEXT": 3
+      }
+    },
+    {
+      "scope": "synthetic-heldout-09",
+      "tp": 7,
+      "fp": 0,
+      "fn": 1,
+      "tn": 24,
+      "abstain": 0,
+      "invalid": 0,
+      "labels": {
+        "SAME_EVENT": 7,
+        "DIFFERENT_EVENT": 24,
+        "RELATED_CONTEXT": 1
+      }
+    }
+  ]
+}
