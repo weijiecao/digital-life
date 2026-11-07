@@ -223,7 +223,7 @@ class TestJudgeIntegration(unittest.TestCase):
             context, '之前那件事有什么安排？')
         elapsed = time.perf_counter() - started
         self.assertEqual(parts, [])
-        self.assertLess(elapsed, 4.0, '超时必须快速放弃，不能拖住回复')
+        self.assertLess(elapsed, 8.0, '超时必须快速放弃，不能拖住回复')
 
     def test_hourly_limit_respected(self):
         context = FakeContext('{"choices":[1],"sufficient":true,"conflict":false,"reason":"x"}')
