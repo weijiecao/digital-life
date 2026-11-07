@@ -76,6 +76,44 @@ class TestV15Consolidator(unittest.TestCase):
         self.assertEqual(len(result.accepted), 0)
         self.assertEqual(len(result.rejected), 1)
 
+    def test_unknown_event_type_is_allowed(self):
+        sources = [SourceEnvelope("a", 1, "sha", "t", "说不清的一件事")]
+        validator = ProposalValidator("a", sources, [])
+        result = validator.validate({"operations": [{
+            "action": "create", "event_type": "unknown", "title": "候选",
+            "summary": "候选", "modality": "unknown", "status_proposal": "unknown",
+            "source_refs": [{"source_seq": 1, "quote": "说不清的一件事"}]}]})
+        self.assertEqual(len(result.accepted), 1)
+
+    def test_followup_without_overlap_is_not_merged(self):
+        sources = [
+            SourceEnvelope("a", 1, "sha1", "t", "下个月搬到杭州西湖区"),
+            SourceEnvelope("a", 2, "sha2", "t", "之前说的那部电影怎么样"),
+        ]
+        first = ProposalOperation(action="create", event_type="plan",
+                                  title="搬家", summary="搬家",
+                                  source_refs=[{"source_seq": 1, "quote": sources[0].text}])
+        follow = ProposalOperation(action="create", event_type="unknown",
+                                   title="电影", summary="电影",
+                                   source_refs=[{"source_seq": 2, "quote": sources[1].text}])
+        merged = _merge_followups([first, follow], sources)
+        self.assertEqual(len(merged), 2)
+
+    def test_followup_with_tied_overlap_is_not_merged(self):
+        sources = [
+            SourceEnvelope("a", 1, "sha1", "t", "杭州搬家计划"),
+            SourceEnvelope("a", 2, "sha2", "t", "杭州搬家预算"),
+            SourceEnvelope("a", 3, "sha3", "t", "之前杭州搬家那件事怎么样"),
+        ]
+        first = ProposalOperation(action="create", event_type="plan", title="搬家A",
+                                  summary="杭州搬家", source_refs=[{"source_seq": 1, "quote": sources[0].text}])
+        second = ProposalOperation(action="create", event_type="plan", title="搬家B",
+                                   summary="杭州搬家", source_refs=[{"source_seq": 2, "quote": sources[1].text}])
+        follow = ProposalOperation(action="create", event_type="unknown", title="回顾",
+                                   summary="回顾", source_refs=[{"source_seq": 3, "quote": sources[2].text}])
+        merged = _merge_followups([first, second, follow], sources)
+        self.assertEqual(len(merged), 3)
+
     def test_followup_source_is_merged_into_existing_event(self):
         sources = [
             SourceEnvelope("a", 1, "sha1", "t", "下个月十五号搬到杭州西湖区"),

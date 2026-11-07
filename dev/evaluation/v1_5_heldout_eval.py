@@ -21,13 +21,14 @@ from v1_5_consolidator.gateway import ContextGateway, OpenAIProvider
 from v1_5_consolidator.store import V15Store
 
 
-def evaluate_scope(v1_db: str, scope: str, groups: list[dict], provider) -> dict:
+def evaluate_scope(v1_db: str, scope: str, groups: list[dict], provider,
+                   batch_limit: int = 40) -> dict:
     with tempfile.TemporaryDirectory(prefix="v15-heldout-") as tmp:
         v15 = str(Path(tmp) / "v15.sqlite3")
         store = V15Store(v15)
         gateway = ContextGateway(store, deny_external=False)
         consolidator = Consolidator(v1_db, v15, provider, gateway=gateway,
-                                    min_messages=1, batch_limit=40, store=store)
+                                    min_messages=1, batch_limit=batch_limit, store=store)
         try:
             summary = consolidator.run_once(scope=scope, force=True)
         finally:
@@ -68,12 +69,14 @@ def main(argv=None) -> int:
     parser.add_argument("--api-key-file", required=True)
     parser.add_argument("--base-url", default="https://api.deepseek.com/v1")
     parser.add_argument("--model", default="deepseek-chat")
+    parser.add_argument("--batch-limit", type=int, default=40)
     parser.add_argument("--out", required=True)
     args = parser.parse_args(argv)
     labels = json.loads(Path(args.labels).read_text(encoding="utf-8"))
     key = Path(args.api_key_file).read_text(encoding="utf-8").strip()
     provider = OpenAIProvider(args.base_url, args.model, key)
-    results = [evaluate_scope(args.v1_db, scope["scope"], scope["groups"], provider)
+    results = [evaluate_scope(args.v1_db, scope["scope"], scope["groups"], provider,
+                              batch_limit=args.batch_limit)
                for scope in labels["scopes"]]
     tp = sum(item["tp"] for item in results)
     pred = sum(item["pred_pairs"] for item in results)
@@ -84,6 +87,7 @@ def main(argv=None) -> int:
     recall = tp / gold if gold else 0.0
     f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
     payload = {"suite": "v1.5-heldout-eval", "model": args.model,
+               "batch_limit": args.batch_limit,
                "scopes": len(results), "gold_pairs": gold,
                "pred_pairs": pred, "tp": tp,
                "pair_precision": round(precision, 4),

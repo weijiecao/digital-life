@@ -1,0 +1,302 @@
+{
+  "suite": "v1.5-heldout-eval",
+  "model": "deepseek-chat",
+  "batch_limit": 8,
+  "scopes": 10,
+  "gold_pairs": 120,
+  "pred_pairs": 14,
+  "tp": 2,
+  "pair_precision": 0.1429,
+  "pair_recall": 0.0167,
+  "pair_f1": 0.0299,
+  "false_merge_rate": 0.1,
+  "mean_source_coverage": 0.5,
+  "results": [
+    {
+      "scope": "synthetic-heldout-00",
+      "events_created": 4,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 3,
+      "tp": 1,
+      "false_merges": 2,
+      "coverage": 0.5,
+      "clusters": [
+        [
+          1,
+          7,
+          8
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-01",
+      "events_created": 6,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 1,
+      "tp": 0,
+      "false_merges": 1,
+      "coverage": 0.5,
+      "clusters": [
+        [
+          21
+        ],
+        [
+          22
+        ],
+        [
+          23
+        ],
+        [
+          24
+        ],
+        [
+          27,
+          28
+        ]
+      ],
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-02",
+      "events_created": 6,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 1,
+      "tp": 0,
+      "false_merges": 1,
+      "coverage": 0.5,
+      "clusters": [
+        [
+          41
+        ],
+        [
+          42
+        ],
+        [
+          43
+        ],
+        [
+          44
+        ],
+        [
+          47,
+          48
+        ]
+      ],
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-03",
+      "events_created": 5,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 1,
+      "tp": 0,
+      "false_merges": 1,
+      "coverage": 0.5,
+      "clusters": [
+        [
+          61
+        ],
+        [
+          62
+        ],
+        [
+          63
+        ],
+        [
+          64
+        ],
+        [
+          67,
+          68
+        ]
+      ],
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-04",
+      "events_created": 6,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 1,
+      "tp": 0,
+      "false_merges": 1,
+      "coverage": 0.5,
+      "clusters": [
+        [
+          81
+        ],
+        [
+          82
+        ],
+        [
+          83
+        ],
+        [
+          84
+        ],
+        [
+          87,
+          88
+        ]
+      ],
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-05",
+      "events_created": 6,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 1,
+      "tp": 0,
+      "false_merges": 1,
+      "coverage": 0.5,
+      "clusters": [
+        [
+          101
+        ],
+        [
+          102
+        ],
+        [
+          103
+        ],
+        [
+          104
+        ],
+        [
+          107,
+          108
+        ]
+      ],
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-06",
+      "events_created": 5,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 1,
+      "tp": 0,
+      "false_merges": 1,
+      "coverage": 0.5,
+      "clusters": [
+        [
+          121
+        ],
+        [
+          122
+        ],
+        [
+          123
+        ],
+        [
+          124
+        ],
+        [
+          127,
+          128
+        ]
+      ],
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-07",
+      "events_created": 6,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 1,
+      "tp": 0,
+      "false_merges": 1,
+      "coverage": 0.5,
+      "clusters": [
+        [
+          141
+        ],
+        [
+          142
+        ],
+        [
+          143
+        ],
+        [
+          144
+        ],
+        [
+          147,
+          148
+        ]
+      ],
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-08",
+      "events_created": 6,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 1,
+      "tp": 0,
+      "false_merges": 1,
+      "coverage": 0.5,
+      "clusters": [
+        [
+          161
+        ],
+        [
+          162
+        ],
+        [
+          163
+        ],
+        [
+          164
+        ],
+        [
+          167,
+          168
+        ]
+      ],
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-09",
+      "events_created": 4,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 3,
+      "tp": 1,
+      "false_merges": 2,
+      "coverage": 0.5,
+      "clusters": [
+        [
+          181,
+          187,
+          188
+        ],
+        [
+          182
+        ],
+        [
+          183
+        ],
+        [
+          184
+        ]
+      ],
+      "validation_issues": []
+    }
+  ]
+}
