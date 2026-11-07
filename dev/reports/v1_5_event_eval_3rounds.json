@@ -1,0 +1,58 @@
+{
+  "suite": "v1.5-event-partition-eval",
+  "date": "2026-11-07T12:02:43.753978+00:00",
+  "model": "deepseek-chat",
+  "rounds": 3,
+  "labels": "evaluation\\v1_5_event_labels.json",
+  "results": [
+    {
+      "round": 1,
+      "events_created": 3,
+      "rejected": 1,
+      "coverage": 0.7333,
+      "pair_precision": 0.9565,
+      "pair_recall": 0.6667,
+      "pair_f1": 0.7857,
+      "false_merge_rate": 0.0303,
+      "gold_pairs": 33,
+      "pred_pairs": 23,
+      "tp": 22,
+      "false_merges": 1
+    },
+    {
+      "round": 2,
+      "events_created": 7,
+      "rejected": 0,
+      "coverage": 0.9333,
+      "pair_precision": 1.0,
+      "pair_recall": 0.697,
+      "pair_f1": 0.8214,
+      "false_merge_rate": 0.0,
+      "gold_pairs": 33,
+      "pred_pairs": 23,
+      "tp": 23,
+      "false_merges": 0
+    },
+    {
+      "round": 3,
+      "events_created": 7,
+      "rejected": 2,
+      "coverage": 0.9333,
+      "pair_precision": 1.0,
+      "pair_recall": 0.7273,
+      "pair_f1": 0.8421,
+      "false_merge_rate": 0.0,
+      "gold_pairs": 33,
+      "pred_pairs": 24,
+      "tp": 24,
+      "false_merges": 0
+    }
+  ],
+  "means": {
+    "coverage": 0.8666,
+    "pair_precision": 0.9855,
+    "pair_recall": 0.697,
+    "pair_f1": 0.8164,
+    "false_merge_rate": 0.0101
+  }
+}

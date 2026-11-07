@@ -64,8 +64,21 @@ cd dev
 
 - 单元测试：`tests.test_v1_5_consolidator` 4 项；
 - 真实 testbed 库（3 scope / 27 条）mock 冒烟：3 个事件、27 条证据；
-- 真实 DeepSeek 冒烟（20 条单 scope）：一轮 7 个事件/2 个校验失败，另一轮 8 个事件/0 个校验失败；
-  说明同一提示词存在 run-to-run 波动，不能据单次结果定准确率；
+- 真实 DeepSeek 冒烟（20 条单 scope）：7–8 个事件、18–19 条证据；
+- **小规模事件划分评测**（4 个标注组 / 15 条消息 / 33 个正对，3 轮）：
+
+| 指标 | 均值 |
+|---|---:|
+| pairwise precision | 0.9855 |
+| pairwise recall | 0.6970 |
+| pairwise F1 | 0.8164 |
+| false merge rate | 0.0101 |
+| source coverage | 0.8667 |
+| events created | 3–7 |
+
+  **判读**：precision 高、误合并低，但 recall 偏低，说明当前 LLM 倾向把同一事件拆开或漏掉部分消息；
+  与 `later`/`叙事` 的标注边界也有关。样本只有 33 个正对，不能当发布准确率。
+
 - 首次真实运行曾因 `max_tokens=1200` 截断 JSON；已提高到 4000。
 
 ## 6. 已知限制

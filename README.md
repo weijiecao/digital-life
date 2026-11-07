@@ -131,7 +131,8 @@ v1.0.19 起聊天里**不注册 `/dlm`**；管理在 WebUI panel，用户零感�
 - 删除 V1 原话后对账 tombstone，证据失效、事件转 `ambiguous`；
 - 默认 mock，不调用外部模型；真实 LLM 需显式 `--allow-external`。
 
-当前只有 Alpha 骨架和 4 项测试，详见
+当前只有 Alpha 骨架和 4 项测试；小规模 33 个正对评测：pairwise F1 0.816、
+false merge 1.01%、source recall 0.697，详见
 [`dev/docs/V1_5_CONSOLIDATOR.md`](dev/docs/V1_5_CONSOLIDATOR.md)。
 
 ### v1.0.19 静默版怎么用
