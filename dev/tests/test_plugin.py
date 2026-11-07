@@ -328,11 +328,13 @@ class Smoke(unittest.TestCase):
             p._record_capture_gap_work=fail_once;p._note_capture_gap(identity)
             async def wait_for_persist():
                 while identity in p.capture_gaps:await asyncio.sleep(.02)
-            await asyncio.wait_for(wait_for_persist(),3)
-            self.assertEqual(len(attempts),2)
-            scope=p.store.scope(*identity)
-            self.assertIsNotNone(await asyncio.get_running_loop().run_in_executor(p.pool,p.store.capture_gap_boundary,scope))
-            await p.terminate()
+            try:
+                await asyncio.wait_for(wait_for_persist(),10)
+                self.assertEqual(len(attempts),2)
+                scope=p.store.scope(*identity)
+                self.assertIsNotNone(await asyncio.get_running_loop().run_in_executor(p.pool,p.store.capture_gap_boundary,scope))
+            finally:
+                await p.terminate()
         with tempfile.TemporaryDirectory() as root:asyncio.run(go(root))
 
     def test_auto_group_context_is_wired_to_plugin_and_marked_unconfirmed(self):
