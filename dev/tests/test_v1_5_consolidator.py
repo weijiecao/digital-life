@@ -260,6 +260,39 @@ class TestV15Consolidator(unittest.TestCase):
             self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0], 0)
             store.close()
 
+    def test_resolver_rejects_multiple_same_proposals(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            seed_event(store, "evt_a")
+            seed_event(store, "evt_b")
+            resolver = ConstrainedResolver(store)
+            result = resolver.resolve("scope-a", SourceEnvelope("scope-a", 1, "sha", "t", "x"),
+                                      JudgmentResult(source_seq=1, proposals=[
+                                          RelationProposal("evt_a", "SAME_EVENT"),
+                                          RelationProposal("evt_b", "SAME_EVENT")]))
+            self.assertEqual(result.conflicts, 2)
+            self.assertEqual(result.attached, 0)
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0], 0)
+            store.close()
+
+    def test_resolver_attachment_survives_reopen(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = str(Path(d) / "v15.sqlite3")
+            store = V15Store(path)
+            seed_event(store, "evt_a")
+            source = SourceEnvelope("scope-a", 1, "sha", "t", "酒店")
+            judgment = JudgmentResult(source_seq=1, proposals=[
+                RelationProposal("evt_a", "SAME_EVENT")])
+            ConstrainedResolver(store).resolve("scope-a", source, judgment)
+            store.close()
+            reopened = V15Store(path)
+            try:
+                self.assertEqual(reopened.events_for_source("scope-a", 1), ["evt_a"])
+                result = ConstrainedResolver(reopened).resolve("scope-a", source, judgment)
+                self.assertEqual(result.already_attached, 1)
+            finally:
+                reopened.close()
+
     def test_tombstone_invalidates_evidence(self):
         with tempfile.TemporaryDirectory() as d:
             v1 = Path(d) / "v1.sqlite3"

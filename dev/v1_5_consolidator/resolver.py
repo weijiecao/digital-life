@@ -38,12 +38,22 @@ class ConstrainedResolver:
                 judgment: JudgmentResult, model_version: str = "") -> ResolutionSummary:
         summary = ResolutionSummary()
         existing = set(self.store.events_for_source(scope_id, source.source_seq))
+        same_props = [p for p in judgment.proposals if p.label == "SAME_EVENT"]
+        ambiguous_same = len(same_props) > 1
         for proposal in judgment.proposals:
             proposal_id = self.store.record_link_proposal(
                 scope_id, source.source_seq, proposal.candidate_event_id,
                 proposal.label, proposal.reason_codes, model_version, judgment.request_id)
             target = proposal.candidate_event_id
             if proposal.label == "SAME_EVENT":
+                if ambiguous_same:
+                    self.store.record_link_decision(
+                        proposal_id, scope_id, source.source_seq, target, "CONFLICT",
+                        "multiple_same_events")
+                    summary.conflicts += 1
+                    summary.decisions.append({"source_seq": source.source_seq,
+                                              "target": target, "decision": "CONFLICT"})
+                    continue
                 conflicts = [event_id for event_id in existing
                              if self.store.cannot_link_exists(scope_id, event_id, target)]
                 if conflicts:

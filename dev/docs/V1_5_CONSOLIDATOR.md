@@ -7,6 +7,7 @@
 > B2 报告：[`reports/V1_5B_B2_REPORT_2026-11-07.md`](../reports/V1_5B_B2_REPORT_2026-11-07.md)
 > B3 报告：[`reports/V1_5B_B3_REPORT_2026-11-07.md`](../reports/V1_5B_B3_REPORT_2026-11-07.md)
 > B3.1 回放：[`reports/V1_5B_B3_1_REPORT_2026-11-07.md`](../reports/V1_5B_B3_1_REPORT_2026-11-07.md)
+> B3.2 耐用性：[`reports/V1_5B_B3_2_REPORT_2026-11-07.md`](../reports/V1_5B_B3_2_REPORT_2026-11-07.md)
 
 ## 1. 定位
 
@@ -67,7 +68,7 @@ cd dev
 
 ## 5. 已验证
 
-- 单元测试：`tests.test_v1_5_consolidator` 16 项；
+- 单元测试：`tests.test_v1_5_consolidator` 18 项；
 - 真实 testbed 库（3 scope / 27 条）mock 冒烟：3 个事件、27 条证据；
 - 真实 DeepSeek 冒烟（20 条单 scope）：7–8 个事件、18–19 条证据；
 - **小规模事件划分评测**（4 个标注组 / 14 条消息 / 26 个正对，3 轮；seq 4 为日期上下文，已排除）：
