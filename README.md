@@ -131,9 +131,9 @@ v1.0.19 起聊天里**不注册 `/dlm`**；管理在 WebUI panel，用户零感�
 - 删除 V1 原话后对账 tombstone，证据失效、事件转 `ambiguous`；
 - 默认 mock，不调用外部模型；真实 LLM 需显式 `--allow-external`。
 
-当前只有 Alpha 骨架和 5 项测试；小规模 26 个正对评测：pairwise F1 1.0、
-false merge 0%、source coverage 1.0（单 scope/单模型，不能当发布准确率），详见
-[`dev/docs/V1_5_CONSOLIDATOR.md`](dev/docs/V1_5_CONSOLIDATOR.md)。
+当前只有 Alpha 骨架和 5 项测试；调参集 26 正对 F1 1.0，但**留出交错集只有 F1 0.39–0.43、false merge 28–36%**
+（连续块留出集 F1 1.0）。结论：LLM 对“连续块”可用，对“多事件交错窗口”不可靠，不能当发布准确率。
+详见 [`dev/docs/V1_5_CONSOLIDATOR.md`](dev/docs/V1_5_CONSOLIDATOR.md)。
 
 ### v1.0.19 静默版怎么用
 

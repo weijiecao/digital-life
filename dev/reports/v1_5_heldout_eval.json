@@ -1,0 +1,125 @@
+{
+  "suite": "v1.5-heldout-eval",
+  "model": "deepseek-chat",
+  "scopes": 10,
+  "gold_pairs": 120,
+  "pred_pairs": 71,
+  "tp": 37,
+  "pair_precision": 0.5211,
+  "pair_recall": 0.3083,
+  "pair_f1": 0.3874,
+  "false_merge_rate": 0.2833,
+  "mean_source_coverage": 0.9417,
+  "results": [
+    {
+      "scope": "synthetic-heldout-00",
+      "events_created": 4,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 11,
+      "tp": 8,
+      "false_merges": 3,
+      "coverage": 0.9167,
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-01",
+      "events_created": 13,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 2,
+      "tp": 1,
+      "false_merges": 1,
+      "coverage": 1.0,
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-02",
+      "events_created": 8,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 8,
+      "tp": 4,
+      "false_merges": 4,
+      "coverage": 0.9167,
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-03",
+      "events_created": 9,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 8,
+      "tp": 4,
+      "false_merges": 4,
+      "coverage": 0.9167,
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-04",
+      "events_created": 12,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 6,
+      "tp": 2,
+      "false_merges": 4,
+      "coverage": 1.0,
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-05",
+      "events_created": 8,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 8,
+      "tp": 4,
+      "false_merges": 4,
+      "coverage": 0.9167,
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-06",
+      "events_created": 13,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 1,
+      "tp": 0,
+      "false_merges": 1,
+      "coverage": 1.0,
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-07",
+      "events_created": 5,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 12,
+      "tp": 6,
+      "false_merges": 6,
+      "coverage": 0.8333,
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-08",
+      "events_created": 13,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 1,
+      "tp": 0,
+      "false_merges": 1,
+      "coverage": 1.0,
+      "validation_issues": []
+    },
+    {
+      "scope": "synthetic-heldout-09",
+      "events_created": 5,
+      "rejected": 0,
+      "gold_pairs": 12,
+      "pred_pairs": 14,
+      "tp": 8,
+      "false_merges": 6,
+      "coverage": 0.9167,
+      "validation_issues": []
+    }
+  ]
+}
