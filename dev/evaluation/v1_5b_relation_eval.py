@@ -43,6 +43,7 @@ def evaluate_scope(db_path: str, scope: str, groups: list[dict], judge: Relation
                         "evidence_refs": [first]})
     counts = {"tp": 0, "fp": 0, "fn": 0, "tn": 0, "abstain": 0, "invalid": 0}
     label_counts: dict[str, int] = {}
+    predictions = []
     for group in groups:
         for query_index, query_seq in enumerate(group["seqs"][1:], start=1):
             content, sha, recorded = rows[query_seq]
@@ -55,6 +56,9 @@ def evaluate_scope(db_path: str, scope: str, groups: list[dict], judge: Relation
             if result.issues:
                 counts["invalid"] += 1
             proposals = {item.candidate_event_id: item.label for item in result.proposals}
+            predictions.append({"scope": scope, "query_seq": query_seq,
+                                "gold_event": group["id"], "relations": proposals,
+                                "issues": result.issues})
             for anchor in anchors:
                 gold_same = anchor["event_id"] == group["id"]
                 label = proposals.get(anchor["event_id"])
@@ -73,7 +77,8 @@ def evaluate_scope(db_path: str, scope: str, groups: list[dict], judge: Relation
                     counts["fn"] += 1
                 else:
                     counts["tn"] += 1
-    return {"scope": scope, **counts, "labels": label_counts}
+    return {"scope": scope, **counts, "labels": label_counts,
+            "predictions": predictions}
 
 
 def main(argv=None) -> int:
@@ -118,7 +123,10 @@ def main(argv=None) -> int:
                "fn": totals["fn"], "tn": totals["tn"],
                "abstain": totals["abstain"], "invalid": totals["invalid"],
                "precision": round(precision, 4), "recall": round(recall, 4),
-               "f1": round(f1, 4), "labels": labels_total, "results": results}
+               "f1": round(f1, 4), "labels": labels_total,
+               "predictions": [prediction for item in results
+                               for prediction in item["predictions"]],
+               "results": results}
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

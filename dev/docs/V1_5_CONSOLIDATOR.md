@@ -6,6 +6,7 @@
 > B0–B1 报告：[`reports/V1_5B_B0_B1_REPORT_2026-11-07.md`](../reports/V1_5B_B0_B1_REPORT_2026-11-07.md)
 > B2 报告：[`reports/V1_5B_B2_REPORT_2026-11-07.md`](../reports/V1_5B_B2_REPORT_2026-11-07.md)
 > B3 报告：[`reports/V1_5B_B3_REPORT_2026-11-07.md`](../reports/V1_5B_B3_REPORT_2026-11-07.md)
+> B3.1 回放：[`reports/V1_5B_B3_1_REPORT_2026-11-07.md`](../reports/V1_5B_B3_1_REPORT_2026-11-07.md)
 
 ## 1. 定位
 
