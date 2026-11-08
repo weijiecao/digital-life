@@ -35,6 +35,7 @@ SUITES = (
     'tests.test_b4_gate',
     'tests.test_v1_5b_t1_t2_fixes',
     'tests.test_b4_lease_fencing',
+    'tests.test_b4_provenance',
     'tests.test_baseline_alignment',
     'tests.test_preflight',
     'tests.test_auto_jobs',

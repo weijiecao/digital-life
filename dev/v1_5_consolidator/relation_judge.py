@@ -11,11 +11,14 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from .contracts import SourceEnvelope
+from .contracts import NarrativeProvenance, SourceEnvelope
 from .gateway import ContextGateway, PreparedRelationContext
 
 RELATION_LABELS = {"SAME_EVENT", "DIFFERENT_EVENT", "RELATED_CONTEXT", "UNCERTAIN"}
 SUGGESTED_ACTIONS = {"ATTACH_EXISTING", "NEW_EVENT", "DEFER"}
+NARRATORS = {"user", "friend", "story_character", "unknown"}
+SUBJECTS = {"user", "other", "story_character", "unknown"}
+REALITY = {"real", "reported", "fictional", "unknown"}
 
 
 @dataclass
@@ -34,6 +37,7 @@ class JudgmentResult:
     issues: list[str] = field(default_factory=list)
     raw: str = ""
     request_id: str = ""
+    provenance: NarrativeProvenance = field(default_factory=NarrativeProvenance)
 
     @property
     def ok(self) -> bool:
@@ -98,8 +102,21 @@ class RelationJudge:
         if action not in SUGGESTED_ACTIONS:
             issues.append("action:" + action)
         target = data.get("target_event_id")
+        provenance_data = data.get("source_provenance") or {}
+        provenance = NarrativeProvenance(
+            narrator=str(provenance_data.get("narrator", "unknown")),
+            subject=str(provenance_data.get("subject", "unknown")),
+            reality_status=str(provenance_data.get("reality_status", "unknown")),
+            story_id=(str(provenance_data["story_id"])
+                      if provenance_data.get("story_id") else None))
+        if provenance.narrator not in NARRATORS:
+            issues.append("provenance_narrator:" + provenance.narrator)
+        if provenance.subject not in SUBJECTS:
+            issues.append("provenance_subject:" + provenance.subject)
+        if provenance.reality_status not in REALITY:
+            issues.append("provenance_reality:" + provenance.reality_status)
         return JudgmentResult(source_seq=source.source_seq, proposals=proposals,
                               suggested_action=action,
                               target_event_id=str(target) if target else None,
                               issues=issues, raw=result.text,
-                              request_id=prepared.request_id)
+                              request_id=prepared.request_id, provenance=provenance)

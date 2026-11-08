@@ -55,6 +55,8 @@ class V15Store:
         CREATE TABLE IF NOT EXISTS event_candidate(
           event_id TEXT PRIMARY KEY, scope_id TEXT NOT NULL, event_type TEXT NOT NULL,
           title TEXT NOT NULL, state TEXT NOT NULL, current_revision INTEGER NOT NULL,
+          narrator TEXT NOT NULL DEFAULT 'unknown', subject TEXT NOT NULL DEFAULT 'unknown',
+          reality_status TEXT NOT NULL DEFAULT 'unknown', story_id TEXT,
           created_at TEXT NOT NULL, updated_at TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS event_revision(
           event_id TEXT NOT NULL, rev INTEGER NOT NULL, summary TEXT NOT NULL,
@@ -103,6 +105,15 @@ class V15Store:
             self.db.execute("ALTER TABLE consolidation_job ADD COLUMN owner_id TEXT NOT NULL DEFAULT ''")
         if "fencing_token" not in job_cols:
             self.db.execute("ALTER TABLE consolidation_job ADD COLUMN fencing_token INTEGER NOT NULL DEFAULT 0")
+        event_cols = {row[1] for row in self.db.execute("PRAGMA table_info(event_candidate)")}
+        for column, ddl in (
+            ("narrator", "TEXT NOT NULL DEFAULT 'unknown'"),
+            ("subject", "TEXT NOT NULL DEFAULT 'unknown'"),
+            ("reality_status", "TEXT NOT NULL DEFAULT 'unknown'"),
+            ("story_id", "TEXT"),
+        ):
+            if column not in event_cols:
+                self.db.execute("ALTER TABLE event_candidate ADD COLUMN %s %s" % (column, ddl))
         self.db.execute("INSERT OR REPLACE INTO meta(key,value) VALUES('schema_version',?)",
                         (str(SCHEMA_VERSION),))
         self.db.commit()
@@ -338,8 +349,10 @@ class V15Store:
 
     def create_event_from_source(self, scope_id: str, source: Any, event_type: str = "unknown",
                                  title: str = "", summary: str = "",
-                                 event_id: str | None = None) -> str:
+                                 event_id: str | None = None,
+                                 provenance: dict | None = None) -> str:
         event_id = event_id or ("evt_" + uuid.uuid4().hex)
+        provenance = provenance or {}
         now = _now()
         with self.db:
             self.db.execute("""INSERT INTO source_ref(scope_id,source_seq,source_hash,recorded_at)
@@ -347,9 +360,14 @@ class V15Store:
                 source_hash=excluded.source_hash,recorded_at=excluded.recorded_at""",
                 (scope_id, source.source_seq, source.source_hash, source.recorded_at))
             self.db.execute("""INSERT INTO event_candidate
-                (event_id,scope_id,event_type,title,state,current_revision,created_at,updated_at)
-                VALUES(?,?,?,?,'provisional',1,?,?)""",
-                (event_id, scope_id, event_type, title or source.text[:80], now, now))
+                (event_id,scope_id,event_type,title,state,current_revision,
+                 narrator,subject,reality_status,story_id,created_at,updated_at)
+                VALUES(?,?,?,?,'provisional',1,?,?,?,?,?,?)""",
+                (event_id, scope_id, event_type, title or source.text[:80],
+                 provenance.get("narrator", "unknown"),
+                 provenance.get("subject", "unknown"),
+                 provenance.get("reality_status", "unknown"),
+                 provenance.get("story_id"), now, now))
             self.db.execute("""INSERT INTO event_revision
                 (event_id,rev,summary,status,modality,created_at)
                 VALUES(?,1,?,?,?,?)""",
@@ -386,6 +404,15 @@ class V15Store:
             WHERE event_id=? AND scope_id=? AND state!='withdrawn'""",
             (event_id, scope_id)).fetchone()
         return row is not None
+
+    def event_provenance(self, event_id: str) -> dict:
+        row = self.db.execute("""SELECT narrator,subject,reality_status,story_id
+            FROM event_candidate WHERE event_id=?""", (event_id,)).fetchone()
+        if not row:
+            return {"narrator": "unknown", "subject": "unknown",
+                    "reality_status": "unknown", "story_id": None}
+        return {"narrator": row[0], "subject": row[1],
+                "reality_status": row[2], "story_id": row[3]}
 
     def cannot_link_exists(self, scope_id: str, event_a: str, event_b: str) -> bool:
         a, b = sorted((event_a, event_b))

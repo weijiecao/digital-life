@@ -14,7 +14,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from .contracts import SourceEnvelope
+from .contracts import NarrativeProvenance, SourceEnvelope
+from .provenance_guard import ProvenanceGuard
 from .relation_judge import JudgmentResult
 from .store import V15Store
 
@@ -31,8 +32,9 @@ class ResolutionSummary:
 
 
 class ConstrainedResolver:
-    def __init__(self, store: V15Store):
+    def __init__(self, store: V15Store, provenance_guard: ProvenanceGuard | None = None):
         self.store = store
+        self.provenance_guard = provenance_guard
 
     def resolve(self, scope_id: str, source: SourceEnvelope,
                 judgment: JudgmentResult, model_version: str = "") -> ResolutionSummary:
@@ -81,6 +83,20 @@ class ConstrainedResolver:
                     summary.decisions.append({"source_seq": source.source_seq,
                                               "target": target, "decision": "CONFLICT"})
                     continue
+                if self.provenance_guard is not None:
+                    candidate_data = self.store.event_provenance(target)
+                    check = self.provenance_guard.check(
+                        judgment.provenance,
+                        NarrativeProvenance(**candidate_data))
+                    if check.action != "ALLOW":
+                        self.store.record_link_decision(
+                            proposal_id, scope_id, source.source_seq, target,
+                            "PROVENANCE_BLOCKED", ",".join(check.reason_codes))
+                        summary.deferred += 1
+                        summary.decisions.append({"source_seq": source.source_seq,
+                                                  "target": target,
+                                                  "decision": "PROVENANCE_BLOCKED"})
+                        continue
                 conflicts = [event_id for event_id in existing
                              if self.store.cannot_link_exists(scope_id, event_id, target)]
                 if conflicts:

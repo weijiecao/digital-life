@@ -13,6 +13,18 @@ STATUS = {"planned", "possibly_postponed", "cancelled", "completed", "ongoing",
 
 
 @dataclass(frozen=True)
+class NarrativeProvenance:
+    narrator: str = "unknown"
+    subject: str = "unknown"
+    reality_status: str = "unknown"
+    story_id: str | None = None
+
+    def as_dict(self) -> dict[str, str | None]:
+        return {"narrator": self.narrator, "subject": self.subject,
+                "reality_status": self.reality_status, "story_id": self.story_id}
+
+
+@dataclass(frozen=True)
 class SourceEnvelope:
     scope_id: str
     source_seq: int

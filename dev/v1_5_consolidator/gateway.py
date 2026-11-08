@@ -100,8 +100,13 @@ class ContextGateway:
             "只有同主题但不同次出行/不同目标才用 RELATED_CONTEXT 或 DIFFERENT_EVENT。"
             "不要因为原话简短或只是补充细节就降级为 RELATED_CONTEXT。",
             "必须为每个候选返回一条 relation；不要新增候选 ID；reason_codes 只是理由声明。",
+            "同时判断当前原话的叙事来源：narrator=user|friend|story_character|unknown，"
+            "subject=user|other|story_character|unknown，reality_status=real|reported|fictional|unknown；"
+            "第一人称虚构不能因为出现“我”就当作用户真实经历。",
             "输出结构：",
-            '{"schema_version":"v1.5b.1","relations":[{"candidate_event_id":"evt_x",'
+            '{"schema_version":"v1.5b.1","source_provenance":{"narrator":"user|friend|story_character|unknown",'
+            '"subject":"user|other|story_character|unknown","reality_status":"real|reported|fictional|unknown",'
+            '"story_id":null},"relations":[{"candidate_event_id":"evt_x",'
             '"label":"SAME_EVENT|DIFFERENT_EVENT|RELATED_CONTEXT|UNCERTAIN",'
             '"reason_codes":["..."]}],"suggested_action":"ATTACH_EXISTING|NEW_EVENT|DEFER",'
             '"target_event_id":null}',
