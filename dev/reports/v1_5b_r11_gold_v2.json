@@ -1,0 +1,88 @@
+{
+  "suite": "v1.5b-b4-r11-gold-v2",
+  "cases": 6,
+  "story_membership": {
+    "scored": 4,
+    "correct": 4,
+    "unknown": 2
+  },
+  "event_relation": {
+    "scored": 6,
+    "correct": 5
+  },
+  "real_event_contamination": 0,
+  "predicted_labels": {
+    "null": 1,
+    "RELATED_CONTEXT": 1,
+    "SAME_EVENT": 2,
+    "DIFFERENT_EVENT": 2
+  },
+  "results": [
+    {
+      "case_id": "POS-S1",
+      "category": "same_story_same_event",
+      "predicted": null,
+      "expected_relation": "SAME_EVENT",
+      "story_membership_ok": true,
+      "event_relation_ok": false,
+      "guard_action": "ALLOW",
+      "source_story_id": "story-1",
+      "candidate_story_id": "story-1"
+    },
+    {
+      "case_id": "POS-S2",
+      "category": "same_story_different_event",
+      "predicted": "RELATED_CONTEXT",
+      "expected_relation": "RELATED_CONTEXT",
+      "story_membership_ok": true,
+      "event_relation_ok": true,
+      "guard_action": "ALLOW",
+      "source_story_id": "story-2",
+      "candidate_story_id": "story-2"
+    },
+    {
+      "case_id": "POS-U1",
+      "category": "user_real_same_event",
+      "predicted": "SAME_EVENT",
+      "expected_relation": "SAME_EVENT",
+      "story_membership_ok": null,
+      "event_relation_ok": true,
+      "guard_action": "ALLOW",
+      "source_story_id": null,
+      "candidate_story_id": null
+    },
+    {
+      "case_id": "POS-U2",
+      "category": "user_real_same_event",
+      "predicted": "SAME_EVENT",
+      "expected_relation": "SAME_EVENT",
+      "story_membership_ok": null,
+      "event_relation_ok": true,
+      "guard_action": "ALLOW",
+      "source_story_id": null,
+      "candidate_story_id": null
+    },
+    {
+      "case_id": "NEG-S1",
+      "category": "different_story",
+      "predicted": "DIFFERENT_EVENT",
+      "expected_relation": "DIFFERENT_EVENT",
+      "story_membership_ok": true,
+      "event_relation_ok": true,
+      "guard_action": "ALLOW",
+      "source_story_id": null,
+      "candidate_story_id": "story-1"
+    },
+    {
+      "case_id": "NEG-S2",
+      "category": "different_story",
+      "predicted": "DIFFERENT_EVENT",
+      "expected_relation": "DIFFERENT_EVENT",
+      "story_membership_ok": true,
+      "event_relation_ok": true,
+      "guard_action": "ALLOW",
+      "source_story_id": null,
+      "candidate_story_id": "story-2"
+    }
+  ]
+}
