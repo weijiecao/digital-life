@@ -46,6 +46,14 @@ class ConstrainedResolver:
                 proposal.label, proposal.reason_codes, model_version, judgment.request_id)
             target = proposal.candidate_event_id
             if proposal.label == "SAME_EVENT":
+                if not self.store.event_in_scope(target, scope_id):
+                    self.store.record_link_decision(
+                        proposal_id, scope_id, source.source_seq, target, "CONFLICT",
+                        "cross_scope_or_missing_event")
+                    summary.conflicts += 1
+                    summary.decisions.append({"source_seq": source.source_seq,
+                                              "target": target, "decision": "CONFLICT"})
+                    continue
                 if ambiguous_same:
                     self.store.record_link_decision(
                         proposal_id, scope_id, source.source_seq, target, "CONFLICT",

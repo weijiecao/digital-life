@@ -9,6 +9,7 @@
 > B3.1 回放：[`reports/V1_5B_B3_1_REPORT_2026-11-07.md`](../reports/V1_5B_B3_1_REPORT_2026-11-07.md)
 > B3.2 耐用性：[`reports/V1_5B_B3_2_REPORT_2026-11-07.md`](../reports/V1_5B_B3_2_REPORT_2026-11-07.md)
 > B4 模拟基线：[`reports/V1_5B_B4_SIM_REPORT_2026-11-08.md`](../reports/V1_5B_B4_SIM_REPORT_2026-11-08.md)
+> B4 可靠性：[`reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md`](../reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md)
 
 ## 1. 定位
 

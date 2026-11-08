@@ -270,6 +270,12 @@ class V15Store:
             ORDER BY e.event_id""", (scope_id, source_seq, scope_id)).fetchall()
         return [row[0] for row in rows]
 
+    def event_in_scope(self, event_id: str, scope_id: str) -> bool:
+        row = self.db.execute("""SELECT 1 FROM event_candidate
+            WHERE event_id=? AND scope_id=? AND state!='withdrawn'""",
+            (event_id, scope_id)).fetchone()
+        return row is not None
+
     def cannot_link_exists(self, scope_id: str, event_a: str, event_b: str) -> bool:
         a, b = sorted((event_a, event_b))
         row = self.db.execute("""SELECT 1 FROM event_cannot_link
