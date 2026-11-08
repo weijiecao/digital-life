@@ -60,6 +60,20 @@
 - 64 FN 仍无法区分 B1/B2/B3/provisional，需要逐消息 trace（当前已有 trace 字段，但根因分类尚未自动化）；
 - 20 ambiguous 仍未解决。
 
+### 3.1 FN 逐消息归因
+
+对 T1 trace 的 64 个 FN 做候选/提议归因：
+
+| 原因 | 数量 |
+|---|---:|
+| `b1_not_recalled_one_side` | 30 |
+| `b3_or_provisional_fragmentation` | 34 |
+
+- 没有发现 `b2_no_same_to_gold`；
+- 30 个是正确事件只在一侧进入候选；
+- 34 个是 B2 已有 SAME 到 gold，但最终被 Resolver/provisional 拆开；
+- 这说明后续应优先查 **候选单侧缺失** 与 **创建策略/批次可见性**，而不是继续加 Gate 规则。
+
 ## 4. Gate 配对结论
 
 固定 T1 trace 的 227 个 SAME proposal：

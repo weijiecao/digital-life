@@ -1,0 +1,550 @@
+{
+  "suite": "v1.5b-b4.5-2-fn-attribution",
+  "fn_pairs": 64,
+  "causes": {
+    "b1_not_recalled_one_side": 30,
+    "b3_or_provisional_fragmentation": 34
+  },
+  "examples": [
+    {
+      "left": "S01-Refc54c95302697",
+      "right": "S01-R7da8db95b6c667",
+      "gold_event": "S01-E06",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S01-E06",
+        "final_event": "evt_30a756ff70854a4bb38eb6df540f3549"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S01-E06",
+        "final_event": "evt_122c06789434492c99a250a679eee990"
+      }
+    },
+    {
+      "left": "S01-Refc54c95302697",
+      "right": "S01-R312c8aa72cb2fd",
+      "gold_event": "S01-E06",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S01-E06",
+        "final_event": "evt_30a756ff70854a4bb38eb6df540f3549"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S01-E06",
+        "final_event": "evt_b88e173ccfc74dc5be46bcc9e6988007"
+      }
+    },
+    {
+      "left": "S01-Refc54c95302697",
+      "right": "S01-Rd3b229360656f5",
+      "gold_event": "S01-E06",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S01-E06",
+        "final_event": "evt_30a756ff70854a4bb38eb6df540f3549"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S01-E06",
+        "final_event": "evt_b88e173ccfc74dc5be46bcc9e6988007"
+      }
+    },
+    {
+      "left": "S01-R7da8db95b6c667",
+      "right": "S01-R312c8aa72cb2fd",
+      "gold_event": "S01-E06",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S01-E06",
+        "final_event": "evt_122c06789434492c99a250a679eee990"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S01-E06",
+        "final_event": "evt_b88e173ccfc74dc5be46bcc9e6988007"
+      }
+    },
+    {
+      "left": "S01-R7da8db95b6c667",
+      "right": "S01-Rd3b229360656f5",
+      "gold_event": "S01-E06",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S01-E06",
+        "final_event": "evt_122c06789434492c99a250a679eee990"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S01-E06",
+        "final_event": "evt_b88e173ccfc74dc5be46bcc9e6988007"
+      }
+    },
+    {
+      "left": "S02-R3fa57434ed2728",
+      "right": "S02-R8b9ca5bd8672dd",
+      "gold_event": "S02-E07",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S02-E07",
+        "final_event": "evt_6e00a630ab6d42478bfad2ce44bc419a"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S02-E07",
+        "final_event": "evt_867c2dd1bb0645fd9b0c8c34230457bb"
+      }
+    },
+    {
+      "left": "S02-R3fa57434ed2728",
+      "right": "S02-R577699c854db6e",
+      "gold_event": "S02-E07",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S02-E07",
+        "final_event": "evt_6e00a630ab6d42478bfad2ce44bc419a"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S02-E07",
+        "final_event": "evt_372d9089bd314082af639df8877b5821"
+      }
+    },
+    {
+      "left": "S02-R3fa57434ed2728",
+      "right": "S02-R1ac5ab3be5f615",
+      "gold_event": "S02-E07",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S02-E07",
+        "final_event": "evt_6e00a630ab6d42478bfad2ce44bc419a"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S02-E07",
+        "final_event": "evt_bee57f9c76b54f998f38b018e188aac5"
+      }
+    },
+    {
+      "left": "S02-R8b9ca5bd8672dd",
+      "right": "S02-R577699c854db6e",
+      "gold_event": "S02-E07",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S02-E07",
+        "final_event": "evt_867c2dd1bb0645fd9b0c8c34230457bb"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S02-E07",
+        "final_event": "evt_372d9089bd314082af639df8877b5821"
+      }
+    },
+    {
+      "left": "S02-R8b9ca5bd8672dd",
+      "right": "S02-R1ac5ab3be5f615",
+      "gold_event": "S02-E07",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S02-E07",
+        "final_event": "evt_867c2dd1bb0645fd9b0c8c34230457bb"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S02-E07",
+        "final_event": "evt_bee57f9c76b54f998f38b018e188aac5"
+      }
+    },
+    {
+      "left": "S02-R577699c854db6e",
+      "right": "S02-R1ac5ab3be5f615",
+      "gold_event": "S02-E07",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S02-E07",
+        "final_event": "evt_372d9089bd314082af639df8877b5821"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S02-E07",
+        "final_event": "evt_bee57f9c76b54f998f38b018e188aac5"
+      }
+    },
+    {
+      "left": "S03-R1341c8b7cb01b1",
+      "right": "S03-Rc2a77f539494c2",
+      "gold_event": "S03-E03",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S03-E03",
+        "final_event": "evt_608563033aff4dee8ba2e5c9abad366a"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S03-E03",
+        "final_event": "evt_705243a78d4d428ab0a853f3a3e11c6b"
+      }
+    },
+    {
+      "left": "S03-R7e7d4eda95cca7",
+      "right": "S03-R6f207b43649bae",
+      "gold_event": "S03-E07",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S03-E07",
+        "final_event": "evt_92e86151004b41ee8d8c6b017eea71c1"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S03-E07",
+        "final_event": "evt_af961777ff114dd8b6144691d0d5c886"
+      }
+    },
+    {
+      "left": "S03-R7e7d4eda95cca7",
+      "right": "S03-R7000e3cfaf96ca",
+      "gold_event": "S03-E07",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S03-E07",
+        "final_event": "evt_92e86151004b41ee8d8c6b017eea71c1"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S03-E07",
+        "final_event": "evt_94dbc8e124be4d73a214b0a2bf031d41"
+      }
+    },
+    {
+      "left": "S03-R7e7d4eda95cca7",
+      "right": "S03-R676ad108da291a",
+      "gold_event": "S03-E07",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S03-E07",
+        "final_event": "evt_92e86151004b41ee8d8c6b017eea71c1"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S03-E07",
+        "final_event": "evt_2ae0615eed7f4a498728ae30621f98e1"
+      }
+    },
+    {
+      "left": "S03-R4a26c7326bb3a9",
+      "right": "S03-R264af441c1044a",
+      "gold_event": "S03-E04",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S03-E04",
+        "final_event": "evt_dfa83a26dff243adaadfadeb027253f7"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S03-E04",
+        "final_event": "evt_04c89b892df9453bad25a85ecef95547"
+      }
+    },
+    {
+      "left": "S03-R264af441c1044a",
+      "right": "S03-Rc081d1ea059bfe",
+      "gold_event": "S03-E04",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S03-E04",
+        "final_event": "evt_04c89b892df9453bad25a85ecef95547"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S03-E04",
+        "final_event": "evt_dfa83a26dff243adaadfadeb027253f7"
+      }
+    },
+    {
+      "left": "S03-R264af441c1044a",
+      "right": "S03-Ree33828895519d",
+      "gold_event": "S03-E04",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S03-E04",
+        "final_event": "evt_04c89b892df9453bad25a85ecef95547"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S03-E04",
+        "final_event": "evt_dfa83a26dff243adaadfadeb027253f7"
+      }
+    },
+    {
+      "left": "S03-R34916d915f28c5",
+      "right": "S03-Rc2a77f539494c2",
+      "gold_event": "S03-E03",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S03-E03",
+        "final_event": "evt_608563033aff4dee8ba2e5c9abad366a"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S03-E03",
+        "final_event": "evt_705243a78d4d428ab0a853f3a3e11c6b"
+      }
+    },
+    {
+      "left": "S03-R6f207b43649bae",
+      "right": "S03-R7000e3cfaf96ca",
+      "gold_event": "S03-E07",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S03-E07",
+        "final_event": "evt_af961777ff114dd8b6144691d0d5c886"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S03-E07",
+        "final_event": "evt_94dbc8e124be4d73a214b0a2bf031d41"
+      }
+    },
+    {
+      "left": "S03-R6f207b43649bae",
+      "right": "S03-R676ad108da291a",
+      "gold_event": "S03-E07",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S03-E07",
+        "final_event": "evt_af961777ff114dd8b6144691d0d5c886"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S03-E07",
+        "final_event": "evt_2ae0615eed7f4a498728ae30621f98e1"
+      }
+    },
+    {
+      "left": "S03-R7000e3cfaf96ca",
+      "right": "S03-R676ad108da291a",
+      "gold_event": "S03-E07",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S03-E07",
+        "final_event": "evt_94dbc8e124be4d73a214b0a2bf031d41"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S03-E07",
+        "final_event": "evt_2ae0615eed7f4a498728ae30621f98e1"
+      }
+    },
+    {
+      "left": "S03-Rc2a77f539494c2",
+      "right": "S03-Rc85127df4ffbdf",
+      "gold_event": "S03-E03",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S03-E03",
+        "final_event": "evt_705243a78d4d428ab0a853f3a3e11c6b"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S03-E03",
+        "final_event": "evt_608563033aff4dee8ba2e5c9abad366a"
+      }
+    },
+    {
+      "left": "S04-Rfd70f35bad63db",
+      "right": "S04-Rd4fadbbbfdd422",
+      "gold_event": "S04-E07",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S04-E07",
+        "final_event": "evt_8f74b74c3d8941209b3d5b5eb60e67f6"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S04-E07",
+        "final_event": "evt_dd3e04869e6b406fbd6995e0463edf2f"
+      }
+    },
+    {
+      "left": "S04-Rfd70f35bad63db",
+      "right": "S04-R598f814a6bc560",
+      "gold_event": "S04-E07",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S04-E07",
+        "final_event": "evt_8f74b74c3d8941209b3d5b5eb60e67f6"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S04-E07",
+        "final_event": "evt_13ac1cdccebc48c3bc83d8ada6105d8a"
+      }
+    },
+    {
+      "left": "S04-Rfd70f35bad63db",
+      "right": "S04-R1fd0118b1db38d",
+      "gold_event": "S04-E07",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S04-E07",
+        "final_event": "evt_8f74b74c3d8941209b3d5b5eb60e67f6"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S04-E07",
+        "final_event": "evt_67e663ced40f4aafa1f977e75080826a"
+      }
+    },
+    {
+      "left": "S04-Rb680de31b872af",
+      "right": "S04-R2554f72405e77d",
+      "gold_event": "S04-E04",
+      "cause": "b1_not_recalled_one_side",
+      "left_trace": {
+        "b1_recalled": false,
+        "b2_same_gold": false,
+        "final_gold": "S04-E04",
+        "final_event": "evt_1201e9a6ae88457d89ceb354cc51b1dd"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S04-E04",
+        "final_event": "evt_96e9f6fff2d448bb900f6ec9c5658947"
+      }
+    },
+    {
+      "left": "S04-R2554f72405e77d",
+      "right": "S04-R1aa83e24847b41",
+      "gold_event": "S04-E04",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S04-E04",
+        "final_event": "evt_96e9f6fff2d448bb900f6ec9c5658947"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S04-E04",
+        "final_event": "evt_1201e9a6ae88457d89ceb354cc51b1dd"
+      }
+    },
+    {
+      "left": "S04-R2554f72405e77d",
+      "right": "S04-Rd27d8c1e90d418",
+      "gold_event": "S04-E04",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S04-E04",
+        "final_event": "evt_96e9f6fff2d448bb900f6ec9c5658947"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S04-E04",
+        "final_event": "evt_1201e9a6ae88457d89ceb354cc51b1dd"
+      }
+    },
+    {
+      "left": "S04-Rd4fadbbbfdd422",
+      "right": "S04-R598f814a6bc560",
+      "gold_event": "S04-E07",
+      "cause": "b3_or_provisional_fragmentation",
+      "left_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": false,
+        "final_gold": "S04-E07",
+        "final_event": "evt_dd3e04869e6b406fbd6995e0463edf2f"
+      },
+      "right_trace": {
+        "b1_recalled": true,
+        "b2_same_gold": true,
+        "final_gold": "S04-E07",
+        "final_event": "evt_13ac1cdccebc48c3bc83d8ada6105d8a"
+      }
+    }
+  ]
+}

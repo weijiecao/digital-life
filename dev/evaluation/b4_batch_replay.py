@@ -23,7 +23,8 @@ from v1_5_consolidator.resolver import ConstrainedResolver
 from v1_5_consolidator.store import V15Store
 
 
-def run(root: str, trace_path: str, batch_size: int) -> dict:
+def run(root: str, trace_path: str, batch_size: int,
+        visibility: str = "deferred") -> dict:
     fixture = B4Fixture.load(root)
     trace = json.loads(Path(trace_path).read_text(encoding="utf-8"))["trace"]
     by_scope = defaultdict(list)
@@ -70,6 +71,8 @@ def run(root: str, trace_path: str, batch_size: int) -> dict:
                                 title=source.text[:80])
                             stats["created"] += 1
                         pending[entry["final_event"]] = event_id
+                        if visibility == "intra":
+                            event_map[entry["final_event"]] = event_id
                         predictions[entry["source_id"]] = event_id
                         stats["messages"] += 1
                     event_map.update(pending)
@@ -77,7 +80,7 @@ def run(root: str, trace_path: str, batch_size: int) -> dict:
         finally:
             store.close()
     return {"suite": "v1.5b-b4.5-batch-replay", "batch_size": batch_size,
-            **stats, "predictions": predictions}
+            "visibility": visibility, **stats, "predictions": predictions}
 
 
 def main() -> int:
@@ -85,9 +88,10 @@ def main() -> int:
     parser.add_argument("--root", required=True)
     parser.add_argument("--trace", required=True)
     parser.add_argument("--batch-size", type=int, required=True)
+    parser.add_argument("--visibility", choices=("deferred", "intra"), default="deferred")
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
-    result = run(args.root, args.trace, args.batch_size)
+    result = run(args.root, args.trace, args.batch_size, args.visibility)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -97,8 +101,8 @@ def main() -> int:
             fh.write(json.dumps({"source_id": source_id,
                                  "predicted_event_id": event_id},
                                 ensure_ascii=False) + "\n")
-    print(json.dumps({k: result[k] for k in ("batch_size", "messages", "batches",
-                                              "attached", "created",
+    print(json.dumps({k: result[k] for k in ("batch_size", "visibility", "messages",
+                                              "batches", "attached", "created",
                                               "attached_cross_batch")},
                      ensure_ascii=False, indent=2))
     return 0
