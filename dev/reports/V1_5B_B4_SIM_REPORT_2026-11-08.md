@@ -61,13 +61,21 @@ VALID: 340 messages × 2 layouts, 80 events, 610 labeled pairs, 180 queries, 12 
 - 候选召回在 **R@5/R@10 不是瓶颈**；
 - 不能由此断言真实对话里词面足够；此前交错留出集里纯词面 R@10 为 0。
 
-## 4. B2 pair 关系基线（全量 610）
+## 4. B2 pair 关系基线（口径修正）
 
-对象：`pair_input` + `pair_gold`；每个 pair 给一个 gold candidate event，隔离 B1。
+原始 610 对；50 个跨 scope 对不进入 B2；60 个 `UNRESOLVED` 进入 B2 但不进入 pairwise。
+
+| 口径 | 数量 |
+|---|---:|
+| raw pairs | **610** |
+| B2 evaluated | **560**（含 60 unresolved） |
+| pairwise scored | **500** |
+
+B2 在 560 个可评测 pair 上：
 
 | 指标 | 值 |
 |---|---:|
-| Pairs | 610 |
+| B2 evaluated | 560 |
 | TP | 200 |
 | FP | **7** |
 | FN | **0** |
@@ -75,6 +83,9 @@ VALID: 340 messages × 2 layouts, 80 events, 610 labeled pairs, 180 queries, 12 
 | Precision | **0.9662** |
 | Recall | **1.0000** |
 | F1 | **0.9828** |
+
+**注意：这些数字的分母是 560，不是 610；500 个 pairwise 样本的指标尚未单独重算。**  
+逐项审计见 [`V1_5B_B4_R0_AUDIT_2026-11-08.md`](V1_5B_B4_R0_AUDIT_2026-11-08.md)。
 
 标签分布：
 

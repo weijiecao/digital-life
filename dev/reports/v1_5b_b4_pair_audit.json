@@ -1,0 +1,691 @@
+{
+  "raw_pairs": 610,
+  "b2_evaluated_pairs": 560,
+  "pairwise_scored_pairs": 500,
+  "excluded_cross_scope": 50,
+  "excluded_unresolved": 60,
+  "status": {
+    "pairwise_scored": 500,
+    "excluded_unresolved": 60,
+    "excluded_cross_scope": 50
+  },
+  "b2_relation_counts": {
+    "SAME_EVENT": 200,
+    "RELATED": 150,
+    "DIFFERENT_EVENT": 150,
+    "UNRESOLVED": 60
+  },
+  "pairwise_relation_counts": {
+    "SAME_EVENT": 200,
+    "RELATED": 150,
+    "DIFFERENT_EVENT": 150
+  },
+  "scored_difficulty_counts": {
+    "cross_batch_positive": 160,
+    "long_gap_positive": 40,
+    "hard_negative_related": 150,
+    "hard_negative_different": 150
+  },
+  "excluded": [
+    {
+      "pair_id": "P0051",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0052",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0053",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0054",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0055",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0056",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0057",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0058",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0059",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0060",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0061",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0112",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0113",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0114",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0115",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0116",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0117",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0118",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0119",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0120",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0121",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0122",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0173",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0174",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0175",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0176",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0177",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0178",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0179",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0180",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0181",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0182",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0183",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0234",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0235",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0236",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0237",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0238",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0239",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0240",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0241",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0242",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0243",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0244",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0295",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0296",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0297",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0298",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0299",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0300",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0301",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0302",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0303",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0304",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0305",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0356",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0357",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0358",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0359",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0360",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0361",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0362",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0363",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0364",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0365",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0366",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0417",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0418",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0419",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0420",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0421",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0422",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0423",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0424",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0425",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0426",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0427",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0478",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0479",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0480",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0481",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0482",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0483",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0484",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0485",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0486",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0487",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0488",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0539",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0540",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0541",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0542",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0543",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0544",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0545",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0546",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0547",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0548",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0549",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0600",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0601",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0602",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0603",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0604",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0605",
+      "reason": "unresolved_no_gold_event",
+      "relation": "UNRESOLVED",
+      "difficulty": "ambiguous_reference"
+    },
+    {
+      "pair_id": "P0606",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0607",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0608",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0609",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    },
+    {
+      "pair_id": "P0610",
+      "reason": "cross_scope",
+      "relation": "DIFFERENT_EVENT",
+      "difficulty": "cross_scope_negative"
+    }
+  ]
+}

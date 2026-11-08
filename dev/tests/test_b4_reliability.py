@@ -1,4 +1,6 @@
 import hashlib
+import multiprocessing
+import os
 import sqlite3
 import tempfile
 import unittest
@@ -41,6 +43,27 @@ class FailingProvider:
 
     def generate(self, prepared):
         raise RuntimeError("provider 503")
+
+
+def _r07_child(path: str) -> None:
+    store = V15Store(path)
+    store.db.execute("BEGIN")
+    store.db.execute("""INSERT INTO event_candidate
+        (event_id,scope_id,event_type,title,state,current_revision,created_at,updated_at)
+        VALUES('evt_r07','scope-a','plan','r07','provisional',1,'t','t')""")
+    store.db.execute("""INSERT INTO event_revision
+        (event_id,rev,summary,status,modality,created_at)
+        VALUES('evt_r07',1,'r07','unknown','unknown','t')""")
+    os._exit(7)
+
+
+def _r08_child(path: str) -> None:
+    store = V15Store(path)
+    seed_event(store, "evt_r08")
+    source = SourceEnvelope("scope-a", 1, "sha", "t", "酒店")
+    ConstrainedResolver(store).resolve("scope-a", source, JudgmentResult(
+        source_seq=1, proposals=[RelationProposal("evt_r08", "SAME_EVENT")]))
+    os._exit(8)
 
 
 class TestB4Reliability(unittest.TestCase):
@@ -127,6 +150,44 @@ class TestB4Reliability(unittest.TestCase):
             self.assertEqual(store.db.execute("SELECT valid FROM event_evidence").fetchone()[0], 0)
             self.assertEqual(store.db.execute("SELECT state FROM event_candidate").fetchone()[0], "ambiguous")
             store.close()
+
+    def test_r07_kill_before_commit_rolls_back(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = str(Path(d) / "v15.sqlite3")
+            process = multiprocessing.Process(target=_r07_child, args=(path,))
+            process.start()
+            process.join(30)
+            self.assertEqual(process.exitcode, 7)
+            store = V15Store(path)
+            try:
+                self.assertEqual(
+                    store.db.execute("SELECT COUNT(*) FROM event_candidate").fetchone()[0], 0)
+                self.assertEqual(
+                    store.db.execute("SELECT COUNT(*) FROM event_revision").fetchone()[0], 0)
+            finally:
+                store.close()
+
+    def test_r08_kill_after_commit_before_cursor_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = str(Path(d) / "v15.sqlite3")
+            process = multiprocessing.Process(target=_r08_child, args=(path,))
+            process.start()
+            process.join(30)
+            self.assertEqual(process.exitcode, 8)
+            store = V15Store(path)
+            try:
+                self.assertEqual(
+                    store.db.execute("SELECT COUNT(*) FROM event_candidate").fetchone()[0], 1)
+                self.assertEqual(store.cursor("scope-a"), 0)
+                source = SourceEnvelope("scope-a", 1, "sha", "t", "酒店")
+                result = ConstrainedResolver(store).resolve("scope-a", source,
+                                                            JudgmentResult(source_seq=1, proposals=[
+                                                                RelationProposal("evt_r08", "SAME_EVENT")]))
+                self.assertEqual(result.already_attached, 1)
+                self.assertEqual(
+                    store.db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0], 1)
+            finally:
+                store.close()
 
     def test_provider_failure_does_not_advance_cursor(self):
         with tempfile.TemporaryDirectory() as d:
