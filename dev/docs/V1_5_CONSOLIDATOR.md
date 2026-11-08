@@ -21,6 +21,7 @@
 > B4.5-6 R11：[`reports/V1_5B_B4_5_6_R11_REPORT_2026-11-08.md`](../reports/V1_5B_B4_5_6_R11_REPORT_2026-11-08.md)
 > R11-7C T02-S3：[`reports/V1_5B_B4_5_6_R11_7C_T02S3_REPORT_2026-11-08.md`](../reports/V1_5B_B4_5_6_R11_7C_T02S3_REPORT_2026-11-08.md)
 > R11-S1 Guard：[`reports/V1_5B_R11_S1_REPORT_2026-11-08.md`](../reports/V1_5B_R11_S1_REPORT_2026-11-08.md)
+> R11-S2 闭环：[`reports/V1_5B_R11_S2_REPORT_2026-11-08.md`](../reports/V1_5B_R11_S2_REPORT_2026-11-08.md)
 > B4 可靠性：[`reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md`](../reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md)
 
 ## 1. 定位

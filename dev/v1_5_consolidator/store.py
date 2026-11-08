@@ -99,6 +99,12 @@ class V15Store:
         CREATE TABLE IF NOT EXISTS validation_issue(
           id INTEGER PRIMARY KEY AUTOINCREMENT, job_id TEXT NOT NULL, op_index INTEGER NOT NULL,
           code TEXT NOT NULL, detail TEXT NOT NULL, created_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS gate_audit(
+          audit_id TEXT PRIMARY KEY, request_id TEXT NOT NULL DEFAULT '', scope_id TEXT NOT NULL,
+          source_seq INTEGER NOT NULL, gate_type TEXT NOT NULL, action TEXT NOT NULL,
+          reason_codes TEXT NOT NULL, policy_version TEXT NOT NULL,
+          candidate_event_id TEXT, relation_label TEXT, resolver_decision TEXT,
+          created_at TEXT NOT NULL);
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -391,6 +397,22 @@ class V15Store:
                     self.db.execute("""INSERT INTO validation_issue
                         (job_id,op_index,code,detail,created_at) VALUES(?,?,?,?,?)""",
                         (job_id, index, issue.code, issue.detail[:200], _now()))
+
+    def record_gate_audit(self, request_id: str, scope_id: str, source_seq: int,
+                          gate_type: str, action: str, reason_codes: list[str],
+                          policy_version: str, candidate_event_id: str | None = None,
+                          relation_label: str | None = None,
+                          resolver_decision: str | None = None) -> str:
+        audit_id = "gate_" + uuid.uuid4().hex
+        with self.db:
+            self.db.execute("""INSERT INTO gate_audit
+                (audit_id,request_id,scope_id,source_seq,gate_type,action,reason_codes,
+                 policy_version,candidate_event_id,relation_label,resolver_decision,created_at)
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (audit_id, request_id, scope_id, source_seq, gate_type, action,
+                 json.dumps(reason_codes, ensure_ascii=False), policy_version,
+                 candidate_event_id, relation_label, resolver_decision, _now()))
+        return audit_id
 
     def events_for_source(self, scope_id: str, source_seq: int) -> list[str]:
         rows = self.db.execute("""SELECT DISTINCT e.event_id FROM event_evidence e
