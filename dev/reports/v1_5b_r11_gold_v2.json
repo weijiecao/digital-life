@@ -8,23 +8,22 @@
   },
   "event_relation": {
     "scored": 6,
-    "correct": 5
+    "correct": 6
   },
   "real_event_contamination": 0,
   "predicted_labels": {
-    "null": 1,
+    "SAME_EVENT": 3,
     "RELATED_CONTEXT": 1,
-    "SAME_EVENT": 2,
     "DIFFERENT_EVENT": 2
   },
   "results": [
     {
       "case_id": "POS-S1",
       "category": "same_story_same_event",
-      "predicted": null,
+      "predicted": "SAME_EVENT",
       "expected_relation": "SAME_EVENT",
       "story_membership_ok": true,
-      "event_relation_ok": false,
+      "event_relation_ok": true,
       "guard_action": "ALLOW",
       "source_story_id": "story-1",
       "candidate_story_id": "story-1"

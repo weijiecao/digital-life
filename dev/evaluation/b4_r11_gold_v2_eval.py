@@ -42,13 +42,13 @@ def main() -> int:
             for case in cases:
                 source = SourceEnvelope("r11", 1, "sha", "2026-11-08", case["story_text"])
                 candidate_prov = NarrativeProvenance(**case["candidate_provenance"])
-                candidate = {"event_id": "candidate", "event_type": "unknown",
+                candidate = {"event_id": "story-event-1", "event_type": "unknown",
                              "title": case["candidate_text"][:80],
                              "anchor_text": case["candidate_text"],
                              "provenance": case["candidate_provenance"]}
                 result = judge.judge("r11", source, [candidate])
                 predicted = next((p.label for p in result.proposals
-                                  if p.candidate_event_id == "candidate"), None)
+                                  if p.candidate_event_id == "story-event-1"), None)
                 decision = guard.check(result.provenance, candidate_prov)
                 labels[predicted] += 1
                 # Story membership is evaluated separately from event identity.
@@ -64,8 +64,13 @@ def main() -> int:
                 event_total += 1
                 event_ok = predicted == case["expected_relation"]
                 event_correct += int(event_ok)
-                if (case["category"].startswith("same_story")
-                        and predicted == "SAME_EVENT" and decision.action == "ALLOW"):
+                # Contamination means narrative/third-party content attached to
+                # a *user real* event; same-story/same-event is legitimate.
+                if (candidate_prov.subject == "user"
+                        and candidate_prov.reality_status == "real"
+                        and result.provenance.subject != "user"
+                        and predicted == "SAME_EVENT"
+                        and decision.action == "ALLOW"):
                     contamination += 1
                 results.append({"case_id": case["case_id"], "category": case["category"],
                                 "predicted": predicted,
