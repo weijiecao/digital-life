@@ -116,6 +116,13 @@ def run(root: str, api_key_file: str, model: str, max_scopes: int = 0,
                         attached = [event_id]
                         stats["created"] += 1
                     predictions[message["source_id"]] = attached[0]
+                    source_provenance = (judgment.provenance.as_dict()
+                                         if candidates else {})
+                    candidate_provenance = {
+                        cid: store.event_provenance(cid) for cid in
+                        [c["event_id"] for c in candidates]}
+                    gate_action = (decision.action if gate is not None and candidates
+                                   else "NOT_APPLIED")
                     trace.append({
                         "scope_id": scope,
                         "source_id": message["source_id"],
@@ -125,6 +132,9 @@ def run(root: str, api_key_file: str, model: str, max_scopes: int = 0,
                                        "label": p.label} for p in
                                       (judgment.proposals if candidates else [])],
                         "issues": (judgment.issues if candidates else []),
+                        "source_provenance": source_provenance,
+                        "candidate_provenance": candidate_provenance,
+                        "gate_decision": gate_action,
                         "final_event": attached[0],
                     })
                     event_texts[attached[0]].append(message["text"])

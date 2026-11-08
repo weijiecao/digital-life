@@ -72,5 +72,21 @@ class TestProvenanceGuard(unittest.TestCase):
             store.close()
 
 
+    def test_default_resolver_cannot_bypass_guard(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            seed_event(store, "evt-real", NarrativeProvenance("user", "user", "real"))
+            resolver = ConstrainedResolver(store)  # no explicit guard
+            result = resolver.resolve("scope-a", SourceEnvelope("scope-a", 1, "sha", "t", "故事"),
+                                      JudgmentResult(source_seq=1, proposals=[
+                                          RelationProposal("evt-real", "SAME_EVENT")],
+                                          provenance=NarrativeProvenance(
+                                              "story_character", "story_character", "fictional", "s1")))
+            self.assertEqual(result.deferred, 1)
+            self.assertEqual(result.attached, 0)
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0], 0)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

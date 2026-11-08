@@ -34,7 +34,8 @@ class ResolutionSummary:
 class ConstrainedResolver:
     def __init__(self, store: V15Store, provenance_guard: ProvenanceGuard | None = None):
         self.store = store
-        self.provenance_guard = provenance_guard
+        # Guard cannot be silently disabled for a provenance-bearing judgment.
+        self.provenance_guard = provenance_guard or ProvenanceGuard()
 
     def resolve(self, scope_id: str, source: SourceEnvelope,
                 judgment: JudgmentResult, model_version: str = "") -> ResolutionSummary:
@@ -83,7 +84,8 @@ class ConstrainedResolver:
                     summary.decisions.append({"source_seq": source.source_seq,
                                               "target": target, "decision": "CONFLICT"})
                     continue
-                if self.provenance_guard is not None:
+                if (self.provenance_guard is not None
+                        and judgment.provenance != NarrativeProvenance()):
                     candidate_data = self.store.event_provenance(target)
                     check = self.provenance_guard.check(
                         judgment.provenance,

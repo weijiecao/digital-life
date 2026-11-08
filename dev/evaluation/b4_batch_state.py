@@ -68,11 +68,9 @@ def run(root: str, trace_path: str, batch_size: int, cold_start: bool) -> dict:
                         if attached:
                             event_id = attached[0]
                             stats["attached"] += 1
-                        elif store.event_in_scope(entry["final_event"], scope):
-                            event_id = entry["final_event"]
-                            store.attach_source(scope, source, event_id, "state-fallback")
-                            stats["attached"] += 1
                         else:
+                            # No fallback to trace final_event: evaluation-only IDs
+                            # must never become an association bypass.
                             event_id = store.create_event_from_source(
                                 scope, source, event_type="unknown",
                                 title=source.text[:80], event_id=entry["final_event"])
