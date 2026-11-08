@@ -1,0 +1,112 @@
+{
+  "run_id": "b4.5-0-baseline-001",
+  "date": "2026-11-08",
+  "git_commit": "3f4ebf3",
+  "git_branch": "main",
+  "python_versions": [
+    "3.10",
+    "3.11",
+    "3.12"
+  ],
+  "ci": "success (3.10/3.11/3.12)",
+  "tests": {
+    "total": 411,
+    "v1_5": 18,
+    "b4_fixture": 3,
+    "b4_reliability": 11,
+    "b4_gate": 6,
+    "t1_t2": 10
+  },
+  "t1": {
+    "mode": "rrf",
+    "rrf_k": 60,
+    "b4_retrieval": {
+      "before": {
+        "r1": 0.275,
+        "r5": 0.9938,
+        "mrr": 0.5352
+      },
+      "after": {
+        "r1": 0.7937,
+        "r5": 1.0,
+        "mrr": 0.8938
+      }
+    }
+  },
+  "t2": {
+    "mode": "fail_closed",
+    "real_sqlite_invalid_writes": 0
+  },
+  "datasets": {
+    "synthetic_b4_zip": {
+      "path": "C:/Users/205/Desktop/Digital_Life_B4_TestData_v1.zip",
+      "sha256": "3628a5cada0ec3048732c4a894e976e353d676778b7c9db881ff9c0c804c2547"
+    },
+    "messages_interleaved": {
+      "path": "C:\\Users\\205\\Desktop\\数字生命\\dev\\evaluation\\b4_testdata\\Digital_Life_B4_TestData_v1\\messages_interleaved.jsonl",
+      "sha256": "707aadec18984f229827311202af61dfc9d69175fd5b75c154b2e2165c6a3716"
+    },
+    "pair_gold": {
+      "path": "C:\\Users\\205\\Desktop\\数字生命\\dev\\evaluation\\b4_testdata\\Digital_Life_B4_TestData_v1\\pair_gold.jsonl",
+      "sha256": "89435261c5960bf67ad315fc014752a282e5dc4d2471ff25fb4571eef63284cd"
+    },
+    "retrieval_gold": {
+      "path": "C:\\Users\\205\\Desktop\\数字生命\\dev\\evaluation\\b4_testdata\\Digital_Life_B4_TestData_v1\\retrieval_query_gold.jsonl",
+      "sha256": "6dd97f906f537cd903bc33b3323b9787923b47fcfdb57d3d8f620ebccb9a7c7b"
+    }
+  },
+  "code": {
+    "candidate_retriever": {
+      "path": "dev/v1_5_consolidator/candidate_retriever.py",
+      "sha256": "cd88f50fe842f07903603ca1876ecf84cbc106033db3354b217bc4ba874d128f"
+    },
+    "resolver": {
+      "path": "dev/v1_5_consolidator/resolver.py",
+      "sha256": "1c66d9547b158a6ce26f2e02d68f98fea8b717a19ec6cd7ee1299eaf978b49d4"
+    },
+    "prompt": {
+      "path": "dev/v1_5_consolidator/gateway.py",
+      "sha256": "5c0fa1104533b43fd87694c59f8122e866d772bcd895d9e857596036dfd1327c"
+    }
+  },
+  "metrics": {
+    "A_pre_t1t2": {
+      "p": 0.97136,
+      "r": 0.84792,
+      "f1": 0.90545,
+      "fp": 12,
+      "fn": 73,
+      "ambiguous_forced": 20
+    },
+    "B_post_t1t2": {
+      "p": 1.0,
+      "r": 0.86667,
+      "f1": 0.92857,
+      "fp": 0,
+      "fn": 64,
+      "ambiguous_forced": 20
+    },
+    "C_gate_exploratory": {
+      "p": 1.0,
+      "r": 0.79583,
+      "f1": 0.88631,
+      "fp": 0,
+      "fn": 98,
+      "ambiguous_forced": 20
+    }
+  },
+  "r0_denominators": {
+    "raw_pairs": 610,
+    "b2_evaluated": 560,
+    "pairwise_scored": 500,
+    "cross_scope_excluded": 50,
+    "unresolved_excluded": 60
+  },
+  "known_limitations": [
+    "synthetic data; real_chat_records=0",
+    "A/B/C are not all paired; C gate was unpaired and later paired trace showed only recall loss",
+    "batch=8/20/40 true state machine not implemented",
+    "R11 narrative complete set not covered",
+    "no real holdout"
+  ]
+}
