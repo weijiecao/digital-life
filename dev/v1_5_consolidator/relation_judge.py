@@ -38,6 +38,11 @@ class JudgmentResult:
     raw: str = ""
     request_id: str = ""
     provenance: NarrativeProvenance = field(default_factory=NarrativeProvenance)
+    provenance_present: bool = False
+
+    def __post_init__(self):
+        if self.provenance != NarrativeProvenance():
+            self.provenance_present = True
 
     @property
     def ok(self) -> bool:
@@ -119,4 +124,5 @@ class RelationJudge:
                               suggested_action=action,
                               target_event_id=str(target) if target else None,
                               issues=issues, raw=result.text,
-                              request_id=prepared.request_id, provenance=provenance)
+                              request_id=prepared.request_id, provenance=provenance,
+                              provenance_present=bool(data.get("source_provenance")))
