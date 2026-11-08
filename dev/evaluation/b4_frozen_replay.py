@@ -18,7 +18,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from b4_fixture import B4Fixture
+try:
+    from .b4_fixture import B4Fixture
+except ImportError:
+    from b4_fixture import B4Fixture
 from v1_5_consolidator.contracts import NarrativeProvenance, SourceEnvelope
 from v1_5_consolidator.relation_judge import JudgmentResult, RelationProposal
 from v1_5_consolidator.resolver import ConstrainedResolver
@@ -26,10 +29,10 @@ from v1_5_consolidator.store import V15Store
 
 
 def _load_map(store, scope):
-    result = defaultdict(list)
+    result = defaultdict(set)
     for old, new in store.db.execute(
             "SELECT old_event_id,event_id FROM replay_map WHERE scope_id=?", (scope,)):
-        result[old].append(new)
+        result[old].add(new)
     return result
 
 
@@ -78,7 +81,7 @@ def run(root: str, trace_path: str, batch_size: int) -> dict:
                         for p in entry.get("proposals", []):
                             candidates = mapping.get(p["candidate_event_id"], [])
                             if len(candidates) == 1:
-                                proposals.append(RelationProposal(candidates[0], p["label"]))
+                                proposals.append(RelationProposal(next(iter(candidates)), p["label"]))
                             elif len(candidates) > 1:
                                 stats["mapping_ambiguous"] += 1
                         prov_data = entry.get("source_provenance") or {}
@@ -102,7 +105,7 @@ def run(root: str, trace_path: str, batch_size: int) -> dict:
                                 provenance=prov_data or None)
                             stats["created"] += 1
                         _add_map(store, scope, entry["final_event"], new_id)
-                        mapping.setdefault(entry["final_event"], []).append(new_id)
+                        mapping.setdefault(entry["final_event"], set()).add(new_id)
                         predictions[entry["source_id"]] = new_id
                         stats["messages"] += 1
                     if not store.commit_job(job_id, "frozen-replay", token,
