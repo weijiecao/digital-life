@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -48,6 +48,7 @@ class V15Store:
           job_id TEXT PRIMARY KEY, scope_id TEXT NOT NULL, from_seq INTEGER NOT NULL,
           to_seq INTEGER NOT NULL, input_digest TEXT NOT NULL, status TEXT NOT NULL,
           attempts INTEGER NOT NULL DEFAULT 0, lease_until TEXT,
+          owner_id TEXT NOT NULL DEFAULT '', fencing_token INTEGER NOT NULL DEFAULT 0,
           created_at TEXT NOT NULL, updated_at TEXT NOT NULL);
         CREATE UNIQUE INDEX IF NOT EXISTS consolidation_job_key
           ON consolidation_job(scope_id, from_seq, to_seq, input_digest);
@@ -97,6 +98,11 @@ class V15Store:
           id INTEGER PRIMARY KEY AUTOINCREMENT, job_id TEXT NOT NULL, op_index INTEGER NOT NULL,
           code TEXT NOT NULL, detail TEXT NOT NULL, created_at TEXT NOT NULL);
         """)
+        job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
+        if "owner_id" not in job_cols:
+            self.db.execute("ALTER TABLE consolidation_job ADD COLUMN owner_id TEXT NOT NULL DEFAULT ''")
+        if "fencing_token" not in job_cols:
+            self.db.execute("ALTER TABLE consolidation_job ADD COLUMN fencing_token INTEGER NOT NULL DEFAULT 0")
         self.db.execute("INSERT OR REPLACE INTO meta(key,value) VALUES('schema_version',?)",
                         (str(SCHEMA_VERSION),))
         self.db.commit()
@@ -145,6 +151,88 @@ class V15Store:
         with self.db:
             self.db.execute("UPDATE consolidation_job SET status=?,updated_at=? WHERE job_id=?",
                             (status, _now(), job_id))
+
+    def claim_job(self, scope_id: str, from_seq: int, to_seq: int, digest: str,
+                  owner_id: str, lease_seconds: int = 30) -> tuple[str, int] | None:
+        """Claim a job or take over an expired lease; returns (job_id, token)."""
+        now = datetime.now(timezone.utc)
+        deadline = (now + timedelta(seconds=max(0, lease_seconds))).isoformat(timespec="seconds")
+        with self.db:
+            row = self.db.execute("""SELECT job_id,status,owner_id,lease_until,fencing_token
+                FROM consolidation_job WHERE scope_id=? AND from_seq=? AND to_seq=? AND input_digest=?""",
+                (scope_id, from_seq, to_seq, digest)).fetchone()
+            if row is None:
+                job_id = "job_" + uuid.uuid4().hex
+                self.db.execute("""INSERT INTO consolidation_job
+                    (job_id,scope_id,from_seq,to_seq,input_digest,status,attempts,lease_until,
+                     owner_id,fencing_token,created_at,updated_at)
+                    VALUES(?,?,?,?,?,'CLAIMED',1,?,?,1,?,?)""",
+                    (job_id, scope_id, from_seq, to_seq, digest, deadline, owner_id,
+                     _now(), _now()))
+                return job_id, 1
+            job_id, status, current_owner, lease_until, token = row
+            if status in ("COMMITTED", "done"):
+                return None
+            if lease_until and lease_until > now.isoformat(timespec="seconds"):
+                if current_owner == owner_id:
+                    return None
+                return None
+            new_token = int(token) + 1
+            self.db.execute("""UPDATE consolidation_job SET status='CLAIMED',owner_id=?,
+                lease_until=?,fencing_token=?,attempts=attempts+1,updated_at=? WHERE job_id=?""",
+                (owner_id, deadline, new_token, _now(), job_id))
+            return job_id, new_token
+
+    def renew_lease(self, job_id: str, owner_id: str, token: int, lease_seconds: int = 30) -> bool:
+        deadline = (datetime.now(timezone.utc) + timedelta(seconds=max(0, lease_seconds))
+                    ).isoformat(timespec="seconds")
+        with self.db:
+            cur = self.db.execute("""UPDATE consolidation_job SET lease_until=?,updated_at=?
+                WHERE job_id=? AND owner_id=? AND fencing_token=? AND status!='COMMITTED'""",
+                (deadline, _now(), job_id, owner_id, int(token)))
+            return cur.rowcount > 0
+
+    def verify_lease(self, job_id: str, owner_id: str, token: int) -> bool:
+        row = self.db.execute("""SELECT owner_id,fencing_token,lease_until,status
+            FROM consolidation_job WHERE job_id=?""", (job_id,)).fetchone()
+        if not row:
+            return False
+        owner, actual_token, lease_until, status = row
+        return (owner == owner_id and int(actual_token) == int(token)
+                and status not in ("COMMITTED", "done")
+                and lease_until is not None
+                and lease_until > _now())
+
+    def commit_job(self, job_id: str, owner_id: str, token: int,
+                   cursor_seq: int) -> bool:
+        """Atomically commit the job marker and cursor; stale tokens are rejected."""
+        with self.db:
+            row = self.db.execute("""SELECT scope_id,owner_id,fencing_token,status,lease_until
+                FROM consolidation_job WHERE job_id=?""", (job_id,)).fetchone()
+            if not row:
+                return False
+            scope_id, owner, actual_token, status, lease_until = row
+            if (owner != owner_id or int(actual_token) != int(token)
+                    or status in ("COMMITTED", "done")):
+                return False
+            if not lease_until or lease_until <= _now():
+                return False
+            self.db.execute("""INSERT INTO consolidation_cursor
+                (scope_id,last_committed_seq,updated_at) VALUES(?,?,?)
+                ON CONFLICT(scope_id) DO UPDATE SET
+                last_committed_seq=excluded.last_committed_seq,updated_at=excluded.updated_at""",
+                (scope_id, int(cursor_seq), _now()))
+            self.db.execute("""UPDATE consolidation_job SET status='COMMITTED',lease_until=NULL,
+                updated_at=? WHERE job_id=?""", (_now(), job_id))
+            return True
+
+    def fail_job(self, job_id: str, owner_id: str, token: int, retryable: bool = True) -> bool:
+        status = "FAILED_RETRYABLE" if retryable else "FAILED"
+        with self.db:
+            cur = self.db.execute("""UPDATE consolidation_job SET status=?,lease_until=NULL,
+                updated_at=? WHERE job_id=? AND owner_id=? AND fencing_token=?""",
+                (status, _now(), job_id, owner_id, int(token)))
+            return cur.rowcount > 0
 
     def source_ref_upsert(self, scope_id: str, seq: int, sha: str, recorded_at: str) -> None:
         with self.db:
@@ -247,6 +335,29 @@ class V15Store:
             self.db.execute("UPDATE consolidation_job SET status='done',updated_at=? WHERE job_id=?",
                             (_now(), job_id))
         return created
+
+    def create_event_from_source(self, scope_id: str, source: Any, event_type: str = "unknown",
+                                 title: str = "", summary: str = "",
+                                 event_id: str | None = None) -> str:
+        event_id = event_id or ("evt_" + uuid.uuid4().hex)
+        now = _now()
+        with self.db:
+            self.db.execute("""INSERT INTO source_ref(scope_id,source_seq,source_hash,recorded_at)
+                VALUES(?,?,?,?) ON CONFLICT(scope_id,source_seq) DO UPDATE SET
+                source_hash=excluded.source_hash,recorded_at=excluded.recorded_at""",
+                (scope_id, source.source_seq, source.source_hash, source.recorded_at))
+            self.db.execute("""INSERT INTO event_candidate
+                (event_id,scope_id,event_type,title,state,current_revision,created_at,updated_at)
+                VALUES(?,?,?,?,'provisional',1,?,?)""",
+                (event_id, scope_id, event_type, title or source.text[:80], now, now))
+            self.db.execute("""INSERT INTO event_revision
+                (event_id,rev,summary,status,modality,created_at)
+                VALUES(?,1,?,?,?,?)""",
+                (event_id, summary or source.text[:200], "unknown", "unknown", now))
+            self.db.execute("""INSERT OR IGNORE INTO event_evidence
+                (event_id,rev,scope_id,source_seq,quote,valid) VALUES(?,1,?,?,?,1)""",
+                (event_id, scope_id, source.source_seq, source.text))
+        return event_id
 
     def record_usage(self, job_id: str, provider: str, tokens_in: int,
                      tokens_out: int, outcome: str) -> None:

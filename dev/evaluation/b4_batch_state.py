@@ -43,8 +43,13 @@ def run(root: str, trace_path: str, batch_size: int, cold_start: bool) -> dict:
                     batch = entries[start:start + batch_size]
                     digest = hashlib.sha256(
                         "|".join(e["source_id"] for e in batch).encode()).hexdigest()
-                    job_id = store.record_job(scope, batch[0]["source_seq"],
-                                              batch[-1]["source_seq"], digest, "CLAIMED")
+                    owner = "b4-state-worker"
+                    claim = store.claim_job(scope, batch[0]["source_seq"],
+                                             batch[-1]["source_seq"], digest,
+                                             owner, lease_seconds=300)
+                    if claim is None:
+                        raise RuntimeError("job could not be claimed")
+                    job_id, token = claim
                     resolver = ConstrainedResolver(store)
                     for entry in batch:
                         source_message = fixture.messages[entry["source_id"]]
@@ -74,8 +79,8 @@ def run(root: str, trace_path: str, batch_size: int, cold_start: bool) -> dict:
                             stats["created"] += 1
                         predictions[entry["source_id"]] = event_id
                         stats["messages"] += 1
-                    store.set_cursor(scope, batch[-1]["source_seq"])
-                    store.finish_job(job_id, "COMMITTED")
+                    if not store.commit_job(job_id, owner, token, batch[-1]["source_seq"]):
+                        raise RuntimeError("job commit rejected by lease/fencing")
                     stats["jobs_committed"] += 1
                     stats["batches"] += 1
                     if cold_start:

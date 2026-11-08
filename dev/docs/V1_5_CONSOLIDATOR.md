@@ -17,6 +17,7 @@
 > T1/T2 修复：[`reports/V1_5B_T1_T2_FIX_REPORT_2026-11-08.md`](../reports/V1_5B_T1_T2_FIX_REPORT_2026-11-08.md)
 > B4.5 基线：[`reports/V1_5B_B4_5_BASELINE_REPORT_2026-11-08.md`](../reports/V1_5B_B4_5_BASELINE_REPORT_2026-11-08.md)
 > B4.5 批次：[`reports/V1_5B_B4_5_3_BATCH_REPORT_2026-11-08.md`](../reports/V1_5B_B4_5_3_BATCH_REPORT_2026-11-08.md)
+> B4.5-4 租约：[`reports/V1_5B_B4_5_4_LEASE_REPORT_2026-11-08.md`](../reports/V1_5B_B4_5_4_LEASE_REPORT_2026-11-08.md)
 > B4 可靠性：[`reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md`](../reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md)
 
 ## 1. 定位
