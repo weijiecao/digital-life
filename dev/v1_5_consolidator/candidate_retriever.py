@@ -156,16 +156,24 @@ class HybridCandidateIndex:
         self._anchors[(anchor.scope_id, anchor.event_id)] = anchor
 
     def search(self, scope_id: str, query: str, k: int = 10) -> list[Candidate]:
+        # RRF fuses *ranks*, not uncalibrated BM25 and cosine scores.
+        # Higher ranks (1 is best) must always receive a larger contribution.
+        rrf_k = 60
         scores: dict[str, float] = defaultdict(float)
         reasons: dict[str, list[str]] = defaultdict(list)
-        for candidate in self.lexical.search(scope_id, query, k=max(k, 10)):
-            scores[candidate.event_id] += 1.0 / (1 + candidate.score)
+        lexical_ranks: dict[str, int] = {}
+        for rank, candidate in enumerate(self.lexical.search(scope_id, query, k=max(k, 10)), start=1):
+            lexical_ranks[candidate.event_id] = rank
+            scores[candidate.event_id] += 1.0 / (rrf_k + rank)
             reasons[candidate.event_id].extend(candidate.reasons)
         if self.embedding is not None:
-            for candidate in self.embedding.search(scope_id, query, k=max(k, 10)):
-                scores[candidate.event_id] += 1.0 + candidate.score
+            for rank, candidate in enumerate(self.embedding.search(scope_id, query, k=max(k, 10)), start=1):
+                scores[candidate.event_id] += 1.0 / (rrf_k + rank)
                 reasons[candidate.event_id].extend(candidate.reasons)
-        ranked = sorted(scores.items(), key=lambda item: item[1], reverse=True)[:k]
+        # A perfectly opposed pair of ranks ties under equal-weight RRF.
+        # Prefer the lexical rank as the deterministic tie-breaker.
+        ranked = sorted(scores.items(),
+                        key=lambda item: (-item[1], lexical_ranks.get(item[0], float("inf")), item[0]))[:k]
         return [Candidate(event_id=event_id, score=round(score, 6),
                           reasons=reasons[event_id][:8],
                           anchor_version=self._anchors[(scope_id, event_id)].version)

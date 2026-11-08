@@ -37,6 +37,25 @@ class ConstrainedResolver:
     def resolve(self, scope_id: str, source: SourceEnvelope,
                 judgment: JudgmentResult, model_version: str = "") -> ResolutionSummary:
         summary = ResolutionSummary()
+        # Fail closed on partially parsed or mismatched model judgments.
+        # Never persist partial proposals, attach evidence, or add cannot-links
+        # when the judge reported any validation issue.
+        if not judgment.ok or judgment.source_seq != source.source_seq:
+            issues = list(judgment.issues)
+            if judgment.source_seq != source.source_seq:
+                issues.append("source_seq_mismatch")
+            if not judgment.proposals:
+                issues.append("no_valid_proposals")
+            for proposal in judgment.proposals or [None]:
+                summary.deferred += 1
+                summary.decisions.append({
+                    "source_seq": source.source_seq,
+                    "target": proposal.candidate_event_id if proposal else None,
+                    "decision": "DEFERRED",
+                    "reason": "invalid_judgment",
+                    "issues": list(issues),
+                })
+            return summary
         existing = set(self.store.events_for_source(scope_id, source.source_seq))
         same_props = [p for p in judgment.proposals if p.label == "SAME_EVENT"]
         ambiguous_same = len(same_props) > 1

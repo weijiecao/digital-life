@@ -189,6 +189,21 @@ class TestB4Reliability(unittest.TestCase):
             finally:
                 store.close()
 
+    def test_invalid_judgment_does_not_write_real_sqlite(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            seed_event(store, "evt_a")
+            invalid = JudgmentResult(source_seq=1, issues=["missing:evt_b"],
+                                     proposals=[RelationProposal("evt_a", "SAME_EVENT")])
+            result = ConstrainedResolver(store).resolve(
+                "scope-a", SourceEnvelope("scope-a", 1, "sha", "t", "x"), invalid)
+            self.assertEqual(result.deferred, 1)
+            self.assertEqual(result.attached, 0)
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_link_proposal").fetchone()[0], 0)
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_link_decision").fetchone()[0], 0)
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0], 0)
+            store.close()
+
     def test_provider_failure_does_not_advance_cursor(self):
         with tempfile.TemporaryDirectory() as d:
             v1 = Path(d) / "v1.sqlite3"
