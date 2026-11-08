@@ -3,7 +3,7 @@
 - 报告编号：DL-V1.5-B-REP-007
 - 日期：2026-11-08
 - 数据：`Digital_Life_B4_TestData_v1`（synthetic；real_chat_records=0）
-- 状态：**10/12 可靠性场景有自动化覆盖；2 项仍未自动化**
+- 状态：**10/12 完整自动化；R11/R12 已有部分探测，但不等同完整验收**
 
 ## 1. 覆盖情况
 
@@ -19,8 +19,8 @@
 | R08 kill_after_commit | ✅ | 提交后退出，重放只记 ALREADY_ATTACHED |
 | R09 provider_503 | ✅ | provider 异常不推进游标 |
 | R10 token_budget | ✅ | 超预算不推进游标 |
-| R11 story_reality | ❌ | 未做故事/真实经历判别测试 |
-| R12 batch_boundary | ❌ | 未做 8/20/40 端到端复核 |
+| R11 story_reality | ◐ | 50 对叙事 vs 非叙事：0 SAME；未覆盖第一人称虚构/纠错 |
+| R12 batch_boundary | ◐ | 340 条增量 B1→B2→B3 F1 0.905；严格 8/20/40 未做 |
 
 ## 2. 新增可靠性测试
 
@@ -42,6 +42,11 @@ R07/R08 使用独立子进程与临时 SQLite：
 
 其中 R05 是新增保护：Resolver 现在会检查目标事件是否属于当前 scope；不属于则 `CONFLICT`，不再误记成 `ALREADY_ATTACHED`。
 
+补充探测：
+
+- R11：50 对叙事 vs 非叙事，50 个 DIFFERENT_EVENT、0 个 SAME_EVENT；仅覆盖叙事事件类型，不覆盖第一人称虚构/转述嵌套/纠错。
+- R12：340 条消息逐条 B1→B2→B3，pairwise F1 0.905、false merge 0.268%、coverage 1.0；这是增量回放，不是严格 batch=8/20/40 状态机。
+
 ## 3. 测试结果
 
 | 项 | 结果 |
@@ -54,8 +59,8 @@ R07/R08 使用独立子进程与临时 SQLite：
 
 ## 4. 仍缺
 
-- 故事人物 vs 用户真实经历；
-- batch=8/20/40 下的完整 cluster；
+- R11 第一人称虚构、转述、嵌套、纠错反转；
+- R12 严格 batch=8/20/40 状态机；
 - 12 个场景全部用真实 Sidecar 执行，而不只是单测。
 
 ## 5. 结论
