@@ -102,7 +102,9 @@ class ContextGateway:
             "必须为每个候选返回一条 relation；不要新增候选 ID；reason_codes 只是理由声明。",
             "同时判断当前原话的叙事来源：narrator=user|friend|story_character|unknown，"
             "subject=user|other|story_character|unknown，reality_status=real|reported|fictional|unknown；"
-            "第一人称虚构不能因为出现“我”就当作用户真实经历。",
+            "第一人称虚构不能因为出现“我”就当作用户真实经历。"
+            "如果候选带有 story_id，且当前原话明显属于同一故事，source_provenance.story_id 应填同一 ID；"
+            "否则不要复制候选的 story_id。",
             "输出结构：",
             '{"schema_version":"v1.5b.1","source_provenance":{"narrator":"user|friend|story_character|unknown",'
             '"subject":"user|other|story_character|unknown","reality_status":"real|reported|fictional|unknown",'
@@ -128,6 +130,13 @@ class ContextGateway:
             anchor = item.get("anchor_text") or ""
             if anchor:
                 lines.append("  anchor: " + anchor[:500])
+            provenance = item.get("provenance") or {}
+            if provenance:
+                lines.append("  provenance: narrator=%s subject=%s reality=%s story_id=%s" % (
+                    provenance.get("narrator", "unknown"),
+                    provenance.get("subject", "unknown"),
+                    provenance.get("reality_status", "unknown"),
+                    provenance.get("story_id")))
         prompt = "\n".join(lines)
         if len(prompt) > self.max_chars:
             raise ValueError("关系判别超过 ContextGateway 字符预算：%d > %d" % (len(prompt), self.max_chars))
