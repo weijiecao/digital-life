@@ -30,6 +30,7 @@ class V15Store:
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.execute("PRAGMA journal_mode=WAL")
         self._unit_depth = 0
+        self._unit_rollback_only = False
         self._init_schema()
 
     def _init_schema(self) -> None:
@@ -135,6 +136,8 @@ class V15Store:
     @contextmanager
     def _write(self):
         """Commit only at the outer boundary; stay open inside a unit."""
+        if self._unit_rollback_only:
+            raise RuntimeError("unit is rollback-only")
         if self._unit_depth:
             yield
         else:
@@ -143,16 +146,20 @@ class V15Store:
 
     @contextmanager
     def unit_of_work(self):
-        """One source-level transaction spanning store method calls."""
+        """Rollback-only nested unit; only the outer boundary commits."""
         if self._unit_depth:
             self._unit_depth += 1
             try:
                 yield self
+            except Exception:
+                self._unit_rollback_only = True
+                raise
             finally:
                 self._unit_depth -= 1
             return
         self.db.execute("BEGIN IMMEDIATE")
         self._unit_depth = 1
+        self._unit_rollback_only = False
         try:
             yield self
         except Exception:
@@ -160,10 +167,15 @@ class V15Store:
             self.db.rollback()
             raise
         else:
+            if self._unit_rollback_only:
+                self._unit_depth = 0
+                self.db.rollback()
+                raise RuntimeError("unit rollback-only: inner failure was swallowed")
             self._unit_depth = 0
             self.db.commit()
         finally:
             self._unit_depth = 0
+            self._unit_rollback_only = False
 
     def close(self) -> None:
         self.db.close()

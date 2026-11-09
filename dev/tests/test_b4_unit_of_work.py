@@ -48,6 +48,21 @@ class TestUnitOfWork(unittest.TestCase):
             store.close()
 
 
+    def test_inner_exception_caught_still_rolls_back(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            source = SourceEnvelope("s", 1, "sha", "t", "hello")
+            with self.assertRaises(RuntimeError):
+                with store.unit_of_work():
+                    try:
+                        with store.unit_of_work():
+                            store.create_event_from_source("s", source)
+                            raise RuntimeError("inner")
+                    except RuntimeError:
+                        pass
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_candidate").fetchone()[0], 0)
+            store.close()
+
     def test_pending_rolls_back_and_relocates(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))

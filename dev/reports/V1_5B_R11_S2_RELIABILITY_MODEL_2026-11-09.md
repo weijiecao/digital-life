@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **437/437**。
+全量回归 **438/438**。
 
 仍待工程接线：
 
@@ -111,6 +111,27 @@ cursor: repeat=ALREADY / evidence=2
 - 自动触发重定位（当前是显式方法）；
 - claim/cursor 与来源单元在同一事务；
 - 真实进程 kill 与 fencing。
+
+## 4.3 E1：rollback-only 嵌套语义
+
+`unit_of_work` 现在：
+
+- 内层异常即使被外层 `except` 捕获，也设置 `_unit_rollback_only`；
+- 外层退出时回滚并抛出明确异常；
+- rollback-only 状态下后续 `_write()` 直接拒绝；
+- 只有最外层负责 BEGIN/COMMIT/ROLLBACK。
+
+新增测试：
+
+- 内层异常被捕获后，外层仍整体回滚；
+- 普通嵌套成功仍由外层一次提交。
+
+仍未完成 E1 全部要求：
+
+- 所有写入路径的显式 commit/rollback/executescript 审查；
+- 迁移与业务事务隔离；
+- 提交前外部 kill；
+- 真实批次入口全部改用该语义。
 
 ## 5. 工程侧下一步
 
