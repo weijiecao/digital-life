@@ -198,8 +198,8 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                         store.record_receipt(scope, source.source_seq,
                                              "ATTACHED" if attached else "CREATED",
                                              source.source_hash)
-                    if not store.commit_job(job_id, "frozen-replay", token,
-                                            batch[-1]["source_seq"]):
+                    frontier = store.contiguous_frontier(scope)
+                    if not store.commit_job(job_id, "frozen-replay", token, frontier):
                         stats["job_commit_failed"] += 1
                     store.db.commit()
                 frontiers[scope] = store.contiguous_frontier(scope)
