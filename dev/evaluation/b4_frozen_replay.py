@@ -95,6 +95,8 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
         by_scope[entry["scope_id"]].append(entry)
     predictions = {}
     stats = Counter()
+    frontiers = {}
+    lease_owner = "frozen-" + uuid.uuid4().hex
     temp_dir = tempfile.TemporaryDirectory(prefix="b4-frozen-") if db_path is None else None
     with (temp_dir if temp_dir is not None else contextlib.nullcontext()):
         if db_path is None:
@@ -108,8 +110,15 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
             for scope, entries in by_scope.items():
                 entries.sort(key=lambda item: item["source_seq"])
                 mapping = _load_map(store, scope)
+                lease_token = store.claim_scope(scope, lease_owner, ttl=300)
+                if lease_token is None:
+                    stats["scope_claim_failed"] += 1
+                    continue
                 for start in range(0, len(entries), batch_size):
                     batch = entries[start:start + batch_size]
+                    if not store.verify_scope(scope, lease_owner, lease_token):
+                        stats["fenced"] += 1
+                        break
                     digest = hashlib.sha256(
                         "|".join(e["source_id"] for e in batch).encode()).hexdigest()
                     claim = store.claim_job(scope, batch[0]["source_seq"],
@@ -156,6 +165,8 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                             mapping.setdefault(entry["final_event"], set()).add(new_id)
                             predictions[entry["source_id"]] = new_id
                             stats["messages"] += 1
+                            store.record_receipt(scope, source.source_seq,
+                                                 "DEFER_MAPPING", source.source_hash)
                             continue
                         proposals = [
                             RelationProposal(item.candidate_event_ids[0], item.original_label)
@@ -184,18 +195,22 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                         mapping.setdefault(entry["final_event"], set()).add(new_id)
                         predictions[entry["source_id"]] = new_id
                         stats["messages"] += 1
+                        store.record_receipt(scope, source.source_seq,
+                                             "ATTACHED" if attached else "CREATED",
+                                             source.source_hash)
                     if not store.commit_job(job_id, "frozen-replay", token,
                                             batch[-1]["source_seq"]):
                         stats["job_commit_failed"] += 1
                     store.db.commit()
+                frontiers[scope] = store.contiguous_frontier(scope)
         finally:
             store.close()
     for key in ("messages", "attached", "created", "mapping_ambiguous",
                 "mapping_missing", "deferred_mapping", "job_claim_failed",
-                "job_commit_failed"):
+                "job_commit_failed", "scope_claim_failed", "fenced"):
         stats.setdefault(key, 0)
     return {"suite": "v1.5b-frozen-replay", "batch_size": batch_size,
-            **dict(stats), "predictions": predictions}
+            **dict(stats), "frontiers": frontiers, "predictions": predictions}
 
 
 def main() -> int:
@@ -218,6 +233,7 @@ def main() -> int:
     print(json.dumps({k: result[k] for k in ("batch_size", "messages", "attached",
                                               "created", "mapping_ambiguous",
                                               "mapping_missing", "deferred_mapping",
+                                              "scope_claim_failed", "fenced",
                                               "job_claim_failed", "job_commit_failed")},
                      ensure_ascii=False, indent=2))
     return 0

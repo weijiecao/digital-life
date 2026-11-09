@@ -156,6 +156,31 @@ cursor: repeat=ALREADY / evidence=2
 - 未实现 manifest 与连续水位接线；
 - 双进程真实竞争未复测。
 
+## 4.5 E2 接入回放：scope lease 与连续回执
+
+`b4_frozen_replay` 现在：
+
+- 每个 scope 先 `claim_scope`，后续每批 `verify_scope`；
+- 每来源提交后写 `source_receipt`；
+- 结束计算 `contiguous_frontier`；
+- 仍保留 range job 作为批次调度记录。
+
+旧 trace 8/20/40：
+
+```text
+scope_claim_failed 0 / fenced 0
+attached 211 / created 129
+frontier 每 scope 34
+F1 0.92857
+```
+
+仍未完成：
+
+- job 与 scope lease 尚未合并为唯一协调域；
+- 回执尚未用于 checkpoint/cursor 恢复；
+- 无 manifest，frontier 只按连续 seq 扫描；
+- 双进程真实竞争与接管未在回放中测试。
+
 ## 5. 工程侧下一步
 
 1. 暴露单来源事务 API，避免 Resolver/Store 内部嵌套提交；
