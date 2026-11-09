@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **438/438**。
+全量回归 **442/442**。
 
 仍待工程接线：
 
@@ -132,6 +132,29 @@ cursor: repeat=ALREADY / evidence=2
 - 迁移与业务事务隔离；
 - 提交前外部 kill；
 - 真实批次入口全部改用该语义。
+
+## 4.4 E2 起步：scope lease、回执与连续水位
+
+新增：
+
+- `scope_lease`：与 range job 分离的 scope 级 lease，token 单调；
+- `claim_scope` / `verify_scope` / `renew_scope`；
+- `source_receipt`：source + input_hash + outcome；
+- `contiguous_frontier`：只跨过连续回执，不用最大 seq。
+
+测试：
+
+- 第二 owner 被拒；过期后 token 2 接管，旧 token verify 失败；
+- 相同回执幂等，不同 input_hash 拒绝；
+- 先 2 后 1 → frontier 2；再 4 不前进；
+- 回执在 unit 内失败回滚。
+
+仍未接入：
+
+- `b4_frozen_replay` 仍用 range job，未使用 scope lease；
+- 回放尚未逐来源写 receipt；
+- 未实现 manifest 与连续水位接线；
+- 双进程真实竞争未复测。
 
 ## 5. 工程侧下一步
 

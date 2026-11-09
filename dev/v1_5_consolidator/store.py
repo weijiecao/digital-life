@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import time
 import uuid
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -114,6 +115,13 @@ class V15Store:
           reason TEXT NOT NULL, status TEXT NOT NULL,
           created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
           UNIQUE(scope_id, source_seq));
+        CREATE TABLE IF NOT EXISTS scope_lease(
+          scope_id TEXT PRIMARY KEY, owner_id TEXT, fencing_token INTEGER NOT NULL DEFAULT 0,
+          expires_at REAL NOT NULL DEFAULT 0, updated_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS source_receipt(
+          scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL, outcome TEXT NOT NULL,
+          input_hash TEXT NOT NULL, created_at TEXT NOT NULL,
+          PRIMARY KEY(scope_id, source_seq));
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -502,6 +510,58 @@ class V15Store:
                 SET status='RELOCATED', updated_at=? WHERE scope_id=? AND source_seq=?
                 AND status='PENDING'""", (_now(), scope_id, source_seq))
         return cursor.rowcount > 0
+
+    def claim_scope(self, scope_id: str, owner_id: str, ttl: float = 30.0) -> int | None:
+        now = time.time()
+        with self._write():
+            row = self.db.execute("SELECT owner_id,fencing_token,expires_at FROM scope_lease WHERE scope_id=?",
+                                  (scope_id,)).fetchone()
+            if row and row["owner_id"] and row["expires_at"] > now:
+                return None
+            token = (row["fencing_token"] + 1) if row else 1
+            self.db.execute("""INSERT INTO scope_lease
+                (scope_id,owner_id,fencing_token,expires_at,updated_at)
+                VALUES(?,?,?,?,?)
+                ON CONFLICT(scope_id) DO UPDATE SET owner_id=excluded.owner_id,
+                fencing_token=excluded.fencing_token, expires_at=excluded.expires_at,
+                updated_at=excluded.updated_at""",
+                (scope_id, owner_id, token, now + ttl, _now()))
+        return token
+
+    def verify_scope(self, scope_id: str, owner_id: str, token: int) -> bool:
+        row = self.db.execute("""SELECT 1 FROM scope_lease WHERE scope_id=? AND owner_id=?
+            AND fencing_token=? AND expires_at > ?""",
+            (scope_id, owner_id, token, time.time())).fetchone()
+        return row is not None
+
+    def renew_scope(self, scope_id: str, owner_id: str, token: int, ttl: float = 30.0) -> bool:
+        with self._write():
+            cursor = self.db.execute("""UPDATE scope_lease SET expires_at=?, updated_at=?
+                WHERE scope_id=? AND owner_id=? AND fencing_token=? AND expires_at > ?""",
+                (time.time() + ttl, _now(), scope_id, owner_id, token, time.time()))
+        return cursor.rowcount > 0
+
+    def record_receipt(self, scope_id: str, source_seq: int, outcome: str,
+                       input_hash: str) -> bool:
+        with self._write():
+            row = self.db.execute("""SELECT input_hash FROM source_receipt
+                WHERE scope_id=? AND source_seq=?""", (scope_id, source_seq)).fetchone()
+            if row:
+                return row[0] == input_hash
+            self.db.execute("""INSERT INTO source_receipt
+                (scope_id,source_seq,outcome,input_hash,created_at) VALUES(?,?,?,?,?)""",
+                (scope_id, source_seq, outcome, input_hash, _now()))
+        return True
+
+    def contiguous_frontier(self, scope_id: str, start: int = 1) -> int:
+        rows = self.db.execute("""SELECT source_seq FROM source_receipt
+            WHERE scope_id=? ORDER BY source_seq""", (scope_id,)).fetchall()
+        expected = start
+        for row in rows:
+            if row[0] != expected:
+                break
+            expected += 1
+        return expected - 1
 
     def events_for_source(self, scope_id: str, source_seq: int) -> list[str]:
         rows = self.db.execute("""SELECT DISTINCT e.event_id FROM event_evidence e
