@@ -125,6 +125,11 @@ class V15Store:
         CREATE TABLE IF NOT EXISTS source_manifest(
           scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL, source_id TEXT NOT NULL,
           PRIMARY KEY(scope_id, source_seq));
+        CREATE TABLE IF NOT EXISTS source_ready(
+          scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL,
+          reason TEXT NOT NULL, generation INTEGER NOT NULL DEFAULT 1,
+          status TEXT NOT NULL DEFAULT 'READY', updated_at TEXT NOT NULL,
+          PRIMARY KEY(scope_id, source_seq));
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -594,6 +599,31 @@ class V15Store:
                 (scope_id,source_seq,outcome,input_hash,created_at) VALUES(?,?,?,?,?)""",
                 (scope_id, source_seq, outcome, input_hash, _now()))
         return True
+
+    def enqueue_ready(self, scope_id: str, source_seq: int, reason: str,
+                      generation: int = 1) -> None:
+        with self._write():
+            self.db.execute("""INSERT INTO source_ready
+                (scope_id,source_seq,reason,generation,status,updated_at)
+                VALUES(?,?,?,?,'READY',?)
+                ON CONFLICT(scope_id,source_seq) DO UPDATE SET
+                reason=excluded.reason,generation=excluded.generation,
+                status='READY',updated_at=excluded.updated_at""",
+                (scope_id, source_seq, reason, generation, _now()))
+
+    def poll_ready(self, scope_id: str, limit: int = 100) -> list[dict]:
+        rows = self.db.execute("""SELECT source_seq,reason,generation FROM source_ready
+            WHERE scope_id=? AND status='READY' ORDER BY source_seq LIMIT ?""",
+            (scope_id, limit)).fetchall()
+        return [{"source_seq": row[0], "reason": row[1], "generation": row[2]}
+                for row in rows]
+
+    def mark_ready_done(self, scope_id: str, source_seq: int) -> bool:
+        with self._write():
+            cursor = self.db.execute("""UPDATE source_ready SET status='DONE', updated_at=?
+                WHERE scope_id=? AND source_seq=? AND status='READY'""",
+                (_now(), scope_id, source_seq))
+        return cursor.rowcount > 0
 
     def register_manifest(self, scope_id: str, entries: list[tuple[int, str]]) -> None:
         with self._write():

@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **446/446**。
+全量回归 **447/447**。
 
 仍待工程接线：
 
@@ -253,6 +253,27 @@ F1 0.92857
 - 缺失扫描尚未接成后台恢复任务；
 - 未实现异常“已订阅但未入队”的修复；
 - 真实双进程与 kill 未复测。
+
+## 4.10 M1/E3：READY 队列原语
+
+新增 `source_ready`：
+
+- `enqueue_ready(scope, seq, reason, generation)`；
+- `poll_ready(scope, limit)` 按 seq 稳定排序；
+- `mark_ready_done`；
+- 同来源重复通知只保留一条 READY，不重复增长。
+
+测试：
+
+- 2、1、2 入队 → poll 为 1、2；
+- 完成 1 后 poll 只剩 2；
+- 重新通知 1 → READY 队列恢复 1、2。
+
+仍未完成：
+
+- 依赖变化尚未自动 enqueue；
+- 后台 worker 未消费；
+- 重评判决与当前归属发布未接线。
 
 ## 5. 工程侧下一步
 

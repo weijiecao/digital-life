@@ -37,6 +37,19 @@ class TestScopeLeaseReceipt(unittest.TestCase):
             self.assertEqual(store.contiguous_frontier("s"), 2)
             store.close()
 
+    def test_ready_queue_dedup_and_order(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            store.enqueue_ready("s", 2, "dep-change")
+            store.enqueue_ready("s", 1, "dep-change")
+            store.enqueue_ready("s", 2, "dep-change")
+            self.assertEqual([r["source_seq"] for r in store.poll_ready("s")], [1, 2])
+            self.assertTrue(store.mark_ready_done("s", 1))
+            self.assertEqual([r["source_seq"] for r in store.poll_ready("s")], [2])
+            store.enqueue_ready("s", 1, "new-change")
+            self.assertEqual([r["source_seq"] for r in store.poll_ready("s")], [1, 2])
+            store.close()
+
     def test_manifest_sparse_frontier_and_missing_scan(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))
