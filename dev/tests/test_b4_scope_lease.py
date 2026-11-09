@@ -60,6 +60,19 @@ class TestScopeLeaseReceipt(unittest.TestCase):
                                               scope_token=scope_token))
             store.close()
 
+    def test_unit_scope_fence_rejects_before_write(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            token = store.claim_scope("s", "worker-a", ttl=30)
+            store.db.execute("UPDATE scope_lease SET expires_at=0 WHERE scope_id='s'")
+            store.db.commit()
+            store.claim_scope("s", "worker-b", ttl=30)
+            with self.assertRaises(RuntimeError):
+                with store.unit_of_work("s", "worker-a", token):
+                    store.record_receipt("s", 1, "ATTACHED", "h1")
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM source_receipt").fetchone()[0], 0)
+            store.close()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **444/444**。
+全量回归 **445/445**。
 
 仍待工程接线：
 
@@ -209,6 +209,29 @@ F1 0.92857
 - job claim 与 scope claim 仍为两次调用；
 - 真实双进程竞争未复测；
 - job cursor 与 scope frontier 未在一个事务内同时提交。
+
+## 4.8 M1：来源 receipt 与 scope fencing 进入单来源事务
+
+回放现在：
+
+- 处理前查 `receipt_for_source`，同 input_hash 直接跳过；
+- receipt 在来源 `unit_of_work` 内写入，不再提交后补写；
+- `unit_of_work(scope, owner, token)` 在 BEGIN 后与 COMMIT 前各校验一次 scope lease；
+- scope 被接管时抛错并回滚，不产生业务写入。
+
+测试：
+
+- 旧 scope token 的 unit 被拒绝，receipt 行数 0；
+- scope 接管后旧 job commit 返回 False；
+- 相同 receipt 幂等，不同 hash 拒绝。
+
+旧 trace 8/20/40：attached 211 / created 129 / F1 0.92857，`already_receipted=0`。
+
+仍未完成：
+
+- receipt 与 job cursor 仍未在同一事务内；
+- manifest 与恢复扫描未实现；
+- 真实双进程竞争与 kill 未验证。
 
 ## 5. 工程侧下一步
 

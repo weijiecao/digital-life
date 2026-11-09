@@ -153,7 +153,8 @@ class V15Store:
                 yield
 
     @contextmanager
-    def unit_of_work(self):
+    def unit_of_work(self, scope_id: str | None = None, scope_owner: str | None = None,
+                     scope_token: int | None = None):
         """Rollback-only nested unit; only the outer boundary commits."""
         if self._unit_depth:
             self._unit_depth += 1
@@ -169,7 +170,13 @@ class V15Store:
         self._unit_depth = 1
         self._unit_rollback_only = False
         try:
+            if scope_id is not None and scope_owner is not None and scope_token is not None:
+                if not self.verify_scope(scope_id, scope_owner, scope_token):
+                    raise RuntimeError("scope lease fenced before unit")
             yield self
+            if scope_id is not None and scope_owner is not None and scope_token is not None:
+                if not self.verify_scope(scope_id, scope_owner, scope_token):
+                    raise RuntimeError("scope lease fenced before commit")
         except Exception:
             self._unit_depth = 0
             self.db.rollback()
@@ -565,6 +572,13 @@ class V15Store:
                 WHERE scope_id=? AND owner_id=? AND fencing_token=? AND expires_at > ?""",
                 (time.time() + ttl, _now(), scope_id, owner_id, token, time.time()))
         return cursor.rowcount > 0
+
+    def receipt_for_source(self, scope_id: str, source_seq: int) -> dict | None:
+        row = self.db.execute("""SELECT outcome,input_hash FROM source_receipt
+            WHERE scope_id=? AND source_seq=?""", (scope_id, source_seq)).fetchone()
+        if row is None:
+            return None
+        return {"outcome": row[0], "input_hash": row[1]}
 
     def record_receipt(self, scope_id: str, source_seq: int, outcome: str,
                        input_hash: str) -> bool:

@@ -134,6 +134,11 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                         source = SourceEnvelope(scope, entry["source_seq"],
                                                 msg["sha256_text"], msg["recorded_at"],
                                                 msg["text"])
+                        existing_receipt = store.receipt_for_source(scope, source.source_seq)
+                        if (existing_receipt is not None
+                                and existing_receipt["input_hash"] == source.source_hash):
+                            stats["already_receipted"] += 1
+                            continue
                         prov_data = entry.get("source_provenance") or {}
                         provenance = NarrativeProvenance(**prov_data) if prov_data else NarrativeProvenance()
                         mapped = map_proposals(entry, mapping)
@@ -145,7 +150,7 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                         if not mapped.safe_to_resolve:
                             stats["deferred_mapping"] += 1
                             new_id = "evt_replay_" + uuid.uuid4().hex
-                            with store.unit_of_work():
+                            with store.unit_of_work(scope, lease_owner, lease_token):
                                 store.create_event_from_source(
                                     scope, source, event_type="unknown",
                                     title=source.text[:80], event_id=new_id,
@@ -161,12 +166,12 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                                      for p in mapped.proposals},
                                     ",".join(mapped.reason_codes) or "MAPPING_INCOMPLETE")
                                 _add_map(store, scope, entry["final_event"], new_id)
+                                store.record_receipt(scope, source.source_seq,
+                                                     "DEFER_MAPPING", source.source_hash)
                             stats["created"] += 1
                             mapping.setdefault(entry["final_event"], set()).add(new_id)
                             predictions[entry["source_id"]] = new_id
                             stats["messages"] += 1
-                            store.record_receipt(scope, source.source_seq,
-                                                 "DEFER_MAPPING", source.source_hash)
                             continue
                         proposals = [
                             RelationProposal(item.candidate_event_ids[0], item.original_label)
@@ -178,7 +183,7 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                             request_id="frozen-" + entry["source_id"],
                             provenance=provenance,
                             provenance_present=bool(prov_data))
-                        with store.unit_of_work():
+                        with store.unit_of_work(scope, lease_owner, lease_token):
                             resolver.resolve(scope, source, judgment)
                             attached = store.events_for_source(scope, source.source_seq)
                             if attached:
@@ -192,12 +197,12 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                                     provenance=prov_data or None)
                                 stats["created"] += 1
                             _add_map(store, scope, entry["final_event"], new_id)
+                            store.record_receipt(scope, source.source_seq,
+                                                 "ATTACHED" if attached else "CREATED",
+                                                 source.source_hash)
                         mapping.setdefault(entry["final_event"], set()).add(new_id)
                         predictions[entry["source_id"]] = new_id
                         stats["messages"] += 1
-                        store.record_receipt(scope, source.source_seq,
-                                             "ATTACHED" if attached else "CREATED",
-                                             source.source_hash)
                     frontier = store.contiguous_frontier(scope)
                     if not store.commit_job(job_id, "frozen-replay", token, frontier,
                                             scope_owner=lease_owner,
@@ -209,7 +214,8 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
             store.close()
     for key in ("messages", "attached", "created", "mapping_ambiguous",
                 "mapping_missing", "deferred_mapping", "job_claim_failed",
-                "job_commit_failed", "scope_claim_failed", "fenced"):
+                "job_commit_failed", "scope_claim_failed", "fenced",
+                "already_receipted"):
         stats.setdefault(key, 0)
     return {"suite": "v1.5b-frozen-replay", "batch_size": batch_size,
             **dict(stats), "frontiers": frontiers, "predictions": predictions}
@@ -236,6 +242,7 @@ def main() -> int:
                                               "created", "mapping_ambiguous",
                                               "mapping_missing", "deferred_mapping",
                                               "scope_claim_failed", "fenced",
+                                              "already_receipted",
                                               "job_claim_failed", "job_commit_failed")},
                      ensure_ascii=False, indent=2))
     return 0
