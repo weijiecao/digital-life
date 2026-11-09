@@ -85,5 +85,23 @@ class TestUnitOfWork(unittest.TestCase):
             store.close()
 
 
+    def test_pending_relocation_writes_evidence_atomically(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            store.create_event_from_source(
+                "s", SourceEnvelope("s", 99, "sha", "t", "seed"),
+                event_id="evt", provenance={"narrator": "user", "subject": "user",
+                                           "reality_status": "real", "story_id": None})
+            store.save_pending("s", 2, [{"candidate_event_id": "old",
+                                         "label": "SAME_EVENT"}],
+                               {"old": ["evt"]}, "split")
+            source = SourceEnvelope("s", 2, "sha", "t", "resolved")
+            self.assertTrue(store.relocate_pending("s", 2, source, "evt"))
+            self.assertEqual(store.events_for_source("s", 2), ["evt"])
+            self.assertEqual(store.pending_for_source("s", 2)["status"], "RELOCATED")
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM gate_audit").fetchone()[0], 1)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

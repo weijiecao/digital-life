@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **442/442**。
+全量回归 **443/443**。
 
 仍待工程接线：
 
@@ -180,6 +180,19 @@ F1 0.92857
 - 回执已用于 job cursor（连续 frontier），但尚未用于进程恢复扫描；
 - 无 manifest，frontier 只按连续 seq 扫描；
 - 双进程真实竞争与接管未在回放中测试。
+
+## 4.6 显式 pending 重定位
+
+新增 `relocate_pending(scope, seq, source, event_id)`：
+
+- 在同一 `unit_of_work` 内 attach evidence；
+- 将 pending 标记为 RELOCATED；
+- 写 relocation 审计；
+- pending 不存在时返回 False，不产生写入。
+
+测试：pending → evidence → RELOCATED → 1 条 audit。
+
+这仍是显式调用，不是依赖变化自动触发；自动 READY 队列与后台重评未实现。
 
 ## 5. 工程侧下一步
 

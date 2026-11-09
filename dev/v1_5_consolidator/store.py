@@ -511,6 +511,23 @@ class V15Store:
                 AND status='PENDING'""", (_now(), scope_id, source_seq))
         return cursor.rowcount > 0
 
+    def relocate_pending(self, scope_id: str, source_seq: int, source: Any,
+                         event_id: str) -> bool:
+        """Attach a previously pending source and close its pending row atomically."""
+        with self.unit_of_work():
+            row = self.db.execute("""SELECT 1 FROM resolution_pending
+                WHERE scope_id=? AND source_seq=? AND status='PENDING'""",
+                (scope_id, source_seq)).fetchone()
+            if row is None:
+                return False
+            self.attach_source(scope_id, source, event_id, "pending-relocation")
+            self.mark_pending_relocated(scope_id, source_seq, event_id)
+            self.record_gate_audit(
+                "pending-" + str(source_seq), scope_id, source_seq,
+                "PendingRelocation", "ALLOW", ["dependency_resolved"],
+                "pending-relocation-1", event_id, "SAME_EVENT", "ATTACHED")
+        return True
+
     def claim_scope(self, scope_id: str, owner_id: str, ttl: float = 30.0) -> int | None:
         now = time.time()
         with self._write():
