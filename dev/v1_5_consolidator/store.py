@@ -282,7 +282,8 @@ class V15Store:
                 and lease_until > _now())
 
     def commit_job(self, job_id: str, owner_id: str, token: int,
-                   cursor_seq: int) -> bool:
+                   cursor_seq: int, scope_owner: str | None = None,
+                   scope_token: int | None = None) -> bool:
         """Atomically commit the job marker and cursor; stale tokens are rejected."""
         with self._write():
             row = self.db.execute("""SELECT scope_id,owner_id,fencing_token,status,lease_until
@@ -295,6 +296,13 @@ class V15Store:
                 return False
             if not lease_until or lease_until <= _now():
                 return False
+            if scope_owner is not None and scope_token is not None:
+                scope_row = self.db.execute("""SELECT 1 FROM scope_lease
+                    WHERE scope_id=? AND owner_id=? AND fencing_token=?
+                    AND expires_at > ?""",
+                    (scope_id, scope_owner, scope_token, time.time())).fetchone()
+                if scope_row is None:
+                    return False
             self.db.execute("""INSERT INTO consolidation_cursor
                 (scope_id,last_committed_seq,updated_at) VALUES(?,?,?)
                 ON CONFLICT(scope_id) DO UPDATE SET

@@ -199,7 +199,9 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                                              "ATTACHED" if attached else "CREATED",
                                              source.source_hash)
                     frontier = store.contiguous_frontier(scope)
-                    if not store.commit_job(job_id, "frozen-replay", token, frontier):
+                    if not store.commit_job(job_id, "frozen-replay", token, frontier,
+                                            scope_owner=lease_owner,
+                                            scope_token=lease_token):
                         stats["job_commit_failed"] += 1
                     store.db.commit()
                 frontiers[scope] = store.contiguous_frontier(scope)

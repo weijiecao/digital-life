@@ -47,6 +47,19 @@ class TestScopeLeaseReceipt(unittest.TestCase):
             self.assertEqual(store.db.execute("SELECT COUNT(*) FROM source_receipt").fetchone()[0], 0)
             store.close()
 
+    def test_job_commit_requires_current_scope_token(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            scope_token = store.claim_scope("s", "worker-a", ttl=30)
+            job = store.claim_job("s", 1, 1, "digest", "worker-a", 30)
+            store.db.execute("UPDATE scope_lease SET expires_at=0 WHERE scope_id='s'")
+            store.db.commit()
+            self.assertEqual(store.claim_scope("s", "worker-b", ttl=30), 2)
+            self.assertFalse(store.commit_job(job[0], "worker-a", job[1], 1,
+                                              scope_owner="worker-a",
+                                              scope_token=scope_token))
+            store.close()
+
 
 if __name__ == "__main__":
     unittest.main()

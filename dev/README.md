@@ -13,7 +13,7 @@
 ```
 dev/
   astrbot_plugin_digital_memory_store/   插件源码（含 store/ 包、commands.py、docs/）
-  tests/                                  全部回归用例（443 项）
+  tests/                                  全部回归用例（444 项）
     test_store.py / test_plugin.py        主体回归（存储、插件钩子、命令面、帮助）
     test_baseline_alignment.py            6 项：上游基线继承
     test_preflight.py                     6 项：依赖/模型自检提示
@@ -60,7 +60,7 @@ dev/
 
 ## 当前状态
 
-**v1.0.19：443 项离线用例全绿；用户聊天面静默（无 /dlm），不新建正式事件；管理走 WebUI panel。**
+**v1.0.19：444 项离线用例全绿；用户聊天面静默（无 /dlm），不新建正式事件；管理走 WebUI panel。**
 
 - 新增 26 项用例（6 自检 + 4 死信 + 4 备份回归 + 12 集成），原 231 项不受影响；
 - 集成探针：注入 8/8、同一请求不重复注入、重启续跑无重复采集、不兼容宿主静默放行；

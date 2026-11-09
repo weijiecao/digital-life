@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **443/443**。
+全量回归 **444/444**。
 
 仍待工程接线：
 
@@ -193,6 +193,22 @@ F1 0.92857
 测试：pending → evidence → RELOCATED → 1 条 audit。
 
 这仍是显式调用，不是依赖变化自动触发；自动 READY 队列与后台重评未实现。
+
+## 4.7 job 提交绑定 scope fencing
+
+`commit_job` 新增可选 `scope_owner/scope_token`：
+
+- job owner/token 校验后，再校验 scope lease 仍属于当前 owner/token；
+- scope 已过期或被接管时，job commit 返回 False；
+- 回放中 `commit_job` 已传入当前 scope lease。
+
+测试：scope 过期、worker-B 接管后，worker-A 的旧 job commit 被拒绝。
+
+仍未完成：
+
+- job claim 与 scope claim 仍为两次调用；
+- 真实双进程竞争未复测；
+- job cursor 与 scope frontier 未在一个事务内同时提交。
 
 ## 5. 工程侧下一步
 
