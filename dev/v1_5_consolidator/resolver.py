@@ -1,4 +1,4 @@
-﻿"""B3 constrained resolver: proposals to append-only, reversible decisions.
+"""B3 constrained resolver: proposals to append-only, reversible decisions.
 
 Rules:
 - SAME_EVENT is only a proposal. It attaches only when no existing source
@@ -89,17 +89,23 @@ class ConstrainedResolver:
                     summary.decisions.append({"source_seq": source.source_seq,
                                               "target": target, "decision": "CONFLICT"})
                     continue
+                gate_action = "NOT_APPLIED"
+                gate_reasons = ["provenance_missing"]
+                gate_policy = "provenance-not-applied"
                 if (self.provenance_guard is not None
                         and judgment.provenance_present):
                     candidate_data = self.store.event_provenance(target)
                     check = self.provenance_guard.check(
                         judgment.provenance,
                         NarrativeProvenance(**candidate_data))
+                    gate_action = check.action
+                    gate_reasons = list(check.reason_codes)
+                    gate_policy = check.policy_version
                     if check.action != "ALLOW":
                         self._audit_gate(
                             judgment.request_id, scope_id, source.source_seq,
-                            "ProvenanceGuard", check.action, list(check.reason_codes),
-                            check.policy_version, target, proposal.label,
+                            "ProvenanceGuard", gate_action, gate_reasons,
+                            gate_policy, target, proposal.label,
                             "PROVENANCE_BLOCKED")
                         self.store.record_link_decision(
                             proposal_id, scope_id, source.source_seq, target,
@@ -109,12 +115,6 @@ class ConstrainedResolver:
                                                   "target": target,
                                                   "decision": "PROVENANCE_BLOCKED"})
                         continue
-                elif self.provenance_guard is not None:
-                    self._audit_gate(
-                        judgment.request_id, scope_id, source.source_seq,
-                        "ProvenanceGuard", "NOT_APPLIED", ["provenance_missing"],
-                        "provenance-not-applied", target, proposal.label,
-                        "PENDING")
                 conflicts = [event_id for event_id in existing
                              if self.store.cannot_link_exists(scope_id, event_id, target)]
                 if conflicts:
@@ -136,14 +136,10 @@ class ConstrainedResolver:
                     summary.decisions.append({"source_seq": source.source_seq,
                                               "target": target, "decision": decision})
                 if self.provenance_guard is not None:
-                    action = "NOT_APPLIED" if not judgment.provenance_present else "APPLIED"
-                    reasons = (["provenance_missing"] if not judgment.provenance_present
-                               else ["compatible"])
                     self._audit_gate(
                         judgment.request_id, scope_id, source.source_seq,
-                        "ProvenanceGuard", action, reasons,
-                        "provenance-not-applied" if not judgment.provenance_present
-                        else "b4.5-6-provenance-1", target, proposal.label, decision)
+                        "ProvenanceGuard", gate_action, gate_reasons,
+                        gate_policy, target, proposal.label, decision)
             elif proposal.label == "DIFFERENT_EVENT":
                 for event_id in existing:
                     self.store.add_cannot_link(scope_id, event_id, target, source.source_seq)

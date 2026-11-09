@@ -41,6 +41,15 @@ def _add_map(store, scope, old, new):
         VALUES(?,?,?)""", (scope, old, new))
 
 
+def mapping_status(mapping, old_event_id):
+    targets = mapping.get(old_event_id, set())
+    if not targets:
+        return "MISSING"
+    if len(targets) == 1:
+        return "UNIQUE"
+    return "AMBIGUOUS_SPLIT"
+
+
 def run(root: str, trace_path: str, batch_size: int) -> dict:
     fixture = B4Fixture.load(root)
     trace = json.loads(Path(trace_path).read_text(encoding="utf-8"))["trace"]
@@ -79,11 +88,14 @@ def run(root: str, trace_path: str, batch_size: int) -> dict:
                                                 msg["text"])
                         proposals = []
                         for p in entry.get("proposals", []):
-                            candidates = mapping.get(p["candidate_event_id"], [])
-                            if len(candidates) == 1:
+                            status = mapping_status(mapping, p["candidate_event_id"])
+                            candidates = mapping.get(p["candidate_event_id"], set())
+                            if status == "UNIQUE":
                                 proposals.append(RelationProposal(next(iter(candidates)), p["label"]))
-                            elif len(candidates) > 1:
+                            elif status == "AMBIGUOUS_SPLIT":
                                 stats["mapping_ambiguous"] += 1
+                            else:
+                                stats["mapping_missing"] += 1
                         prov_data = entry.get("source_provenance") or {}
                         provenance = NarrativeProvenance(**prov_data) if prov_data else NarrativeProvenance()
                         judgment = JudgmentResult(
@@ -115,7 +127,7 @@ def run(root: str, trace_path: str, batch_size: int) -> dict:
         finally:
             store.close()
     for key in ("messages", "attached", "created", "mapping_ambiguous",
-                "job_claim_failed", "job_commit_failed"):
+                "mapping_missing", "job_claim_failed", "job_commit_failed"):
         stats.setdefault(key, 0)
     return {"suite": "v1.5b-frozen-replay", "batch_size": batch_size,
             **dict(stats), "predictions": predictions}
@@ -139,6 +151,7 @@ def main() -> int:
                                 ensure_ascii=False) + "\n")
     print(json.dumps({k: result[k] for k in ("batch_size", "messages", "attached",
                                               "created", "mapping_ambiguous",
+                                              "mapping_missing",
                                               "job_claim_failed", "job_commit_failed")},
                      ensure_ascii=False, indent=2))
     return 0
