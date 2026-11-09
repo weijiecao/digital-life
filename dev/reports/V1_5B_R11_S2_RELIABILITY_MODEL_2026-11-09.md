@@ -69,6 +69,28 @@ cursor: repeat=ALREADY / evidence=2
 - 没有覆盖真实进程 kill、WAL 并发、fencing 与批次调度；
 - 不能据此声明 S2 通过或工程已具备一致性单元。
 
+## 4.1 工程侧首个落地：`unit_of_work`
+
+已在 `V15Store` 增加：
+
+- `_write()`：unit 内不提交，unit 外保持原 `with self.db` 语义；
+- `unit_of_work()`：外层 `BEGIN IMMEDIATE` + 成功 commit / 异常 rollback；
+- 嵌套 unit 只增加深度，不在内层提交。
+
+测试：
+
+- unit 成功提交 event/evidence/gate_audit；
+- unit 内抛错后三表均回滚；
+- 嵌套 unit 外层抛错不会提前提交。
+
+全量回归 **436/436**。
+
+仍待工程接线：
+
+- `b4_frozen_replay` 尚未把单来源处理包进 `unit_of_work`；
+- Resolver/Store 的 claim、pending、cursor 尚未统一到该事务；
+- 真实双 worker / kill 仍未验证。
+
 ## 5. 工程侧下一步
 
 1. 暴露单来源事务 API，避免 Resolver/Store 内部嵌套提交；

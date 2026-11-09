@@ -11,6 +11,7 @@ import sqlite3
 import uuid
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+from contextlib import contextmanager
 from typing import Any, Iterable
 
 SCHEMA_VERSION = 1
@@ -28,6 +29,7 @@ class V15Store:
         self.db.row_factory = sqlite3.Row
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.execute("PRAGMA journal_mode=WAL")
+        self._unit_depth = 0
         self._init_schema()
 
     def _init_schema(self) -> None:
@@ -124,6 +126,39 @@ class V15Store:
                         (str(SCHEMA_VERSION),))
         self.db.commit()
 
+    @contextmanager
+    def _write(self):
+        """Commit only at the outer boundary; stay open inside a unit."""
+        if self._unit_depth:
+            yield
+        else:
+            with self.db:
+                yield
+
+    @contextmanager
+    def unit_of_work(self):
+        """One source-level transaction spanning store method calls."""
+        if self._unit_depth:
+            self._unit_depth += 1
+            try:
+                yield self
+            finally:
+                self._unit_depth -= 1
+            return
+        self.db.execute("BEGIN IMMEDIATE")
+        self._unit_depth = 1
+        try:
+            yield self
+        except Exception:
+            self._unit_depth = 0
+            self.db.rollback()
+            raise
+        else:
+            self._unit_depth = 0
+            self.db.commit()
+        finally:
+            self._unit_depth = 0
+
     def close(self) -> None:
         self.db.close()
 
@@ -134,7 +169,7 @@ class V15Store:
         return int(row[0]) if row else 0
 
     def set_cursor(self, scope_id: str, seq: int) -> None:
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT INTO consolidation_cursor(scope_id,last_committed_seq,updated_at)
                 VALUES(?,?,?) ON CONFLICT(scope_id) DO UPDATE SET
                 last_committed_seq=excluded.last_committed_seq, updated_at=excluded.updated_at""",
@@ -149,7 +184,7 @@ class V15Store:
     def record_job(self, scope_id: str, from_seq: int, to_seq: int, digest: str,
                    status: str, job_id: str | None = None) -> str:
         job_id = job_id or ("job_" + uuid.uuid4().hex)
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT OR IGNORE INTO consolidation_job
                 (job_id,scope_id,from_seq,to_seq,input_digest,status,created_at,updated_at)
                 VALUES(?,?,?,?,?,?,?,?)""",
@@ -165,7 +200,7 @@ class V15Store:
         return row[0] if row else None
 
     def finish_job(self, job_id: str, status: str) -> None:
-        with self.db:
+        with self._write():
             self.db.execute("UPDATE consolidation_job SET status=?,updated_at=? WHERE job_id=?",
                             (status, _now(), job_id))
 
@@ -174,7 +209,7 @@ class V15Store:
         """Claim a job or take over an expired lease; returns (job_id, token)."""
         now = datetime.now(timezone.utc)
         deadline = (now + timedelta(seconds=max(0, lease_seconds))).isoformat(timespec="seconds")
-        with self.db:
+        with self._write():
             row = self.db.execute("""SELECT job_id,status,owner_id,lease_until,fencing_token
                 FROM consolidation_job WHERE scope_id=? AND from_seq=? AND to_seq=? AND input_digest=?""",
                 (scope_id, from_seq, to_seq, digest)).fetchone()
@@ -203,7 +238,7 @@ class V15Store:
     def renew_lease(self, job_id: str, owner_id: str, token: int, lease_seconds: int = 30) -> bool:
         deadline = (datetime.now(timezone.utc) + timedelta(seconds=max(0, lease_seconds))
                     ).isoformat(timespec="seconds")
-        with self.db:
+        with self._write():
             cur = self.db.execute("""UPDATE consolidation_job SET lease_until=?,updated_at=?
                 WHERE job_id=? AND owner_id=? AND fencing_token=? AND status!='COMMITTED'""",
                 (deadline, _now(), job_id, owner_id, int(token)))
@@ -223,7 +258,7 @@ class V15Store:
     def commit_job(self, job_id: str, owner_id: str, token: int,
                    cursor_seq: int) -> bool:
         """Atomically commit the job marker and cursor; stale tokens are rejected."""
-        with self.db:
+        with self._write():
             row = self.db.execute("""SELECT scope_id,owner_id,fencing_token,status,lease_until
                 FROM consolidation_job WHERE job_id=?""", (job_id,)).fetchone()
             if not row:
@@ -245,14 +280,14 @@ class V15Store:
 
     def fail_job(self, job_id: str, owner_id: str, token: int, retryable: bool = True) -> bool:
         status = "FAILED_RETRYABLE" if retryable else "FAILED"
-        with self.db:
+        with self._write():
             cur = self.db.execute("""UPDATE consolidation_job SET status=?,lease_until=NULL,
                 updated_at=? WHERE job_id=? AND owner_id=? AND fencing_token=?""",
                 (status, _now(), job_id, owner_id, int(token)))
             return cur.rowcount > 0
 
     def source_ref_upsert(self, scope_id: str, seq: int, sha: str, recorded_at: str) -> None:
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT INTO source_ref(scope_id,source_seq,source_hash,recorded_at)
                 VALUES(?,?,?,?) ON CONFLICT(scope_id,source_seq) DO UPDATE SET
                 source_hash=excluded.source_hash, recorded_at=excluded.recorded_at""",
@@ -261,7 +296,7 @@ class V15Store:
     def sync_inventory(self, rows: Iterable[tuple[str, int, str]], run_id: str) -> int:
         """Reconcile full V1 key set; missing sources become tombstones."""
         rows = list(rows)
-        with self.db:
+        with self._write():
             for scope, seq, sha in rows:
                 self.db.execute("""INSERT INTO source_inventory
                     (scope_id,source_seq,source_hash,last_seen,deleted_at)
@@ -295,7 +330,7 @@ class V15Store:
             return 0
         source_by_seq = {s.source_seq: s for s in sources}
         created = 0
-        with self.db:
+        with self._write():
             for s in sources:
                 self.db.execute("""INSERT INTO source_ref(scope_id,source_seq,source_hash,recorded_at)
                     VALUES(?,?,?,?) ON CONFLICT(scope_id,source_seq) DO UPDATE SET
@@ -360,7 +395,7 @@ class V15Store:
         event_id = event_id or ("evt_" + uuid.uuid4().hex)
         provenance = provenance or {}
         now = _now()
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT INTO source_ref(scope_id,source_seq,source_hash,recorded_at)
                 VALUES(?,?,?,?) ON CONFLICT(scope_id,source_seq) DO UPDATE SET
                 source_hash=excluded.source_hash,recorded_at=excluded.recorded_at""",
@@ -385,13 +420,13 @@ class V15Store:
 
     def record_usage(self, job_id: str, provider: str, tokens_in: int,
                      tokens_out: int, outcome: str) -> None:
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT INTO provider_usage
                 (job_id,provider,tokens_in,tokens_out,outcome,created_at)
                 VALUES(?,?,?,?,?,?)""", (job_id, provider, tokens_in, tokens_out, outcome, _now()))
 
     def record_validation_issues(self, job_id: str, rejected: list[tuple[Any, list[Any]]]) -> None:
-        with self.db:
+        with self._write():
             for index, (_op, issues) in enumerate(rejected):
                 for issue in issues:
                     self.db.execute("""INSERT INTO validation_issue
@@ -404,7 +439,7 @@ class V15Store:
                           relation_label: str | None = None,
                           resolver_decision: str | None = None) -> str:
         audit_id = "gate_" + uuid.uuid4().hex
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT INTO gate_audit
                 (audit_id,request_id,scope_id,source_seq,gate_type,action,reason_codes,
                  policy_version,candidate_event_id,relation_label,resolver_decision,created_at)
@@ -447,7 +482,7 @@ class V15Store:
         if event_a == event_b:
             return
         a, b = sorted((event_a, event_b))
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT OR IGNORE INTO event_cannot_link
                 (scope_id,event_a,event_b,source_seq,created_at) VALUES(?,?,?,?,?)""",
                 (scope_id, a, b, source_seq, _now()))
@@ -456,7 +491,7 @@ class V15Store:
                              label: str, reason_codes: list[str], model_version: str,
                              request_id: str) -> str:
         proposal_id = "prop_" + uuid.uuid4().hex
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT INTO event_link_proposal
                 (proposal_id,scope_id,source_seq,candidate_event_id,label,reason_codes_json,
                  model_version,request_id,created_at) VALUES(?,?,?,?,?,?,?,?,?)""",
@@ -467,7 +502,7 @@ class V15Store:
     def record_link_decision(self, proposal_id: str, scope_id: str, source_seq: int,
                              event_id: str | None, decision: str, reason: str = "") -> str:
         decision_id = "dec_" + uuid.uuid4().hex
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT OR IGNORE INTO event_link_decision
                 (decision_id,proposal_id,scope_id,source_seq,event_id,decision,reason,created_at)
                 VALUES(?,?,?,?,?,?,?,?)""",
@@ -486,7 +521,7 @@ class V15Store:
         if not row:
             return False
         revision = int(row[0])
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT INTO source_ref(scope_id,source_seq,source_hash,recorded_at)
                 VALUES(?,?,?,?) ON CONFLICT(scope_id,source_seq) DO UPDATE SET
                 source_hash=excluded.source_hash,recorded_at=excluded.recorded_at""",
@@ -507,7 +542,7 @@ class V15Store:
 
     def audit(self, request_id: str, purpose: str, scope_id: str, policy_version: str,
               decision: str, refs: list[dict[str, Any]]) -> None:
-        with self.db:
+        with self._write():
             self.db.execute("""INSERT INTO context_audit
                 (request_id,purpose,scope_id,policy_version,decision,source_refs_json,created_at)
                 VALUES(?,?,?,?,?,?,?)""",

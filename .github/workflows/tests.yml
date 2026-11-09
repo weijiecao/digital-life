@@ -43,6 +43,7 @@ jobs:
             tests.test_b4_lease_fencing tests.test_b4_provenance `
             tests.test_b4_replay_mapping `
             tests.test_b4_frozen_fork `
+            tests.test_b4_unit_of_work `
             tests.test_v1_5b_t1_t2_fixes tests.test_baseline_alignment tests.test_preflight `
             tests.test_auto_jobs tests.test_backup_regression tests.test_prewarm tests.test_model_judge `
             tests.test_delivery tests.test_soak tests.test_threshold tests.test_correction tests.test_metrics `
