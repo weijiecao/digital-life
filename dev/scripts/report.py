@@ -37,6 +37,7 @@ SUITES = (
     'tests.test_b4_lease_fencing',
     'tests.test_b4_provenance',
     'tests.test_b4_replay_mapping',
+    'tests.test_b4_frozen_fork',
     'tests.test_baseline_alignment',
     'tests.test_preflight',
     'tests.test_auto_jobs',
