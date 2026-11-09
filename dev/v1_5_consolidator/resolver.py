@@ -118,6 +118,11 @@ class ConstrainedResolver:
                 conflicts = [event_id for event_id in existing
                              if self.store.cannot_link_exists(scope_id, event_id, target)]
                 if conflicts:
+                    if self.provenance_guard is not None:
+                        self._audit_gate(
+                            judgment.request_id, scope_id, source.source_seq,
+                            "ProvenanceGuard", gate_action, gate_reasons,
+                            gate_policy, target, proposal.label, "CONFLICT")
                     self.store.record_link_decision(
                         proposal_id, scope_id, source.source_seq, target, "CONFLICT",
                         "cannot_link:" + ",".join(sorted(conflicts)))

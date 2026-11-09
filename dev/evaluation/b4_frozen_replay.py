@@ -14,6 +14,7 @@ import sys
 import tempfile
 import uuid
 from collections import Counter, defaultdict
+from dataclasses import dataclass, field
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -48,6 +49,41 @@ def mapping_status(mapping, old_event_id):
     if len(targets) == 1:
         return "UNIQUE"
     return "AMBIGUOUS_SPLIT"
+
+
+@dataclass(frozen=True)
+class MappedProposal:
+    old_event_id: str
+    original_label: str
+    mapping_status: str
+    candidate_event_ids: tuple[str, ...]
+    reason_codes: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class MappingResult:
+    proposals: tuple[MappedProposal, ...]
+    safe_to_resolve: bool
+    reason_codes: tuple[str, ...] = ()
+
+
+def map_proposals(entry: dict, mapping: dict) -> MappingResult:
+    """Map every original proposal; never silently drop an incomplete one."""
+    mapped = []
+    reasons = []
+    safe = True
+    for proposal in entry.get("proposals", []):
+        old = proposal["candidate_event_id"]
+        status = mapping_status(mapping, old)
+        targets = tuple(sorted(mapping.get(old, set())))
+        if status != "UNIQUE":
+            safe = False
+            reasons.append("%s:%s" % (old, status.lower()))
+        mapped.append(MappedProposal(
+            old_event_id=old, original_label=proposal["label"],
+            mapping_status=status, candidate_event_ids=targets,
+            reason_codes=tuple(proposal.get("reason_codes", []))))
+    return MappingResult(tuple(mapped), safe, tuple(reasons))
 
 
 def run(root: str, trace_path: str, batch_size: int) -> dict:
@@ -86,18 +122,31 @@ def run(root: str, trace_path: str, batch_size: int) -> dict:
                         source = SourceEnvelope(scope, entry["source_seq"],
                                                 msg["sha256_text"], msg["recorded_at"],
                                                 msg["text"])
-                        proposals = []
-                        for p in entry.get("proposals", []):
-                            status = mapping_status(mapping, p["candidate_event_id"])
-                            candidates = mapping.get(p["candidate_event_id"], set())
-                            if status == "UNIQUE":
-                                proposals.append(RelationProposal(next(iter(candidates)), p["label"]))
-                            elif status == "AMBIGUOUS_SPLIT":
-                                stats["mapping_ambiguous"] += 1
-                            else:
-                                stats["mapping_missing"] += 1
                         prov_data = entry.get("source_provenance") or {}
                         provenance = NarrativeProvenance(**prov_data) if prov_data else NarrativeProvenance()
+                        mapped = map_proposals(entry, mapping)
+                        for item in mapped.proposals:
+                            if item.mapping_status == "AMBIGUOUS_SPLIT":
+                                stats["mapping_ambiguous"] += 1
+                            elif item.mapping_status == "MISSING":
+                                stats["mapping_missing"] += 1
+                        if not mapped.safe_to_resolve:
+                            stats["deferred_mapping"] += 1
+                            new_id = "evt_replay_" + uuid.uuid4().hex
+                            store.create_event_from_source(
+                                scope, source, event_type="unknown",
+                                title=source.text[:80], event_id=new_id,
+                                provenance=prov_data or None)
+                            stats["created"] += 1
+                            _add_map(store, scope, entry["final_event"], new_id)
+                            mapping.setdefault(entry["final_event"], set()).add(new_id)
+                            predictions[entry["source_id"]] = new_id
+                            stats["messages"] += 1
+                            continue
+                        proposals = [
+                            RelationProposal(item.candidate_event_ids[0], item.original_label)
+                            for item in mapped.proposals
+                            if item.mapping_status == "UNIQUE"]
                         judgment = JudgmentResult(
                             source_seq=entry["source_seq"], proposals=proposals,
                             issues=list(entry.get("issues", [])),
@@ -127,7 +176,8 @@ def run(root: str, trace_path: str, batch_size: int) -> dict:
         finally:
             store.close()
     for key in ("messages", "attached", "created", "mapping_ambiguous",
-                "mapping_missing", "job_claim_failed", "job_commit_failed"):
+                "mapping_missing", "deferred_mapping", "job_claim_failed",
+                "job_commit_failed"):
         stats.setdefault(key, 0)
     return {"suite": "v1.5b-frozen-replay", "batch_size": batch_size,
             **dict(stats), "predictions": predictions}
@@ -151,7 +201,7 @@ def main() -> int:
                                 ensure_ascii=False) + "\n")
     print(json.dumps({k: result[k] for k in ("batch_size", "messages", "attached",
                                               "created", "mapping_ambiguous",
-                                              "mapping_missing",
+                                              "mapping_missing", "deferred_mapping",
                                               "job_claim_failed", "job_commit_failed")},
                      ensure_ascii=False, indent=2))
     return 0

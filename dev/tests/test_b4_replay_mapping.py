@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from evaluation.b4_frozen_replay import _add_map, _load_map, mapping_status
+from evaluation.b4_frozen_replay import _add_map, _load_map, map_proposals, mapping_status
 from v1_5_consolidator.contracts import NarrativeProvenance, SourceEnvelope
 from v1_5_consolidator.relation_judge import JudgmentResult, RelationProposal
 from v1_5_consolidator.resolver import ConstrainedResolver
@@ -72,7 +72,44 @@ class TestReplayMapping(unittest.TestCase):
             self.assertEqual(tuple(row), ("ALLOW", "ATTACHED"))
             store.close()
 
-    def test_gate_audit_is_single_row_for_block(self):
+    def test_split_plus_unique_is_not_silently_reduced(self):
+        entry = {"proposals": [
+            {"candidate_event_id": "old-A", "label": "SAME_EVENT"},
+            {"candidate_event_id": "old-B", "label": "SAME_EVENT"}]}
+        mapping = {"old-A": {"new-A1", "new-A2"}, "old-B": {"new-B"}}
+        result = map_proposals(entry, mapping)
+        self.assertFalse(result.safe_to_resolve)
+        self.assertEqual(len(result.proposals), 2)
+        self.assertEqual([p.mapping_status for p in result.proposals],
+                         ["AMBIGUOUS_SPLIT", "UNIQUE"])
+
+    def test_gate_audit_records_allow_then_conflict(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            now = "2026-11-08T10:00:00+00:00"
+            for eid in ("evt-a", "evt-b"):
+                store.db.execute("""INSERT INTO event_candidate
+                    (event_id,scope_id,event_type,title,state,current_revision,
+                     narrator,subject,reality_status,created_at,updated_at)
+                    VALUES(?, 's','plan',?,'provisional',1,'user','user','real',?,?)""",
+                    (eid, eid, now, now))
+                store.db.execute("""INSERT INTO event_revision
+                    (event_id,rev,summary,status,modality,created_at)
+                    VALUES(?,1,?,'unknown','unknown',?)""", (eid, eid, now))
+            store.db.commit()
+            source2 = SourceEnvelope("s", 2, "sha", "t", "b")
+            store.attach_source("s", source2, "evt-a", "p")
+            store.add_cannot_link("s", "evt-a", "evt-b", 2)
+            ConstrainedResolver(store).resolve(
+                "s", source2,
+                JudgmentResult(source_seq=2, proposals=[
+                    RelationProposal("evt-b", "SAME_EVENT")],
+                    provenance=NarrativeProvenance("user", "user", "real")))
+            row = store.db.execute(
+                "SELECT action,resolver_decision FROM gate_audit").fetchone()
+            self.assertEqual(tuple(row), ("ALLOW", "CONFLICT"))
+            self.assertEqual(store.events_for_source("s", 2), ["evt-a"])
+            store.close()
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))
             now = "2026-11-08T10:00:00+00:00"
