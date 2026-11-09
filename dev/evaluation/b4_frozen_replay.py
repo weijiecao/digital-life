@@ -136,12 +136,23 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                         if not mapped.safe_to_resolve:
                             stats["deferred_mapping"] += 1
                             new_id = "evt_replay_" + uuid.uuid4().hex
-                            store.create_event_from_source(
-                                scope, source, event_type="unknown",
-                                title=source.text[:80], event_id=new_id,
-                                provenance=prov_data or None)
+                            with store.unit_of_work():
+                                store.create_event_from_source(
+                                    scope, source, event_type="unknown",
+                                    title=source.text[:80], event_id=new_id,
+                                    provenance=prov_data or None)
+                                store.save_pending(
+                                    scope, source.source_seq,
+                                    [{"candidate_event_id": p.old_event_id,
+                                      "label": p.original_label,
+                                      "mapping_status": p.mapping_status,
+                                      "candidate_event_ids": list(p.candidate_event_ids)}
+                                     for p in mapped.proposals],
+                                    {p.old_event_id: list(p.candidate_event_ids)
+                                     for p in mapped.proposals},
+                                    ",".join(mapped.reason_codes) or "MAPPING_INCOMPLETE")
+                                _add_map(store, scope, entry["final_event"], new_id)
                             stats["created"] += 1
-                            _add_map(store, scope, entry["final_event"], new_id)
                             mapping.setdefault(entry["final_event"], set()).add(new_id)
                             predictions[entry["source_id"]] = new_id
                             stats["messages"] += 1
@@ -156,19 +167,20 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                             request_id="frozen-" + entry["source_id"],
                             provenance=provenance,
                             provenance_present=bool(prov_data))
-                        resolver.resolve(scope, source, judgment)
-                        attached = store.events_for_source(scope, source.source_seq)
-                        if attached:
-                            new_id = attached[0]
-                            stats["attached"] += 1
-                        else:
-                            new_id = "evt_replay_" + uuid.uuid4().hex
-                            store.create_event_from_source(
-                                scope, source, event_type="unknown",
-                                title=source.text[:80], event_id=new_id,
-                                provenance=prov_data or None)
-                            stats["created"] += 1
-                        _add_map(store, scope, entry["final_event"], new_id)
+                        with store.unit_of_work():
+                            resolver.resolve(scope, source, judgment)
+                            attached = store.events_for_source(scope, source.source_seq)
+                            if attached:
+                                new_id = attached[0]
+                                stats["attached"] += 1
+                            else:
+                                new_id = "evt_replay_" + uuid.uuid4().hex
+                                store.create_event_from_source(
+                                    scope, source, event_type="unknown",
+                                    title=source.text[:80], event_id=new_id,
+                                    provenance=prov_data or None)
+                                stats["created"] += 1
+                            _add_map(store, scope, entry["final_event"], new_id)
                         mapping.setdefault(entry["final_event"], set()).add(new_id)
                         predictions[entry["source_id"]] = new_id
                         stats["messages"] += 1

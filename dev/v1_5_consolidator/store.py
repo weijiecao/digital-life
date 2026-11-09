@@ -107,6 +107,12 @@ class V15Store:
           reason_codes TEXT NOT NULL, policy_version TEXT NOT NULL,
           candidate_event_id TEXT, relation_label TEXT, resolver_decision TEXT,
           created_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS resolution_pending(
+          pending_id TEXT PRIMARY KEY, scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL,
+          proposals_json TEXT NOT NULL, mapping_json TEXT NOT NULL,
+          reason TEXT NOT NULL, status TEXT NOT NULL,
+          created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+          UNIQUE(scope_id, source_seq));
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -448,6 +454,42 @@ class V15Store:
                  json.dumps(reason_codes, ensure_ascii=False), policy_version,
                  candidate_event_id, relation_label, resolver_decision, _now()))
         return audit_id
+
+    def save_pending(self, scope_id: str, source_seq: int, proposals: list[dict],
+                     mapping: dict, reason: str) -> str:
+        now = _now()
+        pending_id = "pending_" + uuid.uuid4().hex
+        with self._write():
+            self.db.execute("""INSERT INTO resolution_pending
+                (pending_id,scope_id,source_seq,proposals_json,mapping_json,
+                 reason,status,created_at,updated_at)
+                VALUES(?,?,?,?,?,?,'PENDING',?,?)
+                ON CONFLICT(scope_id,source_seq) DO UPDATE SET
+                proposals_json=excluded.proposals_json,
+                mapping_json=excluded.mapping_json, reason=excluded.reason,
+                status='PENDING', updated_at=excluded.updated_at""",
+                (pending_id, scope_id, source_seq,
+                 json.dumps(proposals, ensure_ascii=False, sort_keys=True),
+                 json.dumps(mapping, ensure_ascii=False, sort_keys=True),
+                 reason, now, now))
+        return pending_id
+
+    def pending_for_source(self, scope_id: str, source_seq: int) -> dict | None:
+        row = self.db.execute("""SELECT pending_id,proposals_json,mapping_json,
+            reason,status FROM resolution_pending WHERE scope_id=? AND source_seq=?""",
+            (scope_id, source_seq)).fetchone()
+        if not row:
+            return None
+        return {"pending_id": row[0], "proposals": json.loads(row[1]),
+                "mapping": json.loads(row[2]), "reason": row[3], "status": row[4]}
+
+    def mark_pending_relocated(self, scope_id: str, source_seq: int,
+                               event_id: str) -> bool:
+        with self._write():
+            cursor = self.db.execute("""UPDATE resolution_pending
+                SET status='RELOCATED', updated_at=? WHERE scope_id=? AND source_seq=?
+                AND status='PENDING'""", (_now(), scope_id, source_seq))
+        return cursor.rowcount > 0
 
     def events_for_source(self, scope_id: str, source_seq: int) -> list[str]:
         rows = self.db.execute("""SELECT DISTINCT e.event_id FROM event_evidence e

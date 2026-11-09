@@ -48,5 +48,27 @@ class TestUnitOfWork(unittest.TestCase):
             store.close()
 
 
+    def test_pending_rolls_back_and_relocates(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            with self.assertRaises(RuntimeError):
+                with store.unit_of_work():
+                    store.save_pending("s", 1, [{"candidate_event_id": "old",
+                                                 "label": "SAME_EVENT"}],
+                                       {"old": ["new-a", "new-b"]}, "split")
+                    raise RuntimeError("crash")
+            self.assertIsNone(store.pending_for_source("s", 1))
+            with store.unit_of_work():
+                store.save_pending("s", 2, [{"candidate_event_id": "old",
+                                             "label": "SAME_EVENT"}],
+                                   {"old": ["new-a", "new-b"]}, "split")
+            pending = store.pending_for_source("s", 2)
+            self.assertEqual(pending["status"], "PENDING")
+            self.assertEqual(len(pending["proposals"]), 1)
+            self.assertTrue(store.mark_pending_relocated("s", 2, "new-a"))
+            self.assertEqual(store.pending_for_source("s", 2)["status"], "RELOCATED")
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

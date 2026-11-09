@@ -83,13 +83,34 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **436/436**。
+全量回归 **437/437**。
 
 仍待工程接线：
 
 - `b4_frozen_replay` 尚未把单来源处理包进 `unit_of_work`；
 - Resolver/Store 的 claim、pending、cursor 尚未统一到该事务；
 - 真实双 worker / kill 仍未验证。
+
+## 4.2 接入回放：pending 与单来源事务
+
+`b4_frozen_replay` 现在：
+
+- 每个来源的 event/evidence/audit/mapping 写入包在 `store.unit_of_work()`；
+- 映射不完整时，在同一事务内写 `resolution_pending`；
+- pending 保存完整原 proposals、目标集合、reason；
+- 旧 trace 8/20/40 仍为 attached 211 / created 129 / F1 0.92857。
+
+测试：
+
+- pending 在 unit 内抛错后回滚；
+- pending 提交后可读取完整原判；
+- `mark_pending_relocated` 将状态改为 RELOCATED。
+
+仍未完成：
+
+- 自动触发重定位（当前是显式方法）；
+- claim/cursor 与来源单元在同一事务；
+- 真实进程 kill 与 fencing。
 
 ## 5. 工程侧下一步
 
