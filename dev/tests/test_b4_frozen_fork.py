@@ -1,4 +1,5 @@
 import json
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -45,6 +46,29 @@ class TestFrozenFork(unittest.TestCase):
             self.assertEqual(result["attached"], 0)
             self.assertEqual(result["deferred_mapping"], 1)
             self.assertEqual(result["mapping_ambiguous"], 1)
+
+    def test_reopen_and_repeat_are_idempotent(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            trace = _write_fixture(root)
+            db_path = str(root / "replay.sqlite3")
+            first = run(str(root), str(trace), batch_size=2, db_path=db_path)
+            self.assertEqual(first["messages"], 3)
+            db = sqlite3.connect(db_path)
+            evidence = db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0]
+            mapping = db.execute("SELECT COUNT(*) FROM replay_map").fetchone()[0]
+            db.close()
+            second = run(str(root), str(trace), batch_size=2, db_path=db_path)
+            self.assertEqual(second["messages"], 0)
+            self.assertGreaterEqual(second["job_claim_failed"], 1)
+            db = sqlite3.connect(db_path)
+            try:
+                self.assertEqual(db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0],
+                                 evidence)
+                self.assertEqual(db.execute("SELECT COUNT(*) FROM replay_map").fetchone()[0],
+                                 mapping)
+            finally:
+                db.close()
 
 
 if __name__ == "__main__":

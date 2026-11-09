@@ -8,6 +8,7 @@ never reused as event IDs.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import sys
@@ -86,7 +87,7 @@ def map_proposals(entry: dict, mapping: dict) -> MappingResult:
     return MappingResult(tuple(mapped), safe, tuple(reasons))
 
 
-def run(root: str, trace_path: str, batch_size: int) -> dict:
+def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None) -> dict:
     fixture = B4Fixture.load(root)
     trace = json.loads(Path(trace_path).read_text(encoding="utf-8"))["trace"]
     by_scope = defaultdict(list)
@@ -94,8 +95,10 @@ def run(root: str, trace_path: str, batch_size: int) -> dict:
         by_scope[entry["scope_id"]].append(entry)
     predictions = {}
     stats = Counter()
-    with tempfile.TemporaryDirectory(prefix="b4-frozen-") as tmp:
-        db_path = str(Path(tmp) / "v15.sqlite3")
+    temp_dir = tempfile.TemporaryDirectory(prefix="b4-frozen-") if db_path is None else None
+    with (temp_dir if temp_dir is not None else contextlib.nullcontext()):
+        if db_path is None:
+            db_path = str(Path(temp_dir.name) / "v15.sqlite3")
         store = V15Store(db_path)
         store.db.execute("""CREATE TABLE IF NOT EXISTS replay_map(
             scope_id TEXT NOT NULL, old_event_id TEXT NOT NULL, event_id TEXT NOT NULL,
@@ -189,8 +192,9 @@ def main() -> int:
     parser.add_argument("--trace", required=True)
     parser.add_argument("--batch-size", type=int, required=True)
     parser.add_argument("--out", required=True)
+    parser.add_argument("--db", default=None)
     args = parser.parse_args()
-    result = run(args.root, args.trace, args.batch_size)
+    result = run(args.root, args.trace, args.batch_size, args.db)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
