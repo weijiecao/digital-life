@@ -109,6 +109,8 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
         try:
             for scope, entries in by_scope.items():
                 entries.sort(key=lambda item: item["source_seq"])
+                store.register_manifest(scope, [(e["source_seq"], e["source_id"])
+                                                for e in entries])
                 mapping = _load_map(store, scope)
                 lease_token = store.claim_scope(scope, lease_owner, ttl=300)
                 if lease_token is None:

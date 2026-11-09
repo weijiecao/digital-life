@@ -37,6 +37,19 @@ class TestScopeLeaseReceipt(unittest.TestCase):
             self.assertEqual(store.contiguous_frontier("s"), 2)
             store.close()
 
+    def test_manifest_sparse_frontier_and_missing_scan(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            store.register_manifest("s", [(10, "a"), (20, "b"), (30, "c")])
+            store.record_receipt("s", 10, "ATTACHED", "h10")
+            store.record_receipt("s", 30, "ATTACHED", "h30")
+            self.assertEqual(store.contiguous_frontier("s"), 10)
+            self.assertEqual([m["source_seq"] for m in store.manifest_missing_receipts("s")], [20])
+            store.record_receipt("s", 20, "PENDING", "h20")
+            self.assertEqual(store.contiguous_frontier("s"), 30)
+            self.assertEqual(store.manifest_missing_receipts("s"), [])
+            store.close()
+
     def test_receipt_rolls_back_with_unit(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))

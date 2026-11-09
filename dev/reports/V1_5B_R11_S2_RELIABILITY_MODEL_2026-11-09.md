@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **445/445**。
+全量回归 **446/446**。
 
 仍待工程接线：
 
@@ -232,6 +232,27 @@ F1 0.92857
 - receipt 与 job cursor 仍未在同一事务内；
 - manifest 与恢复扫描未实现；
 - 真实双进程竞争与 kill 未验证。
+
+## 4.9 M1-04：manifest 与缺失回执扫描
+
+新增 `source_manifest(scope, source_seq, source_id)`：
+
+- 回放开始登记 scope manifest；
+- `contiguous_frontier` 按 manifest 顺序检查 receipt；
+- `manifest_missing_receipts` 找出未处理来源；
+- 稀疏 seq（10/20/30）可用，不要求 +1。
+
+测试：
+
+- 10、30 有回执、20 缺失 → frontier 10，缺失 [20]；
+- 补 20 后 frontier 30；
+- 旧 trace frontier 仍为每 scope 34。
+
+仍未完成：
+
+- 缺失扫描尚未接成后台恢复任务；
+- 未实现异常“已订阅但未入队”的修复；
+- 真实双进程与 kill 未复测。
 
 ## 5. 工程侧下一步
 

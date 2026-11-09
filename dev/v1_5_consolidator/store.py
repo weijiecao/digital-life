@@ -122,6 +122,9 @@ class V15Store:
           scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL, outcome TEXT NOT NULL,
           input_hash TEXT NOT NULL, created_at TEXT NOT NULL,
           PRIMARY KEY(scope_id, source_seq));
+        CREATE TABLE IF NOT EXISTS source_manifest(
+          scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL, source_id TEXT NOT NULL,
+          PRIMARY KEY(scope_id, source_seq));
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -592,7 +595,33 @@ class V15Store:
                 (scope_id, source_seq, outcome, input_hash, _now()))
         return True
 
+    def register_manifest(self, scope_id: str, entries: list[tuple[int, str]]) -> None:
+        with self._write():
+            for seq, source_id in entries:
+                self.db.execute("""INSERT OR IGNORE INTO source_manifest
+                    (scope_id,source_seq,source_id) VALUES(?,?,?)""",
+                    (scope_id, seq, source_id))
+
+    def manifest_missing_receipts(self, scope_id: str) -> list[dict]:
+        rows = self.db.execute("""SELECT m.source_seq,m.source_id
+            FROM source_manifest m LEFT JOIN source_receipt r
+            ON m.scope_id=r.scope_id AND m.source_seq=r.source_seq
+            WHERE m.scope_id=? AND r.source_seq IS NULL ORDER BY m.source_seq""",
+            (scope_id,)).fetchall()
+        return [{"source_seq": row[0], "source_id": row[1]} for row in rows]
+
     def contiguous_frontier(self, scope_id: str, start: int = 1) -> int:
+        manifest = self.db.execute("""SELECT source_seq FROM source_manifest
+            WHERE scope_id=? ORDER BY source_seq""", (scope_id,)).fetchall()
+        if manifest:
+            last = 0
+            for row in manifest:
+                receipt = self.db.execute("""SELECT 1 FROM source_receipt
+                    WHERE scope_id=? AND source_seq=?""", (scope_id, row[0])).fetchone()
+                if receipt is None:
+                    break
+                last = row[0]
+            return last
         rows = self.db.execute("""SELECT source_seq FROM source_receipt
             WHERE scope_id=? ORDER BY source_seq""", (scope_id,)).fetchall()
         expected = start
