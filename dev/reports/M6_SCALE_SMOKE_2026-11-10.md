@@ -137,6 +137,20 @@ kill 后从 max(source_seq)+1 续跑，最终每来源 1 条 receipt/evidence，
 
 从 490 续跑到 20,000；每来源 1 条 receipt/evidence，无重复。
 
+## 1.10 100k kill 后续跑
+
+| 项 | 值 |
+|---|---:|
+| total | 100,000 |
+| kill 后已提交 | 693 |
+| receipts | **100,000** |
+| evidence | **100,000** |
+| source_refs | **100,000** |
+| duplicates | **0** |
+| integrity | **ok** |
+
+从 694 续跑到 100,000；每来源 1 条 receipt/evidence，无重复。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；

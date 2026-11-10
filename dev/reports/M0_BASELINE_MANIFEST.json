@@ -1,23 +1,27 @@
 {
-  "schema": "m0-baseline-final-2",
-  "date": "2026-11-10",
-  "local_commit": "d21af24",
-  "remote_last_pushed": "d21af24",
+  "schema": "m0-baseline-final-3",
+  "date": "2026-11-11",
+  "local_commit": "7597dd8",
+  "remote_last_pushed": "7597dd8",
   "python": "3.12.10",
   "sqlite": "3.49.1",
   "plugin_version": "1.0.19",
   "test_command": "python -m unittest discover -q -s tests -t .",
   "tests": {
-    "total": 487,
+    "total": 507,
     "failures": 0,
     "errors": 0
   },
   "hashes": {
-    "dev/v1_5_consolidator/store.py": "c5f83f7e9fbc5c115e6adb7c51f2b545922d9272aaec065c957aa9a65e2d27ee",
-    "dev/v1_5_consolidator/candidate_retriever.py": "58ebef635366ce2fbc5cded814465e89e9facb9dd44783f4dfc5b36b5885694f",
+    "dev/v1_5_consolidator/store.py": "f48d3fe45962cab00509334aef0bd9e70e99c2eba345efeea7478991b96aa696",
+    "dev/v1_5_consolidator/candidate_retriever.py": "09e901ff53cb31b26fcec3ce727a4d9b9114ea4085d5b57c89e64f588b78353d",
     "dev/v1_5_consolidator/resolver.py": "a48da36f5b555b59f1530c956bba77116f59391611915717068124b39cbc9f9f",
-    "dev/memory_engine/engine.py": "63417370be6cfa2fca50c424af415db6b2f0950bb8130b334647da3ddec0d18d",
-    "dev/memory_engine/rejudge.py": "562888543900b142c80d1f4c76f1aefd50b6a8a368e7d8268196e2f0ea2cce6c"
+    "dev/memory_engine/engine.py": "cea08270dbda523e5d1ced1222e971a712671baab5dc3b8b83be6da82abbd3e7",
+    "dev/memory_engine/rejudge.py": "aaf9660e482697b097d8b076471640c77f3a6152c9db24738885b449cf198812",
+    "dev/memory_engine/worker.py": "fa11ff7caaa97190a9e2c916abb7339dc36543c3eff393544f250efb3d875667",
+    "dev/memory_engine/render.py": "091aa11a5d858d4fdd27fe0abb5677aef788b2ade6e2a450f204a685453a8afe",
+    "dev/memory_engine/cache.py": "2cafe36f1d31b16cd88ed4209adafbdd9882f6dcb40652de9d0b0f2332bb9859",
+    "dev/memory_engine/backup.py": "4cec99fd8b9f651bccdfdcacd99b9a01f10fa4086b4029df84ace0b0a3e2e6df"
   },
   "status": "LOCAL+REMOTE; CI green",
   "notes": [
