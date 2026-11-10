@@ -33,13 +33,13 @@ gold_included: false
 
 ### 340 条 provenance trace
 
-已启动真实 B4 340 条运行，输出目标：
+340 条 provenance trace 计划输出：
 
 ```text
 dev/reports/v1_5b_b4_cluster_prov_trace.json
 ```
 
-运行尚未完成，不能作为结果。
+运行因网络/模型接口不可用已停止，未生成结果；状态为 BLOCKED，不能作为结果。
 
 ## 2. 未完成
 
