@@ -90,6 +90,35 @@ attached 0 / created 340 / invalid 72
 
 340 已重新运行，结果待定。
 
+## 2.3 340 条 provenance trace 结果
+
+| 指标 | 值 |
+|---|---:|
+| messages | 340 |
+| attached | 117 |
+| created | 223 |
+| invalid | 54 |
+| pairwise precision | 1.00000 |
+| pairwise recall | 0.45833 |
+| pairwise F1 | **0.62857** |
+| FP | 0 |
+| FN | 260 |
+
+与旧 trace F1 0.92857 相比，recall 明显下降。
+
+归因：
+
+- 前几条消息没有候选，创建的事件 provenance 为 unknown；
+- 后续 user-real 来源与 unknown 候选比较时，ProvenanceGuard ABSTAIN；
+- 因此 SAME 不附着，产生大量 FN；
+- 这是保守 Guard 与“无候选来源没有 provenance”共同造成，不是单纯模型退化。
+
+结论：
+
+- 该 trace 可以用于“Guard 开启后的保守代价”分析；
+- 不能直接作为质量提升证据；
+- 需要为无候选来源补充 provenance 或显式 unknown 策略。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。

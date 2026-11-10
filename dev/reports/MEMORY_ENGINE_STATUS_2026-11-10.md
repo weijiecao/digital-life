@@ -12,7 +12,7 @@
 |---|---|---|---|
 | M0 基线 | ✅ 本地 | manifest、475 测试、关键 SHA | 未推送、远端 CI 未跑 |
 | M1 一致性 | ◐ | 双进程竞争、同批 DB、提交前/后 kill、归属切换、pending 重评、READY、manifest | 真实模型重判、Windows CI、不同来源并行 DB 对比 |
-| M2 数据 | ◐ | 21 例 trace、20/21、污染 0 | 340 provenance trace、独立 gold、真实留出 |
+| M2 数据 | ◐ | 21 例 20/21；340 条 trace F1 0.62857、FP 0、污染 0（非独立 gold） | 独立 gold、真实留出；unknown provenance 导致 recall 下降 |
 | M3 引擎 | ◐ | ingest/retrieve/context/delete、CLI、类型投影 | 完整类型体系、更正链、宿主采集 |
 | M4 检索 | ◐ | 同 ID 词面/向量更新 | 混合检索质量、10 万规模、索引重建 |
 | M5 上下文 | ◐ | ContextPacket、缓存失效、保守 Token 预算 | 摘要、精确 tokenizer、跨进程缓存 |
@@ -22,7 +22,7 @@
 ## 2. 关键风险
 
 1. 远端已同步：`d005ebd` 已推送，CI 3.10/3.11/3.12 全绿。
-2. M2 340 条 provenance trace 已重新启动，结果待定。
+2. M2 340 条 provenance trace 已完成：F1 0.62857、FP 0；unknown provenance 导致 recall 下降。
 3. 真实模型重判未接入；当前重评使用注入测试 provider。
 4. 真实语料为 0，不能报告真实误归属/漏归属。
 5. 10k 烟测不是 10 万验收，也没有并发/删除/恢复压力。
