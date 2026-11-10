@@ -139,6 +139,10 @@ class V15Store:
           change_id TEXT PRIMARY KEY, scope_id TEXT NOT NULL, dep_type TEXT NOT NULL,
           dep_id TEXT NOT NULL, old_version INTEGER NOT NULL, new_version INTEGER NOT NULL,
           reason TEXT NOT NULL, created_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS source_payload(
+          scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL, source_hash TEXT NOT NULL,
+          recorded_at TEXT NOT NULL, text TEXT NOT NULL,
+          PRIMARY KEY(scope_id, source_seq));
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -508,10 +512,16 @@ class V15Store:
         return audit_id
 
     def save_pending(self, scope_id: str, source_seq: int, proposals: list[dict],
-                     mapping: dict, reason: str) -> str:
+                     mapping: dict, reason: str, source: Any | None = None) -> str:
         now = _now()
         pending_id = "pending_" + uuid.uuid4().hex
         with self._write():
+            if source is not None:
+                self.db.execute("""INSERT OR REPLACE INTO source_payload
+                    (scope_id,source_seq,source_hash,recorded_at,text)
+                    VALUES(?,?,?,?,?)""",
+                    (scope_id, source_seq, source.source_hash,
+                     source.recorded_at, source.text))
             self.db.execute("""INSERT INTO resolution_pending
                 (pending_id,scope_id,source_seq,proposals_json,mapping_json,
                  reason,status,created_at,updated_at)
@@ -543,7 +553,7 @@ class V15Store:
                 AND status='PENDING'""", (_now(), scope_id, source_seq))
         return cursor.rowcount > 0
 
-    def relocate_pending(self, scope_id: str, source_seq: int, source: Any,
+    def relocate_pending(self, scope_id: str, source_seq: int, source: Any | None,
                          event_id: str) -> bool:
         """Attach a previously pending source and close its pending row atomically."""
         with self.unit_of_work():
@@ -552,6 +562,14 @@ class V15Store:
                 (scope_id, source_seq)).fetchone()
             if row is None:
                 return False
+            if source is None:
+                payload = self.db.execute("""SELECT source_hash,recorded_at,text
+                    FROM source_payload WHERE scope_id=? AND source_seq=?""",
+                    (scope_id, source_seq)).fetchone()
+                if payload is None:
+                    return False
+                from .contracts import SourceEnvelope
+                source = SourceEnvelope(scope_id, source_seq, payload[0], payload[1], payload[2])
             self.attach_source(scope_id, source, event_id, "pending-relocation")
             self.mark_pending_relocated(scope_id, source_seq, event_id)
             self.record_gate_audit(
@@ -559,6 +577,24 @@ class V15Store:
                 "PendingRelocation", "ALLOW", ["dependency_resolved"],
                 "pending-relocation-1", event_id, "SAME_EVENT", "ATTACHED")
         return True
+
+    def auto_relocate_pending(self, scope_id: str) -> dict:
+        """Relocate only when the stored mapping union has one target."""
+        relocated = 0
+        withheld = 0
+        rows = self.db.execute("""SELECT source_seq,mapping_json FROM resolution_pending
+            WHERE scope_id=? AND status='PENDING' ORDER BY source_seq""",
+            (scope_id,)).fetchall()
+        for seq, mapping_json in rows:
+            targets = set()
+            for values in json.loads(mapping_json).values():
+                targets.update(values)
+            if len(targets) == 1 and self.relocate_pending(scope_id, seq, None,
+                                                            next(iter(targets))):
+                relocated += 1
+            else:
+                withheld += 1
+        return {"relocated": relocated, "withheld": withheld}
 
     def claim_scope(self, scope_id: str, owner_id: str, ttl: float = 30.0) -> int | None:
         now = time.time()

@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **452/452**。
+全量回归 **453/453**。
 
 仍待工程接线：
 
@@ -361,6 +361,22 @@ pending 4
 - 依赖内容变化与 hash 校验；
 - 自动重判与当前归属发布；
 - 真实模型重评。
+
+## 4.15 pending 自动重定位（映射唯一时）
+
+新增：
+
+- `source_payload` 保存 pending 来源原文/hash；
+- `save_pending(..., source=...)`；
+- `relocate_pending(..., source=None)` 可从 payload 恢复；
+- `auto_relocate_pending(scope)`：仅当 pending 映射目标集合恰好一个时 attach。
+
+测试：
+
+- 分叉映射 → withheld，effective 为空；
+- 映射更新为唯一 → relocated，evidence 出现。
+
+这不是完整模型重评：没有新判决、没有依赖版本比较、没有归属切换审计。
 
 ## 5. 工程侧下一步
 

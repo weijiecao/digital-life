@@ -121,5 +121,23 @@ class TestUnitOfWork(unittest.TestCase):
             store.close()
 
 
+    def test_auto_relocate_only_when_mapping_is_unique(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            seed = SourceEnvelope("s", 99, "sha", "t", "seed")
+            event_id = store.create_event_from_source("s", seed)
+            source = SourceEnvelope("s", 2, "sha", "t", "pending text")
+            proposals = [{"candidate_event_id": "old", "label": "SAME_EVENT"}]
+            store.save_pending("s", 2, proposals, {"old": ["new-a", "new-b"]},
+                               "split", source=source)
+            self.assertEqual(store.auto_relocate_pending("s")["withheld"], 1)
+            self.assertEqual(store.effective_events_for_source("s", 2), [])
+            store.save_pending("s", 2, proposals, {"old": [event_id]}, "resolved",
+                               source=source)
+            self.assertEqual(store.auto_relocate_pending("s")["relocated"], 1)
+            self.assertEqual(store.events_for_source("s", 2), [event_id])
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()
