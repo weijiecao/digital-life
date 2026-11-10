@@ -110,6 +110,11 @@ s.close()
             lock.write_text("held", encoding="utf-8")
             self.assertIsNone(CacheJanitor(cache, interval_seconds=0,
                                            state_path=state).maybe_run(now=2000))
+            import os
+            os.utime(lock, (1, 1))
+            stale = CacheJanitor(cache, interval_seconds=0, state_path=state,
+                                 lock_ttl_seconds=1)
+            self.assertIsNotNone(stale.maybe_run(now=2001))
             store.close()
 
 

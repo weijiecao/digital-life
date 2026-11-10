@@ -94,7 +94,8 @@ class CacheJanitor:
 
     def __init__(self, cache: PersistentContextCache,
                  interval_seconds: float = 3600, max_rows: int = 1000,
-                 ttl_seconds: float = 86400, state_path=None):
+                 ttl_seconds: float = 86400, state_path=None,
+                 lock_ttl_seconds: float = 3600):
         import json
         from pathlib import Path
         self.cache = cache
@@ -102,6 +103,7 @@ class CacheJanitor:
         self.max_rows = max_rows
         self.ttl_seconds = ttl_seconds
         self.state_path = Path(state_path) if state_path else None
+        self.lock_ttl_seconds = lock_ttl_seconds
         self.last_run: float | None = None
         if self.state_path and self.state_path.exists():
             try:
@@ -124,7 +126,14 @@ class CacheJanitor:
             try:
                 fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
             except FileExistsError:
-                return None
+                try:
+                    if time.time() - lock_path.stat().st_mtime > self.lock_ttl_seconds:
+                        lock_path.unlink()
+                        fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                except (FileNotFoundError, FileExistsError, OSError):
+                    pass
+                if fd is None:
+                    return None
         try:
             removed = self.cache.prune(
                 self.max_rows, older_than_seconds=self.ttl_seconds)

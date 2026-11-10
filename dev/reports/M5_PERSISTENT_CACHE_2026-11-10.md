@@ -24,6 +24,7 @@
 | TTL 删除旧行 | ✅ |
 | CacheJanitor 按 interval 运行 | ✅ |
 | janitor 状态持久化/锁 | ✅ |
+| stale lock 自动清理 | ✅ |
 
 ## 3. 边界
 
