@@ -76,5 +76,18 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_ingest_is_source_idempotent(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            source = SourceEnvelope("s", 1, "sha", "t", "重复消息")
+            first = engine.ingest("s", source)
+            second = engine.ingest("s", source)
+            self.assertEqual(first.event_id, second.event_id)
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_candidate").fetchone()[0], 1)
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM source_receipt").fetchone()[0], 1)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -38,6 +38,12 @@ class MemoryEngine:
 
     def ingest(self, scope_id: str, source: SourceEnvelope,
                provenance: dict | None = None) -> CaptureReceipt:
+        existing = self.store.receipt_for_source(scope_id, source.source_seq)
+        if existing is not None:
+            events = self.store.events_for_source(scope_id, source.source_seq)
+            return CaptureReceipt(scope_id, source.source_seq,
+                                  events[0] if events else "",
+                                  existing["input_hash"] == source.source_hash)
         with self.store.unit_of_work():
             event_id = self.store.create_event_from_source(
                 scope_id, source, event_type="unknown",
