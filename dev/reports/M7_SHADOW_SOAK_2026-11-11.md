@@ -53,6 +53,8 @@
 
 未通过则 exit 1，避免“V1 正常但 shadow 静默缺失”。
 
+testbed 实测：8 项检查全部 true，`ok=true`。
+
 ## 3. 边界
 
 - testbed mock provider；
