@@ -96,6 +96,22 @@ s.close()
             self.assertIsNone(janitor.maybe_run(now=1001))
             store.close()
 
+    def test_janitor_state_and_lock(self):
+        from memory_engine.cache import CacheJanitor
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            cache = PersistentContextCache(store)
+            state = Path(d) / ".janitor.json"
+            janitor = CacheJanitor(cache, interval_seconds=10, state_path=state)
+            janitor.maybe_run(now=1000)
+            restarted = CacheJanitor(cache, interval_seconds=10, state_path=state)
+            self.assertIsNone(restarted.maybe_run(now=1002))
+            lock = state.with_suffix(".lock")
+            lock.write_text("held", encoding="utf-8")
+            self.assertIsNone(CacheJanitor(cache, interval_seconds=0,
+                                           state_path=state).maybe_run(now=2000))
+            store.close()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -94,17 +94,46 @@ class CacheJanitor:
 
     def __init__(self, cache: PersistentContextCache,
                  interval_seconds: float = 3600, max_rows: int = 1000,
-                 ttl_seconds: float = 86400):
+                 ttl_seconds: float = 86400, state_path=None):
+        import json
+        from pathlib import Path
         self.cache = cache
         self.interval_seconds = interval_seconds
         self.max_rows = max_rows
         self.ttl_seconds = ttl_seconds
+        self.state_path = Path(state_path) if state_path else None
         self.last_run: float | None = None
+        if self.state_path and self.state_path.exists():
+            try:
+                self.last_run = json.loads(
+                    self.state_path.read_text(encoding="utf-8")).get("last_run")
+            except (OSError, ValueError):
+                self.last_run = None
 
     def maybe_run(self, now: float | None = None) -> int | None:
+        import json
+        import os
         import time
         now = time.time() if now is None else now
         if self.last_run is not None and now - self.last_run < self.interval_seconds:
             return None
-        self.last_run = now
-        return self.cache.prune(self.max_rows, older_than_seconds=self.ttl_seconds)
+        lock_path = (self.state_path.with_suffix(".lock")
+                     if self.state_path else None)
+        fd = None
+        if lock_path:
+            try:
+                fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            except FileExistsError:
+                return None
+        try:
+            removed = self.cache.prune(
+                self.max_rows, older_than_seconds=self.ttl_seconds)
+            self.last_run = now
+            if self.state_path:
+                self.state_path.write_text(
+                    json.dumps({"last_run": now}), encoding="utf-8")
+            return removed
+        finally:
+            if fd is not None:
+                os.close(fd)
+                lock_path.unlink(missing_ok=True)

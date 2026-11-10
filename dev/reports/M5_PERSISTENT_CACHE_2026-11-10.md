@@ -23,6 +23,7 @@
 | prune 只保留最近 N 行 | ✅ |
 | TTL 删除旧行 | ✅ |
 | CacheJanitor 按 interval 运行 | ✅ |
+| janitor 状态持久化/锁 | ✅ |
 
 ## 3. 边界
 
