@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import sqlite3
+import time
 from typing import Any
 
 
@@ -46,13 +48,20 @@ class PersistentContextCache:
 
     def put(self, key: tuple, generation: int, value: Any) -> None:
         from datetime import datetime, timezone
-        with self.store._write():
-            self.store.db.execute(
-                """INSERT OR REPLACE INTO context_cache
-                   (cache_key,generation,packet_json,updated_at) VALUES(?,?,?,?)""",
-                (self._key(key), generation,
-                 json.dumps(value, ensure_ascii=False),
-                 datetime.now(timezone.utc).isoformat()))
+        for attempt in range(20):
+            try:
+                with self.store._write():
+                    self.store.db.execute(
+                        """INSERT OR REPLACE INTO context_cache
+                           (cache_key,generation,packet_json,updated_at) VALUES(?,?,?,?)""",
+                        (self._key(key), generation,
+                         json.dumps(value, ensure_ascii=False),
+                         datetime.now(timezone.utc).isoformat()))
+                return
+            except sqlite3.OperationalError as exc:
+                if "locked" not in str(exc).lower() or attempt == 19:
+                    raise
+                time.sleep(0.02 * (attempt + 1))
 
     def invalidate_scope(self, scope_id: str) -> None:
         with self.store._write():
