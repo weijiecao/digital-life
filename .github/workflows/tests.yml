@@ -54,6 +54,7 @@ jobs:
             tests.test_memory_engine_backup `
             tests.test_memory_engine_host_budget `
             tests.test_m1_provider_timeout `
+            tests.test_shadow_preflight `
             tests.test_r0_bundle `
             tests.test_memory_index_update tests.test_memory_store_backup `
             tests.test_v1_5b_t1_t2_fixes tests.test_baseline_alignment tests.test_preflight `

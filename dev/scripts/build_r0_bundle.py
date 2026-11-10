@@ -35,6 +35,7 @@ FILES = [
     "host_shadow/metadata.yaml",
     "host_shadow/README.md",
     "host_shadow/soak.py",
+    "host_shadow/preflight.py",
     "reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md",
     "reports/MEMORY_ENGINE_STATUS_2026-11-10.md",
     "reports/M2_DATA_PROGRESS_2026-11-10.md",
@@ -56,7 +57,7 @@ def main() -> int:
                 "file_sha256": {
                     rel: hashlib.sha256((DEV / rel).read_bytes()).hexdigest()
                     for rel in sorted(FILES)},
-                "status": "R0 release candidate; NO-GO", "tests": 526}
+                "status": "R0 release candidate; NO-GO", "tests": 528}
     (OUT.parent / "memory-engine-r0-rc1.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(manifest, ensure_ascii=False, indent=2))

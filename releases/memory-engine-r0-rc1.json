@@ -1,12 +1,13 @@
 {
   "artifact": "memory-engine-r0-rc1.zip",
-  "sha256": "5374b41584a672e2de5914da6beb194d5c499c1852ad2e14bb8089c3dd237a16",
-  "bytes": 50250,
-  "files": 30,
+  "sha256": "d0717e323e6ecb838378339ba852b61e2f6743793947eb372cfd9ee8999a580f",
+  "bytes": 50991,
+  "files": 31,
   "file_sha256": {
     "host_shadow/README.md": "fb917c6ba055ceba2cfb04ec5d9a7ce3db977e389a432b22a083406da335cdab",
     "host_shadow/main.py": "de190e7465287b9ba949e2506d9bbcf542bd00c9eef3d8069d5ca194a9ec4403",
     "host_shadow/metadata.yaml": "bca5deeceb380653e436c29305512a79354a2672f57962a28f212e901deefce2",
+    "host_shadow/preflight.py": "bdd11789a3e029a336a82d3bd9e8b364678a1ce23a3a40a46c2a6be99a53e14f",
     "host_shadow/soak.py": "b0cb2ff4abd9799fc94da1483bd21f38da2e1bceda037b374a951ce6416ae2bc",
     "memory_engine/__init__.py": "c6ec1909f404468641c5535688c3473699075bfccbb8e0c32858de3fe99a9ac3",
     "memory_engine/backup.py": "08a26399dbfed8c899eb12794c08527d169e753df2437222ed6cfa7d536a1769",
@@ -36,5 +37,5 @@
     "v1_5_consolidator/store.py": "b33d251c7b8b90b29c95fcebaf117d1b3e74c879b4ed5a9bc0f677a0d2cae479"
   },
   "status": "R0 release candidate; NO-GO",
-  "tests": 526
+  "tests": 528
 }

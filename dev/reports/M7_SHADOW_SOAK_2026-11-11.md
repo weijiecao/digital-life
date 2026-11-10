@@ -39,6 +39,20 @@
 - 没有一次失败；
 - 仍未覆盖 72h、真实 QQ/NapCat、断电。
 
+## 2.1 预检
+
+`host_shadow/preflight.py` 检查：
+
+- DEV 目录；
+- host_shadow/main.py；
+- AstrBot root；
+- 插件是否安装；
+- metadata；
+- plugin_data；
+- 两个环境变量。
+
+未通过则 exit 1，避免“V1 正常但 shadow 静默缺失”。
+
 ## 3. 边界
 
 - testbed mock provider；
