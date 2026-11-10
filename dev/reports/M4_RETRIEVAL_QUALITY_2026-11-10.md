@@ -42,6 +42,23 @@
 - RRF 分数上限约 0.033，阈值 0.034 会同时清空正常查询；
 - 因此 RRF 的 min_score 不能替代 abstain gate。
 
+## 2.05 阈值 dev/holdout 切分
+
+按 query_id 哈希奇偶切成 dev 79 / holdout 101：
+
+| 集 | attach | hit | recall | abstain | injected |
+|---|---:|---:|---:|---:|---:|
+| dev | 69 | 69 | 1.0000 | 10 | 0 |
+| holdout | 91 | 91 | 1.0000 | 10 | 0 |
+
+选中阈值 **1.139003**。
+
+判读：
+
+- dev 选阈值后 holdout 仍 0 误注入、attach recall 1.0；
+- 这是同一合成查询集的切分，不是独立真实语料；
+- 不能据此确定真实阈值。
+
 ## 2.1 min_score 阈值消融
 
 | min_score | R@1 | R@5 | MRR | inj@1 | inj@5 |

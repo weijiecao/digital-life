@@ -1,0 +1,1293 @@
+{
+  "suite": "m4-threshold-split",
+  "dev_queries": 79,
+  "holdout_queries": 101,
+  "chosen_threshold": 1.139003,
+  "dev": {
+    "attach": 69,
+    "hit": 69,
+    "recall": 1.0,
+    "abstain": 10,
+    "injected": 0,
+    "injection_rate": 0.0
+  },
+  "holdout": {
+    "attach": 91,
+    "hit": 91,
+    "recall": 1.0,
+    "abstain": 10,
+    "injected": 0,
+    "injection_rate": 0.0
+  },
+  "dev_curve": [
+    {
+      "threshold": 0.0,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.348317,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.359044,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.36183,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.380048,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.388992,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.39113,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.392264,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.402877,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.405921,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.420564,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.437952,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.444621,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.448901,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.456532,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.462249,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.464148,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.471598,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.476416,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.484348,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.486353,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.491478,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.506386,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.530525,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.535632,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.540837,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.557081,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.562714,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.568463,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.580319,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.586435,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.599062,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.64276,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.66098,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.664562,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.681441,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.68726,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.705374,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 10,
+      "injection_rate": 1.0
+    },
+    {
+      "threshold": 0.723722,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 9,
+      "injection_rate": 0.9
+    },
+    {
+      "threshold": 0.728053,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 8,
+      "injection_rate": 0.8
+    },
+    {
+      "threshold": 0.74305,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 8,
+      "injection_rate": 0.8
+    },
+    {
+      "threshold": 0.763826,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.789694,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.796437,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.810275,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.817376,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.831957,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.870793,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.879,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.887362,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.889548,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.903999,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.918927,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.926578,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.942268,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 5,
+      "injection_rate": 0.5
+    },
+    {
+      "threshold": 0.950314,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 4,
+      "injection_rate": 0.4
+    },
+    {
+      "threshold": 0.975298,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 0.982957,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 0.98392,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 0.992697,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.034444,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.039036,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.048828,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.058807,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.068976,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.089914,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.113322,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.13435,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.139003,
+      "attach": 69,
+      "hit": 69,
+      "recall": 1.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.146031,
+      "attach": 69,
+      "hit": 68,
+      "recall": 0.9855,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.157955,
+      "attach": 69,
+      "hit": 68,
+      "recall": 0.9855,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.168284,
+      "attach": 69,
+      "hit": 68,
+      "recall": 0.9855,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.280858,
+      "attach": 69,
+      "hit": 68,
+      "recall": 0.9855,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.310237,
+      "attach": 69,
+      "hit": 67,
+      "recall": 0.971,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.369284,
+      "attach": 69,
+      "hit": 67,
+      "recall": 0.971,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.377759,
+      "attach": 69,
+      "hit": 65,
+      "recall": 0.942,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.3873,
+      "attach": 69,
+      "hit": 64,
+      "recall": 0.9275,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.398926,
+      "attach": 69,
+      "hit": 62,
+      "recall": 0.8986,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.551347,
+      "attach": 69,
+      "hit": 61,
+      "recall": 0.8841,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.599295,
+      "attach": 69,
+      "hit": 61,
+      "recall": 0.8841,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.687892,
+      "attach": 69,
+      "hit": 61,
+      "recall": 0.8841,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.767088,
+      "attach": 69,
+      "hit": 60,
+      "recall": 0.8696,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.844934,
+      "attach": 69,
+      "hit": 60,
+      "recall": 0.8696,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.882163,
+      "attach": 69,
+      "hit": 60,
+      "recall": 0.8696,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.891574,
+      "attach": 69,
+      "hit": 60,
+      "recall": 0.8696,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.901347,
+      "attach": 69,
+      "hit": 60,
+      "recall": 0.8696,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 1.94445,
+      "attach": 69,
+      "hit": 60,
+      "recall": 0.8696,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.163854,
+      "attach": 69,
+      "hit": 60,
+      "recall": 0.8696,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.209059,
+      "attach": 69,
+      "hit": 59,
+      "recall": 0.8551,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.223695,
+      "attach": 69,
+      "hit": 57,
+      "recall": 0.8261,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.291096,
+      "attach": 69,
+      "hit": 55,
+      "recall": 0.7971,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.293364,
+      "attach": 69,
+      "hit": 54,
+      "recall": 0.7826,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.314136,
+      "attach": 69,
+      "hit": 54,
+      "recall": 0.7826,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.324823,
+      "attach": 69,
+      "hit": 53,
+      "recall": 0.7681,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.332212,
+      "attach": 69,
+      "hit": 53,
+      "recall": 0.7681,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.380569,
+      "attach": 69,
+      "hit": 50,
+      "recall": 0.7246,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.381728,
+      "attach": 69,
+      "hit": 50,
+      "recall": 0.7246,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.46793,
+      "attach": 69,
+      "hit": 47,
+      "recall": 0.6812,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.495872,
+      "attach": 69,
+      "hit": 45,
+      "recall": 0.6522,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.498771,
+      "attach": 69,
+      "hit": 45,
+      "recall": 0.6522,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.518335,
+      "attach": 69,
+      "hit": 44,
+      "recall": 0.6377,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.628315,
+      "attach": 69,
+      "hit": 44,
+      "recall": 0.6377,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.639294,
+      "attach": 69,
+      "hit": 43,
+      "recall": 0.6232,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.646273,
+      "attach": 69,
+      "hit": 43,
+      "recall": 0.6232,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.66448,
+      "attach": 69,
+      "hit": 42,
+      "recall": 0.6087,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.683003,
+      "attach": 69,
+      "hit": 39,
+      "recall": 0.5652,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.688942,
+      "attach": 69,
+      "hit": 39,
+      "recall": 0.5652,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.70541,
+      "attach": 69,
+      "hit": 38,
+      "recall": 0.5507,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.765245,
+      "attach": 69,
+      "hit": 38,
+      "recall": 0.5507,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.833833,
+      "attach": 69,
+      "hit": 38,
+      "recall": 0.5507,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.869381,
+      "attach": 69,
+      "hit": 38,
+      "recall": 0.5507,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.912211,
+      "attach": 69,
+      "hit": 37,
+      "recall": 0.5362,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 2.982042,
+      "attach": 69,
+      "hit": 33,
+      "recall": 0.4783,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.005201,
+      "attach": 69,
+      "hit": 32,
+      "recall": 0.4638,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.270565,
+      "attach": 69,
+      "hit": 31,
+      "recall": 0.4493,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.322341,
+      "attach": 69,
+      "hit": 30,
+      "recall": 0.4348,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.394375,
+      "attach": 69,
+      "hit": 29,
+      "recall": 0.4203,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.419409,
+      "attach": 69,
+      "hit": 28,
+      "recall": 0.4058,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.43313,
+      "attach": 69,
+      "hit": 26,
+      "recall": 0.3768,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.700607,
+      "attach": 69,
+      "hit": 25,
+      "recall": 0.3623,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.728155,
+      "attach": 69,
+      "hit": 23,
+      "recall": 0.3333,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.841496,
+      "attach": 69,
+      "hit": 20,
+      "recall": 0.2899,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.91517,
+      "attach": 69,
+      "hit": 19,
+      "recall": 0.2754,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 3.938261,
+      "attach": 69,
+      "hit": 14,
+      "recall": 0.2029,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 4.158932,
+      "attach": 69,
+      "hit": 13,
+      "recall": 0.1884,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 4.222008,
+      "attach": 69,
+      "hit": 13,
+      "recall": 0.1884,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 4.270332,
+      "attach": 69,
+      "hit": 13,
+      "recall": 0.1884,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 4.297288,
+      "attach": 69,
+      "hit": 13,
+      "recall": 0.1884,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 4.623749,
+      "attach": 69,
+      "hit": 12,
+      "recall": 0.1739,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 4.626849,
+      "attach": 69,
+      "hit": 10,
+      "recall": 0.1449,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 4.656063,
+      "attach": 69,
+      "hit": 9,
+      "recall": 0.1304,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 5.100603,
+      "attach": 69,
+      "hit": 8,
+      "recall": 0.1159,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 5.490391,
+      "attach": 69,
+      "hit": 7,
+      "recall": 0.1014,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 5.587445,
+      "attach": 69,
+      "hit": 6,
+      "recall": 0.087,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 5.658709,
+      "attach": 69,
+      "hit": 5,
+      "recall": 0.0725,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 5.773019,
+      "attach": 69,
+      "hit": 3,
+      "recall": 0.0435,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 6.462043,
+      "attach": 69,
+      "hit": 3,
+      "recall": 0.0435,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 6.679742,
+      "attach": 69,
+      "hit": 2,
+      "recall": 0.029,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 6.724898,
+      "attach": 69,
+      "hit": 1,
+      "recall": 0.0145,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 6.763764,
+      "attach": 69,
+      "hit": 1,
+      "recall": 0.0145,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    {
+      "threshold": 7.633545,
+      "attach": 69,
+      "hit": 0,
+      "recall": 0.0,
+      "abstain": 10,
+      "injected": 0,
+      "injection_rate": 0.0
+    }
+  ]
+}
