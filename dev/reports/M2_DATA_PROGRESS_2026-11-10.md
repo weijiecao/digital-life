@@ -299,6 +299,18 @@ Resolve 层新增：
 
 与归一化前一致（117/223），说明该规则没有改变 B4 340 的归属。
 
+## 2.15 缺失 candidate 防护
+
+归一化读取 candidate provenance 时，如果 candidate 不存在会 `NarrativeProvenance(**None)` 崩溃。
+
+修复：
+
+- `candidate_data` 为空时不归一化；
+- 不抛异常；
+- 仍走原有决策路径。
+
+新增测试：missing candidate + same story → 不崩溃、产生 1 条 decision。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。

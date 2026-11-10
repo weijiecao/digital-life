@@ -83,6 +83,19 @@ class TestProvenanceGuard(unittest.TestCase):
                 "SELECT COUNT(*) FROM event_cannot_link").fetchone()[0], 0)
             store.close()
 
+    def test_same_story_missing_candidate_does_not_crash(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            source = SourceEnvelope("s", 1, "sha", "t", "章节二")
+            judgment = JudgmentResult(
+                source_seq=1, proposals=[RelationProposal("evt_missing",
+                                                          "DIFFERENT_EVENT")],
+                provenance=NarrativeProvenance("user", "story_character",
+                                               "fictional", "story-1"))
+            summary = ConstrainedResolver(store).resolve("s", source, judgment)
+            self.assertEqual(len(summary.decisions), 1)
+            store.close()
+
     def test_resolver_blocks_narrative_to_real_event(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))

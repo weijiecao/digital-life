@@ -72,9 +72,10 @@ class ConstrainedResolver:
                     and judgment.provenance_present
                     and judgment.provenance.subject == "story_character"
                     and judgment.provenance.story_id):
-                candidate = NarrativeProvenance(
-                    **self.store.event_provenance(proposal.candidate_event_id))
-                if candidate.story_id == judgment.provenance.story_id:
+                candidate_data = self.store.event_provenance(
+                    proposal.candidate_event_id)
+                candidate = NarrativeProvenance(**candidate_data) if candidate_data else None
+                if candidate and candidate.story_id == judgment.provenance.story_id:
                     proposal.label = "RELATED_CONTEXT"
                     if "same_story_different_event" not in proposal.reason_codes:
                         proposal.reason_codes = list(proposal.reason_codes) + [
