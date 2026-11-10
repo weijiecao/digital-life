@@ -53,6 +53,9 @@ def main() -> int:
     digest = hashlib.sha256(OUT.read_bytes()).hexdigest()
     manifest = {"artifact": OUT.name, "sha256": digest,
                 "bytes": OUT.stat().st_size, "files": len(FILES),
+                "file_sha256": {
+                    rel: hashlib.sha256((DEV / rel).read_bytes()).hexdigest()
+                    for rel in sorted(FILES)},
                 "status": "R0 release candidate; NO-GO", "tests": 526}
     (OUT.parent / "memory-engine-r0-rc1.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
