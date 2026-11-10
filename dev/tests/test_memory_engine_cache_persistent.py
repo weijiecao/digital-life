@@ -53,7 +53,7 @@ s.close()
             procs = [subprocess.Popen([sys.executable, "-c", code, path,
                                       str(Path(__file__).resolve().parents[1])],
                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                     text=True) for _ in range(2)]
+                                     text=True) for _ in range(4)]
             for proc in procs:
                 _, err = proc.communicate(timeout=30)
                 self.assertEqual(proc.returncode, 0, err)
