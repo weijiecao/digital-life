@@ -1,8 +1,8 @@
 {
   "artifact": "memory-engine-r0-rc1.zip",
-  "sha256": "756c01cab037b6e8825cd04d0171a862b48abf023007a34c33fcea3790cfdedf",
-  "bytes": 39684,
-  "files": 21,
+  "sha256": "87b64d0573e66571aed5d1c1c611e2e661bc0fe3ab5b0fd1ee67f0e73c2065b0",
+  "bytes": 49155,
+  "files": 30,
   "status": "R0 release candidate; NO-GO",
   "tests": 523
 }
