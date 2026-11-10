@@ -1,0 +1,27 @@
+{
+  "suite": "m1-model-rejudge-smoke",
+  "result": {
+    "processed": 1,
+    "resolved": 1,
+    "deferred": 0
+  },
+  "attached": [
+    "evt_ae3535572d8140d0a3261df13939c99c"
+  ],
+  "pending": {
+    "pending_id": "pending_67465a913a8245d4b2a1ad1114323a7a",
+    "proposals": [
+      {
+        "candidate_event_id": "evt_ae3535572d8140d0a3261df13939c99c",
+        "label": "SAME_EVENT"
+      }
+    ],
+    "mapping": {
+      "evt_ae3535572d8140d0a3261df13939c99c": [
+        "evt_ae3535572d8140d0a3261df13939c99c"
+      ]
+    },
+    "reason": "initial",
+    "status": "RELOCATED"
+  }
+}
