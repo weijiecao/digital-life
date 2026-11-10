@@ -17,6 +17,7 @@ from v1_5_consolidator.store import V15Store
 from memory_engine.cache import ContextCache
 from memory_engine.projection import classify_memory
 from memory_engine.summary_cache import SummaryCache
+from v1_5_consolidator.candidate_retriever import EventAnchor, LexicalCandidateIndex
 
 
 @dataclass(frozen=True)
@@ -61,7 +62,8 @@ class MemoryEngine:
         self._bump(scope_id)
         return CaptureReceipt(scope_id, source.source_seq, event_id, receipt_ok)
 
-    def retrieve(self, scope_id: str, query: str, limit: int = 10) -> list[dict]:
+    def retrieve(self, scope_id: str, query: str, limit: int = 10,
+                 min_score: float = 0.0) -> list[dict]:
         pattern = "%" + query.replace("%", "").replace("_", "") + "%"
         rows = self.store.db.execute("""SELECT DISTINCT c.event_id,c.title,c.event_type,
             r.summary,e.quote
@@ -74,26 +76,40 @@ class MemoryEngine:
                 AND p.status='PENDING')
             AND (c.title LIKE ? OR r.summary LIKE ? OR e.quote LIKE ?)
             ORDER BY c.updated_at DESC LIMIT ?""",
-            (scope_id, pattern, pattern, pattern, limit)).fetchall()
+            (scope_id, pattern, pattern, pattern, max(limit, 100))).fetchall()
+        if min_score > 0 and query:
+            index = LexicalCandidateIndex()
+            by_id = {}
+            for row in rows:
+                by_id[row[0]] = row
+                index.add(EventAnchor(
+                    event_id=row[0], scope_id=scope_id,
+                    canonical_title=row[1] or "",
+                    anchor_text=" ".join(str(part or "") for part in
+                                         (row[1], row[3], row[4]))))
+            ranked = index.search(scope_id, query, k=limit, min_score=min_score)
+            rows = [by_id[c.event_id] for c in ranked if c.event_id in by_id]
+        else:
+            rows = rows[:limit]
         return [{"event_id": row[0], "title": row[1], "event_type": row[2],
                  "summary": self.summary_cache.get(row[3] or row[1] or ""),
                  "evidence": row[4]} for row in rows]
 
     def build_context(self, scope_id: str, query: str, budget: int = 2000,
                       budget_tokens: int | None = None,
-                      token_counter=None) -> dict:
+                      token_counter=None, min_score: float = 0.0) -> dict:
         if budget_tokens is not None and token_counter is None:
             budget = min(budget, max(0, budget_tokens) * 4)
         tokenizer_name = getattr(token_counter, "encoding_name", None)
         db_version = self.store.db.execute("PRAGMA data_version").fetchone()[0]
         epoch = self.store.scope_epoch(scope_id)
         key = (scope_id, query, budget, budget_tokens, tokenizer_name,
-               db_version, epoch)
+               db_version, epoch, min_score)
         generation = self._generation[scope_id]
         cached = self.cache.get(key, generation)
         if cached is not None:
             return cached
-        items = self.retrieve(scope_id, query, limit=10)
+        items = self.retrieve(scope_id, query, limit=10, min_score=min_score)
         selected = []
         used = 0
         used_tokens = 0
@@ -175,10 +191,12 @@ class MemoryEngine:
         return ok
 
     def build_rendered_context(self, scope_id: str, query: str,
-                               budget_tokens: int, token_counter=None) -> dict:
+                               budget_tokens: int, token_counter=None,
+                               min_score: float = 0.0) -> dict:
         """Render the final model block and enforce its token budget."""
         from memory_engine.render import fit_packet, render_context
-        packet = self.build_context(scope_id, query, budget=10 ** 9)
+        packet = self.build_context(scope_id, query, budget=10 ** 9,
+                                    min_score=min_score)
         if token_counter is None:
             rendered = render_context(packet)
             packet = dict(packet)

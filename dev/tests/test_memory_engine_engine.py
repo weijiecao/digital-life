@@ -186,5 +186,15 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_retrieve_min_score_can_abstain(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "茶"))
+            self.assertEqual(len(engine.retrieve("s", "茶", min_score=0.1)), 1)
+            self.assertEqual(engine.retrieve("s", "茶", min_score=1000), [])
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

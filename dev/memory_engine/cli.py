@@ -26,6 +26,7 @@ def build_parser() -> argparse.ArgumentParser:
     search.add_argument("--scope", required=True)
     search.add_argument("--query", required=True)
     search.add_argument("--limit", type=int, default=10)
+    search.add_argument("--min-score", type=float, default=0.0)
 
     context = sub.add_parser("context")
     context.add_argument("--scope", required=True)
@@ -34,6 +35,7 @@ def build_parser() -> argparse.ArgumentParser:
     context.add_argument("--budget-tokens", type=int, default=None)
     context.add_argument("--rendered", action="store_true")
     context.add_argument("--tokenizer", default="cl100k_base")
+    context.add_argument("--min-score", type=float, default=0.0)
 
     health = sub.add_parser("health")
     return parser
@@ -51,7 +53,8 @@ def main(argv=None) -> int:
             print(json.dumps({"event_id": receipt.event_id,
                               "receipt_ok": receipt.receipt_ok}, ensure_ascii=False))
         elif args.command == "search":
-            print(json.dumps(engine.retrieve(args.scope, args.query, args.limit),
+            print(json.dumps(engine.retrieve(args.scope, args.query, args.limit,
+                                             args.min_score),
                              ensure_ascii=False, indent=2))
         elif args.command == "context":
             if args.rendered:
@@ -59,9 +62,10 @@ def main(argv=None) -> int:
                 counter = TokenCounter(args.tokenizer)
                 packet = engine.build_rendered_context(
                     args.scope, args.query, args.budget_tokens or args.budget,
-                    counter)
+                    counter, args.min_score)
             else:
-                packet = engine.build_context(args.scope, args.query, args.budget)
+                packet = engine.build_context(args.scope, args.query, args.budget,
+                                              min_score=args.min_score)
             print(json.dumps(packet, ensure_ascii=False, indent=2))
         elif args.command == "health":
             print(json.dumps(engine.health(), ensure_ascii=False))

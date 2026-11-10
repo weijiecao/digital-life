@@ -29,6 +29,7 @@
 > M3 引擎切片：[`reports/M3_ENGINE_SLICE_2026-11-10.md`](../reports/M3_ENGINE_SLICE_2026-11-10.md)
 > M4 索引更新：[`reports/M4_INDEX_UPDATE_2026-11-10.md`](../reports/M4_INDEX_UPDATE_2026-11-10.md)
 > M4 检索质量：[`reports/M4_RETRIEVAL_QUALITY_2026-11-10.md`](../reports/M4_RETRIEVAL_QUALITY_2026-11-10.md)
+> M4 引擎门面：[`reports/M4_ENGINE_GATE_2026-11-10.md`](../reports/M4_ENGINE_GATE_2026-11-10.md)
 > M5 上下文缓存：[`reports/M5_CONTEXT_CACHE_2026-11-10.md`](../reports/M5_CONTEXT_CACHE_2026-11-10.md)
 > M6 备份切片：[`reports/M6_BACKUP_SLICE_2026-11-10.md`](../reports/M6_BACKUP_SLICE_2026-11-10.md)
 > M6 10k 烟测：[`reports/M6_SCALE_SMOKE_2026-11-10.md`](../reports/M6_SCALE_SMOKE_2026-11-10.md)
