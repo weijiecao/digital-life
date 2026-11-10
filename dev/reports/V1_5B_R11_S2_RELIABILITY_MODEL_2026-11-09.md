@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **456/456**。
+全量回归 **457/457**。
 
 仍待工程接线：
 
@@ -425,6 +425,26 @@ pending 4
 
 - 双进程同时竞争；
 - 提交后 cursor 前断电/磁盘故障；
+- Windows 目标平台 CI。
+
+## 4.18 双进程 scope 竞争
+
+`claim_scope` 改为：
+
+- `BEGIN IMMEDIATE` 锁内读取 owner/token/expires；
+- SQLITE_BUSY 限次重试；
+- token 单调递增。
+
+测试：
+
+- 两个真实子进程同时尝试 claim 同一 scope；
+- 结果恰好一个 token 1，另一个 None（或过期接管 token 2）；
+- 不出现两个同时有效 owner。
+
+仍未完成：
+
+- 双进程同时处理同一批来源与最终 DB 对比；
+- 提交后 cursor 前真实断电/磁盘故障；
 - Windows 目标平台 CI。
 
 ## 5. 工程侧下一步

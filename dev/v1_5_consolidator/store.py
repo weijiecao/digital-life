@@ -599,20 +599,30 @@ class V15Store:
 
     def claim_scope(self, scope_id: str, owner_id: str, ttl: float = 30.0) -> int | None:
         now = time.time()
-        with self._write():
-            row = self.db.execute("SELECT owner_id,fencing_token,expires_at FROM scope_lease WHERE scope_id=?",
-                                  (scope_id,)).fetchone()
-            if row and row["owner_id"] and row["expires_at"] > now:
-                return None
-            token = (row["fencing_token"] + 1) if row else 1
-            self.db.execute("""INSERT INTO scope_lease
-                (scope_id,owner_id,fencing_token,expires_at,updated_at)
-                VALUES(?,?,?,?,?)
-                ON CONFLICT(scope_id) DO UPDATE SET owner_id=excluded.owner_id,
-                fencing_token=excluded.fencing_token, expires_at=excluded.expires_at,
-                updated_at=excluded.updated_at""",
-                (scope_id, owner_id, token, now + ttl, _now()))
-        return token
+        last_error = None
+        for _attempt in range(5):
+            try:
+                with self._write():
+                    self.db.execute("BEGIN IMMEDIATE")
+                    row = self.db.execute("SELECT owner_id,fencing_token,expires_at FROM scope_lease WHERE scope_id=?",
+                                          (scope_id,)).fetchone()
+                    if row and row["owner_id"] and row["expires_at"] > now:
+                        return None
+                    token = (row["fencing_token"] + 1) if row else 1
+                    self.db.execute("""INSERT INTO scope_lease
+                        (scope_id,owner_id,fencing_token,expires_at,updated_at)
+                        VALUES(?,?,?,?,?)
+                        ON CONFLICT(scope_id) DO UPDATE SET owner_id=excluded.owner_id,
+                        fencing_token=excluded.fencing_token, expires_at=excluded.expires_at,
+                        updated_at=excluded.updated_at""",
+                        (scope_id, owner_id, token, now + ttl, _now()))
+                return token
+            except sqlite3.OperationalError as exc:
+                last_error = exc
+                if "locked" not in str(exc).lower():
+                    raise
+                time.sleep(0.05)
+        raise last_error
 
     def verify_scope(self, scope_id: str, owner_id: str, token: int) -> bool:
         row = self.db.execute("""SELECT 1 FROM scope_lease WHERE scope_id=? AND owner_id=?

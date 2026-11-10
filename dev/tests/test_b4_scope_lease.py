@@ -1,3 +1,5 @@
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -77,6 +79,29 @@ class TestScopeLeaseReceipt(unittest.TestCase):
             store.enqueue_ready("s", 1, "new-change")
             self.assertEqual([r["source_seq"] for r in store.poll_ready("s")], [1, 2])
             store.close()
+
+    def test_two_processes_only_one_claims_scope(self):
+        with tempfile.TemporaryDirectory() as d:
+            db_path = str(Path(d) / "v15.sqlite3")
+            V15Store(db_path).close()
+            code = """
+import sys, time
+from v1_5_consolidator.store import V15Store
+store = V15Store(sys.argv[1])
+token = store.claim_scope('s', sys.argv[2], 30)
+print('TOKEN', token, flush=True)
+time.sleep(0.3)
+"""
+            procs = [subprocess.Popen([sys.executable, "-c", code, db_path, name],
+                                      cwd=str(Path(__file__).resolve().parents[1]),
+                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                      text=True)
+                     for name in ("worker-a", "worker-b")]
+            outputs = [p.communicate(timeout=20)[0] for p in procs]
+            tokens = [line.split()[-1] for out in outputs for line in out.splitlines()
+                      if line.startswith("TOKEN")]
+            self.assertIn(sorted(tokens), (["1", "None"], ["1", "2"]))
+            self.assertEqual(len([t for t in tokens if t == "1"]), 1)
 
     def test_manifest_sparse_frontier_and_missing_scan(self):
         with tempfile.TemporaryDirectory() as d:
