@@ -213,5 +213,18 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_history_tracks_supersedes_chain(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "杭州"))
+            engine.revise_source("s", 1, SourceEnvelope("s", 2, "sha", "t", "上海"))
+            final = engine.revise_source("s", 2, SourceEnvelope("s", 3, "sha", "t", "北京"))
+            history = engine.history("s", final)
+            self.assertEqual(len(history["events"]), 3)
+            self.assertEqual(len(history["relations"]), 2)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

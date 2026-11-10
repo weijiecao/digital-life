@@ -210,6 +210,25 @@ class MemoryEngine:
         packet["estimated"] = False
         return packet
 
+    def history(self, scope_id: str, event_id: str) -> dict:
+        rows = self.store.db.execute("""SELECT from_event,to_event FROM event_relation
+            WHERE scope_id=? AND relation_type='SUPERSEDES' AND status='active'""",
+            (scope_id,)).fetchall()
+        edges = {tuple(row) for row in rows}
+        seen = {event_id}
+        changed = True
+        while changed:
+            changed = False
+            for left, right in edges:
+                if left in seen or right in seen:
+                    for node in (left, right):
+                        if node not in seen:
+                            seen.add(node)
+                            changed = True
+        relations = [{"from": left, "to": right} for left, right in sorted(edges)
+                     if left in seen and right in seen]
+        return {"event_id": event_id, "events": sorted(seen), "relations": relations}
+
     def health(self) -> dict:
         return {"events": self.store.db.execute(
             "SELECT COUNT(*) FROM event_candidate").fetchone()[0],
