@@ -1,12 +1,12 @@
 {
   "workers": 4,
   "scopes": 4,
-  "per_scope": 2500,
-  "sources": 10000,
-  "wall_ms": 16984.93,
-  "p95_ms": 2.215,
+  "per_scope": 25000,
+  "sources": 100000,
+  "wall_ms": 631171.27,
+  "p95_ms": 8.463,
   "errors": 0,
-  "evidence": 10000,
-  "receipts": 10000,
+  "evidence": 100000,
+  "receipts": 100000,
   "integrity": "ok"
 }

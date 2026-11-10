@@ -188,6 +188,18 @@ attached 0 / created 340 / invalid 72
 - attached/created 数量也变化；
 - 这是模型波动 + unknown provenance 保守共同结果，不是稳定质量。
 
+## 2.8 冻结输入
+
+`m2_frozen_manifest.json` 固定：
+
+- 340 trace run1 SHA-256 `0f839707...`；
+- 340 trace run2 SHA-256 `f03cb18f...`；
+- 21 run2 SHA-256 `e88ab12e...`；
+- B4 message gold SHA-256 `8884a543...`；
+- B4 manifest SHA-256 `752c1504...`。
+
+这只固定输入，不把合成 gold 变成真实 gold。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。

@@ -60,20 +60,12 @@
 
 ## 1.4 多 scope 写并发
 
-| 项 | 值 |
-|---|---:|
-| scopes | 4 |
-| per scope | 2,500 |
-| sources | 10,000 |
-| workers | 4 |
-| wall | 16.98 s |
-| p95 | 2.215 ms |
-| errors | 0 |
-| evidence | 10,000 |
-| receipts | 10,000 |
-| integrity | ok |
+| sources | scopes | per scope | wall | p95 | errors | evidence | receipts | integrity |
+|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| 10,000 | 4 | 2,500 | 16.98 s | 2.215 ms | 0 | 10,000 | 10,000 | ok |
+| **100,000** | **4** | **25,000** | **631.2 s** | **8.463 ms** | **0** | **100,000** | **100,000** | **ok** |
 
-多 scope 可并行申请不同租约；SQLite 仍是单写者，但比单 scope 串行 10k（42.8 s）快。
+多 scope 可并行申请不同租约；10k 比单 scope 42.8s 快，但 100k 仍受 SQLite 单写者限制（631s vs 单 scope 598s）。
 
 ## 2. 边界
 
