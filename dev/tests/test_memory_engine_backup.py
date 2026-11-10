@@ -23,6 +23,23 @@ class TestBackupScheduler(unittest.TestCase):
             self.assertIsNone(restarted.maybe_backup(now=1022))
             store.close()
 
+    def test_restored_backup_serves_query_and_context(self):
+        from memory_engine.engine import MemoryEngine
+        from v1_5_consolidator.contracts import SourceEnvelope
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "茶"))
+            scheduler = BackupScheduler(store, Path(d) / "backups",
+                                        interval_seconds=0, keep=2)
+            backup = scheduler.maybe_backup(now=1000)
+            restored = V15Store(str(backup))
+            restored_engine = MemoryEngine(restored)
+            self.assertEqual(len(restored_engine.retrieve("s", "茶")), 1)
+            self.assertEqual(len(restored_engine.build_context("s", "茶")["items"]), 1)
+            restored.close()
+            store.close()
+
 
 if __name__ == "__main__":
     unittest.main()
