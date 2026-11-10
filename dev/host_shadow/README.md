@@ -14,6 +14,15 @@ Copy-Item -Recurse .\host_shadow "$env:ASTRBOT_ROOT\data\plugins\astrbot_plugin_
 AstrBot loads `astrbot_plugin_memory_shadow`; set the same env vars for the
 AstrBot process (systemd/Windows service or launcher).
 
+## Preflight
+
+```powershell
+python dev\host_shadow\preflight.py --dev $env:DIGITAL_LIFE_DEV --root $env:ASTRBOT_ROOT
+```
+
+Exit 1 means the shadow plugin is not installed or env is incomplete; do not
+start a soak.
+
 ## Files
 
 - `shadow.sqlite3` — Memory Engine shadow DB;
