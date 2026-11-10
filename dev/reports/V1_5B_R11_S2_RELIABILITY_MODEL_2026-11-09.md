@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **449/449**。
+全量回归 **451/451**。
 
 仍待工程接线：
 
@@ -319,6 +319,22 @@ pending 4
 - 后台 worker 消费 READY；
 - 重评冻结输入与新判决；
 - 重评后当前归属原子切换。
+
+## 4.13 M1：READY worker 消费
+
+新增 `memory_engine.worker.ReadyWorker`：
+
+- `poll_ready` 取 READY；
+- 注入评测回调，不自行调用模型；
+- 成功后在 `unit_of_work` 内 mark done；
+- 回调异常或 RETRY 时保留 READY，不标记完成。
+
+测试：
+
+- 两个 READY 来源只消费一次；
+- 回调异常后 READY 仍在。
+
+这仍是通用消费原语，不是自动依赖订阅；真实重评判决和归属切换未接线。
 
 ## 5. 工程侧下一步
 
