@@ -196,5 +196,22 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_multi_step_revision_chain(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "杭州"))
+            engine.revise_source("s", 1, SourceEnvelope("s", 2, "sha", "t", "上海"))
+            final = engine.revise_source("s", 2, SourceEnvelope("s", 3, "sha", "t", "北京"))
+            self.assertEqual(store.events_for_source("s", 1), [])
+            self.assertEqual(store.events_for_source("s", 2), [])
+            self.assertEqual(store.events_for_source("s", 3), [final])
+            self.assertEqual(engine.retrieve("s", "北京")[0]["event_id"], final)
+            relations = store.db.execute(
+                "SELECT COUNT(*) FROM event_relation WHERE relation_type='SUPERSEDES'").fetchone()[0]
+            self.assertEqual(relations, 2)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()
