@@ -1,0 +1,14 @@
+{
+  "cases": 21,
+  "raw_event_correct": 20,
+  "guard_effective_correct": 20,
+  "contamination": 0,
+  "by_category": {
+    "same_story_same_event": 4,
+    "same_story_different_event": 5,
+    "different_story": 4,
+    "narrative_to_user": 4,
+    "user_real_same_event": 4
+  },
+  "gold": "generator labels (not independent holdout)"
+}

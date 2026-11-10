@@ -53,6 +53,21 @@ dev/reports/v1_5b_b4_cluster_prov_trace.json
 | 分层 P/R/F1、污染、碎片 | ❌ |
 | 真实脱敏留出集 | ❌ |
 
+## 2.1 21 例计分（非独立 gold）
+
+`dev/evaluation/m2_score_21.py`：
+
+| 指标 | 值 |
+|---|---:|
+| cases | 21 |
+| raw event correct | **20/21** |
+| Guard effective correct | **20/21** |
+| contamination | **0** |
+
+分类：same story same 4、same story different 5、different story 4、narrative→user 4、user real 4。
+
+限制：gold 来自生成器标签，不是独立留出集；不能作为泛化准确率。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。
