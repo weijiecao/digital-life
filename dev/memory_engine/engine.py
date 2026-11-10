@@ -174,6 +174,21 @@ class MemoryEngine:
         self._bump(scope_id)
         return ok
 
+    def build_rendered_context(self, scope_id: str, query: str,
+                               budget_tokens: int, token_counter=None) -> dict:
+        """Render the final model block and enforce its token budget."""
+        from memory_engine.render import fit_packet, render_context
+        packet = self.build_context(scope_id, query, budget=10 ** 9)
+        if token_counter is None:
+            rendered = render_context(packet)
+            packet = dict(packet)
+            packet.update({"rendered": rendered, "rendered_tokens": None,
+                           "budget_enforced": False, "estimated": True})
+            return packet
+        packet = fit_packet(packet, token_counter, budget_tokens)
+        packet["estimated"] = False
+        return packet
+
     def health(self) -> dict:
         return {"events": self.store.db.execute(
             "SELECT COUNT(*) FROM event_candidate").fetchone()[0],
