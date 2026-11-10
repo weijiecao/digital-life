@@ -792,6 +792,14 @@ class V15Store:
                 (scope_id, source_seq))
         return cursor.rowcount
 
+    def delete_source(self, scope_id: str, source_seq: int) -> int:
+        with self.unit_of_work():
+            count = self.invalidate_source_evidence(scope_id, source_seq)
+            self.db.execute("""UPDATE source_ref SET deleted_at=?
+                WHERE scope_id=? AND source_seq=?""",
+                (_now(), scope_id, source_seq))
+        return count
+
     def event_in_scope(self, event_id: str, scope_id: str) -> bool:
         row = self.db.execute("""SELECT 1 FROM event_candidate
             WHERE event_id=? AND scope_id=? AND state!='withdrawn'""",
