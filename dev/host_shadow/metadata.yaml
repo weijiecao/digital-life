@@ -1,0 +1,6 @@
+name: astrbot_plugin_memory_shadow
+display_name: Memory Engine Shadow
+desc: Offline memory-engine shadow observer; never modifies replies.
+version: 0.1.0
+author: DigitalLife_Local_Test
+repo: https://github.com/weijiecao/digital-life
