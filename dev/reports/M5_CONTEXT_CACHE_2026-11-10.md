@@ -63,6 +63,16 @@
 
 测试：`hello world`=2 tokens；5 token 预算返回空。
 
+## 2.4 摘要缓存
+
+新增 `memory_engine.summary_cache.SummaryCache`：
+
+- key 为 max_chars + 原文；
+- 纯文本摘要可缓存，不需要依赖失效；
+- `MemoryEngine.retrieve` 复用摘要缓存。
+
+测试：同一文本两次 retrieve 只生成一条摘要缓存。
+
 ## 3. 边界
 
 - 缓存只在单个 `MemoryEngine` 实例内；

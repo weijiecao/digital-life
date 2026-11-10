@@ -28,5 +28,16 @@ class TestSummary(unittest.TestCase):
             store.close()
 
 
+    def test_summary_cache_avoids_recompute(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "茶" * 50))
+            engine.retrieve("s", "茶")
+            engine.retrieve("s", "茶")
+            self.assertEqual(engine.summary_cache.size(), 1)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

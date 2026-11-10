@@ -16,7 +16,7 @@ from v1_5_consolidator.store import V15Store
 
 from memory_engine.cache import ContextCache
 from memory_engine.projection import classify_memory
-from memory_engine.summary import summarize
+from memory_engine.summary_cache import SummaryCache
 
 
 @dataclass(frozen=True)
@@ -28,9 +28,11 @@ class CaptureReceipt:
 
 
 class MemoryEngine:
-    def __init__(self, store: V15Store, cache: ContextCache | None = None):
+    def __init__(self, store: V15Store, cache: ContextCache | None = None,
+                 summary_cache: SummaryCache | None = None):
         self.store = store
         self.cache = cache or ContextCache()
+        self.summary_cache = summary_cache or SummaryCache()
         self._generation = defaultdict(int)
 
     def _bump(self, scope_id: str) -> None:
@@ -70,7 +72,7 @@ class MemoryEngine:
             ORDER BY c.updated_at DESC LIMIT ?""",
             (scope_id, pattern, pattern, pattern, limit)).fetchall()
         return [{"event_id": row[0], "title": row[1], "event_type": row[2],
-                 "summary": summarize(row[3] or row[1] or ""),
+                 "summary": self.summary_cache.get(row[3] or row[1] or ""),
                  "evidence": row[4]} for row in rows]
 
     def build_context(self, scope_id: str, query: str, budget: int = 2000,
