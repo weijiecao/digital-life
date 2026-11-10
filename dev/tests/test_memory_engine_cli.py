@@ -60,6 +60,29 @@ class TestMemoryEngineCli(unittest.TestCase):
             self.assertEqual(history["events"], [event_id])
             self.assertEqual(history["relations"], [])
 
+    def test_revise_and_withdraw_commands(self):
+        with tempfile.TemporaryDirectory() as d:
+            db = str(Path(d) / "v15.sqlite3")
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                main(["--db", db, "ingest", "--scope", "s", "--seq", "1",
+                      "--text", "杭州"])
+            old = json.loads(out.getvalue())["event_id"]
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                main(["--db", db, "revise", "--scope", "s", "--old-seq", "1",
+                      "--new-seq", "2", "--text", "上海"])
+            new = json.loads(out.getvalue())["event_id"]
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                main(["--db", db, "search", "--scope", "s", "--query", "上海"])
+            self.assertIn(new, out.getvalue())
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                main(["--db", db, "withdraw", "--scope", "s", "--event-id", new])
+            self.assertTrue(json.loads(out.getvalue())["withdrawn"])
+            self.assertNotEqual(old, new)
+
     def test_health(self):
         with tempfile.TemporaryDirectory() as d:
             db = str(Path(d) / "v15.sqlite3")

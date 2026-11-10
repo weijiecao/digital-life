@@ -41,6 +41,17 @@ def build_parser() -> argparse.ArgumentParser:
     history = sub.add_parser("history")
     history.add_argument("--scope", required=True)
     history.add_argument("--event-id", required=True)
+
+    revise = sub.add_parser("revise")
+    revise.add_argument("--scope", required=True)
+    revise.add_argument("--old-seq", type=int, required=True)
+    revise.add_argument("--new-seq", type=int, required=True)
+    revise.add_argument("--text", required=True)
+    revise.add_argument("--hash", default="cli-revise")
+
+    withdraw = sub.add_parser("withdraw")
+    withdraw.add_argument("--scope", required=True)
+    withdraw.add_argument("--event-id", required=True)
     return parser
 
 
@@ -75,6 +86,14 @@ def main(argv=None) -> int:
         elif args.command == "history":
             print(json.dumps(engine.history(args.scope, args.event_id),
                              ensure_ascii=False, indent=2))
+        elif args.command == "revise":
+            event_id = engine.revise_source(
+                args.scope, args.old_seq,
+                SourceEnvelope(args.scope, args.new_seq, args.hash, "cli", args.text))
+            print(json.dumps({"event_id": event_id}, ensure_ascii=False))
+        elif args.command == "withdraw":
+            print(json.dumps({"withdrawn": engine.withdraw_event(
+                args.scope, args.event_id)}, ensure_ascii=False))
     finally:
         store.close()
     return 0
