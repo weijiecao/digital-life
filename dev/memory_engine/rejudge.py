@@ -27,15 +27,17 @@ class PendingRejudger:
                 continue
             judgment = self.judge(scope_id, source)
             with self.store.unit_of_work():
-                self.resolver.resolve(scope_id, source, judgment)
+                summary = self.resolver.resolve(scope_id, source, judgment)
                 events = self.store.events_for_source(scope_id, item["source_seq"])
-                if events:
+                if events and (summary.attached or summary.already_attached):
                     self.store.mark_pending_relocated(
                         scope_id, item["source_seq"], events[0])
                     resolved += 1
                 else:
                     deferred += 1
-                self.store.mark_ready_done(scope_id, item["source_seq"])
+                self.store.mark_ready_done(
+                    scope_id, item["source_seq"],
+                    expected_generation=item["generation"])
             processed += 1
         return {"processed": processed, "resolved": resolved, "deferred": deferred}
 

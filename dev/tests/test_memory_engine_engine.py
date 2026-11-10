@@ -119,5 +119,49 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_retrieve_hides_pending_source(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "茶"))
+            store.save_pending("s", 1, [{"candidate_event_id": "old",
+                                         "label": "SAME_EVENT"}],
+                               {"old": ["e1", "e2"]}, "split")
+            self.assertEqual(engine.retrieve("s", "茶"), [])
+            self.assertEqual(engine.build_context("s", "茶")["items"], [])
+            store.close()
+
+
+    def test_other_connection_deletion_invalidates_context_cache(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = str(Path(d) / "v15.sqlite3")
+            a = V15Store(path)
+            b = V15Store(path)
+            engine_a = MemoryEngine(a)
+            engine_b = MemoryEngine(b)
+            engine_a.ingest("s", SourceEnvelope("s", 1, "sha", "t", "茶"))
+            self.assertEqual(len(engine_a.build_context("s", "茶")["items"]), 1)
+            engine_b.delete_source("s", 1)
+            self.assertEqual(engine_a.build_context("s", "茶")["items"], [])
+            a.close()
+            b.close()
+
+
+    def test_repeated_revise_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "杭州"))
+            new_source = SourceEnvelope("s", 2, "sha", "t", "上海")
+            first = engine.revise_source("s", 1, new_source)
+            second = engine.revise_source("s", 1, new_source)
+            self.assertEqual(first, second)
+            self.assertEqual(store.db.execute(
+                "SELECT COUNT(*) FROM event_candidate").fetchone()[0], 2)
+            self.assertEqual(store.db.execute(
+                "SELECT COUNT(*) FROM revision_receipt").fetchone()[0], 1)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from v1_5_consolidator.contracts import SourceEnvelope
+from v1_5_consolidator.contracts import NarrativeProvenance, SourceEnvelope
 from v1_5_consolidator.store import V15Store
 
 
@@ -94,9 +94,12 @@ class TestUnitOfWork(unittest.TestCase):
                                            "reality_status": "real", "story_id": None})
             store.save_pending("s", 2, [{"candidate_event_id": "old",
                                          "label": "SAME_EVENT"}],
-                               {"old": ["evt"]}, "split")
+                               {"old": ["evt"]}, "split",
+                               provenance=NarrativeProvenance("user", "user", "real"))
             source = SourceEnvelope("s", 2, "sha", "t", "resolved")
-            self.assertTrue(store.relocate_pending("s", 2, source, "evt"))
+            self.assertTrue(store.relocate_pending(
+                "s", 2, source, "evt",
+                source_provenance=NarrativeProvenance("user", "user", "real")))
             self.assertEqual(store.events_for_source("s", 2), ["evt"])
             self.assertEqual(store.pending_for_source("s", 2)["status"], "RELOCATED")
             self.assertEqual(store.db.execute("SELECT COUNT(*) FROM gate_audit").fetchone()[0], 1)
@@ -125,7 +128,9 @@ class TestUnitOfWork(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))
             seed = SourceEnvelope("s", 99, "sha", "t", "seed")
-            event_id = store.create_event_from_source("s", seed)
+            event_id = store.create_event_from_source(
+                "s", seed, provenance={"narrator": "user", "subject": "user",
+                                       "reality_status": "real", "story_id": None})
             source = SourceEnvelope("s", 2, "sha", "t", "pending text")
             proposals = [{"candidate_event_id": "old", "label": "SAME_EVENT"}]
             store.save_pending("s", 2, proposals, {"old": ["new-a", "new-b"]},
@@ -133,7 +138,7 @@ class TestUnitOfWork(unittest.TestCase):
             self.assertEqual(store.auto_relocate_pending("s")["withheld"], 1)
             self.assertEqual(store.effective_events_for_source("s", 2), [])
             store.save_pending("s", 2, proposals, {"old": [event_id]}, "resolved",
-                               source=source)
+                               source=source, provenance=NarrativeProvenance("user", "user", "real"))
             self.assertEqual(store.auto_relocate_pending("s")["relocated"], 1)
             self.assertEqual(store.events_for_source("s", 2), [event_id])
             store.close()
@@ -143,17 +148,43 @@ class TestUnitOfWork(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))
             seed = SourceEnvelope("s", 99, "sha", "t", "seed")
-            old_event = store.create_event_from_source("s", seed)
+            old_event = store.create_event_from_source(
+                "s", seed, provenance={"narrator": "user", "subject": "user",
+                                       "reality_status": "real", "story_id": None})
             new_event = store.create_event_from_source(
-                "s", SourceEnvelope("s", 98, "sha", "t", "new"))
+                "s", SourceEnvelope("s", 98, "sha", "t", "new"),
+                provenance={"narrator": "user", "subject": "user",
+                            "reality_status": "real", "story_id": None})
             source = SourceEnvelope("s", 2, "sha", "t", "pending")
             store.attach_source("s", source, old_event, "old")
             store.save_pending("s", 2, [{"candidate_event_id": "old",
                                          "label": "SAME_EVENT"}],
-                               {"old": [new_event]}, "resolved", source=source)
+                               {"old": [new_event]}, "resolved", source=source,
+                               provenance=NarrativeProvenance("user", "user", "real"))
             self.assertTrue(store.relocate_pending("s", 2, None, new_event))
             self.assertEqual(store.effective_events_for_source("s", 2), [new_event])
             self.assertEqual(store.events_for_source("s", 2), [new_event])
+            store.close()
+
+
+    def test_auto_relocate_cannot_bypass_provenance_guard(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            event_id = store.create_event_from_source(
+                "s", SourceEnvelope("s", 99, "sha", "t", "用户真实事件"),
+                provenance={"narrator": "user", "subject": "user",
+                            "reality_status": "real", "story_id": None})
+            source = SourceEnvelope("s", 2, "sha", "t", "虚构故事里的经历")
+            store.save_pending("s", 2, [{"candidate_event_id": event_id,
+                                         "label": "SAME_EVENT"}],
+                               {event_id: [event_id]}, "relocate", source=source,
+                               provenance=NarrativeProvenance(
+                                   "user", "story_character", "fictional", "story-1"))
+            self.assertEqual(store.auto_relocate_pending("s")["relocated"], 0)
+            self.assertEqual(store.events_for_source("s", 2), [])
+            gate = store.db.execute(
+                "SELECT action FROM gate_audit ORDER BY rowid DESC LIMIT 1").fetchone()
+            self.assertEqual(gate[0], "REJECT")
             store.close()
 
 

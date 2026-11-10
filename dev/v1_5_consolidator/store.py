@@ -141,7 +141,7 @@ class V15Store:
           reason TEXT NOT NULL, created_at TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS source_payload(
           scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL, source_hash TEXT NOT NULL,
-          recorded_at TEXT NOT NULL, text TEXT NOT NULL,
+          recorded_at TEXT NOT NULL, text TEXT NOT NULL, provenance_json TEXT,
           PRIMARY KEY(scope_id, source_seq));
         CREATE TABLE IF NOT EXISTS memory_item(
           item_id TEXT PRIMARY KEY, scope_id TEXT NOT NULL, event_id TEXT NOT NULL,
@@ -150,6 +150,10 @@ class V15Store:
         CREATE TABLE IF NOT EXISTS source_tombstone(
           scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL, deleted_at TEXT NOT NULL,
           PRIMARY KEY(scope_id, source_seq));
+        CREATE TABLE IF NOT EXISTS revision_receipt(
+          scope_id TEXT NOT NULL, old_seq INTEGER NOT NULL, new_seq INTEGER NOT NULL,
+          input_hash TEXT NOT NULL, event_id TEXT NOT NULL, created_at TEXT NOT NULL,
+          PRIMARY KEY(scope_id, old_seq, new_seq, input_hash));
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -165,6 +169,9 @@ class V15Store:
         ):
             if column not in event_cols:
                 self.db.execute("ALTER TABLE event_candidate ADD COLUMN %s %s" % (column, ddl))
+        payload_cols = {row[1] for row in self.db.execute("PRAGMA table_info(source_payload)")}
+        if "provenance_json" not in payload_cols:
+            self.db.execute("ALTER TABLE source_payload ADD COLUMN provenance_json TEXT")
         self.db.execute("INSERT OR REPLACE INTO meta(key,value) VALUES('schema_version',?)",
                         (str(SCHEMA_VERSION),))
         self.db.commit()
@@ -533,16 +540,19 @@ class V15Store:
         return audit_id
 
     def save_pending(self, scope_id: str, source_seq: int, proposals: list[dict],
-                     mapping: dict, reason: str, source: Any | None = None) -> str:
+                     mapping: dict, reason: str, source: Any | None = None,
+                     provenance: Any | None = None) -> str:
         now = _now()
         pending_id = "pending_" + uuid.uuid4().hex
         with self._write():
             if source is not None:
                 self.db.execute("""INSERT OR REPLACE INTO source_payload
-                    (scope_id,source_seq,source_hash,recorded_at,text)
-                    VALUES(?,?,?,?,?)""",
+                    (scope_id,source_seq,source_hash,recorded_at,text,provenance_json)
+                    VALUES(?,?,?,?,?,?)""",
                     (scope_id, source_seq, source.source_hash,
-                     source.recorded_at, source.text))
+                     source.recorded_at, source.text,
+                     json.dumps(provenance.as_dict(), ensure_ascii=False)
+                     if provenance is not None else None))
             self.db.execute("""INSERT INTO resolution_pending
                 (pending_id,scope_id,source_seq,proposals_json,mapping_json,
                  reason,status,created_at,updated_at)
@@ -574,6 +584,14 @@ class V15Store:
         from .contracts import SourceEnvelope
         return SourceEnvelope(scope_id, source_seq, row[0], row[1], row[2])
 
+    def pending_provenance(self, scope_id: str, source_seq: int) -> Any | None:
+        row = self.db.execute("""SELECT provenance_json FROM source_payload
+            WHERE scope_id=? AND source_seq=?""", (scope_id, source_seq)).fetchone()
+        if not row or not row[0]:
+            return None
+        from .contracts import NarrativeProvenance
+        return NarrativeProvenance(**json.loads(row[0]))
+
     def mark_pending_relocated(self, scope_id: str, source_seq: int,
                                event_id: str) -> bool:
         with self._write():
@@ -583,7 +601,7 @@ class V15Store:
         return cursor.rowcount > 0
 
     def relocate_pending(self, scope_id: str, source_seq: int, source: Any | None,
-                         event_id: str) -> bool:
+                         event_id: str, source_provenance: Any | None = None) -> bool:
         """Attach a previously pending source and close its pending row atomically."""
         with self.unit_of_work():
             row = self.db.execute("""SELECT 1 FROM resolution_pending
@@ -599,6 +617,21 @@ class V15Store:
                     return False
                 from .contracts import SourceEnvelope
                 source = SourceEnvelope(scope_id, source_seq, payload[0], payload[1], payload[2])
+            if source_provenance is None:
+                source_provenance = self.pending_provenance(scope_id, source_seq)
+            from .provenance_guard import ProvenanceGuard
+            from .contracts import NarrativeProvenance
+            if source_provenance is None:
+                return False
+            check = ProvenanceGuard().check(
+                source_provenance,
+                NarrativeProvenance(**self.event_provenance(event_id)))
+            if check.action != "ALLOW":
+                self.record_gate_audit(
+                    "pending-" + str(source_seq), scope_id, source_seq,
+                    "PendingRelocation", check.action, list(check.reason_codes),
+                    check.policy_version, event_id, "SAME_EVENT", "PROVENANCE_BLOCKED")
+                return False
             self.invalidate_source_evidence(scope_id, source_seq)
             self.attach_source(scope_id, source, event_id, "pending-relocation")
             self.mark_pending_relocated(scope_id, source_seq, event_id)
@@ -619,8 +652,9 @@ class V15Store:
             targets = set()
             for values in json.loads(mapping_json).values():
                 targets.update(values)
-            if len(targets) == 1 and self.relocate_pending(scope_id, seq, None,
-                                                            next(iter(targets))):
+            if len(targets) == 1 and self.relocate_pending(
+                    scope_id, seq, None, next(iter(targets)),
+                    source_provenance=self.pending_provenance(scope_id, seq)):
                 relocated += 1
             else:
                 withheld += 1
@@ -673,6 +707,21 @@ class V15Store:
                 WHERE scope_id=? AND owner_id=? AND fencing_token=?""",
                 (_now(), scope_id, owner_id, token))
         return cursor.rowcount > 0
+
+    def revision_result(self, scope_id: str, old_seq: int, new_seq: int,
+                        input_hash: str) -> str | None:
+        row = self.db.execute("""SELECT event_id FROM revision_receipt
+            WHERE scope_id=? AND old_seq=? AND new_seq=? AND input_hash=?""",
+            (scope_id, old_seq, new_seq, input_hash)).fetchone()
+        return row[0] if row else None
+
+    def save_revision_result(self, scope_id: str, old_seq: int, new_seq: int,
+                             input_hash: str, event_id: str) -> None:
+        with self._write():
+            self.db.execute("""INSERT OR IGNORE INTO revision_receipt
+                (scope_id,old_seq,new_seq,input_hash,event_id,created_at)
+                VALUES(?,?,?,?,?,?)""",
+                (scope_id, old_seq, new_seq, input_hash, event_id, _now()))
 
     def receipt_for_source(self, scope_id: str, source_seq: int) -> dict | None:
         row = self.db.execute("""SELECT outcome,input_hash FROM source_receipt
@@ -738,11 +787,18 @@ class V15Store:
         return [{"source_seq": row[0], "reason": row[1], "generation": row[2]}
                 for row in rows]
 
-    def mark_ready_done(self, scope_id: str, source_seq: int) -> bool:
+    def mark_ready_done(self, scope_id: str, source_seq: int,
+                        expected_generation: int | None = None) -> bool:
         with self._write():
-            cursor = self.db.execute("""UPDATE source_ready SET status='DONE', updated_at=?
-                WHERE scope_id=? AND source_seq=? AND status='READY'""",
-                (_now(), scope_id, source_seq))
+            if expected_generation is None:
+                cursor = self.db.execute("""UPDATE source_ready SET status='DONE', updated_at=?
+                    WHERE scope_id=? AND source_seq=? AND status='READY'""",
+                    (_now(), scope_id, source_seq))
+            else:
+                cursor = self.db.execute("""UPDATE source_ready SET status='DONE', updated_at=?
+                    WHERE scope_id=? AND source_seq=? AND status='READY'
+                    AND generation=?""",
+                    (_now(), scope_id, source_seq, expected_generation))
         return cursor.rowcount > 0
 
     def reconcile_ready(self, scope_id: str) -> dict:

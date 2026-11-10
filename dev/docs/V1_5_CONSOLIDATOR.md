@@ -36,6 +36,7 @@
 > M7 离线 Shadow：[`reports/M7_SHADOW_SLICE_2026-11-10.md`](../reports/M7_SHADOW_SLICE_2026-11-10.md)
 > 总状态：[`reports/MEMORY_ENGINE_STATUS_2026-11-10.md`](../reports/MEMORY_ENGINE_STATUS_2026-11-10.md)
 > 验收矩阵：[`reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md`](../reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md)
+> 复核修复 P01–P06：[`reports/REVIEW_FIX_P01_P06_2026-11-10.md`](../reports/REVIEW_FIX_P01_P06_2026-11-10.md)
 > B4 可靠性：[`reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md`](../reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md)
 
 ## 1. 定位

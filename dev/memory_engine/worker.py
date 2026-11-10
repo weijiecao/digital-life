@@ -29,6 +29,7 @@ class ReadyWorker:
                 failed += 1
                 continue
             with self.store.unit_of_work():
-                self.store.mark_ready_done(scope_id, source_seq)
+                self.store.mark_ready_done(scope_id, source_seq,
+                                           expected_generation=item["generation"])
             processed += 1
         return {"processed": processed, "failed": failed}

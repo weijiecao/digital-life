@@ -31,6 +31,18 @@ class TestReadyWorker(unittest.TestCase):
             self.assertEqual([r["source_seq"] for r in store.poll_ready("s")], [1])
             store.close()
 
+    def test_old_generation_completion_does_not_consume_new(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            store.enqueue_ready("s", 1, "new", generation=1)
+            def enqueue_new(scope, seq):
+                store.enqueue_ready(scope, seq, "newer", generation=2)
+                return {"outcome": "DONE"}
+            ReadyWorker(store).run_once("s", enqueue_new)
+            self.assertEqual([(r["source_seq"], r["generation"])
+                              for r in store.poll_ready("s")], [(1, 2)])
+            store.close()
+
 
 if __name__ == "__main__":
     unittest.main()

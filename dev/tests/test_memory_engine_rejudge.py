@@ -54,5 +54,24 @@ class TestPendingRejudger(unittest.TestCase):
             store.close()
 
 
+    def test_uncertain_does_not_reuse_old_provisional(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            event_id = self._seed(store)
+            source = SourceEnvelope("s", 1, "sha", "t", "hello")
+            store.attach_source("s", source, event_id, "old")
+            store.save_pending("s", 1, [{"candidate_event_id": "old",
+                                         "label": "SAME_EVENT"}],
+                               {"old": [event_id]}, "split", source=source)
+            store.enqueue_ready("s", 1, "recheck")
+            def judge(scope, src):
+                return JudgmentResult(source_seq=1, proposals=[
+                    RelationProposal(event_id, "UNCERTAIN")])
+            result = PendingRejudger(store, judge).run_once("s")
+            self.assertEqual(result["deferred"], 1)
+            self.assertEqual(store.pending_for_source("s", 1)["status"], "PENDING")
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

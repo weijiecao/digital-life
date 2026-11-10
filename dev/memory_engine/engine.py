@@ -68,6 +68,9 @@ class MemoryEngine:
             JOIN event_revision r ON r.event_id=c.event_id AND r.rev=c.current_revision
             JOIN event_evidence e ON e.event_id=c.event_id AND e.rev=c.current_revision
             WHERE c.scope_id=? AND c.state!='withdrawn' AND e.valid=1
+            AND NOT EXISTS (SELECT 1 FROM resolution_pending p
+                WHERE p.scope_id=c.scope_id AND p.source_seq=e.source_seq
+                AND p.status='PENDING')
             AND (c.title LIKE ? OR r.summary LIKE ? OR e.quote LIKE ?)
             ORDER BY c.updated_at DESC LIMIT ?""",
             (scope_id, pattern, pattern, pattern, limit)).fetchall()
@@ -81,7 +84,8 @@ class MemoryEngine:
         if budget_tokens is not None and token_counter is None:
             budget = min(budget, max(0, budget_tokens) * 4)
         tokenizer_name = getattr(token_counter, "encoding_name", None)
-        key = (scope_id, query, budget, budget_tokens, tokenizer_name)
+        db_version = self.store.db.execute("PRAGMA data_version").fetchone()[0]
+        key = (scope_id, query, budget, budget_tokens, tokenizer_name, db_version)
         generation = self._generation[scope_id]
         cached = self.cache.get(key, generation)
         if cached is not None:
@@ -124,7 +128,15 @@ class MemoryEngine:
                       new_source: SourceEnvelope,
                       provenance: dict | None = None) -> str:
         """Replace a source's current membership with a new event."""
+        existing = self.store.revision_result(
+            scope_id, old_source_seq, new_source.source_seq, new_source.source_hash)
+        if existing:
+            return existing
         with self.store.unit_of_work():
+            existing = self.store.revision_result(
+                scope_id, old_source_seq, new_source.source_seq, new_source.source_hash)
+            if existing:
+                return existing
             old_events = self.store.events_for_source(scope_id, old_source_seq)
             self.store.invalidate_source_evidence(scope_id, old_source_seq)
             event_id = self.store.create_event_from_source(
@@ -139,6 +151,9 @@ class MemoryEngine:
                     VALUES(?,?,?,'SUPERSEDES','active',?,?)""",
                     (scope_id, old_event, event_id, new_source.source_seq,
                      "2026-11-10T00:00:00+00:00"))
+            self.store.save_revision_result(
+                scope_id, old_source_seq, new_source.source_seq,
+                new_source.source_hash, event_id)
         self._bump(scope_id)
         return event_id
 
