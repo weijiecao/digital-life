@@ -38,6 +38,9 @@ def build_parser() -> argparse.ArgumentParser:
     context.add_argument("--min-score", type=float, default=0.0)
 
     health = sub.add_parser("health")
+    history = sub.add_parser("history")
+    history.add_argument("--scope", required=True)
+    history.add_argument("--event-id", required=True)
     return parser
 
 
@@ -69,6 +72,9 @@ def main(argv=None) -> int:
             print(json.dumps(packet, ensure_ascii=False, indent=2))
         elif args.command == "health":
             print(json.dumps(engine.health(), ensure_ascii=False))
+        elif args.command == "history":
+            print(json.dumps(engine.history(args.scope, args.event_id),
+                             ensure_ascii=False, indent=2))
     finally:
         store.close()
     return 0

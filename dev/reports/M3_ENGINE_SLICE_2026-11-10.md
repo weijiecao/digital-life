@@ -69,7 +69,7 @@ memory-engine --db <path> health
 
 测试：旧“杭州”事件被“搬到上海”替代后不可检索；withdraw 后新事件也不可检索。
 多步链：杭州→上海→北京，旧两段归属都失效，SUPERSEDES 关系 2 条。
-`history()` 返回整条链 3 个事件和 2 条关系。
+`history()` 返回整条链 3 个事件和 2 条关系；CLI `history --scope --event-id` 可查询。
 
 ## 3. 明确边界
 

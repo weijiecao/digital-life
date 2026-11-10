@@ -44,6 +44,22 @@ class TestMemoryEngineCli(unittest.TestCase):
             self.assertLessEqual(packet["rendered_tokens"], 150)
             self.assertIn("summary:", packet["rendered"])
 
+    def test_history_command(self):
+        with tempfile.TemporaryDirectory() as d:
+            db = str(Path(d) / "v15.sqlite3")
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                main(["--db", db, "ingest", "--scope", "s", "--seq", "1",
+                      "--text", "茶"])
+            event_id = json.loads(out.getvalue())["event_id"]
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                main(["--db", db, "history", "--scope", "s",
+                      "--event-id", event_id])
+            history = json.loads(out.getvalue())
+            self.assertEqual(history["events"], [event_id])
+            self.assertEqual(history["relations"], [])
+
     def test_health(self):
         with tempfile.TemporaryDirectory() as d:
             db = str(Path(d) / "v15.sqlite3")
