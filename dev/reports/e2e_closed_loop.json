@@ -1,0 +1,19 @@
+{
+  "suite": "e-e-closed-loop",
+  "batch_sizes": [
+    8,
+    20,
+    40
+  ],
+  "comparison": {
+    "20": {
+      "same": true,
+      "diff": []
+    },
+    "40": {
+      "same": true,
+      "diff": []
+    }
+  },
+  "repeat_same_db": true
+}

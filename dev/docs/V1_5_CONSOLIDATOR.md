@@ -39,6 +39,7 @@
 > 复核修复 P01–P06：[`reports/REVIEW_FIX_P01_P06_2026-11-10.md`](../reports/REVIEW_FIX_P01_P06_2026-11-10.md)
 > 复核修复 B01–B04：[`reports/REVIEW_FIX_B01_B04_2026-11-10.md`](../reports/REVIEW_FIX_B01_B04_2026-11-10.md)
 > P07 渲染预算：[`reports/P07_RENDER_BUDGET_2026-11-10.md`](../reports/P07_RENDER_BUDGET_2026-11-10.md)
+> E-E 闭环：[`reports/E2E_CLOSED_LOOP_2026-11-10.md`](../reports/E2E_CLOSED_LOOP_2026-11-10.md)
 > B4 可靠性：[`reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md`](../reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md)
 
 ## 1. 定位
