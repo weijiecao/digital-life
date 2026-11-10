@@ -81,6 +81,21 @@ s.close()
             self.assertEqual(cache.size(), 0)
             store.close()
 
+    def test_janitor_runs_on_interval(self):
+        from memory_engine.cache import CacheJanitor
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            cache = PersistentContextCache(store)
+            cache.put(("s", "old"), 1, {"i": 1})
+            store.db.execute(
+                "UPDATE context_cache SET updated_at='2000-01-01T00:00:00+00:00'")
+            store.db.commit()
+            janitor = CacheJanitor(cache, interval_seconds=10, ttl_seconds=60)
+            self.assertEqual(janitor.maybe_run(now=1000), 1)
+            self.assertEqual(cache.size(), 0)
+            self.assertIsNone(janitor.maybe_run(now=1001))
+            store.close()
+
 
 if __name__ == "__main__":
     unittest.main()

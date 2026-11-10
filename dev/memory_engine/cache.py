@@ -87,3 +87,24 @@ class PersistentContextCache:
                    ORDER BY updated_at DESC LIMIT ?)""", (max(0, max_rows),))
             removed += cursor.rowcount
         return removed
+
+
+class CacheJanitor:
+    """Optional periodic TTL/size cleanup for the persistent cache."""
+
+    def __init__(self, cache: PersistentContextCache,
+                 interval_seconds: float = 3600, max_rows: int = 1000,
+                 ttl_seconds: float = 86400):
+        self.cache = cache
+        self.interval_seconds = interval_seconds
+        self.max_rows = max_rows
+        self.ttl_seconds = ttl_seconds
+        self.last_run: float | None = None
+
+    def maybe_run(self, now: float | None = None) -> int | None:
+        import time
+        now = time.time() if now is None else now
+        if self.last_run is not None and now - self.last_run < self.interval_seconds:
+            return None
+        self.last_run = now
+        return self.cache.prune(self.max_rows, older_than_seconds=self.ttl_seconds)
