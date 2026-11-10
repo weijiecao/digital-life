@@ -32,6 +32,12 @@ class TestBackupScheduler(unittest.TestCase):
             lock.parent.mkdir(parents=True)
             lock.write_text("held", encoding="utf-8")
             self.assertIsNone(scheduler.maybe_backup(now=1000))
+            import os
+            os.utime(lock, (1, 1))
+            stale = BackupScheduler(store, Path(d) / "backups",
+                                    interval_seconds=0, keep=2,
+                                    lock_ttl_seconds=1)
+            self.assertIsNotNone(stale.maybe_backup(now=2001))
             store.close()
 
     def test_restored_backup_serves_query_and_context(self):

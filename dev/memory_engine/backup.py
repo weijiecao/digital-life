@@ -10,11 +10,12 @@ from pathlib import Path
 
 class BackupScheduler:
     def __init__(self, store, directory, interval_seconds: float = 3600,
-                 keep: int = 3):
+                 keep: int = 3, lock_ttl_seconds: float = 3600):
         self.store = store
         self.directory = Path(directory)
         self.interval_seconds = interval_seconds
         self.keep = max(1, keep)
+        self.lock_ttl_seconds = lock_ttl_seconds
         self.state_path = self.directory / ".backup-state.json"
         self.last_backup_at: float | None = None
         if self.state_path.exists():
@@ -39,7 +40,16 @@ class BackupScheduler:
         try:
             fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
         except FileExistsError:
-            return None
+            try:
+                if time.time() - lock_path.stat().st_mtime > self.lock_ttl_seconds:
+                    lock_path.unlink()
+                    fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                else:
+                    fd = None
+            except (FileNotFoundError, FileExistsError, OSError):
+                fd = None
+            if fd is None:
+                return None
         try:
             path = self.directory / ("backup-%d.sqlite3" % int(now * 1000))
             self.store.backup_to(str(path))
