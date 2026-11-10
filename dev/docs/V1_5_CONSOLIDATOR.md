@@ -50,6 +50,7 @@
 > M7 Shadow 回退：[`reports/M7_SHADOW_ROLLBACK_2026-11-11.md`](../reports/M7_SHADOW_ROLLBACK_2026-11-11.md)
 > 总状态：[`reports/MEMORY_ENGINE_STATUS_2026-11-10.md`](../reports/MEMORY_ENGINE_STATUS_2026-11-10.md)
 > 验收矩阵：[`reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md`](../reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md)
+> R0 RC bundle：[`reports/R0_RC_BUNDLE_2026-11-11.md`](../reports/R0_RC_BUNDLE_2026-11-11.md)
 > 复核修复 P01–P06：[`reports/REVIEW_FIX_P01_P06_2026-11-10.md`](../reports/REVIEW_FIX_P01_P06_2026-11-10.md)
 > 复核修复 B01–B04：[`reports/REVIEW_FIX_B01_B04_2026-11-10.md`](../reports/REVIEW_FIX_B01_B04_2026-11-10.md)
 > P07 渲染预算：[`reports/P07_RENDER_BUDGET_2026-11-10.md`](../reports/P07_RENDER_BUDGET_2026-11-10.md)
