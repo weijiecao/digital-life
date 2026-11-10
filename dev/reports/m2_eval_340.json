@@ -1,0 +1,18 @@
+{
+  "abstain": {
+    "predicted_clusters": 203,
+    "pure_clusters": 203,
+    "mixed_clusters": 0,
+    "mixed_cluster_rate": 0.0,
+    "gold_covered": 203,
+    "total_gold_sources": 320
+  },
+  "allow_user_real": {
+    "predicted_clusters": 153,
+    "pure_clusters": 151,
+    "mixed_clusters": 2,
+    "mixed_cluster_rate": 0.0131,
+    "gold_covered": 155,
+    "total_gold_sources": 320
+  }
+}

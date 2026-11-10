@@ -137,6 +137,22 @@ attached 0 / created 340 / invalid 72
 
 这是显式策略开关，不是静默改默认。
 
+## 2.5 340 条簇级质量
+
+对 B4 fixture 独立 gold 做簇纯度检查（不是真实语料）：
+
+| 策略 | predicted clusters | pure | mixed | mixed rate | gold events covered |
+|---|---:|---:|---:|---:|---:|
+| strict ABSTAIN | 203 | 203 | **0** | 0.0000 | 203/320 |
+| allow_user_real | 153 | 151 | **2** | 0.0131 | 155/320 |
+
+判读：
+
+- strict 没有任何 gold 事件混合，但只覆盖 203/320 个 gold 事件；
+- 放宽后覆盖 155/320，却出现 2 个混合簇；
+- 与 pairwise 结果一致：放宽提高召回、增加误合并；
+- 都不是可接受的质量结论，需要独立真实 gold 决策。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。
