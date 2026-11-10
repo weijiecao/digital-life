@@ -666,6 +666,14 @@ class V15Store:
                 (time.time() + ttl, _now(), scope_id, owner_id, token, time.time()))
         return cursor.rowcount > 0
 
+    def release_scope(self, scope_id: str, owner_id: str, token: int) -> bool:
+        with self._write():
+            cursor = self.db.execute("""UPDATE scope_lease
+                SET owner_id=NULL, expires_at=0, updated_at=?
+                WHERE scope_id=? AND owner_id=? AND fencing_token=?""",
+                (_now(), scope_id, owner_id, token))
+        return cursor.rowcount > 0
+
     def receipt_for_source(self, scope_id: str, source_seq: int) -> dict | None:
         row = self.db.execute("""SELECT outcome,input_hash FROM source_receipt
             WHERE scope_id=? AND source_seq=?""", (scope_id, source_seq)).fetchone()

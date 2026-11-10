@@ -488,6 +488,23 @@ pending 4
 - 重评后旧归属失效的完整路径；
 - 真实并发 worker。
 
+## 4.21 双进程处理不同来源（scope handoff）
+
+新增 `release_scope(scope, owner, token)`。
+
+测试：
+
+- 两个真实子进程各自处理 source 1 和 source 2；
+- 抢不到 scope 的进程轮询，直到前一个释放；
+- 最终 DB：两个 source 的 evidence 和 receipt 各 1 条；
+- 无重复、无跨进程丢失。
+
+仍未完成：
+
+- 高频竞争与公平性；
+- 长时间运行；
+- Windows 目标机故障注入。
+
 ## 5. 工程侧下一步
 
 1. 暴露单来源事务 API，避免 Resolver/Store 内部嵌套提交；

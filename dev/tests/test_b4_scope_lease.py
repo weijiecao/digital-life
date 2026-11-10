@@ -143,6 +143,52 @@ time.sleep(0.2)
             finally:
                 check.close()
 
+    def test_two_processes_process_different_sources_with_handoff(self):
+        with tempfile.TemporaryDirectory() as d:
+            db_path = str(Path(d) / "v15.sqlite3")
+            store = V15Store(db_path)
+            event_id = store.create_event_from_source(
+                "s", SourceEnvelope("s", 99, "sha", "t", "seed"))
+            store.close()
+            code = """
+import sys, time
+from v1_5_consolidator.contracts import SourceEnvelope
+from v1_5_consolidator.store import V15Store
+store = V15Store(sys.argv[1])
+owner = sys.argv[2]
+seq = int(sys.argv[3])
+for _ in range(200):
+    token = store.claim_scope('s', owner, 30)
+    if token is not None:
+        break
+    time.sleep(0.02)
+else:
+    raise SystemExit(2)
+source = SourceEnvelope('s', seq, 'sha', 't', 'source-%d' % seq)
+with store.unit_of_work('s', owner, token):
+    store.attach_source('s', source, sys.argv[4], 'handoff')
+    store.record_receipt('s', seq, 'ATTACHED', source.source_hash)
+store.release_scope('s', owner, token)
+print('DONE', seq, flush=True)
+"""
+            procs = [subprocess.Popen([sys.executable, "-c", code, db_path, "w%d" % seq,
+                                      str(seq), event_id],
+                                     cwd=str(Path(__file__).resolve().parents[1]),
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                     text=True)
+                     for seq in (1, 2)]
+            for proc in procs:
+                out, err = proc.communicate(timeout=30)
+                self.assertEqual(proc.returncode, 0, err)
+            check = V15Store(db_path)
+            try:
+                self.assertEqual(check.db.execute(
+                    "SELECT COUNT(*) FROM event_evidence WHERE source_seq IN (1,2)").fetchone()[0], 2)
+                self.assertEqual(check.db.execute(
+                    "SELECT COUNT(*) FROM source_receipt WHERE source_seq IN (1,2)").fetchone()[0], 2)
+            finally:
+                check.close()
+
     def test_manifest_sparse_frontier_and_missing_scan(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))
