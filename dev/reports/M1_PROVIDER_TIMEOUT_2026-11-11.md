@@ -1,0 +1,27 @@
+# M1 Provider 超时烟测
+
+- 日期：2026-11-11
+- 状态：**本地慢 HTTP 服务触发 provider 超时**
+- 测试：519/519
+
+## 1. 场景
+
+- 本地 HTTP server 延迟 2s；
+- `OpenAIProvider(timeout=0.2)`；
+- 调用 `generate`；
+- 断言抛异常。
+
+## 2. 结果
+
+| 项 | 值 |
+|---|---|
+| provider timeout | 0.2s |
+| server delay | 2s |
+| 结果 | 超时异常 |
+| 测试 | ✅ |
+
+## 3. 边界
+
+- 本地 HTTP，不是 DeepSeek 真实网络；
+- 只验证超时抛出，不验证重试策略；
+- 不是模型质量测试。
