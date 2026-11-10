@@ -1,14 +1,14 @@
 {
-  "schema": "m0-baseline-final-3",
+  "schema": "m0-baseline-final-4",
   "date": "2026-11-11",
-  "local_commit": "7597dd8",
-  "remote_last_pushed": "7597dd8",
+  "local_commit": "faa6102",
+  "remote_last_pushed": "c445b32",
   "python": "3.12.10",
   "sqlite": "3.49.1",
   "plugin_version": "1.0.19",
   "test_command": "python -m unittest discover -q -s tests -t .",
   "tests": {
-    "total": 507,
+    "total": 508,
     "failures": 0,
     "errors": 0
   },
@@ -21,12 +21,12 @@
     "dev/memory_engine/worker.py": "fa11ff7caaa97190a9e2c916abb7339dc36543c3eff393544f250efb3d875667",
     "dev/memory_engine/render.py": "091aa11a5d858d4fdd27fe0abb5677aef788b2ade6e2a450f204a685453a8afe",
     "dev/memory_engine/cache.py": "2cafe36f1d31b16cd88ed4209adafbdd9882f6dcb40652de9d0b0f2332bb9859",
-    "dev/memory_engine/backup.py": "4cec99fd8b9f651bccdfdcacd99b9a01f10fa4086b4029df84ace0b0a3e2e6df"
+    "dev/memory_engine/backup.py": "6ff0379a480610e2b04bee50194a6bf1b96841051ecfc2152f90edc00f3d4e90"
   },
-  "status": "LOCAL+REMOTE; CI green",
+  "status": "REMOTE CONTENT VIA API; CI green",
   "notes": [
+    "local/remote hashes differ after TLS bypass",
     "M0-M7 slices verified",
-    "340 trace two runs",
     "real corpus absent",
     "R0/R1 NO-GO"
   ]
