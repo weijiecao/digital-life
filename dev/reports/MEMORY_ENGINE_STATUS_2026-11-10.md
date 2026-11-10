@@ -1,44 +1,45 @@
-# Memory Engine 当前状态与 Go/No-Go（2026-11-10）
+# Memory Engine 当前状态与 Go/No-Go（2026-11-11）
 
-- 状态：**NO-GO for R0/R1；M0 本地冻结，M1 部分，M2 阻塞，M3–M7 仅有切片**
-- 全量测试：**500/500**
+- 状态：**NO-GO for R0/R1；M0 完成，M1–M7 有可复现切片，真实 gold/72h 未完成**
+- 全量测试：**508/508**
 - 真实聊天语料：0
-- 远端最后成功提交：`d005ebd`
-- 本地已推送，CI 3.10/3.11/3.12 全绿
+- 真实宿主：AstrBot 4.29.3 本地 testbed
+- 远端最后成功提交：`77cd1dc`
+- CI：Windows 3.10 / 3.11 / 3.12 全绿
 
 ## 1. 节点状态
 
 | 节点 | 状态 | 已有证据 | 主要缺口 |
 |---|---|---|---|
-| M0 基线 | ✅ 本地 | manifest、475 测试、关键 SHA | 未推送、远端 CI 未跑 |
-| M1 一致性 | ◐ | 双进程竞争、同批 DB、提交前/后 kill、归属切换、pending 重评、READY、manifest | 真实模型重判、Windows CI、不同来源并行 DB 对比 |
-| M2 数据 | ◐ | 21 例 20/21；340 条 trace F1 0.62857、FP 0、污染 0（非独立 gold） | 独立 gold、真实留出；unknown provenance 导致 recall 下降 |
-| M3 引擎 | ◐ | ingest/retrieve/context/delete、CLI、类型投影 | 完整类型体系、更正链、宿主采集 |
-| M4 检索 | ◐ | 同 ID 词面/向量更新 | 混合检索质量、10 万规模、索引重建 |
-| M5 上下文 | ◐ | ContextPacket、缓存失效、保守 Token 预算 | 摘要、精确 tokenizer、跨进程缓存 |
-| M6 规模 | ◐ | 一致性备份、10k 烟测 p95 49ms | 10 万主档、恢复/删除重放、并发 |
-| M7 接入 | ◐ | 模拟宿主、重复消息幂等 | 真实 AstrBot/NapCat、影子、72h、回退 |
+| M0 基线 | ✅ | 508 测试、manifest、关键 SHA、远端 CI | 真实平台包验收 |
+| M1 一致性 | ◐ | 双进程竞争/handoff、提交前后 kill、pending 重评、真实模型单条、READY 代际 CAS | 21/340 模型稳定性门槛 |
+| M2 数据 | ◐ | 21 例三次 20/19/20；340 三次 F1 0.629–0.655、FP0、0 mixed；冻结 SHA；污染 0/311 | 独立真实 gold、真实留出 |
+| M3 引擎 | ◐ | ingest/retrieve/context/delete、CLI、类型、更正/撤回、真实 shadow 采集 | 完整类型体系、生产宿主采集 |
+| M4 检索 | ◐ | 词面/BGE、abstain、阈值 dev/holdout、分 scope、引擎 min_score | 真实查询集、约束过滤统一 |
+| M5 上下文 | ◐ | 摘要、tiktoken、final renderer、持久缓存、多进程、prune | 宿主总预算、高并发击穿 |
+| M6 规模 | ◐ | 100k 读/写、备份、kill 续跑、多 scope、自动备份锁 | 断电 fsync、多 scope 100k 中断 |
+| M7 接入 | ◐ | 真实 AstrBot 启动/消息链、Memory Engine shadow、回退 | 72h、真实平台消息、版本回退 |
 
 ## 2. 关键风险
 
-1. 远端已同步：`d005ebd` 已推送，CI 3.10/3.11/3.12 全绿。
-2. M2 340 trace 两次完成：F1 0.62857/0.65358、FP 0；unknown provenance 导致 recall 下降。
-3. 真实模型重判未接入；当前重评使用注入测试 provider。
-4. 真实语料为 0，不能报告真实误归属/漏归属。
-5. 10k 烟测不是 10 万验收，也没有并发/删除/恢复压力。
-6. M7 只有模拟宿主，不是发布包。
+1. 真实脱敏语料仍为 0，不能报告真实误归属/漏归属。
+2. unknown provenance 使 strict Guard 召回低；放宽会增加 FP。
+3. 21 例三次 19–20/21，仍有模型波动。
+4. M4 阈值来自合成 B4，不是真实标定。
+5. M6 断电级故障与多 scope 100k 中断未做。
+6. M7 只有 testbed shadow，没有 72h/真实 QQ 平台。
 
 ## 3. 发布结论
 
 - R0 独立离线文本引擎：**未达成**；
-- R1 目标宿主：**未开始**；
+- R1 目标宿主：**未达成**；
 - Shadow/生产：**禁止**；
 - V1 保持正常，V1.5-B 保持离线。
 
 ## 4. 下一阶段优先项
 
-1. ~~恢复网络，推送本地提交并跑 CI~~（已完成）；
-2. 用真实 provider 跑 21 例和 340 trace，建立独立 gold；
-3. M1 真实模型重判、Windows 故障与不同来源并行 DB 对比；
-4. M5 摘要/精确预算、M6 10 万与恢复、M7 真实宿主影子；
-5. 达到门槛后再讨论 R0/R1。
+1. 接入真实脱敏语料与独立 gold；
+2. 冻结 renderer/宿主总预算；
+3. 断电级 fsync 与 100k 多 scope 中断恢复；
+4. 真实 AstrBot/NapCat 72h shadow 与回退演练；
+5. 再讨论 R0/R1。

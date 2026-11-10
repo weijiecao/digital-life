@@ -1,8 +1,8 @@
 {
-  "schema": "m0-baseline-final-4",
+  "schema": "m0-baseline-final-5",
   "date": "2026-11-11",
-  "local_commit": "faa6102",
-  "remote_last_pushed": "c445b32",
+  "local_commit": "77cd1dc",
+  "remote_last_pushed": "77cd1dc",
   "python": "3.12.10",
   "sqlite": "3.49.1",
   "plugin_version": "1.0.19",
@@ -23,10 +23,10 @@
     "dev/memory_engine/cache.py": "2cafe36f1d31b16cd88ed4209adafbdd9882f6dcb40652de9d0b0f2332bb9859",
     "dev/memory_engine/backup.py": "6ff0379a480610e2b04bee50194a6bf1b96841051ecfc2152f90edc00f3d4e90"
   },
-  "status": "REMOTE CONTENT VIA API; CI green",
+  "status": "LOCAL+REMOTE; CI green",
   "notes": [
-    "local/remote hashes differ after TLS bypass",
     "M0-M7 slices verified",
+    "340 trace three runs",
     "real corpus absent",
     "R0/R1 NO-GO"
   ]
