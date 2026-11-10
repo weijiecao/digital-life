@@ -50,16 +50,11 @@
 
 ## 1.3 写并发（单 scope 租约）
 
-| 项 | 值 |
-|---|---:|
-| workers | 4 |
-| sources | 20 |
-| wall | 78.36 ms |
-| p95 | 2.181 ms |
-| errors | 0 |
-| evidence | 20 |
-| receipts | 20 |
-| integrity | ok |
+| sources | wall | p95 | errors | evidence | receipts | integrity |
+|---:|---:|---:|---:|---:|---:|---|
+| 20 | 78.36 ms | 2.181 ms | 0 | 20 | 20 | ok |
+| 10,000 | 42.8 s | 6.797 ms | 0 | 10,000 | 10,000 | ok |
+| **100,000** | **598.3 s** | **7.73 ms** | **0** | **100,000** | **100,000** | **ok** |
 
 多线程各自连接，通过 scope lease 串行写；同一 scope 无并发写冲突。不是多 scope 写扩展测试。
 
