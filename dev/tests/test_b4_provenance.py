@@ -65,6 +65,24 @@ class TestProvenanceGuard(unittest.TestCase):
         self.assertEqual(permissive.action, "ALLOW")
         self.assertIn("user_real_to_unknown", permissive.reason_codes)
 
+    def test_same_story_different_event_is_related_not_different(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            target = store.create_event_from_source(
+                "s", SourceEnvelope("s", 99, "sha", "t", "章节一"),
+                provenance={"narrator": "user", "subject": "story_character",
+                            "reality_status": "fictional", "story_id": "story-1"})
+            source = SourceEnvelope("s", 1, "sha", "t", "章节二")
+            judgment = JudgmentResult(
+                source_seq=1, proposals=[RelationProposal(target, "DIFFERENT_EVENT")],
+                provenance=NarrativeProvenance("user", "story_character",
+                                               "fictional", "story-1"))
+            summary = ConstrainedResolver(store).resolve("s", source, judgment)
+            self.assertEqual(summary.decisions[0]["decision"], "RELATED_ONLY")
+            self.assertEqual(store.db.execute(
+                "SELECT COUNT(*) FROM event_cannot_link").fetchone()[0], 0)
+            store.close()
+
     def test_resolver_blocks_narrative_to_real_event(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))

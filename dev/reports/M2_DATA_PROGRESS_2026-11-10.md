@@ -266,6 +266,23 @@ attached 0 / created 340 / invalid 72
 - T02-S2 是稳定系统性错误；
 - 仍不是独立真实 gold。
 
+## 2.13 同故事不同事件归一化
+
+T02-S2 连续四次被模型判为 `DIFFERENT_EVENT`，但同一 `story_id` 的另一个事件应为 `RELATED_CONTEXT`。
+
+Resolve 层新增：
+
+- 当 source/candidate 都是 story_character 且 story_id 相同；
+- 把 `DIFFERENT_EVENT` 归一化为 `RELATED_CONTEXT`；
+- 不再创建 cannot-link。
+
+边界：
+
+- 这不改变模型的原始输出；
+- 21 例脚本仍按原始预测计分，run5 仍是 20/21；
+- 归一化用于实际 DB 决策；
+- 需要单独评测归一化后的语义。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。

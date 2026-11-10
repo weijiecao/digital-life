@@ -68,6 +68,17 @@ class ConstrainedResolver:
         same_props = [p for p in judgment.proposals if p.label == "SAME_EVENT"]
         ambiguous_same = len(same_props) > 1
         for proposal in judgment.proposals:
+            if (proposal.label == "DIFFERENT_EVENT"
+                    and judgment.provenance_present
+                    and judgment.provenance.subject == "story_character"
+                    and judgment.provenance.story_id):
+                candidate = NarrativeProvenance(
+                    **self.store.event_provenance(proposal.candidate_event_id))
+                if candidate.story_id == judgment.provenance.story_id:
+                    proposal.label = "RELATED_CONTEXT"
+                    if "same_story_different_event" not in proposal.reason_codes:
+                        proposal.reason_codes = list(proposal.reason_codes) + [
+                            "same_story_different_event"]
             proposal_id = self.store.record_link_proposal(
                 scope_id, source.source_seq, proposal.candidate_event_id,
                 proposal.label, proposal.reason_codes, model_version, judgment.request_id)
