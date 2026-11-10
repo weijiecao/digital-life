@@ -98,6 +98,21 @@
 
 kill 后从 max(source_seq)+1 续跑，最终每来源 1 条 receipt/evidence，无重复。
 
+## 1.7 多 scope kill 后续跑
+
+| 项 | 值 |
+|---|---:|
+| scopes | 4 |
+| per scope | 2,000 |
+| kill 后已提交 | s0 493 / s1 292 / s2 123 / s3 60 |
+| resume exits | 0/0/0/0 |
+| receipts | **8,000** |
+| evidence | **8,000** |
+| duplicates | **0** |
+| integrity | **ok** |
+
+四个 scope 同时被终止，再各自从 max+1 续跑；最终每个来源 1 条 receipt/evidence。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；
