@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from v1_5_consolidator.contracts import SourceEnvelope
 from v1_5_consolidator.store import V15Store
 
 
@@ -102,6 +103,45 @@ time.sleep(0.3)
                       if line.startswith("TOKEN")]
             self.assertIn(sorted(tokens), (["1", "None"], ["1", "2"]))
             self.assertEqual(len([t for t in tokens if t == "1"]), 1)
+
+    def test_two_processes_do_not_duplicate_source_evidence(self):
+        with tempfile.TemporaryDirectory() as d:
+            db_path = str(Path(d) / "v15.sqlite3")
+            store = V15Store(db_path)
+            event_id = store.create_event_from_source(
+                "s", SourceEnvelope("s", 99, "sha", "t", "seed"))
+            store.close()
+            code = """
+import sys, time
+from v1_5_consolidator.contracts import SourceEnvelope
+from v1_5_consolidator.store import V15Store
+store = V15Store(sys.argv[1])
+token = store.claim_scope('s', sys.argv[2], 30)
+if token is None:
+    print('LOSER', flush=True)
+    raise SystemExit(0)
+source = SourceEnvelope('s', 1, 'sha', 't', 'hello')
+with store.unit_of_work('s', sys.argv[2], token):
+    store.attach_source('s', source, sys.argv[3], 'win')
+    store.record_receipt('s', 1, 'ATTACHED', source.source_hash)
+print('WINNER', flush=True)
+time.sleep(0.2)
+"""
+            procs = [subprocess.Popen([sys.executable, "-c", code, db_path, name, event_id],
+                                      cwd=str(Path(__file__).resolve().parents[1]),
+                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                      text=True)
+                     for name in ("worker-a", "worker-b")]
+            outputs = [p.communicate(timeout=20)[0] for p in procs]
+            self.assertEqual(sum(1 for out in outputs if "WINNER" in out), 1)
+            check = V15Store(db_path)
+            try:
+                self.assertEqual(check.db.execute(
+                    "SELECT COUNT(*) FROM event_evidence WHERE source_seq=1").fetchone()[0], 1)
+                self.assertEqual(check.db.execute(
+                    "SELECT COUNT(*) FROM source_receipt WHERE source_seq=1").fetchone()[0], 1)
+            finally:
+                check.close()
 
     def test_manifest_sparse_frontier_and_missing_scan(self):
         with tempfile.TemporaryDirectory() as d:

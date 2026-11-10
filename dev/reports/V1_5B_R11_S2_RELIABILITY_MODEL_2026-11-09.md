@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **457/457**。
+全量回归 **458/458**。
 
 仍待工程接线：
 
@@ -445,6 +445,24 @@ pending 4
 
 - 双进程同时处理同一批来源与最终 DB 对比；
 - 提交后 cursor 前真实断电/磁盘故障；
+- Windows 目标平台 CI。
+
+## 4.19 双进程同批最终 DB 对比
+
+新增真实双进程测试：
+
+- 两个子进程同时 claim 同一 scope；
+- 只有一个 WINNER 进入 `unit_of_work`；
+- winner attach evidence + receipt；
+- 父进程重开最终 DB 断言：
+  - source evidence = 1；
+  - receipt = 1；
+  - 无重复。
+
+仍未完成：
+
+- 两个进程都处理**不同**来源后最终 DB 对比；
+- 提交后 cursor 前断电/磁盘故障；
 - Windows 目标平台 CI。
 
 ## 5. 工程侧下一步
