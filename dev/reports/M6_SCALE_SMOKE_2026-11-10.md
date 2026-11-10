@@ -186,6 +186,18 @@ kill 后从 max(source_seq)+1 续跑，最终每来源 1 条 receipt/evidence，
 
 恢复备份后实际调用 `MemoryEngine.retrieve` 和 `build_context`，不是只计数。
 
+## 1.13 并发写入时备份
+
+| 项 | 值 |
+|---|---:|
+| writer | 5,000 sources |
+| backups | 20 |
+| counts monotonic | **true** |
+| errors | **0** |
+| writer exit | 0 |
+
+备份期间 writer 持续写入；20 个快照的 receipt 计数单调增长（0→2,579），全部 integrity ok。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；
