@@ -21,6 +21,12 @@ class TestUnitOfWork(unittest.TestCase):
             self.assertEqual(store.db.execute("SELECT COUNT(*) FROM gate_audit").fetchone()[0], 1)
             store.close()
 
+    def test_busy_timeout_is_configured(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            self.assertEqual(store.db.execute("PRAGMA busy_timeout").fetchone()[0], 5000)
+            store.close()
+
     def test_unit_rollback(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))
