@@ -27,7 +27,7 @@
 
 ## 3. 边界
 
-- 默认 `build_context` 仍按 summary+evidence 字符估算；
+- 默认 `build_context` 在提供 token_counter + budget_tokens 时，已对最终 block 做 fit；纯字符路径仍是估算；
 - 尚未把 `build_rendered_context` 设为 CLI 默认；
 - 未覆盖模型实际模板/系统提示；
 - 不把本切片等同于完整上下文验收。

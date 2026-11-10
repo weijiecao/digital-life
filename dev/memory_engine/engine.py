@@ -135,6 +135,9 @@ class MemoryEngine:
                                   else ((used + 3) // 4 if budget_tokens is not None else None)),
                   "tokenizer": tokenizer_name,
                   "degraded": len(selected) < len(items)}
+        if token_counter is not None and budget_tokens is not None:
+            from memory_engine.render import fit_packet
+            packet = fit_packet(packet, token_counter, budget_tokens)
         self.cache.put(key, generation, packet)
         return packet
 
