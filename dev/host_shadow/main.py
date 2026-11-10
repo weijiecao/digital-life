@@ -26,8 +26,14 @@ if not DEV.exists():
 sys.path.insert(0, str(DEV))
 
 from memory_engine.engine import MemoryEngine
+from memory_engine.host_budget import HostBudget
 from v1_5_consolidator.contracts import SourceEnvelope
 from v1_5_consolidator.store import V15Store
+
+try:
+    from memory_engine.token_budget import TokenCounter
+except Exception:
+    TokenCounter = None
 
 
 class MemoryShadow(Star):
@@ -40,6 +46,12 @@ class MemoryShadow(Star):
         self.engine = MemoryEngine(self.store)
         self.log = base / "shadow_events.jsonl"
         self.lock = threading.Lock()
+        self.counter = TokenCounter() if TokenCounter is not None else None
+
+    def _tokens(self, text):
+        if self.counter is not None:
+            return self.counter.count(text or "")
+        return (len(text or "") + 3) // 4
 
     def _scope(self, event) -> str:
         origin = getattr(event, "unified_msg_origin", "") or "unknown"
@@ -65,10 +77,19 @@ class MemoryShadow(Star):
         if not text:
             return
         scope = self._scope(event)
-        packet = self.engine.build_context(scope, text, budget=1200)
+        total = int(os.environ.get("SHADOW_HOST_TOTAL_TOKENS", "8192"))
+        reserve = int(os.environ.get("SHADOW_OUTPUT_TOKENS", "800"))
+        history = json.dumps(getattr(req, "contexts", []) or [], ensure_ascii=False)
+        budget = HostBudget(total, self._tokens(req.system_prompt),
+                            self._tokens(history), reserve)
+        packet = self.engine.build_rendered_context(
+            scope, text, budget.memory_tokens, self.counter,
+            host_budget=budget)
         record = {"ts": time.time(), "scope": scope, "query": text,
                   "items": len(packet["items"]),
-                  "event_ids": [item["event_id"] for item in packet["items"]]}
+                  "event_ids": [item["event_id"] for item in packet["items"]],
+                  "host_memory_tokens": budget.memory_tokens,
+                  "rendered_tokens": packet.get("rendered_tokens")}
         with self.lock:
             with self.log.open("a", encoding="utf-8") as handle:
                 handle.write(json.dumps(record, ensure_ascii=False) + "\n")
