@@ -1,30 +1,29 @@
 {
-  "schema": "m0-baseline-final",
+  "schema": "m0-baseline-final-2",
   "date": "2026-11-10",
-  "local_commit": "263af991f2235d3516c7e02e8197cb5dd7255c73",
-  "remote_last_pushed": "597f498221ad506149e42cd27d9fa9abba5e102a",
+  "local_commit": "d21af24",
+  "remote_last_pushed": "d21af24",
   "python": "3.12.10",
   "sqlite": "3.49.1",
   "plugin_version": "1.0.19",
   "test_command": "python -m unittest discover -q -s tests -t .",
   "tests": {
-    "total": 475,
+    "total": 487,
     "failures": 0,
     "errors": 0
   },
   "hashes": {
-    "dev/v1_5_consolidator/store.py": "a3ccad1d469d083197543678adbcb61ee203912f4e74c69519129148f1f04295",
+    "dev/v1_5_consolidator/store.py": "c5f83f7e9fbc5c115e6adb7c51f2b545922d9272aaec065c957aa9a65e2d27ee",
+    "dev/v1_5_consolidator/candidate_retriever.py": "58ebef635366ce2fbc5cded814465e89e9facb9dd44783f4dfc5b36b5885694f",
     "dev/v1_5_consolidator/resolver.py": "a48da36f5b555b59f1530c956bba77116f59391611915717068124b39cbc9f9f",
-    "dev/v1_5_consolidator/provenance_guard.py": "546b612d061ba62919ec65568ee42faf168bf87e1edcb0b568fae1f29683b998",
-    "dev/v1_5_consolidator/relation_judge.py": "4a36ba8f85f3e60a8655644c9a1b8988a1c7339c79cdaf54f34565d14d7f6c3e",
-    "dev/v1_5_consolidator/candidate_retriever.py": "b4f5a02f756e3b4607130a248ef00a587adcf2473bffc9aeff2797b4162f699e",
-    "dev/evaluation/b4_frozen_replay.py": "1dffaa0c0fa6b9e8129802a8c76a406bd011dcc15de1d28237e2083258fd0564"
+    "dev/memory_engine/engine.py": "63417370be6cfa2fca50c424af415db6b2f0950bb8130b334647da3ddec0d18d",
+    "dev/memory_engine/rejudge.py": "562888543900b142c80d1f4c76f1aefd50b6a8a368e7d8268196e2f0ea2cce6c"
   },
-  "status": "LOCAL_FINAL_BASELINE; not pushed",
+  "status": "LOCAL+REMOTE; CI green",
   "notes": [
-    "all M0-M7 work is local",
-    "remote CI not run",
-    "340 provenance trace blocked by network",
-    "real corpus absent"
+    "M0-M7 slices verified",
+    "340 trace two runs",
+    "real corpus absent",
+    "R0/R1 NO-GO"
   ]
 }
