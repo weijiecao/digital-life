@@ -67,6 +67,23 @@
 
 多 scope 可并行申请不同租约；10k 比单 scope 42.8s 快，但 100k 仍受 SQLite 单写者限制（631s vs 单 scope 598s）。
 
+## 1.5 写中途 kill
+
+| 项 | 值 |
+|---|---:|
+| kill 时已提交 evidence | 1,064 |
+| receipts | 1,064 |
+| duplicate sources | 0 |
+| integrity | ok |
+| 子进程 exit | 1 |
+
+说明：
+
+- 父进程 2s 后 terminate；
+- 子进程在 `unit_of_work` 内写；
+- 重开后 evidence=receipts，无重复来源，integrity ok；
+- 这是进程终止烟测，不是断电/fsync 故障注入。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；
