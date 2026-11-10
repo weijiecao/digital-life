@@ -10,7 +10,7 @@
 `dev/host_shadow/main.py`：
 
 - `HostBudget(total, system, history, output)`；
-- total 默认 `SHADOW_HOST_TOTAL_TOKENS=8192`；
+- total 优先读 `cmd_config.json` 的 provider `max_context_tokens`，再回退 `SHADOW_HOST_TOTAL_TOKENS=8192`；
 - output 默认 `SHADOW_OUTPUT_TOKENS=800`；
 - system 从 `req.system_prompt` 计数；
 - history 从 `req.contexts` JSON 计数；
@@ -19,7 +19,7 @@
 ## 2. 真实运行
 
 ```text
-host_memory_tokens = 5791 / 5684
+host_memory_tokens = 5791 / 5684（配置读取后仍 5684）
 rendered_tokens    = 123 / 199
 items              = 1 / 2
 V1 injection       = true

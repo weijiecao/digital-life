@@ -47,6 +47,18 @@ class MemoryShadow(Star):
         self.log = base / "shadow_events.jsonl"
         self.lock = threading.Lock()
         self.counter = TokenCounter() if TokenCounter is not None else None
+        self.host_total = int(os.environ.get("SHADOW_HOST_TOTAL_TOKENS", "8192"))
+        config_path = root / "data" / "cmd_config.json"
+        if config_path.exists():
+            try:
+                config = json.loads(config_path.read_text(encoding="utf-8"))
+                for provider in config.get("provider", []):
+                    value = provider.get("max_context_tokens")
+                    if value:
+                        self.host_total = int(value)
+                        break
+            except (OSError, ValueError, TypeError):
+                pass
 
     def _tokens(self, text):
         if self.counter is not None:
@@ -77,7 +89,7 @@ class MemoryShadow(Star):
         if not text:
             return
         scope = self._scope(event)
-        total = int(os.environ.get("SHADOW_HOST_TOTAL_TOKENS", "8192"))
+        total = self.host_total
         reserve = int(os.environ.get("SHADOW_OUTPUT_TOKENS", "800"))
         history = json.dumps(getattr(req, "contexts", []) or [], ensure_ascii=False)
         budget = HostBudget(total, self._tokens(req.system_prompt),
