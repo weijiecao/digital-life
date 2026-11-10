@@ -1,7 +1,7 @@
 {
   "artifact": "memory-engine-r0-rc1.zip",
-  "sha256": "f746bd4a21c745988801031ccc24d9d49fff579aaee42e72c0c0df476dd9c761",
-  "bytes": 49970,
+  "sha256": "5374b41584a672e2de5914da6beb194d5c499c1852ad2e14bb8089c3dd237a16",
+  "bytes": 50250,
   "files": 30,
   "file_sha256": {
     "host_shadow/README.md": "fb917c6ba055ceba2cfb04ec5d9a7ce3db977e389a432b22a083406da335cdab",
@@ -22,7 +22,7 @@
     "memory_engine/summary_cache.py": "161930edbea00077fec654de560ff70b8c6cc573188313c5c8d94adbae8374d7",
     "memory_engine/token_budget.py": "c33c8f487643cb160d5ae6e0ead50c1c8a706db710cf6fd014bf1ba3712ac3f7",
     "memory_engine/worker.py": "fa11ff7caaa97190a9e2c916abb7339dc36543c3eff393544f250efb3d875667",
-    "reports/M2_DATA_PROGRESS_2026-11-10.md": "1a1f774bc848f2ddbded7bd2340cb70491e76f86fe2517dd42552270c009c0f3",
+    "reports/M2_DATA_PROGRESS_2026-11-10.md": "0f7d7eb7ade87b4cb51d3b3913fe4f18a30107436c2615e03a9270fdbf6f8012",
     "reports/M6_SCALE_SMOKE_2026-11-10.md": "bacb0d5dd0129b30b42cadbcc1f6d60beaa7757530a27a0daae1cf2a7b59c76f",
     "reports/M7_HOST_BUDGET_REAL_2026-11-11.md": "ed70863fbd7d5c9678e1d6a7e538901e5a04af5e585cea96a248489b7d560b1c",
     "reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md": "19e1c487480a2f42784916e9d792fe9b310fac227265d5550fa120c8cdc94036",
