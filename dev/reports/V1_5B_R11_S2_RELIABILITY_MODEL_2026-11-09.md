@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **455/455**。
+全量回归 **456/456**。
 
 仍待工程接线：
 
@@ -408,6 +408,23 @@ pending 4
 - 提交后、cursor 前 kill；
 - 双进程真实竞争；
 - 自动重判判决；
+- Windows 目标平台 CI。
+
+## 4.17 提交后、cursor 前进程 kill
+
+新增测试：
+
+- 子进程 claim scope/job；
+- `unit_of_work` 内 attach evidence + receipt；
+- 在 commit_job/cursor 之前 `os._exit(9)`；
+- 父进程重开：evidence 与 receipt 已提交、frontier 1、job 未 COMMITTED；
+- 过期接管后重新 claim scope/job，commit cursor；
+- 来源 evidence 仍只有 1 条，不重复。
+
+仍未完成：
+
+- 双进程同时竞争；
+- 提交后 cursor 前断电/磁盘故障；
 - Windows 目标平台 CI。
 
 ## 5. 工程侧下一步
