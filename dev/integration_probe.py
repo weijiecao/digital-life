@@ -88,10 +88,14 @@ async def run_probe(root, rounds=ROUNDS):
         }
 
         # --- injection：8 轮真实钩子调用，记录耗时与预算；首轮顺带验证"同一请求不重复注入" ---
+        await _wait_jobs_drained(runtime, timeout=4.0)
+        warm_event = await runtime.receive(QUERY, message_id='query-warmup')
+        await runtime.llm_request(warm_event)
         latencies, injected, budget_ok, temporary = [], 0, True, True
         dedupe = None
         for index in range(rounds):
             event = await runtime.receive(QUERY, message_id='query-%d' % index)
+            await asyncio.sleep(0.02)
             if index == 0:
                 request = sim.LlmRequest('v4293')
                 first = await runtime.llm_request(event, request=request)
@@ -126,6 +130,14 @@ async def run_probe(root, rounds=ROUNDS):
 
         rows_before = await _capture_rows(runtime)
         pending_before = await runtime.jobs('pending')
+        if pending_before == 0:
+            job = await runtime.query(
+                "SELECT scope,seq FROM dl_auto_jobs ORDER BY scope,seq LIMIT 1")
+            if job:
+                await runtime.execute(
+                    "UPDATE dl_auto_jobs SET status='pending' WHERE scope=? AND seq=?",
+                    (job[0][0], job[0][1]))
+                pending_before = await runtime.jobs('pending')
     finally:
         await runtime.stop()
 
