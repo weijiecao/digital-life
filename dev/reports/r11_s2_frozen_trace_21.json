@@ -1,0 +1,538 @@
+{
+  "schema_version": "r11-s2-v1",
+  "run_id": "r11-21-frozen-2026-11-10",
+  "source": "v1_5b_r11_s2_closed_loop.json",
+  "gold_included": false,
+  "cases": [
+    {
+      "case_id": "T01-S1",
+      "source_id": 11,
+      "candidate_event_id": "s2-event-01",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-1"
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-1"
+      },
+      "model_label": "SAME_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": true,
+      "post_attached": true,
+      "expected_relation": "SAME_EVENT"
+    },
+    {
+      "case_id": "T01-S2",
+      "source_id": 21,
+      "candidate_event_id": "s2-event-02",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-2"
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-2"
+      },
+      "model_label": "SAME_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": true,
+      "post_attached": true,
+      "expected_relation": "SAME_EVENT"
+    },
+    {
+      "case_id": "T01-S3",
+      "source_id": 31,
+      "candidate_event_id": "s2-event-03",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-3"
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-3"
+      },
+      "model_label": "SAME_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": true,
+      "post_attached": true,
+      "expected_relation": "SAME_EVENT"
+    },
+    {
+      "case_id": "T01-S4",
+      "source_id": 41,
+      "candidate_event_id": "s2-event-04",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-4"
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-4"
+      },
+      "model_label": "SAME_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": true,
+      "post_attached": true,
+      "expected_relation": "SAME_EVENT"
+    },
+    {
+      "case_id": "T02-S1",
+      "source_id": 51,
+      "candidate_event_id": "s2-event-05",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-1"
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-1"
+      },
+      "model_label": "RELATED_CONTEXT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "RELATED_CONTEXT"
+    },
+    {
+      "case_id": "T02-S2",
+      "source_id": 61,
+      "candidate_event_id": "s2-event-06",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-1"
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-1"
+      },
+      "model_label": "DIFFERENT_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "RELATED_CONTEXT"
+    },
+    {
+      "case_id": "T02-S3",
+      "source_id": 71,
+      "candidate_event_id": "s2-event-07",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-2"
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-2"
+      },
+      "model_label": "RELATED_CONTEXT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "RELATED_CONTEXT"
+    },
+    {
+      "case_id": "T02-S4",
+      "source_id": 81,
+      "candidate_event_id": "s2-event-08",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-3"
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-3"
+      },
+      "model_label": "RELATED_CONTEXT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "RELATED_CONTEXT"
+    },
+    {
+      "case_id": "T02-S5",
+      "source_id": 91,
+      "candidate_event_id": "s2-event-09",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-2"
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-2"
+      },
+      "model_label": "SAME_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": true,
+      "post_attached": true,
+      "expected_relation": "SAME_EVENT"
+    },
+    {
+      "case_id": "T03-S1",
+      "source_id": 101,
+      "candidate_event_id": "s2-event-10",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-9"
+      },
+      "model_label": "DIFFERENT_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "DIFFERENT_EVENT"
+    },
+    {
+      "case_id": "T03-S2",
+      "source_id": 111,
+      "candidate_event_id": "s2-event-11",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-8"
+      },
+      "model_label": "DIFFERENT_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "DIFFERENT_EVENT"
+    },
+    {
+      "case_id": "T03-S3",
+      "source_id": 121,
+      "candidate_event_id": "s2-event-12",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-7"
+      },
+      "model_label": "DIFFERENT_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "DIFFERENT_EVENT"
+    },
+    {
+      "case_id": "T03-S4",
+      "source_id": 131,
+      "candidate_event_id": "s2-event-13",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": "story-6"
+      },
+      "model_label": "DIFFERENT_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "same_narrative_scope"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "DIFFERENT_EVENT"
+    },
+    {
+      "case_id": "T04-N1",
+      "source_id": 141,
+      "candidate_event_id": "s2-event-14",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "model_label": "DIFFERENT_EVENT",
+      "guard_action": "REJECT",
+      "guard_reasons": [
+        "narrative_to_user_event"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "DIFFERENT_EVENT"
+    },
+    {
+      "case_id": "T04-N2",
+      "source_id": 151,
+      "candidate_event_id": "s2-event-15",
+      "source_provenance": {
+        "narrator": "story_character",
+        "subject": "story_character",
+        "reality_status": "fictional",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "model_label": "DIFFERENT_EVENT",
+      "guard_action": "REJECT",
+      "guard_reasons": [
+        "narrative_to_user_event"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "DIFFERENT_EVENT"
+    },
+    {
+      "case_id": "T04-N3",
+      "source_id": 161,
+      "candidate_event_id": "s2-event-16",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "friend",
+        "reality_status": "reported",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "model_label": "DIFFERENT_EVENT",
+      "guard_action": "REJECT",
+      "guard_reasons": [
+        "narrative_to_user_event"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "DIFFERENT_EVENT"
+    },
+    {
+      "case_id": "T04-N4",
+      "source_id": 171,
+      "candidate_event_id": "s2-event-17",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "other",
+        "reality_status": "reported",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "model_label": "DIFFERENT_EVENT",
+      "guard_action": "REJECT",
+      "guard_reasons": [
+        "narrative_to_user_event"
+      ],
+      "pre_guard_same": false,
+      "post_attached": false,
+      "expected_relation": "DIFFERENT_EVENT"
+    },
+    {
+      "case_id": "T05-U1",
+      "source_id": 181,
+      "candidate_event_id": "s2-event-18",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "model_label": "SAME_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "user_real"
+      ],
+      "pre_guard_same": true,
+      "post_attached": true,
+      "expected_relation": "SAME_EVENT"
+    },
+    {
+      "case_id": "T05-U2",
+      "source_id": 191,
+      "candidate_event_id": "s2-event-19",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "model_label": "SAME_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "user_real"
+      ],
+      "pre_guard_same": true,
+      "post_attached": true,
+      "expected_relation": "SAME_EVENT"
+    },
+    {
+      "case_id": "T05-U3",
+      "source_id": 201,
+      "candidate_event_id": "s2-event-20",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "model_label": "SAME_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "user_real"
+      ],
+      "pre_guard_same": true,
+      "post_attached": true,
+      "expected_relation": "SAME_EVENT"
+    },
+    {
+      "case_id": "T05-U4",
+      "source_id": 211,
+      "candidate_event_id": "s2-event-21",
+      "source_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "candidate_provenance": {
+        "narrator": "user",
+        "subject": "user",
+        "reality_status": "real",
+        "story_id": null
+      },
+      "model_label": "SAME_EVENT",
+      "guard_action": "ALLOW",
+      "guard_reasons": [
+        "user_real"
+      ],
+      "pre_guard_same": true,
+      "post_attached": true,
+      "expected_relation": "SAME_EVENT"
+    }
+  ],
+  "notes": [
+    "single frozen model run",
+    "candidate member snapshot not captured",
+    "does not prove stability"
+  ]
+}

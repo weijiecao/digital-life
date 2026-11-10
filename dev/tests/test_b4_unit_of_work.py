@@ -103,5 +103,23 @@ class TestUnitOfWork(unittest.TestCase):
             store.close()
 
 
+    def test_effective_read_filters_pending_and_invalid(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            source = SourceEnvelope("s", 1, "sha", "t", "hello")
+            event_id = store.create_event_from_source("s", source)
+            store.attach_source("s", source, event_id, "p")
+            self.assertEqual(store.effective_events_for_source("s", 1), [event_id])
+            store.save_pending("s", 1, [{"candidate_event_id": "old",
+                                         "label": "SAME_EVENT"}],
+                               {"old": [event_id]}, "split")
+            self.assertEqual(store.effective_events_for_source("s", 1), [])
+            store.mark_pending_relocated("s", 1, event_id)
+            self.assertEqual(store.effective_events_for_source("s", 1), [event_id])
+            store.invalidate_source_evidence("s", 1)
+            self.assertEqual(store.effective_events_for_source("s", 1), [])
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

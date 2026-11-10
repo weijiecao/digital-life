@@ -668,6 +668,26 @@ class V15Store:
             ORDER BY e.event_id""", (scope_id, source_seq, scope_id)).fetchall()
         return [row[0] for row in rows]
 
+    def effective_events_for_source(self, scope_id: str, source_seq: int) -> list[str]:
+        pending = self.db.execute("""SELECT 1 FROM resolution_pending
+            WHERE scope_id=? AND source_seq=? AND status='PENDING'""",
+            (scope_id, source_seq)).fetchone()
+        if pending is not None:
+            return []
+        rows = self.db.execute("""SELECT DISTINCT e.event_id FROM event_evidence e
+            JOIN event_candidate c ON c.event_id=e.event_id
+            WHERE e.scope_id=? AND e.source_seq=? AND e.valid=1 AND c.scope_id=?
+            AND c.state!='withdrawn' ORDER BY e.event_id""",
+            (scope_id, source_seq, scope_id)).fetchall()
+        return [row[0] for row in rows]
+
+    def invalidate_source_evidence(self, scope_id: str, source_seq: int) -> int:
+        with self._write():
+            cursor = self.db.execute("""UPDATE event_evidence SET valid=0
+                WHERE scope_id=? AND source_seq=? AND valid=1""",
+                (scope_id, source_seq))
+        return cursor.rowcount
+
     def event_in_scope(self, event_id: str, scope_id: str) -> bool:
         row = self.db.execute("""SELECT 1 FROM event_candidate
             WHERE event_id=? AND scope_id=? AND state!='withdrawn'""",

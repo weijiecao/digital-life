@@ -24,6 +24,7 @@
 > R11-S2 闭环：[`reports/V1_5B_R11_S2_REPORT_2026-11-08.md`](../reports/V1_5B_R11_S2_REPORT_2026-11-08.md)
 > R11-S2 一致性模型：[`reports/V1_5B_R11_S2_RELIABILITY_MODEL_2026-11-09.md`](../reports/V1_5B_R11_S2_RELIABILITY_MODEL_2026-11-09.md)
 > M0 基线：[`reports/M0_BASELINE_REPORT_2026-11-10.md`](../reports/M0_BASELINE_REPORT_2026-11-10.md)
+> M2 数据进展：[`reports/M2_DATA_PROGRESS_2026-11-10.md`](../reports/M2_DATA_PROGRESS_2026-11-10.md)
 > B4 可靠性：[`reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md`](../reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md)
 
 ## 1. 定位

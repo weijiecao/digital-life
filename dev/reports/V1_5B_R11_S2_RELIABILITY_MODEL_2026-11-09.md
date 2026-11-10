@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **447/447**。
+全量回归 **448/448**。
 
 仍待工程接线：
 
@@ -274,6 +274,27 @@ F1 0.92857
 - 依赖变化尚未自动 enqueue；
 - 后台 worker 未消费；
 - 重评判决与当前归属发布未接线。
+
+## 4.11 有效归属读取最小契约
+
+新增：
+
+- `effective_events_for_source`：pending PENDING 或事件 withdrawn / evidence invalid 时不返回；
+- `invalidate_source_evidence`：将来源有效 evidence 置为 invalid；
+- `events_for_source` 保留原始历史读取。
+
+测试：
+
+- attach 后 effective 返回事件；
+- 来源转 pending 后 effective 立即为空；
+- relocated 后恢复；
+- invalidate 后再次为空。
+
+仍未完成：
+
+- generation/dirty/read 版本过滤；
+- 索引读取端统一走 effective 契约；
+- 旧归属失效与新归属发布同事务。
 
 ## 5. 工程侧下一步
 
