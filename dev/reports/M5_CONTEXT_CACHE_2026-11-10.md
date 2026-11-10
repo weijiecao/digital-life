@@ -28,6 +28,17 @@
 
 全量：**469/469**。
 
+## 2.1 保守 Token 预算
+
+`build_context(..., budget_tokens=N)`：
+
+- 用 4 chars/token 的保守上界；
+- 同时保留 `budget_chars`；
+- packet 记录 `budget_tokens`、`used_tokens`；
+- 缓存 key 区分 token 预算。
+
+测试：1 token 预算返回空；100 token 预算返回条目且 used_tokens>0。
+
 ## 3. 边界
 
 - 缓存只在单个 `MemoryEngine` 实例内；

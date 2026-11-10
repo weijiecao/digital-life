@@ -89,5 +89,19 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_token_budget_is_conservative(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "茶" * 40))
+            packet = engine.build_context("s", "茶", budget_tokens=1)
+            self.assertEqual(packet["items"], [])
+            self.assertEqual(packet["used_tokens"], 0)
+            packet = engine.build_context("s", "茶", budget_tokens=100)
+            self.assertEqual(len(packet["items"]), 1)
+            self.assertGreater(packet["used_tokens"], 0)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

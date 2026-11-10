@@ -71,8 +71,11 @@ class MemoryEngine:
         return [{"event_id": row[0], "title": row[1], "event_type": row[2],
                  "summary": row[3], "evidence": row[4]} for row in rows]
 
-    def build_context(self, scope_id: str, query: str, budget: int = 2000) -> dict:
-        key = (scope_id, query, budget)
+    def build_context(self, scope_id: str, query: str, budget: int = 2000,
+                      budget_tokens: int | None = None) -> dict:
+        if budget_tokens is not None:
+            budget = min(budget, max(0, budget_tokens) * 4)
+        key = (scope_id, query, budget, budget_tokens)
         generation = self._generation[scope_id]
         cached = self.cache.get(key, generation)
         if cached is not None:
@@ -90,6 +93,8 @@ class MemoryEngine:
                   "query": query, "items": selected, "source_refs": [
                       {"event_id": item["event_id"]} for item in selected],
                   "budget_chars": budget, "used_chars": used,
+                  "budget_tokens": budget_tokens,
+                  "used_tokens": (used + 3) // 4 if budget_tokens is not None else None,
                   "degraded": len(selected) < len(items)}
         self.cache.put(key, generation, packet)
         return packet
