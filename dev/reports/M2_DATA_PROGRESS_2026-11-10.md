@@ -283,6 +283,22 @@ Resolve 层新增：
 - 归一化用于实际 DB 决策；
 - 需要单独评测归一化后的语义。
 
+## 2.14 340 重放回归
+
+同故事归一化后，340 trace 重放（batch 8）结果：
+
+| 项 | 值 |
+|---|---:|
+| messages | 340 |
+| attached | 117 |
+| created | 223 |
+| mapping_ambiguous | 0 |
+| mapping_missing | 0 |
+| scope_claim_failed | 0 |
+| job_commit_failed | 0 |
+
+与归一化前一致（117/223），说明该规则没有改变 B4 340 的归属。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。
