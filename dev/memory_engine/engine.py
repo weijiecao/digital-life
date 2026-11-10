@@ -195,9 +195,12 @@ class MemoryEngine:
 
     def build_rendered_context(self, scope_id: str, query: str,
                                budget_tokens: int, token_counter=None,
-                               min_score: float = 0.0) -> dict:
+                               min_score: float = 0.0,
+                               host_budget=None) -> dict:
         """Render the final model block and enforce its token budget."""
         from memory_engine.render import fit_packet, render_context
+        if host_budget is not None:
+            budget_tokens = host_budget.memory_tokens
         packet = self.build_context(scope_id, query, budget=10 ** 9,
                                     min_score=min_score)
         if token_counter is None:

@@ -32,6 +32,7 @@
 > M4 引擎门面：[`reports/M4_ENGINE_GATE_2026-11-10.md`](../reports/M4_ENGINE_GATE_2026-11-10.md)
 > M5 上下文缓存：[`reports/M5_CONTEXT_CACHE_2026-11-10.md`](../reports/M5_CONTEXT_CACHE_2026-11-10.md)
 > M5 持久缓存：[`reports/M5_PERSISTENT_CACHE_2026-11-10.md`](../reports/M5_PERSISTENT_CACHE_2026-11-10.md)
+> M5 宿主预算：[`reports/M5_HOST_BUDGET_2026-11-11.md`](../reports/M5_HOST_BUDGET_2026-11-11.md)
 > M6 备份切片：[`reports/M6_BACKUP_SLICE_2026-11-10.md`](../reports/M6_BACKUP_SLICE_2026-11-10.md)
 > M6 自动备份：[`reports/M6_AUTO_BACKUP_2026-11-10.md`](../reports/M6_AUTO_BACKUP_2026-11-10.md)
 > M6 并发修复：[`reports/M6_CONCURRENCY_FIX_2026-11-11.md`](../reports/M6_CONCURRENCY_FIX_2026-11-11.md)
