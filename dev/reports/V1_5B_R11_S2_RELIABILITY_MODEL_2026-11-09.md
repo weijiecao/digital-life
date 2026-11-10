@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **458/458**。
+全量回归 **460/460**。
 
 仍待工程接线：
 
@@ -464,6 +464,29 @@ pending 4
 - 两个进程都处理**不同**来源后最终 DB 对比；
 - 提交后 cursor 前断电/磁盘故障；
 - Windows 目标平台 CI。
+
+## 4.20 pending 重评服务
+
+新增 `memory_engine.rejudge.PendingRejudger`：
+
+- 消费 READY 队列；
+- 从 `source_payload` 恢复来源；
+- 注入 judgment provider；
+- 实际调用 `ConstrainedResolver`；
+- attach 成功则 pending RELOCATED、READY DONE；
+- 未附着则 pending 保留、READY DONE。
+
+测试：
+
+- SAME 判决 → resolved 1、evidence 出现、pending RELOCATED；
+- DIFFERENT 判决 → deferred、evidence 空、pending 仍 PENDING。
+
+仍未完成：
+
+- 真实模型 judgment provider；
+- 依赖版本与快照校验；
+- 重评后旧归属失效的完整路径；
+- 真实并发 worker。
 
 ## 5. 工程侧下一步
 

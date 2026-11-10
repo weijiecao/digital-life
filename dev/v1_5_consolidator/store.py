@@ -545,6 +545,14 @@ class V15Store:
         return {"pending_id": row[0], "proposals": json.loads(row[1]),
                 "mapping": json.loads(row[2]), "reason": row[3], "status": row[4]}
 
+    def pending_source(self, scope_id: str, source_seq: int) -> Any | None:
+        row = self.db.execute("""SELECT source_hash,recorded_at,text FROM source_payload
+            WHERE scope_id=? AND source_seq=?""", (scope_id, source_seq)).fetchone()
+        if row is None:
+            return None
+        from .contracts import SourceEnvelope
+        return SourceEnvelope(scope_id, source_seq, row[0], row[1], row[2])
+
     def mark_pending_relocated(self, scope_id: str, source_seq: int,
                                event_id: str) -> bool:
         with self._write():
