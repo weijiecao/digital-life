@@ -25,6 +25,19 @@
 | delete source 后不可检索 | ✅ |
 | budget 不足时为空并标记 degraded | ✅ |
 
+## 2.1 CLI
+
+新增 `dev/memory_engine/cli.py`：
+
+```text
+memory-engine --db <path> ingest  --scope s --seq 1 --text "..."
+memory-engine --db <path> search  --scope s --query "..."
+memory-engine --db <path> context --scope s --query "..." --budget 2000
+memory-engine --db <path> health
+```
+
+测试：ingest → search → context；health 空库。
+
 ## 3. 明确边界
 
 未实现：
