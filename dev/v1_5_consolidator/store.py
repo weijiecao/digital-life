@@ -217,6 +217,20 @@ class V15Store:
             self._unit_depth = 0
             self._unit_rollback_only = False
 
+    def integrity_check(self) -> str:
+        return self.db.execute("PRAGMA integrity_check").fetchone()[0]
+
+    def backup_to(self, path: str | Path) -> str:
+        target = Path(path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        dest = sqlite3.connect(str(target))
+        try:
+            self.db.backup(dest)
+            result = dest.execute("PRAGMA integrity_check").fetchone()[0]
+        finally:
+            dest.close()
+        return result
+
     def close(self) -> None:
         self.db.close()
 
