@@ -20,6 +20,11 @@ class ProvenanceDecision:
 
 
 class ProvenanceGuard:
+    def __init__(self, unknown_candidate: str = "abstain"):
+        if unknown_candidate not in ("abstain", "allow_user_real"):
+            raise ValueError("unknown_candidate must be abstain or allow_user_real")
+        self.unknown_candidate = unknown_candidate
+
     def check(self, source: NarrativeProvenance,
               candidate: NarrativeProvenance) -> ProvenanceDecision:
         source_narrative = (source.reality_status in ("fictional", "reported")
@@ -29,6 +34,11 @@ class ProvenanceGuard:
         if source_narrative and candidate_user_real:
             return ProvenanceDecision("REJECT", ("narrative_to_user_event",))
         if source.reality_status == "unknown" or candidate.reality_status == "unknown":
+            if (self.unknown_candidate == "allow_user_real"
+                    and source.subject == "user"
+                    and source.reality_status == "real"
+                    and candidate.reality_status == "unknown"):
+                return ProvenanceDecision("ALLOW", ("user_real_to_unknown",))
             return ProvenanceDecision("ABSTAIN", ("provenance_unknown",))
         if (source.reality_status in ("fictional", "reported")
                 and candidate.reality_status in ("fictional", "reported")):

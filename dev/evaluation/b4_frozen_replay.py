@@ -25,6 +25,7 @@ try:
 except ImportError:
     from b4_fixture import B4Fixture
 from v1_5_consolidator.contracts import NarrativeProvenance, SourceEnvelope
+from v1_5_consolidator.provenance_guard import ProvenanceGuard
 from v1_5_consolidator.relation_judge import JudgmentResult, RelationProposal
 from v1_5_consolidator.resolver import ConstrainedResolver
 from v1_5_consolidator.store import V15Store
@@ -87,7 +88,8 @@ def map_proposals(entry: dict, mapping: dict) -> MappingResult:
     return MappingResult(tuple(mapped), safe, tuple(reasons))
 
 
-def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None) -> dict:
+def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
+        guard_policy: str = "abstain") -> dict:
     fixture = B4Fixture.load(root)
     trace = json.loads(Path(trace_path).read_text(encoding="utf-8"))["trace"]
     by_scope = defaultdict(list)
@@ -130,7 +132,8 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None)
                         stats["job_claim_failed"] += 1
                         continue
                     job_id, token = claim
-                    resolver = ConstrainedResolver(store)
+                    resolver = ConstrainedResolver(
+                        store, provenance_guard=ProvenanceGuard(guard_policy))
                     for entry in batch:
                         msg = fixture.messages[entry["source_id"]]
                         source = SourceEnvelope(scope, entry["source_seq"],
@@ -230,8 +233,10 @@ def main() -> int:
     parser.add_argument("--batch-size", type=int, required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--db", default=None)
+    parser.add_argument("--guard-policy", default="abstain",
+                        choices=["abstain", "allow_user_real"])
     args = parser.parse_args()
-    result = run(args.root, args.trace, args.batch_size, args.db)
+    result = run(args.root, args.trace, args.batch_size, args.db, args.guard_policy)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -119,6 +119,24 @@ attached 0 / created 340 / invalid 72
 - 不能直接作为质量提升证据；
 - 需要为无候选来源补充 provenance 或显式 unknown 策略。
 
+## 2.4 Guard unknown-candidate 策略消融
+
+固定 340 trace、不调用模型：
+
+| 策略 | P | R | F1 | FP | FN | false merge |
+|---|---:|---:|---:|---:|---:|---:|
+| strict ABSTAIN | 1.00000 | 0.45833 | 0.62857 | 0 | 260 | 0 |
+| allow_user_real | 0.92233 | 0.59375 | **0.72243** | 24 | 195 | 0.00536 |
+
+判读：
+
+- 放宽 unknown candidate 能提高召回和 F1；
+- 但引入 24 个 FP，false merge 0.00536；
+- 当前没有独立 gold 证明这些 FP 可接受；
+- 因此默认仍保持 strict，不因为 F1 好看就放宽。
+
+这是显式策略开关，不是静默改默认。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。

@@ -56,6 +56,15 @@ class TestProvenanceGuard(unittest.TestCase):
         result = self.guard.check(NarrativeProvenance(), NarrativeProvenance())
         self.assertEqual(result.action, "ABSTAIN")
 
+    def test_unknown_candidate_policy_is_explicit(self):
+        source = NarrativeProvenance("user", "user", "real")
+        candidate = NarrativeProvenance()
+        strict = self.guard.check(source, candidate)
+        permissive = ProvenanceGuard("allow_user_real").check(source, candidate)
+        self.assertEqual(strict.action, "ABSTAIN")
+        self.assertEqual(permissive.action, "ALLOW")
+        self.assertIn("user_real_to_unknown", permissive.reason_codes)
+
     def test_resolver_blocks_narrative_to_real_event(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))
