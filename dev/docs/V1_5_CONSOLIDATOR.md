@@ -31,6 +31,7 @@
 > M4 检索质量：[`reports/M4_RETRIEVAL_QUALITY_2026-11-10.md`](../reports/M4_RETRIEVAL_QUALITY_2026-11-10.md)
 > M4 引擎门面：[`reports/M4_ENGINE_GATE_2026-11-10.md`](../reports/M4_ENGINE_GATE_2026-11-10.md)
 > M5 上下文缓存：[`reports/M5_CONTEXT_CACHE_2026-11-10.md`](../reports/M5_CONTEXT_CACHE_2026-11-10.md)
+> M5 持久缓存：[`reports/M5_PERSISTENT_CACHE_2026-11-10.md`](../reports/M5_PERSISTENT_CACHE_2026-11-10.md)
 > M6 备份切片：[`reports/M6_BACKUP_SLICE_2026-11-10.md`](../reports/M6_BACKUP_SLICE_2026-11-10.md)
 > M6 10k 烟测：[`reports/M6_SCALE_SMOKE_2026-11-10.md`](../reports/M6_SCALE_SMOKE_2026-11-10.md)
 > M7 模拟宿主：[`reports/M7_HOST_ADAPTER_2026-11-10.md`](../reports/M7_HOST_ADAPTER_2026-11-10.md)

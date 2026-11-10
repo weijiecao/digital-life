@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 
@@ -25,3 +26,38 @@ class ContextCache:
 
     def size(self) -> int:
         return len(self._data)
+
+
+class PersistentContextCache:
+    """Context cache shared by engine instances through the same SQLite DB."""
+
+    def __init__(self, store):
+        self.store = store
+
+    @staticmethod
+    def _key(key: tuple) -> str:
+        return json.dumps(key, ensure_ascii=False, sort_keys=True)
+
+    def get(self, key: tuple, generation: int):
+        row = self.store.db.execute(
+            "SELECT packet_json FROM context_cache WHERE cache_key=?",
+            (self._key(key),)).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def put(self, key: tuple, generation: int, value: Any) -> None:
+        from datetime import datetime, timezone
+        with self.store._write():
+            self.store.db.execute(
+                """INSERT OR REPLACE INTO context_cache
+                   (cache_key,generation,packet_json,updated_at) VALUES(?,?,?,?)""",
+                (self._key(key), generation,
+                 json.dumps(value, ensure_ascii=False),
+                 datetime.now(timezone.utc).isoformat()))
+
+    def invalidate_scope(self, scope_id: str) -> None:
+        with self.store._write():
+            self.store.db.execute("DELETE FROM context_cache WHERE cache_key LIKE ?",
+                                  ('["' + scope_id + '"%',))
+
+    def size(self) -> int:
+        return self.store.db.execute("SELECT COUNT(*) FROM context_cache").fetchone()[0]

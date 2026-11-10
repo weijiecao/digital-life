@@ -156,6 +156,9 @@ class V15Store:
           PRIMARY KEY(scope_id, old_seq, new_seq, input_hash));
         CREATE TABLE IF NOT EXISTS scope_epoch(
           scope_id TEXT PRIMARY KEY, epoch INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS context_cache(
+          cache_key TEXT PRIMARY KEY, generation INTEGER NOT NULL,
+          packet_json TEXT NOT NULL, updated_at TEXT NOT NULL);
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:

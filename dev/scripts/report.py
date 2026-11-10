@@ -52,6 +52,7 @@ SUITES = (
     'tests.test_memory_engine_token_budget',
     'tests.test_memory_engine_shadow',
     'tests.test_memory_engine_render',
+    'tests.test_memory_engine_cache_persistent',
     'tests.test_baseline_alignment',
     'tests.test_preflight',
     'tests.test_auto_jobs',
