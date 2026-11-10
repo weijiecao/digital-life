@@ -200,6 +200,21 @@ attached 0 / created 340 / invalid 72
 
 这只固定输入，不把合成 gold 变成真实 gold。
 
+## 2.9 340 来源污染
+
+| 项 | 值 |
+|---|---:|
+| 有 provenance 的来源 | 311 |
+| 附着 | 311 |
+| fictional/reported → user-real | **0** |
+
+说明：
+
+- 在 strict replay DB 上逐来源读取有效 event；
+- 比较 source provenance 与 event provenance；
+- 没有发现叙事来源附着到 user-real 事件；
+- 这是合成数据上的来源污染结果，不是真实语料。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。
