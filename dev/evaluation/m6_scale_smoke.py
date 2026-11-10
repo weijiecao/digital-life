@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from v1_5_consolidator.candidate_retriever import EventAnchor, LexicalCandidateIndex
 from v1_5_consolidator.store import V15Store
 
-N = 10000
+N = int(sys.argv[1]) if len(sys.argv) > 1 else 10000
 QUERIES = 200
 
 
@@ -68,7 +68,7 @@ def main() -> int:
                    "integrity": store.integrity_check()}
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         Path(__file__).resolve().parent.parent.joinpath(
-            "reports", "m6_scale_smoke_10k.json").write_text(
+            "reports", "m6_scale_smoke_%dk.json" % (N // 1000)).write_text(
             json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         store.close()
     return 0
