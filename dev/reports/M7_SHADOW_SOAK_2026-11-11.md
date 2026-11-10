@@ -17,6 +17,20 @@
 | shadow scopes | 6 |
 | shadow observations | 18 |
 
+## 1.1 第二批 5 次
+
+| 项 | 值 |
+|---|---:|
+| successful runs | **10** |
+| failures | 0 |
+| shadow events | 52 |
+| shadow sources | 52 |
+| shadow scopes | 13 |
+| observations | 39 |
+| each injection prefix | true |
+
+操作陷阱：有 5 次未设置 `DIGITAL_LIFE_DEV` 的运行，V1 正常注入但 shadow 插件导入失败、DB 不增长；这类运行不能计入 shadow soak。
+
 ## 2. 判读
 
 - 连续 5 次启动真实 AstrBot、加载 V1 + shadow、发送合成 WebChat 消息；
