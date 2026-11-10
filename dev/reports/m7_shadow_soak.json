@@ -1,0 +1,10 @@
+{
+  "suite": "m7-shadow-soak-short",
+  "runs": 5,
+  "failures": 0,
+  "events": 24,
+  "sources": 24,
+  "scopes": 6,
+  "log_lines": 18,
+  "injection_prefix_true": 5
+}
