@@ -58,5 +58,23 @@ class TestBackup(unittest.TestCase):
                 source.close()
 
 
+    def test_restored_backup_accepts_new_writes(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "source.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha1", "t", "first"))
+            backup = str(Path(d) / "backup.sqlite3")
+            store.backup_to(backup)
+            restored = V15Store(backup)
+            restored_engine = MemoryEngine(restored)
+            restored_engine.ingest("s", SourceEnvelope("s", 2, "sha2", "t", "second"))
+            self.assertEqual(restored.db.execute(
+                "SELECT COUNT(*) FROM source_receipt").fetchone()[0], 2)
+            self.assertEqual(len(restored_engine.retrieve("s", "second")), 1)
+            self.assertEqual(restored.integrity_check(), "ok")
+            restored.close()
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()
