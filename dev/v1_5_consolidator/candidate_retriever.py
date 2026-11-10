@@ -62,12 +62,15 @@ class LexicalCandidateIndex:
 
     def add(self, anchor: EventAnchor) -> None:
         key = (anchor.scope_id, anchor.event_id)
-        if key not in self._anchors:
-            terms = Counter(_terms(anchor.searchable_text()))
-            self._terms[key] = terms
-            self._lengths[key] = sum(terms.values()) or 1
-            for term in terms:
-                self._doc_freq[anchor.scope_id][term] += 1
+        old_terms = self._terms.get(key)
+        if old_terms is not None:
+            for term in old_terms:
+                self._doc_freq[anchor.scope_id][term] -= 1
+        terms = Counter(_terms(anchor.searchable_text()))
+        self._terms[key] = terms
+        self._lengths[key] = sum(terms.values()) or 1
+        for term in terms:
+            self._doc_freq[anchor.scope_id][term] += 1
         self._anchors[key] = anchor
 
     def search(self, scope_id: str, query: str, k: int = 10) -> list[Candidate]:
@@ -123,7 +126,8 @@ class EmbeddingCandidateIndex:
 
     def add(self, anchor: EventAnchor) -> None:
         key = (anchor.scope_id, anchor.event_id)
-        if key not in self._vectors:
+        old = self._anchors.get(key)
+        if old is None or old.version != anchor.version or key not in self._vectors:
             self._vectors[key] = self._encode([anchor.searchable_text()])[0]
         self._anchors[key] = anchor
 
