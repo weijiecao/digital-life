@@ -215,6 +215,23 @@ attached 0 / created 340 / invalid 72
 - 没有发现叙事来源附着到 user-real 事件；
 - 这是合成数据上的来源污染结果，不是真实语料。
 
+## 2.10 21 例第三次真实运行
+
+| run | event correct | story | contamination | guard false reject |
+|---|---:|---:|---:|---:|
+| run1 | 20/21 | 17/17 | 0 | 0 |
+| run2 | 19/21 | 17/17 | 0 | 0 |
+| run3 | 20/21 | 17/17 | 0 | 0 |
+
+三次分布 19–20/21；T02-S2 三次都错，T04-N2 一次波动。
+
+判读：
+
+- 污染三次都为 0；
+- Guard false reject 三次都为 0；
+- 关系判断仍有稳定性问题；
+- 不能把单次 20/21 当准确率。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。
