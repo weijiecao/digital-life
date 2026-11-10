@@ -248,6 +248,24 @@ attached 0 / created 340 / invalid 72
 - attached 后两次稳定 123；
 - strict Guard 的召回仍然低（约 0.46–0.49）。
 
+## 2.12 21 例第四次真实运行
+
+| run | event correct | story | contamination | guard false reject |
+|---|---:|---:|---:|---:|
+| run1 | 20/21 | 17/17 | 0 | 0 |
+| run2 | 19/21 | 17/17 | 0 | 0 |
+| run3 | 20/21 | 17/17 | 0 | 0 |
+| run4 | 20/21 | 17/17 | 0 | 0 |
+
+四次分布 19–20/21，均值 19.75；T02-S2 四次都错，其余稳定。
+
+判读：
+
+- 污染四次都为 0；
+- Guard false reject 四次都为 0；
+- T02-S2 是稳定系统性错误；
+- 仍不是独立真实 gold。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。
