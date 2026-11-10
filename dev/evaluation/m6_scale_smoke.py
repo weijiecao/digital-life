@@ -66,6 +66,15 @@ def main() -> int:
                    "max_query_ms": round(max(latencies), 3),
                    "total_hits": hits,
                    "integrity": store.integrity_check()}
+        backup_path = str(Path(d) / "backup.sqlite3")
+        store.backup_to(backup_path)
+        restored = V15Store(backup_path)
+        try:
+            payload["backup_events"] = restored.db.execute(
+                "SELECT COUNT(*) FROM event_candidate").fetchone()[0]
+            payload["backup_integrity"] = restored.integrity_check()
+        finally:
+            restored.close()
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         Path(__file__).resolve().parent.parent.joinpath(
             "reports", "m6_scale_smoke_%dk.json" % (N // 1000)).write_text(

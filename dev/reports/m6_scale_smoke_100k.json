@@ -1,10 +1,12 @@
 {
   "events": 100000,
   "queries": 200,
-  "index_build_ms": 828.18,
-  "p50_query_ms": 405.284,
-  "p95_query_ms": 458.756,
-  "max_query_ms": 495.264,
+  "index_build_ms": 845.82,
+  "p50_query_ms": 425.817,
+  "p95_query_ms": 489.26,
+  "max_query_ms": 578.414,
   "total_hits": 2000,
-  "integrity": "ok"
+  "integrity": "ok",
+  "backup_events": 100000,
+  "backup_integrity": "ok"
 }

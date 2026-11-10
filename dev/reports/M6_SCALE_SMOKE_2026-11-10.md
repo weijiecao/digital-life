@@ -113,6 +113,16 @@ kill 后从 max(source_seq)+1 续跑，最终每来源 1 条 receipt/evidence，
 
 四个 scope 同时被终止，再各自从 max+1 续跑；最终每个来源 1 条 receipt/evidence。
 
+## 1.8 100k 备份校验
+
+| 项 | 值 |
+|---|---:|
+| events | 100,000 |
+| backup_events | **100,000** |
+| backup_integrity | **ok** |
+
+说明：100k 主档生成后 `backup_to`，重新打开备份库计数并 integrity_check；不包含恢复后 query/context。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；
