@@ -44,6 +44,12 @@ jobs:
             tests.test_b4_replay_mapping `
             tests.test_b4_frozen_fork `
             tests.test_b4_unit_of_work `
+            tests.test_b4_scope_lease tests.test_b4_crash_unit `
+            tests.test_memory_engine_worker tests.test_memory_engine_rejudge `
+            tests.test_memory_engine_engine tests.test_memory_engine_cli `
+            tests.test_memory_engine_host tests.test_memory_engine_summary `
+            tests.test_memory_engine_token_budget tests.test_memory_engine_shadow `
+            tests.test_memory_index_update tests.test_memory_store_backup `
             tests.test_v1_5b_t1_t2_fixes tests.test_baseline_alignment tests.test_preflight `
             tests.test_auto_jobs tests.test_backup_regression tests.test_prewarm tests.test_model_judge `
             tests.test_delivery tests.test_soak tests.test_threshold tests.test_correction tests.test_metrics `

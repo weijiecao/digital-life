@@ -1,3 +1,4 @@
+import importlib.util
 import tempfile
 import unittest
 from pathlib import Path
@@ -9,10 +10,12 @@ from v1_5_consolidator.store import V15Store
 
 
 class TestExactTokenBudget(unittest.TestCase):
+    @unittest.skipUnless(importlib.util.find_spec("tiktoken"), "tiktoken not installed")
     def test_counter_counts_tokens(self):
         counter = TokenCounter("cl100k_base")
         self.assertEqual(counter.count("hello world"), 2)
 
+    @unittest.skipUnless(importlib.util.find_spec("tiktoken"), "tiktoken not installed")
     def test_exact_budget_limits_items(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))
