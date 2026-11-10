@@ -31,6 +31,9 @@ def build_parser() -> argparse.ArgumentParser:
     context.add_argument("--scope", required=True)
     context.add_argument("--query", required=True)
     context.add_argument("--budget", type=int, default=2000)
+    context.add_argument("--budget-tokens", type=int, default=None)
+    context.add_argument("--rendered", action="store_true")
+    context.add_argument("--tokenizer", default="cl100k_base")
 
     health = sub.add_parser("health")
     return parser
@@ -51,8 +54,15 @@ def main(argv=None) -> int:
             print(json.dumps(engine.retrieve(args.scope, args.query, args.limit),
                              ensure_ascii=False, indent=2))
         elif args.command == "context":
-            print(json.dumps(engine.build_context(args.scope, args.query, args.budget),
-                             ensure_ascii=False, indent=2))
+            if args.rendered:
+                from memory_engine.token_budget import TokenCounter
+                counter = TokenCounter(args.tokenizer)
+                packet = engine.build_rendered_context(
+                    args.scope, args.query, args.budget_tokens or args.budget,
+                    counter)
+            else:
+                packet = engine.build_context(args.scope, args.query, args.budget)
+            print(json.dumps(packet, ensure_ascii=False, indent=2))
         elif args.command == "health":
             print(json.dumps(engine.health(), ensure_ascii=False))
     finally:
