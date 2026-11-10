@@ -39,6 +39,19 @@
 
 测试：1 token 预算返回空；100 token 预算返回条目且 used_tokens>0。
 
+## 2.2 抽取式摘要
+
+新增 `memory_engine.summary.summarize`：
+
+- 无模型；按句抽取，限制字符数；
+- 不生成原文没有的内容；
+- ContextPacket 的 summary 使用摘要，evidence 仍保留原文。
+
+测试：
+
+- 摘要不超过上限且保留否定词“不”；
+- context summary 有界，evidence 仍为长原文。
+
 ## 3. 边界
 
 - 缓存只在单个 `MemoryEngine` 实例内；

@@ -16,6 +16,7 @@ from v1_5_consolidator.store import V15Store
 
 from memory_engine.cache import ContextCache
 from memory_engine.projection import classify_memory
+from memory_engine.summary import summarize
 
 
 @dataclass(frozen=True)
@@ -69,7 +70,8 @@ class MemoryEngine:
             ORDER BY c.updated_at DESC LIMIT ?""",
             (scope_id, pattern, pattern, pattern, limit)).fetchall()
         return [{"event_id": row[0], "title": row[1], "event_type": row[2],
-                 "summary": row[3], "evidence": row[4]} for row in rows]
+                 "summary": summarize(row[3] or row[1] or ""),
+                 "evidence": row[4]} for row in rows]
 
     def build_context(self, scope_id: str, query: str, budget: int = 2000,
                       budget_tokens: int | None = None) -> dict:

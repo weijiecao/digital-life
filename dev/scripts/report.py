@@ -48,6 +48,7 @@ SUITES = (
     'tests.test_memory_index_update',
     'tests.test_memory_store_backup',
     'tests.test_memory_engine_host',
+    'tests.test_memory_engine_summary',
     'tests.test_baseline_alignment',
     'tests.test_preflight',
     'tests.test_auto_jobs',
