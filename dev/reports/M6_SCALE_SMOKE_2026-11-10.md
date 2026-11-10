@@ -123,6 +123,20 @@ kill 后从 max(source_seq)+1 续跑，最终每来源 1 条 receipt/evidence，
 
 说明：100k 主档生成后 `backup_to`，重新打开备份库计数并 integrity_check；不包含恢复后 query/context。
 
+## 1.9 20k kill 后续跑
+
+| 项 | 值 |
+|---|---:|
+| total | 20,000 |
+| kill 后已提交 | 489 |
+| receipts | **20,000** |
+| evidence | **20,000** |
+| source_refs | **20,000** |
+| duplicates | **0** |
+| integrity | **ok** |
+
+从 490 续跑到 20,000；每来源 1 条 receipt/evidence，无重复。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；

@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-TOTAL = 5000
+TOTAL = int(sys.argv[1]) if len(sys.argv) > 1 else 5000
 
 CHILD = r"""
 import sys, time
@@ -75,7 +75,7 @@ def main() -> int:
             check.close()
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         Path(__file__).resolve().parent.parent.joinpath(
-            "reports", "m6_kill_resume.json").write_text(
+            "reports", "m6_kill_resume_%dk.json" % (TOTAL // 1000)).write_text(
             json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         ok = (receipts == TOTAL and evidence == TOTAL and source_refs == TOTAL
               and duplicates == 0 and integrity == "ok" and done.returncode == 0)
