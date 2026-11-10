@@ -40,6 +40,7 @@
 > M7 真实宿主启动：[`reports/M7_REAL_HOST_BOOT_2026-11-11.md`](../reports/M7_REAL_HOST_BOOT_2026-11-11.md)
 > M7 真实消息链：[`reports/M7_REAL_CHAIN_2026-11-11.md`](../reports/M7_REAL_CHAIN_2026-11-11.md)
 > M7 真实宿主 Shadow：[`reports/M7_MEMORY_SHADOW_REAL_HOST_2026-11-11.md`](../reports/M7_MEMORY_SHADOW_REAL_HOST_2026-11-11.md)
+> M7 Shadow 回退：[`reports/M7_SHADOW_ROLLBACK_2026-11-11.md`](../reports/M7_SHADOW_ROLLBACK_2026-11-11.md)
 > 总状态：[`reports/MEMORY_ENGINE_STATUS_2026-11-10.md`](../reports/MEMORY_ENGINE_STATUS_2026-11-10.md)
 > 验收矩阵：[`reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md`](../reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md)
 > 复核修复 P01–P06：[`reports/REVIEW_FIX_P01_P06_2026-11-10.md`](../reports/REVIEW_FIX_P01_P06_2026-11-10.md)
