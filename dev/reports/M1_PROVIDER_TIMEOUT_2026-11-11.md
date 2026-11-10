@@ -20,6 +20,15 @@
 | 结果 | 超时异常 |
 | 测试 | ✅ |
 
+## 2.1 超时后 pending
+
+测试：
+
+- 慢 provider 超时；
+- source 无 evidence；
+- pending 仍 READY；
+- 快速 judge 重试后附着。
+
 ## 3. 边界
 
 - 本地 HTTP，不是 DeepSeek 真实网络；
