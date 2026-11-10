@@ -84,6 +84,20 @@
 - 重开后 evidence=receipts，无重复来源，integrity ok；
 - 这是进程终止烟测，不是断电/fsync 故障注入。
 
+## 1.6 kill 后续跑
+
+| 项 | 值 |
+|---|---:|
+| kill 后已提交 | 608 |
+| 续跑到 | 5,000 |
+| receipts | 5,000 |
+| evidence | 5,000 |
+| source_refs | 5,000 |
+| duplicates | 0 |
+| integrity | ok |
+
+kill 后从 max(source_seq)+1 续跑，最终每来源 1 条 receipt/evidence，无重复。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；
