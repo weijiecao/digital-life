@@ -57,5 +57,24 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_context_cache_hits_and_invalidates(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "茶"))
+            first = engine.build_context("s", "茶")
+            second = engine.build_context("s", "茶")
+            self.assertIs(first, second)
+            self.assertEqual(engine.cache.size(), 1)
+            engine.ingest("s", SourceEnvelope("s", 2, "sha", "t", "茶点"))
+            third = engine.build_context("s", "茶")
+            self.assertIsNot(first, third)
+            self.assertEqual(len(third["items"]), 2)
+            engine.delete_source("s", 1)
+            fourth = engine.build_context("s", "茶")
+            self.assertEqual(len(fourth["items"]), 1)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -8,11 +8,13 @@ host integration.
 from __future__ import annotations
 
 import json
+from collections import defaultdict
 from dataclasses import dataclass
 
 from v1_5_consolidator.contracts import SourceEnvelope
 from v1_5_consolidator.store import V15Store
 
+from memory_engine.cache import ContextCache
 from memory_engine.projection import classify_memory
 
 
@@ -25,8 +27,14 @@ class CaptureReceipt:
 
 
 class MemoryEngine:
-    def __init__(self, store: V15Store):
+    def __init__(self, store: V15Store, cache: ContextCache | None = None):
         self.store = store
+        self.cache = cache or ContextCache()
+        self._generation = defaultdict(int)
+
+    def _bump(self, scope_id: str) -> None:
+        self._generation[scope_id] += 1
+        self.cache.invalidate_scope(scope_id)
 
     def ingest(self, scope_id: str, source: SourceEnvelope,
                provenance: dict | None = None) -> CaptureReceipt:
@@ -40,6 +48,7 @@ class MemoryEngine:
             self.store.attach_source(scope_id, source, event_id, "engine-ingest")
             receipt_ok = self.store.record_receipt(
                 scope_id, source.source_seq, "ATTACHED", source.source_hash)
+        self._bump(scope_id)
         return CaptureReceipt(scope_id, source.source_seq, event_id, receipt_ok)
 
     def retrieve(self, scope_id: str, query: str, limit: int = 10) -> list[dict]:
@@ -57,6 +66,11 @@ class MemoryEngine:
                  "summary": row[3], "evidence": row[4]} for row in rows]
 
     def build_context(self, scope_id: str, query: str, budget: int = 2000) -> dict:
+        key = (scope_id, query, budget)
+        generation = self._generation[scope_id]
+        cached = self.cache.get(key, generation)
+        if cached is not None:
+            return cached
         items = self.retrieve(scope_id, query, limit=10)
         selected = []
         used = 0
@@ -66,14 +80,18 @@ class MemoryEngine:
                 break
             selected.append(item)
             used += size
-        return {"schema_version": "memory-context-v1", "scope_id": scope_id,
-                "query": query, "items": selected, "source_refs": [
-                    {"event_id": item["event_id"]} for item in selected],
-                "budget_chars": budget, "used_chars": used,
-                "degraded": len(selected) < len(items)}
+        packet = {"schema_version": "memory-context-v1", "scope_id": scope_id,
+                  "query": query, "items": selected, "source_refs": [
+                      {"event_id": item["event_id"]} for item in selected],
+                  "budget_chars": budget, "used_chars": used,
+                  "degraded": len(selected) < len(items)}
+        self.cache.put(key, generation, packet)
+        return packet
 
     def delete_source(self, scope_id: str, source_seq: int) -> int:
-        return self.store.delete_source(scope_id, source_seq)
+        count = self.store.delete_source(scope_id, source_seq)
+        self._bump(scope_id)
+        return count
 
     def health(self) -> dict:
         return {"events": self.store.db.execute(
