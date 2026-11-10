@@ -28,6 +28,10 @@ class TestR0Bundle(unittest.TestCase):
             with zipfile.ZipFile(ZIP) as bundle:
                 bundle.extractall(d)
                 self.assertEqual(len(bundle.namelist()), manifest["files"])
+            for rel, digest in manifest.get("file_sha256", {}).items():
+                self.assertEqual(
+                    hashlib.sha256((Path(d) / rel).read_bytes()).hexdigest(),
+                    digest, rel)
             code = """
 import sys
 from memory_engine.engine import MemoryEngine
