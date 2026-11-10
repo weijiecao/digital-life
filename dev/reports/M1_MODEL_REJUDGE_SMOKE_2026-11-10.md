@@ -33,6 +33,10 @@ pending   RELOCATED
 - 第二条仍 READY；
 - 重试后第二条附着。
 
+## 2.2 重试
+
+`run_once(attempts=N, backoff=...)` 对瞬时 provider 失败重试；测试：第一次 timeout、第二次成功，最终 resolved 1。
+
 ## 3. 边界
 
 - 单条合成输入、单次调用；

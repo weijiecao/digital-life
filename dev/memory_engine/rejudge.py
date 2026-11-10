@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Callable
 
 from v1_5_consolidator.relation_judge import JudgmentResult
@@ -16,7 +17,8 @@ class PendingRejudger:
         self.judge = judge
         self.resolver = ConstrainedResolver(store)
 
-    def run_once(self, scope_id: str, limit: int = 100) -> dict:
+    def run_once(self, scope_id: str, limit: int = 100,
+                 attempts: int = 1, backoff: float = 0.0) -> dict:
         processed = 0
         resolved = 0
         deferred = 0
@@ -27,7 +29,16 @@ class PendingRejudger:
                 self.store.mark_ready_done(scope_id, item["source_seq"],
                                            expected_generation=item["generation"])
                 continue
-            judgment = self.judge(scope_id, source)
+            judgment = None
+            for attempt in range(max(1, attempts)):
+                try:
+                    judgment = self.judge(scope_id, source)
+                    break
+                except Exception:
+                    if attempt == max(1, attempts) - 1:
+                        raise
+                    if backoff:
+                        time.sleep(backoff * (2 ** attempt))
             with self.store.unit_of_work():
                 if (self.store.ready_generation(scope_id, item["source_seq"])
                         != item["generation"]):

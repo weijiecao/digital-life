@@ -124,5 +124,28 @@ class TestPendingRejudger(unittest.TestCase):
             store.close()
 
 
+    def test_retry_attempts_resolves_transient_failure(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            target = self._seed(store)
+            source = SourceEnvelope("s", 1, "sha", "t", "hello")
+            store.save_pending("s", 1, [{"candidate_event_id": target,
+                                         "label": "SAME_EVENT"}],
+                               {target: [target]}, "split", source=source,
+                               provenance=NarrativeProvenance("user", "user", "real"))
+            store.enqueue_ready("s", 1, "recheck")
+            calls = {"n": 0}
+            def judge(scope, src):
+                calls["n"] += 1
+                if calls["n"] == 1:
+                    raise RuntimeError("transient")
+                return JudgmentResult(source_seq=src.source_seq, proposals=[
+                    RelationProposal(target, "SAME_EVENT")])
+            result = PendingRejudger(store, judge).run_once("s", attempts=2)
+            self.assertEqual(result["resolved"], 1)
+            self.assertEqual(store.events_for_source("s", 1), [target])
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()
