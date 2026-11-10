@@ -735,11 +735,7 @@ class V15Store:
         return self.scope_epoch(scope_id)
 
     def has_cannot_link(self, scope_id: str, left: str, right: str) -> bool:
-        row = self.db.execute("""SELECT 1 FROM event_relation
-            WHERE scope_id=? AND relation_type='CANNOT_LINK' AND status='active'
-            AND ((from_event=? AND to_event=?) OR (from_event=? AND to_event=?))
-            LIMIT 1""", (scope_id, left, right, right, left)).fetchone()
-        return row is not None
+        return self.cannot_link_exists(scope_id, left, right)
 
     def ready_generation(self, scope_id: str, source_seq: int) -> int | None:
         row = self.db.execute("""SELECT generation FROM source_ready

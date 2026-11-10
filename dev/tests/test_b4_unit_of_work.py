@@ -201,10 +201,7 @@ class TestUnitOfWork(unittest.TestCase):
                             "reality_status": "real", "story_id": None})
             source = SourceEnvelope("s", 2, "sha", "t", "待重定位")
             store.attach_source("s", source, provisional, "provisional")
-            store.db.execute("""INSERT INTO event_relation
-                (scope_id,from_event,to_event,relation_type,status,source_seq,created_at)
-                VALUES('s',?,?,'CANNOT_LINK','active',2,'2026-11-10T00:00:00+00:00')""",
-                (provisional, target))
+            store.add_cannot_link("s", provisional, target, 2)
             store.save_pending("s", 2, [{"candidate_event_id": target,
                                          "label": "SAME_EVENT"}],
                                {target: [target]}, "relocate", source=source,

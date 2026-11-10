@@ -169,7 +169,8 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
                                      for p in mapped.proposals],
                                     {p.old_event_id: list(p.candidate_event_ids)
                                      for p in mapped.proposals},
-                                    ",".join(mapped.reason_codes) or "MAPPING_INCOMPLETE")
+                                    ",".join(mapped.reason_codes) or "MAPPING_INCOMPLETE",
+                                    source=source, provenance=provenance)
                                 _add_map(store, scope, entry["final_event"], new_id)
                                 store.record_receipt(scope, source.source_seq,
                                                      "DEFER_MAPPING", source.source_hash)
