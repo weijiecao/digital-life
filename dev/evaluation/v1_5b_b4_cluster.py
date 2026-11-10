@@ -104,7 +104,9 @@ def run(root: str, api_key_file: str, model: str, max_scopes: int = 0,
                         if not attached:
                             event_id = store.create_event_from_source(
                                 scope, source, event_type="unknown",
-                                title=message["text"][:80])
+                                title=message["text"][:80],
+                                provenance=(judgment.provenance.as_dict()
+                                            if candidates else None))
                             event_ids.append(event_id)
                             attached = [event_id]
                             stats["created"] += 1

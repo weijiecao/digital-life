@@ -33,13 +33,13 @@ gold_included: false
 
 ### 340 条 provenance trace
 
-340 条 provenance trace 计划输出：
+340 条 provenance trace 已重新启动，输出目标：
 
 ```text
 dev/reports/v1_5b_b4_cluster_prov_trace.json
 ```
 
-运行因网络/模型接口不可用已停止，未生成结果；状态为 BLOCKED，不能作为结果。
+运行中；尚未生成结果，不能作为结果。
 
 ## 2. 未完成
 
@@ -67,6 +67,28 @@ dev/reports/v1_5b_b4_cluster_prov_trace.json
 分类：same story same 4、same story different 5、different story 4、narrative→user 4、user real 4。
 
 限制：gold 来自生成器标签，不是独立留出集；不能作为泛化准确率。
+
+## 2.2 340 首轮失败归因
+
+首次 340 运行：
+
+```text
+attached 0 / created 340 / invalid 72
+```
+
+归因：
+
+- `ConstraintResolver` 已默认启用 ProvenanceGuard；
+- 新建候选事件没有写入 provenance，全部为 unknown；
+- 来源为 user-real 时 Guard ABSTAIN，因此所有 SAME 都不附着；
+- 这不是模型没有判 SAME（trace 中有 33 个 SAME）。
+
+修复：
+
+- cluster 创建事件时写入 `judgment.provenance`；
+- 单 scope 复测 attached 14 / created 20 / invalid 4。
+
+340 已重新运行，结果待定。
 
 ## 3. 结论
 
