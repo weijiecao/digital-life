@@ -1,8 +1,8 @@
 # Memory Engine 阶段验收矩阵（2026-11-11）
 
 - 状态：**NO-GO（R0/R1 均未通过）**
-- 全量测试：516/516
-- 远端提交：`e93172d`
+- 全量测试：524/524
+- 远端提交：`5d73c9b`
 - CI：Windows 3.10 / 3.11 / 3.12 全绿
 - 真实聊天语料：0
 - 真实宿主：AstrBot 4.29.3 testbed
@@ -12,7 +12,7 @@
 | 验收项 | 证据 | 状态 |
 |---|---|---|
 | 版本/提交冻结 | manifest、本地/远端提交 | ✅ |
-| 全量回归 | 516/516 | ✅ |
+| 全量回归 | 524/524 | ✅ |
 | 关键源文件 SHA | manifest | ✅ |
 | 契约/CI | Windows CI 三版本 | ✅ |
 
@@ -67,6 +67,7 @@
 | ContextPacket | ✅ | ✅ |
 | 摘要 | 抽取式、保留否定 | ✅ |
 | 精确 tokenizer | tiktoken | ✅ |
+| 宿主总预算 | HostBudget | ✅ |
 | final renderer | fit_packet | ✅ |
 | 持久缓存 | 四进程共享 | ✅ |
 | prune/TTL/janitor | 状态+锁+stale | ✅ |
