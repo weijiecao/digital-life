@@ -46,6 +46,7 @@
 > M7 Shadow 短时重复：[`reports/M7_SHADOW_SOAK_2026-11-11.md`](../reports/M7_SHADOW_SOAK_2026-11-11.md)
 > M7 Shadow 插件源码：[`reports/M7_HOST_PLUGIN_SOURCE_2026-11-11.md`](../reports/M7_HOST_PLUGIN_SOURCE_2026-11-11.md)
 > M7 宿主预算接入：[`reports/M7_HOST_BUDGET_REAL_2026-11-11.md`](../reports/M7_HOST_BUDGET_REAL_2026-11-11.md)
+> M7 Soak 工具：[`reports/M7_SOAK_TOOL_2026-11-11.md`](../reports/M7_SOAK_TOOL_2026-11-11.md)
 > M7 Shadow 回退：[`reports/M7_SHADOW_ROLLBACK_2026-11-11.md`](../reports/M7_SHADOW_ROLLBACK_2026-11-11.md)
 > 总状态：[`reports/MEMORY_ENGINE_STATUS_2026-11-10.md`](../reports/MEMORY_ENGINE_STATUS_2026-11-10.md)
 > 验收矩阵：[`reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md`](../reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md)
