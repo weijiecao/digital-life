@@ -71,10 +71,19 @@ class PersistentContextCache:
     def size(self) -> int:
         return self.store.db.execute("SELECT COUNT(*) FROM context_cache").fetchone()[0]
 
-    def prune(self, max_rows: int = 1000) -> int:
+    def prune(self, max_rows: int = 1000, older_than_seconds: float | None = None) -> int:
+        removed = 0
         with self.store._write():
+            if older_than_seconds is not None:
+                from datetime import datetime, timedelta, timezone
+                cutoff = (datetime.now(timezone.utc) - timedelta(
+                    seconds=older_than_seconds)).isoformat()
+                cursor = self.store.db.execute(
+                    "DELETE FROM context_cache WHERE updated_at < ?", (cutoff,))
+                removed += cursor.rowcount
             cursor = self.store.db.execute(
                 """DELETE FROM context_cache WHERE cache_key NOT IN (
                    SELECT cache_key FROM context_cache
                    ORDER BY updated_at DESC LIMIT ?)""", (max(0, max_rows),))
-        return cursor.rowcount
+            removed += cursor.rowcount
+        return removed

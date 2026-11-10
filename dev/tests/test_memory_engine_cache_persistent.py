@@ -69,6 +69,18 @@ s.close()
             self.assertEqual(cache.size(), 2)
             store.close()
 
+    def test_prune_removes_old_rows(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            cache = PersistentContextCache(store)
+            cache.put(("s", "old"), 1, {"i": 1})
+            store.db.execute(
+                "UPDATE context_cache SET updated_at='2000-01-01T00:00:00+00:00'")
+            store.db.commit()
+            self.assertEqual(cache.prune(1000, older_than_seconds=60), 1)
+            self.assertEqual(cache.size(), 0)
+            store.close()
+
 
 if __name__ == "__main__":
     unittest.main()
