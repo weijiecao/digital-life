@@ -154,6 +154,8 @@ class V15Store:
           scope_id TEXT NOT NULL, old_seq INTEGER NOT NULL, new_seq INTEGER NOT NULL,
           input_hash TEXT NOT NULL, event_id TEXT NOT NULL, created_at TEXT NOT NULL,
           PRIMARY KEY(scope_id, old_seq, new_seq, input_hash));
+        CREATE TABLE IF NOT EXISTS scope_epoch(
+          scope_id TEXT PRIMARY KEY, epoch INTEGER NOT NULL);
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -632,6 +634,13 @@ class V15Store:
                     "PendingRelocation", check.action, list(check.reason_codes),
                     check.policy_version, event_id, "SAME_EVENT", "PROVENANCE_BLOCKED")
                 return False
+            for provisional in self.events_for_source(scope_id, source_seq):
+                if self.has_cannot_link(scope_id, provisional, event_id):
+                    self.record_gate_audit(
+                        "pending-" + str(source_seq), scope_id, source_seq,
+                        "PendingRelocation", "CONFLICT", ["cannot_link"],
+                        check.policy_version, event_id, "SAME_EVENT", "CONSTRAINT_BLOCKED")
+                    return False
             self.invalidate_source_evidence(scope_id, source_seq)
             self.attach_source(scope_id, source, event_id, "pending-relocation")
             self.mark_pending_relocated(scope_id, source_seq, event_id)
@@ -707,6 +716,36 @@ class V15Store:
                 WHERE scope_id=? AND owner_id=? AND fencing_token=?""",
                 (_now(), scope_id, owner_id, token))
         return cursor.rowcount > 0
+
+    def revision_identity(self, scope_id: str, old_seq: int, new_seq: int) -> dict | None:
+        row = self.db.execute("""SELECT input_hash,event_id FROM revision_receipt
+            WHERE scope_id=? AND old_seq=? AND new_seq=?""",
+            (scope_id, old_seq, new_seq)).fetchone()
+        return {"input_hash": row[0], "event_id": row[1]} if row else None
+
+    def scope_epoch(self, scope_id: str) -> int:
+        row = self.db.execute("SELECT epoch FROM scope_epoch WHERE scope_id=?",
+                              (scope_id,)).fetchone()
+        return int(row[0]) if row else 0
+
+    def bump_scope_epoch(self, scope_id: str) -> int:
+        with self._write():
+            self.db.execute("""INSERT INTO scope_epoch(scope_id,epoch) VALUES(?,1)
+                ON CONFLICT(scope_id) DO UPDATE SET epoch=epoch+1""", (scope_id,))
+        return self.scope_epoch(scope_id)
+
+    def has_cannot_link(self, scope_id: str, left: str, right: str) -> bool:
+        row = self.db.execute("""SELECT 1 FROM event_relation
+            WHERE scope_id=? AND relation_type='CANNOT_LINK' AND status='active'
+            AND ((from_event=? AND to_event=?) OR (from_event=? AND to_event=?))
+            LIMIT 1""", (scope_id, left, right, right, left)).fetchone()
+        return row is not None
+
+    def ready_generation(self, scope_id: str, source_seq: int) -> int | None:
+        row = self.db.execute("""SELECT generation FROM source_ready
+            WHERE scope_id=? AND source_seq=? AND status='READY'""",
+            (scope_id, source_seq)).fetchone()
+        return int(row[0]) if row else None
 
     def revision_result(self, scope_id: str, old_seq: int, new_seq: int,
                         input_hash: str) -> str | None:
@@ -886,6 +925,7 @@ class V15Store:
                 (scope_id, source_seq, now))
             self.db.execute("""UPDATE source_ref SET deleted_at=?
                 WHERE scope_id=? AND source_seq=?""", (now, scope_id, source_seq))
+        self.bump_scope_epoch(scope_id)
         return count
 
     def withdraw_event(self, scope_id: str, event_id: str) -> bool:
@@ -897,6 +937,8 @@ class V15Store:
                 self.db.execute("""UPDATE event_evidence SET valid=0
                     WHERE scope_id=? AND event_id=? AND valid=1""",
                     (scope_id, event_id))
+        if cursor.rowcount:
+            self.bump_scope_epoch(scope_id)
         return cursor.rowcount > 0
 
     def apply_tombstones(self, target: "V15Store") -> int:

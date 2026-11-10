@@ -20,13 +20,19 @@ class PendingRejudger:
         processed = 0
         resolved = 0
         deferred = 0
+        stale = 0
         for item in self.store.poll_ready(scope_id, limit):
             source = self.store.pending_source(scope_id, item["source_seq"])
             if source is None:
-                self.store.mark_ready_done(scope_id, item["source_seq"])
+                self.store.mark_ready_done(scope_id, item["source_seq"],
+                                           expected_generation=item["generation"])
                 continue
             judgment = self.judge(scope_id, source)
             with self.store.unit_of_work():
+                if (self.store.ready_generation(scope_id, item["source_seq"])
+                        != item["generation"]):
+                    stale += 1
+                    continue
                 summary = self.resolver.resolve(scope_id, source, judgment)
                 events = self.store.events_for_source(scope_id, item["source_seq"])
                 if events and (summary.attached or summary.already_attached):
@@ -39,7 +45,8 @@ class PendingRejudger:
                     scope_id, item["source_seq"],
                     expected_generation=item["generation"])
             processed += 1
-        return {"processed": processed, "resolved": resolved, "deferred": deferred}
+        return {"processed": processed, "resolved": resolved,
+                "deferred": deferred, "stale": stale}
 
 
 if __name__ == "__main__":

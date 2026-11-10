@@ -57,6 +57,7 @@ class MemoryEngine:
             self.store.attach_source(scope_id, source, event_id, "engine-ingest")
             receipt_ok = self.store.record_receipt(
                 scope_id, source.source_seq, "ATTACHED", source.source_hash)
+        self.store.bump_scope_epoch(scope_id)
         self._bump(scope_id)
         return CaptureReceipt(scope_id, source.source_seq, event_id, receipt_ok)
 
@@ -85,7 +86,9 @@ class MemoryEngine:
             budget = min(budget, max(0, budget_tokens) * 4)
         tokenizer_name = getattr(token_counter, "encoding_name", None)
         db_version = self.store.db.execute("PRAGMA data_version").fetchone()[0]
-        key = (scope_id, query, budget, budget_tokens, tokenizer_name, db_version)
+        epoch = self.store.scope_epoch(scope_id)
+        key = (scope_id, query, budget, budget_tokens, tokenizer_name,
+               db_version, epoch)
         generation = self._generation[scope_id]
         cached = self.cache.get(key, generation)
         if cached is not None:
@@ -128,11 +131,19 @@ class MemoryEngine:
                       new_source: SourceEnvelope,
                       provenance: dict | None = None) -> str:
         """Replace a source's current membership with a new event."""
+        identity = self.store.revision_identity(
+            scope_id, old_source_seq, new_source.source_seq)
+        if identity and identity["input_hash"] != new_source.source_hash:
+            raise ValueError("revision identity hash conflict")
         existing = self.store.revision_result(
             scope_id, old_source_seq, new_source.source_seq, new_source.source_hash)
         if existing:
             return existing
         with self.store.unit_of_work():
+            identity = self.store.revision_identity(
+                scope_id, old_source_seq, new_source.source_seq)
+            if identity and identity["input_hash"] != new_source.source_hash:
+                raise ValueError("revision identity hash conflict")
             existing = self.store.revision_result(
                 scope_id, old_source_seq, new_source.source_seq, new_source.source_hash)
             if existing:
@@ -154,6 +165,7 @@ class MemoryEngine:
             self.store.save_revision_result(
                 scope_id, old_source_seq, new_source.source_seq,
                 new_source.source_hash, event_id)
+        self.store.bump_scope_epoch(scope_id)
         self._bump(scope_id)
         return event_id
 

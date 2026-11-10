@@ -188,5 +188,34 @@ class TestUnitOfWork(unittest.TestCase):
             store.close()
 
 
+    def test_auto_relocate_respects_cannot_link(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            provisional = store.create_event_from_source(
+                "s", SourceEnvelope("s", 1, "sha", "t", "旧 provisional"),
+                provenance={"narrator": "user", "subject": "user",
+                            "reality_status": "real", "story_id": None})
+            target = store.create_event_from_source(
+                "s", SourceEnvelope("s", 99, "sha", "t", "目标事件"),
+                provenance={"narrator": "user", "subject": "user",
+                            "reality_status": "real", "story_id": None})
+            source = SourceEnvelope("s", 2, "sha", "t", "待重定位")
+            store.attach_source("s", source, provisional, "provisional")
+            store.db.execute("""INSERT INTO event_relation
+                (scope_id,from_event,to_event,relation_type,status,source_seq,created_at)
+                VALUES('s',?,?,'CANNOT_LINK','active',2,'2026-11-10T00:00:00+00:00')""",
+                (provisional, target))
+            store.save_pending("s", 2, [{"candidate_event_id": target,
+                                         "label": "SAME_EVENT"}],
+                               {target: [target]}, "relocate", source=source,
+                               provenance=NarrativeProvenance("user", "user", "real"))
+            self.assertEqual(store.auto_relocate_pending("s")["relocated"], 0)
+            self.assertEqual(store.events_for_source("s", 2), [provisional])
+            self.assertNotEqual(store.db.execute(
+                "SELECT action FROM gate_audit ORDER BY rowid DESC LIMIT 1").fetchone()[0],
+                "ALLOW")
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -163,5 +163,28 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_same_connection_store_delete_invalidates_context(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "茶"))
+            self.assertEqual(len(engine.build_context("s", "茶")["items"]), 1)
+            engine.store.delete_source("s", 1)
+            self.assertEqual(engine.build_context("s", "茶")["items"], [])
+            store.close()
+
+    def test_revision_identity_hash_conflict_is_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "杭州"))
+            engine.revise_source("s", 1, SourceEnvelope("s", 2, "hash-a", "t", "上海"))
+            with self.assertRaises(ValueError):
+                engine.revise_source("s", 1, SourceEnvelope("s", 2, "hash-b", "t", "北京"))
+            self.assertEqual(store.db.execute(
+                "SELECT COUNT(*) FROM revision_receipt").fetchone()[0], 1)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()
