@@ -37,6 +37,19 @@ class TestScopeLeaseReceipt(unittest.TestCase):
             self.assertEqual(store.contiguous_frontier("s"), 2)
             store.close()
 
+    def test_dependency_change_enqueues_ready_atomically(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            self.assertTrue(store.update_dependency("s", "event", "e1", 1, [1, 2], "created"))
+            self.assertEqual([r["source_seq"] for r in store.poll_ready("s")], [1, 2])
+            self.assertFalse(store.update_dependency("s", "event", "e1", 1, [3], "same"))
+            self.assertEqual([r["source_seq"] for r in store.poll_ready("s")], [1, 2])
+            self.assertTrue(store.update_dependency("s", "event", "e1", 2, [3], "changed"))
+            self.assertEqual([r["source_seq"] for r in store.poll_ready("s")], [1, 2, 3])
+            self.assertEqual(store.db.execute(
+                "SELECT COUNT(*) FROM dependency_change").fetchone()[0], 2)
+            store.close()
+
     def test_reconcile_enqueues_missing_and_pending(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))

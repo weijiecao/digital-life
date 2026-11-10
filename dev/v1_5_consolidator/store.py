@@ -130,6 +130,15 @@ class V15Store:
           reason TEXT NOT NULL, generation INTEGER NOT NULL DEFAULT 1,
           status TEXT NOT NULL DEFAULT 'READY', updated_at TEXT NOT NULL,
           PRIMARY KEY(scope_id, source_seq));
+        CREATE TABLE IF NOT EXISTS dependency_version(
+          scope_id TEXT NOT NULL, dep_type TEXT NOT NULL, dep_id TEXT NOT NULL,
+          version INTEGER NOT NULL, content_hash TEXT NOT NULL DEFAULT '',
+          updated_at TEXT NOT NULL,
+          PRIMARY KEY(scope_id, dep_type, dep_id));
+        CREATE TABLE IF NOT EXISTS dependency_change(
+          change_id TEXT PRIMARY KEY, scope_id TEXT NOT NULL, dep_type TEXT NOT NULL,
+          dep_id TEXT NOT NULL, old_version INTEGER NOT NULL, new_version INTEGER NOT NULL,
+          reason TEXT NOT NULL, created_at TEXT NOT NULL);
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -598,6 +607,33 @@ class V15Store:
             self.db.execute("""INSERT INTO source_receipt
                 (scope_id,source_seq,outcome,input_hash,created_at) VALUES(?,?,?,?,?)""",
                 (scope_id, source_seq, outcome, input_hash, _now()))
+        return True
+
+    def update_dependency(self, scope_id: str, dep_type: str, dep_id: str,
+                          new_version: int, affected_seqs: list[int],
+                          reason: str, content_hash: str = "") -> bool:
+        """Version bump + change log + READY enqueue in one transaction."""
+        with self.unit_of_work():
+            row = self.db.execute("""SELECT version FROM dependency_version
+                WHERE scope_id=? AND dep_type=? AND dep_id=?""",
+                (scope_id, dep_type, dep_id)).fetchone()
+            old_version = row[0] if row else 0
+            if new_version <= old_version:
+                return False
+            self.db.execute("""INSERT INTO dependency_version
+                (scope_id,dep_type,dep_id,version,content_hash,updated_at)
+                VALUES(?,?,?,?,?,?)
+                ON CONFLICT(scope_id,dep_type,dep_id) DO UPDATE SET
+                version=excluded.version,content_hash=excluded.content_hash,
+                updated_at=excluded.updated_at""",
+                (scope_id, dep_type, dep_id, new_version, content_hash, _now()))
+            self.db.execute("""INSERT INTO dependency_change
+                (change_id,scope_id,dep_type,dep_id,old_version,new_version,
+                 reason,created_at) VALUES(?,?,?,?,?,?,?,?)""",
+                ("dep_" + uuid.uuid4().hex, scope_id, dep_type, dep_id,
+                 old_version, new_version, reason, _now()))
+            for seq in affected_seqs:
+                self.enqueue_ready(scope_id, seq, "dependency:" + dep_type)
         return True
 
     def enqueue_ready(self, scope_id: str, source_seq: int, reason: str,

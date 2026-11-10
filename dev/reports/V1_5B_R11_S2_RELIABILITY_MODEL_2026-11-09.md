@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **451/451**。
+全量回归 **452/452**。
 
 仍待工程接线：
 
@@ -335,6 +335,32 @@ pending 4
 - 回调异常后 READY 仍在。
 
 这仍是通用消费原语，不是自动依赖订阅；真实重评判决和归属切换未接线。
+
+## 4.14 M1/E3：依赖版本变化自动入队
+
+新增：
+
+- `dependency_version`；
+- `dependency_change` 变更历史；
+- `update_dependency(scope, dep_type, dep_id, version, affected_seqs, reason)`。
+
+行为：
+
+- 版本严格递增；相同或更旧版本返回 False，不重复入队；
+- 版本更新、变更日志、受影响来源 READY 入队在同一事务内；
+- READY worker 可消费，但真实重判尚未接线。
+
+测试：
+
+- v1 入队 1、2；
+- 重复 v1 不新增；
+- v2 入队 3；change 记录 2 条。
+
+仍未完成：
+
+- 依赖内容变化与 hash 校验；
+- 自动重判与当前归属发布；
+- 真实模型重评。
 
 ## 5. 工程侧下一步
 
