@@ -11,8 +11,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-SCOPES = 4
-PER_SCOPE = 2000
+SCOPES = int(sys.argv[2]) if len(sys.argv) > 2 else 4
+PER_SCOPE = int(sys.argv[1]) if len(sys.argv) > 1 else 2000
 
 CHILD = r"""
 import sys, time
@@ -68,8 +68,14 @@ def main() -> int:
             resume.append(subprocess.Popen(
                 [sys.executable, "-c", code, db, str(ROOT), scope,
                  str(start + 1), str(PER_SCOPE)],
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
-        exits = [proc.wait(timeout=120) for proc in resume]
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True))
+        exits = []
+        resume_errors = []
+        for proc in resume:
+            out, err = proc.communicate(timeout=900)
+            exits.append(proc.returncode)
+            if proc.returncode:
+                resume_errors.append(err[-800:])
         check = V15Store(db)
         try:
             integrity = check.integrity_check()
@@ -81,12 +87,13 @@ def main() -> int:
             payload = {"scopes": SCOPES, "per_scope": PER_SCOPE,
                        "partial_after_kill": first, "resume_exits": exits,
                        "receipts": receipts, "evidence": evidence,
-                       "duplicates": duplicates, "integrity": integrity}
+                       "duplicates": duplicates, "integrity": integrity,
+                       "resume_errors": resume_errors}
         finally:
             check.close()
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         Path(__file__).resolve().parent.parent.joinpath(
-            "reports", "m6_kill_resume_multi.json").write_text(
+            "reports", "m6_kill_resume_multi_%dk.json" % ((SCOPES * PER_SCOPE) // 1000)).write_text(
             json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         ok = (receipts == SCOPES * PER_SCOPE and evidence == SCOPES * PER_SCOPE
               and duplicates == 0 and integrity == "ok" and all(v == 0 for v in exits))

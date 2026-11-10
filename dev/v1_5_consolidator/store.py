@@ -30,6 +30,7 @@ class V15Store:
         self.db.row_factory = sqlite3.Row
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.execute("PRAGMA journal_mode=WAL")
+        self.db.execute("PRAGMA busy_timeout=5000")
         self._unit_depth = 0
         self._unit_rollback_only = False
         self._init_schema()
@@ -206,7 +207,14 @@ class V15Store:
             finally:
                 self._unit_depth -= 1
             return
-        self.db.execute("BEGIN IMMEDIATE")
+        for attempt in range(40):
+            try:
+                self.db.execute("BEGIN IMMEDIATE")
+                break
+            except sqlite3.OperationalError as exc:
+                if "locked" not in str(exc).lower() or attempt == 39:
+                    raise
+                time.sleep(0.01 * (attempt + 1))
         self._unit_depth = 1
         self._unit_rollback_only = False
         try:
@@ -713,12 +721,18 @@ class V15Store:
         return cursor.rowcount > 0
 
     def release_scope(self, scope_id: str, owner_id: str, token: int) -> bool:
-        with self._write():
-            cursor = self.db.execute("""UPDATE scope_lease
-                SET owner_id=NULL, expires_at=0, updated_at=?
-                WHERE scope_id=? AND owner_id=? AND fencing_token=?""",
-                (_now(), scope_id, owner_id, token))
-        return cursor.rowcount > 0
+        for attempt in range(20):
+            try:
+                with self._write():
+                    cursor = self.db.execute("""UPDATE scope_lease
+                        SET owner_id=NULL, expires_at=0, updated_at=?
+                        WHERE scope_id=? AND owner_id=? AND fencing_token=?""",
+                        (_now(), scope_id, owner_id, token))
+                return cursor.rowcount > 0
+            except sqlite3.OperationalError as exc:
+                if "locked" not in str(exc).lower() or attempt == 19:
+                    raise
+                time.sleep(0.02 * (attempt + 1))
 
     def revision_identity(self, scope_id: str, old_seq: int, new_seq: int) -> dict | None:
         row = self.db.execute("""SELECT input_hash,event_id FROM revision_receipt

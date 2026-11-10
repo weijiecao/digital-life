@@ -151,6 +151,27 @@ kill 后从 max(source_seq)+1 续跑，最终每来源 1 条 receipt/evidence，
 
 从 694 续跑到 100,000；每来源 1 条 receipt/evidence，无重复。
 
+## 1.11 100k 多 scope kill 后续跑（并发修复后）
+
+| 项 | 值 |
+|---|---:|
+| scopes | 4 |
+| per scope | 25,000 |
+| kill 后已提交 | s0 549 / s1 410 / s2 0 / s3 0 |
+| resume exits | 0/0/0/0 |
+| receipts | **100,000** |
+| evidence | **100,000** |
+| duplicates | **0** |
+| integrity | **ok** |
+
+并发修复：
+
+- `busy_timeout=5000`；
+- `release_scope` 对 locked 退避重试；
+- `unit_of_work` 的 `BEGIN IMMEDIATE` 对 locked 退避重试。
+
+修复前 25k 多 scope 续跑出现 exit 1 / 仅 31k–54k 条；修复后 100k 全部完成。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；
