@@ -172,6 +172,20 @@ kill 后从 max(source_seq)+1 续跑，最终每来源 1 条 receipt/evidence，
 
 修复前 25k 多 scope 续跑出现 exit 1 / 仅 31k–54k 条；修复后 100k 全部完成。
 
+## 1.12 100k 备份恢复后查询
+
+| 项 | 值 |
+|---|---:|
+| events | 100,000 |
+| build | 1,346 ms |
+| backup_events | **100,000** |
+| retrieve hits | **10** |
+| query | **152.83 ms** |
+| context items | **10** |
+| integrity | **ok** |
+
+恢复备份后实际调用 `MemoryEngine.retrieve` 和 `build_context`，不是只计数。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；

@@ -1,0 +1,9 @@
+{
+  "events": 100000,
+  "build_ms": 1346.15,
+  "backup_events": 100000,
+  "retrieve_hits": 10,
+  "query_ms": 152.83,
+  "context_items": 10,
+  "integrity": "ok"
+}
