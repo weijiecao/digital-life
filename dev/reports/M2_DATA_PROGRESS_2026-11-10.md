@@ -153,6 +153,27 @@ attached 0 / created 340 / invalid 72
 - 与 pairwise 结果一致：放宽提高召回、增加误合并；
 - 都不是可接受的质量结论，需要独立真实 gold 决策。
 
+## 2.6 21 例两次真实运行
+
+| run | event correct | story membership | contamination | guard false reject |
+|---|---:|---:|---:|---:|
+| frozen trace run | 20/21 | 17/17 | 0 | 0 |
+| rerun 2026-11-10 | **19/21** | 17/17 | 0 | 0 |
+
+两次共同错误：
+
+- T02-S2：同故事不同情节判 DIFFERENT，应 RELATED；
+
+波动错误：
+
+- T04-N2：一次 DIFFERENT，一次 SAME；SAME 被 Guard REJECT，所以最终污染仍 0。
+
+说明：
+
+- 21 例不是稳定单一数字；
+- Guard 能拦住波动产生的错误 SAME；
+- 不能把 20/21 或 19/21 当成真实泛化准确率。
+
 ## 3. 结论
 
 M2 仍为 **BLOCKED/PREPARING**：21 例 trace 可复放，但 340 条运行与独立 gold 未完成，不能报告质量指标。
