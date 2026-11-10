@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 
@@ -34,12 +35,21 @@ class BackupScheduler:
         if self.last_backup_at is not None and now - self.last_backup_at < self.interval_seconds:
             return None
         self.directory.mkdir(parents=True, exist_ok=True)
-        path = self.directory / ("backup-%d.sqlite3" % int(now * 1000))
-        self.store.backup_to(str(path))
-        self.last_backup_at = now
-        self.state_path.write_text(
-            json.dumps({"last_backup_at": now}), encoding="utf-8")
-        current = self.backups()
-        for old in current[:-self.keep]:
-            old.unlink(missing_ok=True)
-        return path
+        lock_path = self.directory / ".backup.lock"
+        try:
+            fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        except FileExistsError:
+            return None
+        try:
+            path = self.directory / ("backup-%d.sqlite3" % int(now * 1000))
+            self.store.backup_to(str(path))
+            self.last_backup_at = now
+            self.state_path.write_text(
+                json.dumps({"last_backup_at": now}), encoding="utf-8")
+            current = self.backups()
+            for old in current[:-self.keep]:
+                old.unlink(missing_ok=True)
+            return path
+        finally:
+            os.close(fd)
+            lock_path.unlink(missing_ok=True)

@@ -21,6 +21,7 @@
 | 超过 interval 备份 | ✅ |
 | keep=2 只保留 2 个 | ✅ |
 | 重启后 interval 仍生效 | ✅ |
+| 锁文件阻止并行备份 | ✅ |
 | 恢复备份后 retrieve/context 可用 | ✅ |
 
 ## 3. 边界
