@@ -296,8 +296,12 @@ Resolve 层新增：
 | mapping_missing | 0 |
 | scope_claim_failed | 0 |
 | job_commit_failed | 0 |
+| predicted_clusters | 203 |
+| pure_clusters | 203 |
+| mixed_clusters | 0 |
+| gold_covered | 203 |
 
-与归一化前一致（117/223），说明该规则没有改变 B4 340 的归属。
+与归一化前的 cluster 指标一致（203/203 pure、mixed 0）。原始 event_id 每次重放都会重新生成，不能直接按 ID 比较；应按 gold 簇指标比较。
 
 ## 2.15 缺失 candidate 防护
 
