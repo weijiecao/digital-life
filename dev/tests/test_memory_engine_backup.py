@@ -18,6 +18,9 @@ class TestBackupScheduler(unittest.TestCase):
             scheduler.maybe_backup(now=1011)
             scheduler.maybe_backup(now=1021)
             self.assertEqual(len(scheduler.backups()), 2)
+            restarted = BackupScheduler(store, Path(d) / "backups",
+                                        interval_seconds=10, keep=2)
+            self.assertIsNone(restarted.maybe_backup(now=1022))
             store.close()
 
 

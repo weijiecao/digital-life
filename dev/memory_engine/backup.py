@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import time
 from pathlib import Path
 
@@ -13,7 +14,14 @@ class BackupScheduler:
         self.directory = Path(directory)
         self.interval_seconds = interval_seconds
         self.keep = max(1, keep)
+        self.state_path = self.directory / ".backup-state.json"
         self.last_backup_at: float | None = None
+        if self.state_path.exists():
+            try:
+                self.last_backup_at = json.loads(
+                    self.state_path.read_text(encoding="utf-8")).get("last_backup_at")
+            except (OSError, ValueError):
+                self.last_backup_at = None
 
     def backups(self) -> list[Path]:
         if not self.directory.exists():
@@ -29,6 +37,8 @@ class BackupScheduler:
         path = self.directory / ("backup-%d.sqlite3" % int(now * 1000))
         self.store.backup_to(str(path))
         self.last_backup_at = now
+        self.state_path.write_text(
+            json.dumps({"last_backup_at": now}), encoding="utf-8")
         current = self.backups()
         for old in current[:-self.keep]:
             old.unlink(missing_ok=True)
