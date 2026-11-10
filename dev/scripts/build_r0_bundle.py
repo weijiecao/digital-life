@@ -46,13 +46,14 @@ FILES = [
 def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as bundle:
-        for rel in FILES:
-            path = DEV / rel
-            bundle.write(path, arcname=rel)
+        for rel in sorted(FILES):
+            info = zipfile.ZipInfo(rel, date_time=(2026, 11, 11, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            bundle.writestr(info, (DEV / rel).read_bytes())
     digest = hashlib.sha256(OUT.read_bytes()).hexdigest()
     manifest = {"artifact": OUT.name, "sha256": digest,
                 "bytes": OUT.stat().st_size, "files": len(FILES),
-                "status": "R0 release candidate; NO-GO", "tests": 523}
+                "status": "R0 release candidate; NO-GO", "tests": 524}
     (OUT.parent / "memory-engine-r0-rc1.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(manifest, ensure_ascii=False, indent=2))
