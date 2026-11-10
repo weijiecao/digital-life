@@ -35,17 +35,22 @@ def _ignore_pycache(directory, names):
     return [name for name in names if name in ignored or name.endswith('.pyc')]
 
 
+def _make_writable(path):
+    mode = os.stat(path).st_mode
+    os.chmod(path, mode | stat.S_IWUSR | stat.S_IXUSR)
+
+
 def _force_rmtree(path):
-    """Windows 下 .git 对象是只读的，先去掉只读位再删。"""
+    """Remove read-only files/dirs without dropping POSIX read/execute bits."""
     path = Path(path)
     for root, dirs, files in os.walk(path):
         for name in files:
             try:
-                os.chmod(os.path.join(root, name), stat.S_IWRITE)
+                _make_writable(os.path.join(root, name))
             except OSError:
                 pass
         try:
-            os.chmod(root, stat.S_IWRITE)
+            _make_writable(root)
         except OSError:
             pass
     shutil.rmtree(path)

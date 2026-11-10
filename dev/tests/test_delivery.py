@@ -5,6 +5,8 @@
 
 import importlib.util
 import json
+import os
+import stat
 import tempfile
 import unittest
 from pathlib import Path
@@ -174,6 +176,16 @@ class TestInstallUpgradeRollback(unittest.TestCase):
         restored = Path(result['target']) / 'marker.txt'
         self.assertTrue(restored.is_file())
         self.assertEqual(restored.read_text(encoding='utf-8'), 'old-version')
+
+    def test_force_rmtree_removes_read_only_tree(self):
+        root = Path(self.root) / 'readonly-tree'
+        root.mkdir()
+        child = root / 'file.txt'
+        child.write_text('x', encoding='utf-8')
+        os.chmod(child, stat.S_IREAD)
+        os.chmod(root, stat.S_IREAD | stat.S_IEXEC)
+        self.module._force_rmtree(root)
+        self.assertFalse(root.exists())
 
     def test_rollback_without_backup_fails_loudly(self):
         self.module.install(self.root, 'off')
