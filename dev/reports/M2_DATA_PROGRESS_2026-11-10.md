@@ -301,7 +301,20 @@ Resolve 层新增：
 | mixed_clusters | 0 |
 | gold_covered | 203 |
 
-与归一化前的 cluster 指标一致（203/203 pure、mixed 0）。原始 event_id 每次重放都会重新生成，不能直接按 ID 比较；应按 gold 簇指标比较。
+与归一化前的 cluster 指标一致（203/203 pure、mixed 0）。
+
+pair F1 对比：
+
+| 指标 | 归一化前 | 归一化后 |
+|---|---:|---:|
+| TP | 220 | 220 |
+| FP | 0 | 0 |
+| FN | 260 | 260 |
+| precision | 1.0 | 1.0 |
+| recall | 0.4583 | 0.4583 |
+| F1 | 0.6286 | 0.6286 |
+
+原始 event_id 每次重放都会重新生成，不能直接按 ID 比较；应按 gold 簇和 pair 指标比较。
 
 ## 2.15 缺失 candidate 防护
 
