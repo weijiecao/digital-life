@@ -70,3 +70,11 @@ class PersistentContextCache:
 
     def size(self) -> int:
         return self.store.db.execute("SELECT COUNT(*) FROM context_cache").fetchone()[0]
+
+    def prune(self, max_rows: int = 1000) -> int:
+        with self.store._write():
+            cursor = self.store.db.execute(
+                """DELETE FROM context_cache WHERE cache_key NOT IN (
+                   SELECT cache_key FROM context_cache
+                   ORDER BY updated_at DESC LIMIT ?)""", (max(0, max_rows),))
+        return cursor.rowcount

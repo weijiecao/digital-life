@@ -58,6 +58,17 @@ s.close()
                 _, err = proc.communicate(timeout=30)
                 self.assertEqual(proc.returncode, 0, err)
 
+    def test_prune_keeps_recent_rows(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            cache = PersistentContextCache(store)
+            for i in range(3):
+                cache.put(("s", "q%d" % i), 1, {"i": i})
+            self.assertEqual(cache.size(), 3)
+            self.assertEqual(cache.prune(2), 1)
+            self.assertEqual(cache.size(), 2)
+            store.close()
+
 
 if __name__ == "__main__":
     unittest.main()
