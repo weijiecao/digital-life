@@ -182,9 +182,11 @@ kill 后从 max(source_seq)+1 续跑，最终每来源 1 条 receipt/evidence，
 | retrieve hits | **10** |
 | query | **152.83 ms** |
 | context items | **10** |
+| write after restore | **1** |
+| new receipts | **1** |
 | integrity | **ok** |
 
-恢复备份后实际调用 `MemoryEngine.retrieve` 和 `build_context`，不是只计数。
+恢复备份后实际调用 `MemoryEngine.retrieve` 和 `build_context`，并继续写入一条新 source；不是只计数。
 恢复后继续写入：新增 source 2，receipts=2、retrieve 命中、integrity ok。
 
 ## 1.13 并发写入时备份

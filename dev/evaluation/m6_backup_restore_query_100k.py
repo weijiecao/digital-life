@@ -47,15 +47,22 @@ def main() -> int:
         store.close()
         restored = V15Store(backup)
         engine = MemoryEngine(restored)
+        backup_count = restored.db.execute(
+            "SELECT COUNT(*) FROM event_candidate").fetchone()[0]
         t0 = time.perf_counter()
         hits = engine.retrieve("s", "主题词1", limit=10)
         query_ms = (time.perf_counter() - t0) * 1000
         packet = engine.build_context("s", "主题词1", budget=1200)
+        from v1_5_consolidator.contracts import SourceEnvelope
+        engine.ingest("s", SourceEnvelope("s", N + 1, "sha-new", "t", "恢复后新增"))
+        write_hit = len(engine.retrieve("s", "恢复后新增"))
         payload = {"events": N, "build_ms": round(build_ms, 2),
-                   "backup_events": restored.db.execute(
-                       "SELECT COUNT(*) FROM event_candidate").fetchone()[0],
+                   "backup_events": backup_count,
                    "retrieve_hits": len(hits), "query_ms": round(query_ms, 2),
                    "context_items": len(packet["items"]),
+                   "write_after_restore": write_hit,
+                   "receipts": restored.db.execute(
+                       "SELECT COUNT(*) FROM source_receipt").fetchone()[0],
                    "integrity": restored.integrity_check()}
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         Path(__file__).resolve().parent.parent.joinpath(
@@ -63,6 +70,7 @@ def main() -> int:
             json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         restored.close()
         return 0 if (payload["backup_events"] == N and hits
+                     and payload["write_after_restore"] == 1
                      and payload["integrity"] == "ok") else 1
 
 

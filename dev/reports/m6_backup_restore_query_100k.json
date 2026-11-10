@@ -1,9 +1,11 @@
 {
   "events": 100000,
-  "build_ms": 1346.15,
+  "build_ms": 1177.19,
   "backup_events": 100000,
   "retrieve_hits": 10,
-  "query_ms": 152.83,
+  "query_ms": 151.87,
   "context_items": 10,
+  "write_after_restore": 1,
+  "receipts": 1,
   "integrity": "ok"
 }
