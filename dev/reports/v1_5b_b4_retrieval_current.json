@@ -5,6 +5,10 @@
   "scope_count": 10,
   "queries_attach": 160,
   "abstain_expected": 20,
+  "abstain_false_injection": {
+    "1": 1.0,
+    "5": 1.0
+  },
   "recall": {
     "1": 0.7812,
     "5": 1.0,

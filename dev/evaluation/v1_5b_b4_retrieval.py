@@ -22,15 +22,12 @@ def evaluate(root: str, encoder=None) -> dict:
     total = 0
     reciprocal = 0.0
     abstain_expected = 0
+    abstain_injected = {1: 0, 5: 0}
     errors = []
     for query in fixture.retrieval_queries:
         gold = fixture.retrieval_gold[query["query_id"]]
-        if gold["expected"] != "ATTACH_EXISTING":
-            abstain_expected += 1
-            continue
         query_message = fixture.messages[query["source_id"]]
         scope = query["scope_id"]
-        query_seq = int(query_message["stream_seq"])
         index = HybridCandidateIndex(encoder) if encoder is not None else LexicalCandidateIndex()
         event_ids = []
         for event in fixture.events.values():
@@ -47,6 +44,12 @@ def evaluate(root: str, encoder=None) -> dict:
                                   evidence_refs=[item["source_id"] for item in prior]))
             event_ids.append(event["event_id"])
         ranked = [item.event_id for item in index.search(scope, query_message["text"], k=max(ks))]
+        if gold["expected"] != "ATTACH_EXISTING":
+            abstain_expected += 1
+            for k in (1, 5):
+                if ranked[:k]:
+                    abstain_injected[k] += 1
+            continue
         total += 1
         if gold["gold_event_id"] in ranked:
             reciprocal += 1.0 / (ranked.index(gold["gold_event_id"]) + 1)
@@ -58,6 +61,9 @@ def evaluate(root: str, encoder=None) -> dict:
                            "ranked": ranked[:5]})
     return {"scope_count": len({q["scope_id"] for q in fixture.retrieval_queries}),
             "queries_attach": total, "abstain_expected": abstain_expected,
+            "abstain_false_injection": {
+                str(k): round(abstain_injected[k] / abstain_expected, 4)
+                if abstain_expected else 0.0 for k in (1, 5)},
             "recall": {str(k): round(hits[k] / total, 4) if total else 0.0 for k in ks},
             "mrr": round(reciprocal / total, 4) if total else 0.0,
             "errors": errors}

@@ -13,6 +13,8 @@
 | scopes | 10 |
 | attach queries | 160 |
 | expected abstain | 20 |
+| abstain false injection@1 | **1.0000** |
+| abstain false injection@5 | **1.0000** |
 | Recall@1 | **0.7812** |
 | Recall@5 | **1.0000** |
 | Recall@10 | **1.0000** |
@@ -22,7 +24,7 @@
 
 - 词面检索在合成 B4 查询上 R@5 全中；
 - R@1 约 0.78，仍有排序改进空间；
-- 未评估 expected-abstain 的误召回率；
+- expected-abstain 的误召回率为 **1.0**：20/20 都返回了候选；
 - 未使用 BGE/混合索引；
 - 不是真实查询集，不是 10 万规模检索。
 
@@ -30,4 +32,4 @@
 
 - 合成数据，不能代表真实聊天；
 - 与 M4-01 索引更新修复分开；
-- 不能作为 M4 完成或 R0 检索验收。
+- 不能作为 M4 完成或 R0 检索验收；需要 abstain 阈值或 gate。
