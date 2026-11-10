@@ -85,13 +85,42 @@ class TestPendingRejudger(unittest.TestCase):
             store.enqueue_ready("s", 1, "recheck", generation=1)
             def judge(scope, src):
                 store.enqueue_ready(scope, 1, "new", generation=2)
-                return JudgmentResult(source_seq=1, proposals=[
+                return JudgmentResult(source_seq=src.source_seq, proposals=[
                     RelationProposal(target, "SAME_EVENT")])
             result = PendingRejudger(store, judge).run_once("s")
             self.assertEqual(result["stale"], 1)
             self.assertEqual(store.events_for_source("s", 1), [])
             self.assertEqual(store.pending_for_source("s", 1)["status"], "PENDING")
             self.assertEqual(store.ready_generation("s", 1), 2)
+            store.close()
+
+
+    def test_partial_batch_failure_keeps_remaining_ready(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            target = self._seed(store)
+            for seq in (1, 2):
+                source = SourceEnvelope("s", seq, "sha", "t", "item-%d" % seq)
+                store.save_pending("s", seq, [{"candidate_event_id": target,
+                                               "label": "SAME_EVENT"}],
+                                   {target: [target]}, "split", source=source,
+                                   provenance=NarrativeProvenance("user", "user", "real"))
+                store.enqueue_ready("s", seq, "recheck")
+            calls = {"n": 0}
+            def judge(scope, src):
+                calls["n"] += 1
+                if calls["n"] == 2:
+                    raise RuntimeError("provider timeout")
+                return JudgmentResult(source_seq=src.source_seq, proposals=[
+                    RelationProposal(target, "SAME_EVENT")])
+            with self.assertRaises(RuntimeError):
+                PendingRejudger(store, judge).run_once("s")
+            self.assertEqual(store.events_for_source("s", 1), [target])
+            self.assertEqual(store.events_for_source("s", 2), [])
+            self.assertEqual(store.ready_generation("s", 2), 1)
+            result = PendingRejudger(store, judge).run_once("s")
+            self.assertEqual(result["resolved"], 1)
+            self.assertEqual(store.events_for_source("s", 2), [target])
             store.close()
 
 

@@ -25,6 +25,14 @@ attached  [evt_ae35...]
 pending   RELOCATED
 ```
 
+## 2.1 部分批次失败
+
+测试：两条 pending，第一条成功、第二条 provider timeout；确认：
+
+- 第一条已附着；
+- 第二条仍 READY；
+- 重试后第二条附着。
+
 ## 3. 边界
 
 - 单条合成输入、单次调用；
