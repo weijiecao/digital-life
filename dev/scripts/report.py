@@ -41,6 +41,7 @@ SUITES = (
     'tests.test_b4_unit_of_work',
     'tests.test_b4_scope_lease',
     'tests.test_memory_engine_worker',
+    'tests.test_b4_crash_unit',
     'tests.test_baseline_alignment',
     'tests.test_preflight',
     'tests.test_auto_jobs',

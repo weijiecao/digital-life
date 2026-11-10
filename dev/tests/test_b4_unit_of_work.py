@@ -139,5 +139,23 @@ class TestUnitOfWork(unittest.TestCase):
             store.close()
 
 
+    def test_relocation_invalidates_old_membership(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            seed = SourceEnvelope("s", 99, "sha", "t", "seed")
+            old_event = store.create_event_from_source("s", seed)
+            new_event = store.create_event_from_source(
+                "s", SourceEnvelope("s", 98, "sha", "t", "new"))
+            source = SourceEnvelope("s", 2, "sha", "t", "pending")
+            store.attach_source("s", source, old_event, "old")
+            store.save_pending("s", 2, [{"candidate_event_id": "old",
+                                         "label": "SAME_EVENT"}],
+                               {"old": [new_event]}, "resolved", source=source)
+            self.assertTrue(store.relocate_pending("s", 2, None, new_event))
+            self.assertEqual(store.effective_events_for_source("s", 2), [new_event])
+            self.assertEqual(store.events_for_source("s", 2), [new_event])
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

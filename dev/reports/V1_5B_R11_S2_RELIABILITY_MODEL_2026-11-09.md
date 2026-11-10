@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **453/453**。
+全量回归 **455/455**。
 
 仍待工程接线：
 
@@ -377,6 +377,38 @@ pending 4
 - 映射更新为唯一 → relocated，evidence 出现。
 
 这不是完整模型重评：没有新判决、没有依赖版本比较、没有归属切换审计。
+
+## 4.16 M1：归属切换与进程级回滚
+
+### 旧归属失效
+
+`relocate_pending` 在同一事务内：
+
+- 先 `invalidate_source_evidence(source)`；
+- 再 attach 新目标；
+- pending → RELOCATED；
+- 写 relocation 审计。
+
+测试：旧目标 attach 后转 pending，relocate 到新目标；
+`events_for_source` 只返回新目标。
+
+### 进程级提交前 kill
+
+新增子进程测试：
+
+- 子进程在 `unit_of_work` 内 attach + record_receipt；
+- `os._exit(9)`；
+- 父进程重开 DB：
+  - evidence 为空；
+  - receipt 为空；
+  - frontier 0。
+
+仍未完成：
+
+- 提交后、cursor 前 kill；
+- 双进程真实竞争；
+- 自动重判判决；
+- Windows 目标平台 CI。
 
 ## 5. 工程侧下一步
 

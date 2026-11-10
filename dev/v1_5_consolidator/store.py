@@ -570,6 +570,7 @@ class V15Store:
                     return False
                 from .contracts import SourceEnvelope
                 source = SourceEnvelope(scope_id, source_seq, payload[0], payload[1], payload[2])
+            self.invalidate_source_evidence(scope_id, source_seq)
             self.attach_source(scope_id, source, event_id, "pending-relocation")
             self.mark_pending_relocated(scope_id, source_seq, event_id)
             self.record_gate_audit(
