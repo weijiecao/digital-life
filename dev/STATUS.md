@@ -1,11 +1,11 @@
 # E5.0-F 工程状态（自动生成，勿手改）
 
-> 由 `python scripts/report.py` 生成于 2026-11-11T05:55:10+08:00；插件版本 `1.0.19`。
+> 由 `python scripts/report.py` 生成于 2026-11-11T06:11:47+08:00；插件版本 `1.0.19`。
 > 文档中的用例数、通过率、评估分一律引用本文件，不再手写。
 
 ## 一句话
 
-**离线用例 523/523 通过**；场景评估 14/15；集成探针注入 8/8。
+**离线用例 524/524 通过**；场景评估 14/15；集成探针注入 8/8。
 
 **真实环境**：AstrBot 4.29.3 上插件加载成功，1 轮真实请求中 1 轮看到记忆片段（平台 WebChat、provider 为本地 mock）。
 
@@ -30,12 +30,12 @@
 
 | 套件 | 用例 | 失败/错误 | 跳过 | 耗时 |
 |---|---|---|---|---|
-| `tests.test_store` | 162 | 0 | 0 | 13.5s |
+| `tests.test_store` | 162 | 0 | 0 | 13.6s |
 | `tests.test_plugin` | 78 | 0 | 0 | 5.4s |
 | `tests.test_data_safety` | 4 | 0 | 0 | 0.1s |
 | `tests.test_v1_5_consolidator` | 18 | 0 | 0 | 0.3s |
 | `tests.test_b4_fixture` | 3 | 0 | 0 | 0.0s |
-| `tests.test_b4_reliability` | 11 | 0 | 0 | 0.6s |
+| `tests.test_b4_reliability` | 11 | 0 | 0 | 0.7s |
 | `tests.test_b4_gate` | 6 | 0 | 0 | 0.0s |
 | `tests.test_v1_5b_t1_t2_fixes` | 10 | 0 | 0 | 0.0s |
 | `tests.test_b4_lease_fencing` | 7 | 0 | 0 | 0.2s |
@@ -60,11 +60,12 @@
 | `tests.test_memory_engine_backup` | 3 | 0 | 0 | 0.1s |
 | `tests.test_memory_engine_host_budget` | 2 | 0 | 0 | 0.0s |
 | `tests.test_m1_provider_timeout` | 2 | 0 | 0 | 4.1s |
+| `tests.test_r0_bundle` | 1 | 0 | 0 | 0.2s |
 | `tests.test_baseline_alignment` | 6 | 0 | 0 | 0.1s |
 | `tests.test_preflight` | 6 | 0 | 0 | 0.0s |
 | `tests.test_auto_jobs` | 4 | 0 | 0 | 0.2s |
 | `tests.test_backup_regression` | 6 | 0 | 0 | 0.5s |
-| `tests.test_prewarm` | 5 | 0 | 0 | 1.0s |
+| `tests.test_prewarm` | 5 | 0 | 0 | 1.1s |
 | `tests.test_model_judge` | 23 | 0 | 0 | 1.7s |
 | `tests.test_delivery` | 14 | 0 | 0 | 0.9s |
 | `tests.test_soak` | 11 | 0 | 0 | 5.7s |
@@ -77,7 +78,7 @@
 | `tests.test_attribution` | 4 | 0 | 0 | 0.0s |
 | `tests.test_panel` | 6 | 0 | 0 | 0.3s |
 | `tests.test_integration_chain` | 12 | 0 | 0 | 0.6s |
-| **合计** | **523** | **0** | | |
+| **合计** | **524** | **0** | | |
 
 ## 评估与探针
 
@@ -88,7 +89,7 @@
 | 真实 BGE 场景评估 | 13/15 | 真实编码；失败项见 BGE_CALIBRATION |
 | 上游基线检索对齐 | plain 0/2；weak 0/2；semantic_fixture 2/2 | 规则 0/2 是结构性的；semantic_fixture 仅证明管线 |
 | 集成探针·注入 | 8/8 轮 | 替身平台与受控编码器 |
-| 集成探针·钩子耗时 | P50 2.2ms / P95 2.8ms | 不含真实 BGE 编码 |
+| 集成探针·钩子耗时 | P50 2.5ms / P95 3.0ms | 不含真实 BGE 编码 |
 | 集成探针·重启 | 积压 9 → 0，重复采集=否 | 同一进程重启，非崩溃恢复 |
 | 集成探针·不兼容宿主 | 静默放行=是 | 模拟缺 extra_user_content_parts |
 
