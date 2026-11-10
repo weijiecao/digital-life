@@ -1,0 +1,10 @@
+{
+  "workers": 4,
+  "sources": 20,
+  "wall_ms": 78.36,
+  "p95_ms": 2.181,
+  "errors": 0,
+  "evidence": 20,
+  "receipts": 20,
+  "integrity": "ok"
+}

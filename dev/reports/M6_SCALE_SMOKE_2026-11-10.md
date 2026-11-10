@@ -48,6 +48,21 @@
 
 这是简单 LIKE 读查询的并发烟测，不是写并发、复杂检索或真实查询。
 
+## 1.3 写并发（单 scope 租约）
+
+| 项 | 值 |
+|---|---:|
+| workers | 4 |
+| sources | 20 |
+| wall | 78.36 ms |
+| p95 | 2.181 ms |
+| errors | 0 |
+| evidence | 20 |
+| receipts | 20 |
+| integrity | ok |
+
+多线程各自连接，通过 scope lease 串行写；同一 scope 无并发写冲突。不是多 scope 写扩展测试。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；
