@@ -36,6 +36,7 @@ def collect():
         ranked = index.search(query["scope_id"], message["text"], k=10)
         scores = {c.event_id: c.score for c in ranked}
         rows.append({"query_id": query["query_id"],
+                     "scope": query["scope_id"],
                      "attach": gold["expected"] == "ATTACH_EXISTING",
                      "gold": gold.get("gold_event_id"),
                      "scores": scores,
@@ -64,12 +65,17 @@ def main() -> int:
     ranked = [(t, metrics(dev, t)) for t in candidates]
     safe = [(t, m) for t, m in ranked if m["injected"] == 0]
     chosen = max(safe, key=lambda item: (item[1]["recall"], item[0])) if safe else (0.0, metrics(dev, 0.0))
+    scopes = sorted({row["scope"] for row in rows})
+    per_scope = {scope: metrics([r for r in rows if r["scope"] == scope],
+                                chosen[0]) for scope in scopes}
     payload = {"suite": "m4-threshold-split", "dev_queries": len(dev),
                "holdout_queries": len(holdout),
                "chosen_threshold": chosen[0],
                "dev": chosen[1], "holdout": metrics(holdout, chosen[0]),
+               "per_scope": per_scope,
                "dev_curve": [{"threshold": t, **m} for t, m in ranked]}
-    print(json.dumps({k: payload[k] for k in ("chosen_threshold", "dev", "holdout")},
+    print(json.dumps({k: payload[k] for k in
+                      ("chosen_threshold", "dev", "holdout", "per_scope")},
                      ensure_ascii=False, indent=2))
     (ROOT.parent / "reports" / "m4_threshold_split.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

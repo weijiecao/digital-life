@@ -19,6 +19,88 @@
     "injected": 0,
     "injection_rate": 0.0
   },
+  "per_scope": {
+    "S01": {
+      "attach": 16,
+      "hit": 16,
+      "recall": 1.0,
+      "abstain": 2,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    "S02": {
+      "attach": 16,
+      "hit": 16,
+      "recall": 1.0,
+      "abstain": 2,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    "S03": {
+      "attach": 16,
+      "hit": 16,
+      "recall": 1.0,
+      "abstain": 2,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    "S04": {
+      "attach": 16,
+      "hit": 16,
+      "recall": 1.0,
+      "abstain": 2,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    "S05": {
+      "attach": 16,
+      "hit": 16,
+      "recall": 1.0,
+      "abstain": 2,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    "S06": {
+      "attach": 16,
+      "hit": 16,
+      "recall": 1.0,
+      "abstain": 2,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    "S07": {
+      "attach": 16,
+      "hit": 16,
+      "recall": 1.0,
+      "abstain": 2,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    "S08": {
+      "attach": 16,
+      "hit": 16,
+      "recall": 1.0,
+      "abstain": 2,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    "S09": {
+      "attach": 16,
+      "hit": 16,
+      "recall": 1.0,
+      "abstain": 2,
+      "injected": 0,
+      "injection_rate": 0.0
+    },
+    "S10": {
+      "attach": 16,
+      "hit": 16,
+      "recall": 1.0,
+      "abstain": 2,
+      "injected": 0,
+      "injection_rate": 0.0
+    }
+  },
   "dev_curve": [
     {
       "threshold": 0.0,

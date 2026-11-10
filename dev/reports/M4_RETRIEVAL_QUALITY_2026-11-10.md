@@ -59,6 +59,16 @@
 - 这是同一合成查询集的切分，不是独立真实语料；
 - 不能据此确定真实阈值。
 
+## 2.06 分 scope 稳定性
+
+阈值 1.139003 下 10 个 scope：
+
+| scope | attach | hit | abstain | injected |
+|---|---:|---:|---:|---:|
+| S01–S10 | 各 16 | 各 16 | 各 2 | 各 0 |
+
+所有 scope attach recall 1.0、误注入 0；仍是同一合成 fixture，不代表真实跨域泛化。
+
 ## 2.1 min_score 阈值消融
 
 | min_score | R@1 | R@5 | MRR | inj@1 | inj@5 |
