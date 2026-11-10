@@ -625,6 +625,19 @@ class V15Store:
                 (_now(), scope_id, source_seq))
         return cursor.rowcount > 0
 
+    def reconcile_ready(self, scope_id: str) -> dict:
+        """Enqueue recoverable work without attaching or changing evidence."""
+        missing = self.manifest_missing_receipts(scope_id)
+        pending = self.db.execute("""SELECT source_seq,reason FROM resolution_pending
+            WHERE scope_id=? AND status='PENDING' ORDER BY source_seq""",
+            (scope_id,)).fetchall()
+        for item in missing:
+            self.enqueue_ready(scope_id, item["source_seq"], "missing_receipt")
+        for row in pending:
+            self.enqueue_ready(scope_id, row[0], "pending_recheck")
+        return {"missing_receipts": len(missing), "pending": len(pending),
+                "ready": len(self.poll_ready(scope_id, 100000))}
+
     def register_manifest(self, scope_id: str, entries: list[tuple[int, str]]) -> None:
         with self._write():
             for seq, source_id in entries:

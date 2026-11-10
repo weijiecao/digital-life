@@ -83,7 +83,7 @@ cursor: repeat=ALREADY / evidence=2
 - unit 内抛错后三表均回滚；
 - 嵌套 unit 外层抛错不会提前提交。
 
-全量回归 **448/448**。
+全量回归 **449/449**。
 
 仍待工程接线：
 
@@ -295,6 +295,30 @@ F1 0.92857
 - generation/dirty/read 版本过滤；
 - 索引读取端统一走 effective 契约；
 - 旧归属失效与新归属发布同事务。
+
+## 4.12 恢复扫描：reconcile_ready
+
+新增 `reconcile_ready(scope)`：
+
+- 扫描 manifest 中缺回执的来源；
+- 扫描 PENDING 来源；
+- 只入 READY 队列，不 attach、不改 evidence；
+- 返回 missing/pending/ready 计数。
+
+测试：
+
+```text
+manifest 1,2,3；receipt 1
+pending 4
+→ missing 2，pending 1，ready [2,3,4]
+→ event_evidence 仍为 0
+```
+
+仍未完成：
+
+- 后台 worker 消费 READY；
+- 重评冻结输入与新判决；
+- 重评后当前归属原子切换。
 
 ## 5. 工程侧下一步
 

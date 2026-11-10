@@ -1,11 +1,11 @@
 # E5.0-F 工程状态（自动生成，勿手改）
 
-> 由 `python scripts/report.py` 生成于 2026-11-10T10:47:53+08:00；插件版本 `1.0.19`。
+> 由 `python scripts/report.py` 生成于 2026-11-10T10:51:22+08:00；插件版本 `1.0.19`。
 > 文档中的用例数、通过率、评估分一律引用本文件，不再手写。
 
 ## 一句话
 
-**离线用例 448/448 通过**；场景评估 14/15；集成探针注入 8/8。
+**离线用例 449/449 通过**；场景评估 14/15；集成探针注入 8/8。
 
 **真实环境**：AstrBot 4.29.3 上插件加载成功，1 轮真实请求中 1 轮看到记忆片段（平台 WebChat、provider 为本地 mock）。
 
@@ -30,9 +30,9 @@
 
 | 套件 | 用例 | 失败/错误 | 跳过 | 耗时 |
 |---|---|---|---|---|
-| `tests.test_store` | 162 | 0 | 0 | 13.5s |
+| `tests.test_store` | 162 | 0 | 0 | 13.3s |
 | `tests.test_plugin` | 78 | 0 | 0 | 7.3s |
-| `tests.test_data_safety` | 4 | 0 | 0 | 0.1s |
+| `tests.test_data_safety` | 4 | 0 | 0 | 0.2s |
 | `tests.test_v1_5_consolidator` | 18 | 0 | 0 | 0.2s |
 | `tests.test_b4_fixture` | 3 | 0 | 0 | 0.0s |
 | `tests.test_b4_reliability` | 11 | 0 | 0 | 0.6s |
@@ -43,15 +43,15 @@
 | `tests.test_b4_replay_mapping` | 6 | 0 | 0 | 0.1s |
 | `tests.test_b4_frozen_fork` | 2 | 0 | 0 | 0.1s |
 | `tests.test_b4_unit_of_work` | 7 | 0 | 0 | 0.1s |
-| `tests.test_b4_scope_lease` | 8 | 0 | 0 | 0.1s |
+| `tests.test_b4_scope_lease` | 9 | 0 | 0 | 0.2s |
 | `tests.test_baseline_alignment` | 6 | 0 | 0 | 0.1s |
 | `tests.test_preflight` | 6 | 0 | 0 | 0.0s |
 | `tests.test_auto_jobs` | 4 | 0 | 0 | 0.2s |
 | `tests.test_backup_regression` | 6 | 0 | 0 | 0.6s |
 | `tests.test_prewarm` | 5 | 0 | 0 | 1.1s |
 | `tests.test_model_judge` | 23 | 0 | 0 | 2.0s |
-| `tests.test_delivery` | 13 | 0 | 0 | 0.9s |
-| `tests.test_soak` | 11 | 0 | 0 | 9.4s |
+| `tests.test_delivery` | 13 | 0 | 0 | 1.0s |
+| `tests.test_soak` | 11 | 0 | 0 | 9.3s |
 | `tests.test_threshold` | 3 | 0 | 0 | 0.4s |
 | `tests.test_correction` | 3 | 0 | 0 | 0.1s |
 | `tests.test_metrics` | 3 | 0 | 0 | 0.2s |
@@ -61,7 +61,7 @@
 | `tests.test_attribution` | 4 | 0 | 0 | 0.0s |
 | `tests.test_panel` | 6 | 0 | 0 | 0.3s |
 | `tests.test_integration_chain` | 12 | 0 | 0 | 0.5s |
-| **合计** | **448** | **0** | | |
+| **合计** | **449** | **0** | | |
 
 ## 评估与探针
 
@@ -72,7 +72,7 @@
 | 真实 BGE 场景评估 | 13/15 | 真实编码；失败项见 BGE_CALIBRATION |
 | 上游基线检索对齐 | plain 0/2；weak 0/2；semantic_fixture 2/2 | 规则 0/2 是结构性的；semantic_fixture 仅证明管线 |
 | 集成探针·注入 | 8/8 轮 | 替身平台与受控编码器 |
-| 集成探针·钩子耗时 | P50 4.1ms / P95 5.1ms | 不含真实 BGE 编码 |
+| 集成探针·钩子耗时 | P50 2.6ms / P95 12.9ms | 不含真实 BGE 编码 |
 | 集成探针·重启 | 积压 8 → 0，重复采集=否 | 同一进程重启，非崩溃恢复 |
 | 集成探针·不兼容宿主 | 静默放行=是 | 模拟缺 extra_user_content_parts |
 
@@ -200,7 +200,7 @@
 |---|---|---|---|
 | 采集成功率（真实私聊 3 天） | ≥99% | 无实机数据 | 未测 |
 | 注入生效 | ≥95% | 100%（替身） | 仅替身证据 |
-| P95 钩子耗时 | <1.5s | 5ms（替身，无 BGE 编码） | 仅替身证据 |
+| P95 钩子耗时 | <1.5s | 13ms（替身，无 BGE 编码） | 仅替身证据 |
 | 备份可生成/校验/恢复/删除 | 全部通过 | 通过 | 单测通过 |
 | 重启续跑、无重复注入 | 通过 | 通过 | 探针通过（替身） |
 | 真实框架注入（AstrBot 4.29.3） | 可见 | 1/1 轮 / 0.09s | real（WebChat+mock） |

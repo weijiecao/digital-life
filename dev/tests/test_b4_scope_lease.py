@@ -37,6 +37,21 @@ class TestScopeLeaseReceipt(unittest.TestCase):
             self.assertEqual(store.contiguous_frontier("s"), 2)
             store.close()
 
+    def test_reconcile_enqueues_missing_and_pending(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            store.register_manifest("s", [(1, "a"), (2, "b"), (3, "c")])
+            store.record_receipt("s", 1, "ATTACHED", "h1")
+            store.save_pending("s", 4, [{"candidate_event_id": "old",
+                                         "label": "SAME_EVENT"}],
+                               {"old": ["e1", "e2"]}, "split")
+            result = store.reconcile_ready("s")
+            self.assertEqual(result["missing_receipts"], 2)
+            self.assertEqual(result["pending"], 1)
+            self.assertEqual([r["source_seq"] for r in store.poll_ready("s")], [2, 3, 4])
+            self.assertEqual(store.db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0], 0)
+            store.close()
+
     def test_ready_queue_dedup_and_order(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))
