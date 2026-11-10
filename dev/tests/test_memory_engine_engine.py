@@ -103,5 +103,21 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_revise_and_withdraw(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            old = engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "住在杭州"))
+            new_event = engine.revise_source(
+                "s", 1, SourceEnvelope("s", 2, "sha", "t", "搬到上海"))
+            self.assertEqual(engine.retrieve("s", "杭州"), [])
+            self.assertEqual([h["event_id"] for h in engine.retrieve("s", "上海")],
+                             [new_event])
+            self.assertTrue(engine.withdraw_event("s", new_event))
+            self.assertEqual(engine.retrieve("s", "上海"), [])
+            self.assertEqual(store.events_for_source("s", 1), [])
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

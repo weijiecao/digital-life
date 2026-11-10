@@ -118,6 +118,33 @@ class MemoryEngine:
         self._bump(scope_id)
         return count
 
+    def revise_source(self, scope_id: str, old_source_seq: int,
+                      new_source: SourceEnvelope,
+                      provenance: dict | None = None) -> str:
+        """Replace a source's current membership with a new event."""
+        with self.store.unit_of_work():
+            old_events = self.store.events_for_source(scope_id, old_source_seq)
+            self.store.invalidate_source_evidence(scope_id, old_source_seq)
+            event_id = self.store.create_event_from_source(
+                scope_id, new_source, event_type="unknown",
+                title=new_source.text[:80], provenance=provenance)
+            self.store.attach_source(scope_id, new_source, event_id, "revise")
+            self.store.record_receipt(scope_id, new_source.source_seq,
+                                      "REVISED", new_source.source_hash)
+            for old_event in old_events:
+                self.store.db.execute("""INSERT INTO event_relation
+                    (scope_id,from_event,to_event,relation_type,status,source_seq,created_at)
+                    VALUES(?,?,?,'SUPERSEDES','active',?,?)""",
+                    (scope_id, old_event, event_id, new_source.source_seq,
+                     "2026-11-10T00:00:00+00:00"))
+        self._bump(scope_id)
+        return event_id
+
+    def withdraw_event(self, scope_id: str, event_id: str) -> bool:
+        ok = self.store.withdraw_event(scope_id, event_id)
+        self._bump(scope_id)
+        return ok
+
     def health(self) -> dict:
         return {"events": self.store.db.execute(
             "SELECT COUNT(*) FROM event_candidate").fetchone()[0],

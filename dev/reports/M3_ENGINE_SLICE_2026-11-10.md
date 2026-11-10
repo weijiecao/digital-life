@@ -54,6 +54,21 @@ memory-engine --db <path> health
 
 规则是保守词面规则，不是完整语义投影。
 
+## 2.3 更正与撤回
+
+新增：
+
+- `revise_source(scope, old_seq, new_source)`：
+  - 失效旧 evidence；
+  - 创建新事件并 attach；
+  - 写 SUPERSEDES 关系；
+- `withdraw_event(scope, event_id)`：
+  - state=withdrawn；
+  - evidence 失效；
+  - 检索不可见。
+
+测试：旧“杭州”事件被“搬到上海”替代后不可检索；withdraw 后新事件也不可检索。
+
 ## 3. 明确边界
 
 未实现：

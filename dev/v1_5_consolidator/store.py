@@ -832,6 +832,17 @@ class V15Store:
                 WHERE scope_id=? AND source_seq=?""", (now, scope_id, source_seq))
         return count
 
+    def withdraw_event(self, scope_id: str, event_id: str) -> bool:
+        with self.unit_of_work():
+            cursor = self.db.execute("""UPDATE event_candidate SET state='withdrawn',
+                updated_at=? WHERE event_id=? AND scope_id=? AND state!='withdrawn'""",
+                (_now(), event_id, scope_id))
+            if cursor.rowcount:
+                self.db.execute("""UPDATE event_evidence SET valid=0
+                    WHERE scope_id=? AND event_id=? AND valid=1""",
+                    (scope_id, event_id))
+        return cursor.rowcount > 0
+
     def apply_tombstones(self, target: "V15Store") -> int:
         """Re-apply local source deletions after restoring a backup."""
         rows = self.db.execute("""SELECT scope_id,source_seq,deleted_at
