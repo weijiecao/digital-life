@@ -1,0 +1,10 @@
+{
+  "events": 10000,
+  "queries": 200,
+  "index_build_ms": 89.42,
+  "p50_query_ms": 37.204,
+  "p95_query_ms": 49.257,
+  "max_query_ms": 76.21,
+  "total_hits": 2000,
+  "integrity": "ok"
+}

@@ -29,6 +29,7 @@
 > M4 索引更新：[`reports/M4_INDEX_UPDATE_2026-11-10.md`](../reports/M4_INDEX_UPDATE_2026-11-10.md)
 > M5 上下文缓存：[`reports/M5_CONTEXT_CACHE_2026-11-10.md`](../reports/M5_CONTEXT_CACHE_2026-11-10.md)
 > M6 备份切片：[`reports/M6_BACKUP_SLICE_2026-11-10.md`](../reports/M6_BACKUP_SLICE_2026-11-10.md)
+> M6 10k 烟测：[`reports/M6_SCALE_SMOKE_2026-11-10.md`](../reports/M6_SCALE_SMOKE_2026-11-10.md)
 > M7 模拟宿主：[`reports/M7_HOST_ADAPTER_2026-11-10.md`](../reports/M7_HOST_ADAPTER_2026-11-10.md)
 > B4 可靠性：[`reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md`](../reports/V1_5B_B4_RELIABILITY_REPORT_2026-11-08.md)
 
