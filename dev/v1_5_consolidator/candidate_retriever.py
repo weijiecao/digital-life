@@ -162,7 +162,8 @@ class HybridCandidateIndex:
             self.embedding.add(anchor)
         self._anchors[(anchor.scope_id, anchor.event_id)] = anchor
 
-    def search(self, scope_id: str, query: str, k: int = 10) -> list[Candidate]:
+    def search(self, scope_id: str, query: str, k: int = 10,
+               min_score: float = 0.0) -> list[Candidate]:
         # RRF fuses *ranks*, not uncalibrated BM25 and cosine scores.
         # Higher ranks (1 is best) must always receive a larger contribution.
         rrf_k = 60
@@ -181,6 +182,7 @@ class HybridCandidateIndex:
         # Prefer the lexical rank as the deterministic tie-breaker.
         ranked = sorted(scores.items(),
                         key=lambda item: (-item[1], lexical_ranks.get(item[0], float("inf")), item[0]))[:k]
+        ranked = [item for item in ranked if item[1] >= min_score]
         return [Candidate(event_id=event_id, score=round(score, 6),
                           reasons=reasons[event_id][:8],
                           anchor_version=self._anchors[(scope_id, event_id)].version)
