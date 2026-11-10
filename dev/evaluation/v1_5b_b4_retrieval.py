@@ -15,7 +15,7 @@ from v1_5_consolidator.candidate_retriever import (EventAnchor,
                                                    LexicalCandidateIndex)
 
 
-def evaluate(root: str, encoder=None) -> dict:
+def evaluate(root: str, encoder=None, min_score: float = 0.0) -> dict:
     fixture = B4Fixture.load(root)
     ks = (1, 5, 10)
     hits = {k: 0 for k in ks}
@@ -43,7 +43,7 @@ def evaluate(root: str, encoder=None) -> dict:
                                   anchor_text=text,
                                   evidence_refs=[item["source_id"] for item in prior]))
             event_ids.append(event["event_id"])
-        ranked = [item.event_id for item in index.search(scope, query_message["text"], k=max(ks))]
+        ranked = [item.event_id for item in index.search(scope, query_message["text"], k=max(ks), min_score=min_score)]
         if gold["expected"] != "ATTACH_EXISTING":
             abstain_expected += 1
             for k in (1, 5):
@@ -74,12 +74,13 @@ def main(argv=None) -> int:
     parser.add_argument("--root", required=True)
     parser.add_argument("--bge-model", default="")
     parser.add_argument("--out", required=True)
+    parser.add_argument("--min-score", type=float, default=0.0)
     args = parser.parse_args(argv)
     encoder = None
     if args.bge_model:
         from sentence_transformers import SentenceTransformer
         encoder = SentenceTransformer(args.bge_model, device="cpu")
-    result = evaluate(args.root, encoder)
+    result = evaluate(args.root, encoder, args.min_score)
     payload = {"suite": "v1.5b-b4-retrieval",
                "method": "bm25+bge" if encoder is not None else "lexical",
                "dataset": "synthetic_b4_v1", **result}

@@ -1,0 +1,133 @@
+{
+  "suite": "v1.5b-b4-retrieval",
+  "method": "lexical",
+  "dataset": "synthetic_b4_v1",
+  "scope_count": 10,
+  "queries_attach": 160,
+  "abstain_expected": 20,
+  "abstain_false_injection": {
+    "1": 0.0,
+    "5": 0.0
+  },
+  "recall": {
+    "1": 0.7063,
+    "5": 0.8688,
+    "10": 0.8688
+  },
+  "mrr": 0.7875,
+  "errors": [
+    {
+      "query_id": "Q0001",
+      "gold_event": "S01-E01",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0003",
+      "gold_event": "S01-E02",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0004",
+      "gold_event": "S01-E02",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0019",
+      "gold_event": "S02-E01",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0037",
+      "gold_event": "S03-E01",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0039",
+      "gold_event": "S03-E02",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0040",
+      "gold_event": "S03-E02",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0041",
+      "gold_event": "S03-E03",
+      "ranked": [
+        "S03-E04"
+      ]
+    },
+    {
+      "query_id": "Q0055",
+      "gold_event": "S04-E01",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0057",
+      "gold_event": "S04-E02",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0058",
+      "gold_event": "S04-E02",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0073",
+      "gold_event": "S05-E01",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0109",
+      "gold_event": "S07-E01",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0111",
+      "gold_event": "S07-E02",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0112",
+      "gold_event": "S07-E02",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0113",
+      "gold_event": "S07-E03",
+      "ranked": [
+        "S07-E04"
+      ]
+    },
+    {
+      "query_id": "Q0145",
+      "gold_event": "S09-E01",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0147",
+      "gold_event": "S09-E02",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0148",
+      "gold_event": "S09-E02",
+      "ranked": []
+    },
+    {
+      "query_id": "Q0149",
+      "gold_event": "S09-E03",
+      "ranked": [
+        "S09-E04"
+      ]
+    },
+    {
+      "query_id": "Q0167",
+      "gold_event": "S10-E03",
+      "ranked": [
+        "S10-E04"
+      ]
+    }
+  ]
+}

@@ -34,5 +34,13 @@ class TestIndexUpdate(unittest.TestCase):
         self.assertGreater(index.search("s", "火箭")[0].score, 0)
 
 
+    def test_min_score_can_abstain(self):
+        index = LexicalCandidateIndex()
+        index.add(EventAnchor("e1", "s", canonical_title="熊猫"))
+        self.assertEqual(index.search("s", "熊猫", min_score=1000), [])
+        self.assertEqual([c.event_id for c in index.search("s", "熊猫", min_score=0.1)],
+                         ["e1"])
+
+
 if __name__ == "__main__":
     unittest.main()

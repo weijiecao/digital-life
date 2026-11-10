@@ -73,7 +73,8 @@ class LexicalCandidateIndex:
             self._doc_freq[anchor.scope_id][term] += 1
         self._anchors[key] = anchor
 
-    def search(self, scope_id: str, query: str, k: int = 10) -> list[Candidate]:
+    def search(self, scope_id: str, query: str, k: int = 10,
+               min_score: float = 0.0) -> list[Candidate]:
         query_terms = Counter(_terms(query))
         if not query_terms:
             return []
@@ -94,6 +95,8 @@ class LexicalCandidateIndex:
                 shared.append(term)
             if score > 0:
                 anchor = self._anchors[(scope, event_id)]
+                if score < min_score:
+                    continue
                 candidates.append(Candidate(event_id=event_id, score=round(score, 6),
                                             reasons=["lexical:" + ",".join(shared[:8])],
                                             anchor_version=anchor.version))
