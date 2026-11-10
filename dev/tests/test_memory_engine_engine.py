@@ -43,5 +43,19 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_projection_types(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            engine = MemoryEngine(store)
+            cases = [("我打算下周去青岛", "plan"), ("我喜欢乌龙茶", "preference"),
+                     ("故事里他去了雪山", "story"), ("我昨天去了成都", "experience")]
+            for index, (text, expected) in enumerate(cases, start=1):
+                receipt = engine.ingest(
+                    "s", SourceEnvelope("s", index, "sha", "t", text))
+                items = store.memory_items_for_event(receipt.event_id)
+                self.assertEqual(items[0]["item_type"], expected)
+            store.close()
+
+
 if __name__ == "__main__":
     unittest.main()

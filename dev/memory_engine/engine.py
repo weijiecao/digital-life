@@ -13,6 +13,8 @@ from dataclasses import dataclass
 from v1_5_consolidator.contracts import SourceEnvelope
 from v1_5_consolidator.store import V15Store
 
+from memory_engine.projection import classify_memory
+
 
 @dataclass(frozen=True)
 class CaptureReceipt:
@@ -32,6 +34,9 @@ class MemoryEngine:
             event_id = self.store.create_event_from_source(
                 scope_id, source, event_type="unknown",
                 title=source.text[:80], provenance=provenance)
+            item_type, modality = classify_memory(source.text)
+            self.store.save_memory_item(scope_id, event_id, item_type,
+                                        source.text, modality)
             self.store.attach_source(scope_id, source, event_id, "engine-ingest")
             receipt_ok = self.store.record_receipt(
                 scope_id, source.source_seq, "ATTACHED", source.source_hash)

@@ -143,6 +143,10 @@ class V15Store:
           scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL, source_hash TEXT NOT NULL,
           recorded_at TEXT NOT NULL, text TEXT NOT NULL,
           PRIMARY KEY(scope_id, source_seq));
+        CREATE TABLE IF NOT EXISTS memory_item(
+          item_id TEXT PRIMARY KEY, scope_id TEXT NOT NULL, event_id TEXT NOT NULL,
+          item_type TEXT NOT NULL, text TEXT NOT NULL, modality TEXT NOT NULL,
+          created_at TEXT NOT NULL);
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -805,6 +809,22 @@ class V15Store:
             WHERE event_id=? AND scope_id=? AND state!='withdrawn'""",
             (event_id, scope_id)).fetchone()
         return row is not None
+
+    def save_memory_item(self, scope_id: str, event_id: str, item_type: str,
+                         text: str, modality: str = "asserted") -> str:
+        item_id = "mem_" + uuid.uuid4().hex
+        with self._write():
+            self.db.execute("""INSERT INTO memory_item
+                (item_id,scope_id,event_id,item_type,text,modality,created_at)
+                VALUES(?,?,?,?,?,?,?)""",
+                (item_id, scope_id, event_id, item_type, text, modality, _now()))
+        return item_id
+
+    def memory_items_for_event(self, event_id: str) -> list[dict]:
+        rows = self.db.execute("""SELECT item_id,item_type,text,modality
+            FROM memory_item WHERE event_id=? ORDER BY created_at""", (event_id,)).fetchall()
+        return [{"item_id": r[0], "item_type": r[1], "text": r[2], "modality": r[3]}
+                for r in rows]
 
     def event_provenance(self, event_id: str) -> dict:
         row = self.db.execute("""SELECT narrator,subject,reality_status,story_id

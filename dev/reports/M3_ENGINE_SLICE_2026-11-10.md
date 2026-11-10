@@ -38,6 +38,22 @@ memory-engine --db <path> health
 
 测试：ingest → search → context；health 空库。
 
+## 2.2 记忆类型投影
+
+新增 `memory_engine.projection.classify_memory`：
+
+- plan：打算/计划/准备；
+- preference：喜欢/讨厌/偏好；
+- experience：去了/吃了/见了/买了；
+- story：故事/小说/剧本；
+- 默认 statement。
+
+新增 `memory_item` 表与 `save_memory_item` / `memory_items_for_event`。
+
+测试：plan、preference、story、experience 四类正确落库。
+
+规则是保守词面规则，不是完整语义投影。
+
 ## 3. 明确边界
 
 未实现：
