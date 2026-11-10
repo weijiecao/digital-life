@@ -58,6 +58,23 @@
 
 多线程各自连接，通过 scope lease 串行写；同一 scope 无并发写冲突。不是多 scope 写扩展测试。
 
+## 1.4 多 scope 写并发
+
+| 项 | 值 |
+|---|---:|
+| scopes | 4 |
+| per scope | 2,500 |
+| sources | 10,000 |
+| workers | 4 |
+| wall | 16.98 s |
+| p95 | 2.215 ms |
+| errors | 0 |
+| evidence | 10,000 |
+| receipts | 10,000 |
+| integrity | ok |
+
+多 scope 可并行申请不同租约；SQLite 仍是单写者，但比单 scope 串行 10k（42.8 s）快。
+
 ## 2. 边界
 
 - 10 万只是单进程词面烟测，不是完整主档验收；

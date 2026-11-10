@@ -1,0 +1,12 @@
+{
+  "workers": 4,
+  "scopes": 4,
+  "per_scope": 2500,
+  "sources": 10000,
+  "wall_ms": 16984.93,
+  "p95_ms": 2.215,
+  "errors": 0,
+  "evidence": 10000,
+  "receipts": 10000,
+  "integrity": "ok"
+}
