@@ -52,6 +52,17 @@
 - 摘要不超过上限且保留否定词“不”；
 - context summary 有界，evidence 仍为长原文。
 
+## 2.3 精确 tokenizer
+
+新增 `memory_engine.token_budget.TokenCounter`：
+
+- 使用 tiktoken `cl100k_base`；
+- `build_context(..., token_counter=...)` 按真实 token 数裁剪；
+- packet 记录 `tokenizer` 与 `used_tokens`；
+- 无 tokenizer 时仍用 4 chars/token 保守上界。
+
+测试：`hello world`=2 tokens；5 token 预算返回空。
+
 ## 3. 边界
 
 - 缓存只在单个 `MemoryEngine` 实例内；

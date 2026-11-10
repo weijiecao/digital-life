@@ -74,10 +74,12 @@ class MemoryEngine:
                  "evidence": row[4]} for row in rows]
 
     def build_context(self, scope_id: str, query: str, budget: int = 2000,
-                      budget_tokens: int | None = None) -> dict:
-        if budget_tokens is not None:
+                      budget_tokens: int | None = None,
+                      token_counter=None) -> dict:
+        if budget_tokens is not None and token_counter is None:
             budget = min(budget, max(0, budget_tokens) * 4)
-        key = (scope_id, query, budget, budget_tokens)
+        tokenizer_name = getattr(token_counter, "encoding_name", None)
+        key = (scope_id, query, budget, budget_tokens, tokenizer_name)
         generation = self._generation[scope_id]
         cached = self.cache.get(key, generation)
         if cached is not None:
@@ -85,18 +87,28 @@ class MemoryEngine:
         items = self.retrieve(scope_id, query, limit=10)
         selected = []
         used = 0
+        used_tokens = 0
         for item in items:
-            size = len(item.get("summary", "")) + len(item.get("evidence", ""))
-            if used + size > budget:
+            chars = len(item.get("summary", "")) + len(item.get("evidence", ""))
+            tokens = (token_counter.count(item.get("summary", ""))
+                      + token_counter.count(item.get("evidence", ""))
+                      if token_counter is not None else None)
+            if token_counter is not None and budget_tokens is not None:
+                if used_tokens + tokens > budget_tokens:
+                    break
+                used_tokens += tokens
+            elif used + chars > budget:
                 break
             selected.append(item)
-            used += size
+            used += chars
         packet = {"schema_version": "memory-context-v1", "scope_id": scope_id,
                   "query": query, "items": selected, "source_refs": [
                       {"event_id": item["event_id"]} for item in selected],
                   "budget_chars": budget, "used_chars": used,
                   "budget_tokens": budget_tokens,
-                  "used_tokens": (used + 3) // 4 if budget_tokens is not None else None,
+                  "used_tokens": (used_tokens if token_counter is not None
+                                  else ((used + 3) // 4 if budget_tokens is not None else None)),
+                  "tokenizer": tokenizer_name,
                   "degraded": len(selected) < len(items)}
         self.cache.put(key, generation, packet)
         return packet
