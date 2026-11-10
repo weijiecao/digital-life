@@ -147,6 +147,9 @@ class V15Store:
           item_id TEXT PRIMARY KEY, scope_id TEXT NOT NULL, event_id TEXT NOT NULL,
           item_type TEXT NOT NULL, text TEXT NOT NULL, modality TEXT NOT NULL,
           created_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS source_tombstone(
+          scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL, deleted_at TEXT NOT NULL,
+          PRIMARY KEY(scope_id, source_seq));
         """)
         job_cols = {row[1] for row in self.db.execute("PRAGMA table_info(consolidation_job)")}
         if "owner_id" not in job_cols:
@@ -813,10 +816,28 @@ class V15Store:
     def delete_source(self, scope_id: str, source_seq: int) -> int:
         with self.unit_of_work():
             count = self.invalidate_source_evidence(scope_id, source_seq)
+            now = _now()
+            self.db.execute("""INSERT OR REPLACE INTO source_tombstone
+                (scope_id,source_seq,deleted_at) VALUES(?,?,?)""",
+                (scope_id, source_seq, now))
             self.db.execute("""UPDATE source_ref SET deleted_at=?
-                WHERE scope_id=? AND source_seq=?""",
-                (_now(), scope_id, source_seq))
+                WHERE scope_id=? AND source_seq=?""", (now, scope_id, source_seq))
         return count
+
+    def apply_tombstones(self, target: "V15Store") -> int:
+        """Re-apply local source deletions after restoring a backup."""
+        rows = self.db.execute("""SELECT scope_id,source_seq,deleted_at
+            FROM source_tombstone""").fetchall()
+        for scope_id, source_seq, deleted_at in rows:
+            target.invalidate_source_evidence(scope_id, source_seq)
+            with target._write():
+                target.db.execute("""INSERT OR REPLACE INTO source_tombstone
+                    (scope_id,source_seq,deleted_at) VALUES(?,?,?)""",
+                    (scope_id, source_seq, deleted_at))
+                target.db.execute("""UPDATE source_ref SET deleted_at=?
+                    WHERE scope_id=? AND source_seq=?""",
+                    (deleted_at, scope_id, source_seq))
+        return len(rows)
 
     def event_in_scope(self, event_id: str, scope_id: str) -> bool:
         row = self.db.execute("""SELECT 1 FROM event_candidate

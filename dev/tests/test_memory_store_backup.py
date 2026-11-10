@@ -40,5 +40,23 @@ class TestBackup(unittest.TestCase):
                 source.close()
 
 
+    def test_restore_reapplies_tombstones(self):
+        with tempfile.TemporaryDirectory() as d:
+            source = V15Store(str(Path(d) / "source.sqlite3"))
+            engine = MemoryEngine(source)
+            receipt = engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "要删除"))
+            backup_path = str(Path(d) / "before-delete.sqlite3")
+            source.backup_to(backup_path)
+            engine.delete_source("s", 1)
+            backup = V15Store(backup_path)
+            try:
+                self.assertEqual(backup.effective_events_for_source("s", 1), [receipt.event_id])
+                self.assertEqual(source.apply_tombstones(backup), 1)
+                self.assertEqual(backup.effective_events_for_source("s", 1), [])
+            finally:
+                backup.close()
+                source.close()
+
+
 if __name__ == "__main__":
     unittest.main()

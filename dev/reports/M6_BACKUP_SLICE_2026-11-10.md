@@ -27,6 +27,21 @@
 
 全量：**471/471**。
 
+## 2.1 删除清单重放
+
+新增 `source_tombstone`：
+
+- `delete_source` 写入 tombstone；
+- `apply_tombstones(target)` 在恢复后的备份库上重新失效 evidence；
+- 恢复旧备份不会复活已删除来源。
+
+测试：
+
+```text
+备份 → 删除 → 恢复旧备份 → apply_tombstones
+→ effective 为空
+```
+
 ## 3. 边界
 
 - 未实现自动备份调度；
