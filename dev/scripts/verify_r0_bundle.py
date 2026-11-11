@@ -65,7 +65,7 @@ print(json.dumps({'isolated_import': True, 'ingest_repeat_conflict': True,
 def locate(bundle):
     if bundle:
         return Path(bundle).resolve()
-    for name in ('memory-engine-r0-rc2.zip', 'memory-engine-r0-rc1.zip'):
+    for name in ('memory-engine-r0-rc3.zip', 'memory-engine-r0-rc2.zip', 'memory-engine-r0-rc1.zip'):
         for folder in (ROOT.parent / 'releases', ROOT.parent / '_publish/digital-life/releases'):
             if (folder / name).is_file():
                 return folder / name

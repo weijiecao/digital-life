@@ -1,0 +1,228 @@
+[
+  {
+    "group": "family",
+    "split": "holdout",
+    "messages": {
+      "initial": "妈妈周日去银行，上午十点。",
+      "current": "妈妈周日去银行，最终确认上午十一点。",
+      "deleted": "撤回便签妈妈银行，临时方案下午。",
+      "withdrawn": "已废弃选项妈妈银行，备份方案周一。",
+      "other_scope": "隔壁组专属妈妈银行，上午九点。"
+    },
+    "initial_provenance": {
+      "narrator": "user",
+      "subject": "family",
+      "reality_status": "real",
+      "story_id": null
+    },
+    "queries": [
+      {
+        "case": "family:subject_family:1",
+        "category": "subject_family",
+        "query": "妈妈周日去银行几点",
+        "expected": "current"
+      },
+      {
+        "case": "family:subject_wrong:2",
+        "category": "subject_wrong",
+        "query": "我周日去银行几点",
+        "expected": null
+      },
+      {
+        "case": "family:time_current:3",
+        "category": "time_current",
+        "query": "现在妈妈去银行是周日上午十一点吗",
+        "expected": "current"
+      },
+      {
+        "case": "family:time_old:4",
+        "category": "time_old",
+        "query": "原来妈妈去银行是周日上午十点吗",
+        "expected": null
+      },
+      {
+        "case": "family:correction:5",
+        "category": "correction",
+        "query": "妈妈去银行改成了几点",
+        "expected": "current"
+      },
+      {
+        "case": "family:withdrawal:6",
+        "category": "withdrawal",
+        "query": "撤回便签妈妈银行",
+        "expected": null
+      },
+      {
+        "case": "family:no_answer:7",
+        "category": "no_answer",
+        "query": "妈妈银行的付款凭证",
+        "expected": null
+      },
+      {
+        "case": "family:paraphrase:8",
+        "category": "paraphrase",
+        "query": "母亲周末去金融机构的时间",
+        "expected": "current"
+      }
+    ]
+  },
+  {
+    "group": "repair",
+    "split": "holdout",
+    "messages": {
+      "initial": "单车检修约在周三，暂定东门。",
+      "current": "单车检修约在周五，最终确认西门。",
+      "deleted": "撤回便签单车检修，临时方案北门。",
+      "withdrawn": "已废弃选项单车检修，备份方案南门。",
+      "other_scope": "隔壁组专属单车检修，东门。"
+    },
+    "initial_provenance": {
+      "narrator": "user",
+      "subject": "user",
+      "reality_status": "real",
+      "story_id": null
+    },
+    "queries": [
+      {
+        "case": "repair:time_current:1",
+        "category": "time_current",
+        "query": "现在单车检修在周五吗",
+        "expected": "current"
+      },
+      {
+        "case": "repair:time_old:2",
+        "category": "time_old",
+        "query": "原来单车检修在周三吗",
+        "expected": null
+      },
+      {
+        "case": "repair:correction:3",
+        "category": "correction",
+        "query": "单车检修改到哪个门了",
+        "expected": "current"
+      },
+      {
+        "case": "repair:withdrawal:4",
+        "category": "withdrawal",
+        "query": "备份方案单车检修",
+        "expected": null
+      },
+      {
+        "case": "repair:no_answer:5",
+        "category": "no_answer",
+        "query": "单车检修的付款凭证",
+        "expected": null
+      },
+      {
+        "case": "repair:paraphrase:6",
+        "category": "paraphrase",
+        "query": "自行车送修的最终地点",
+        "expected": "current"
+      }
+    ]
+  },
+  {
+    "group": "story2",
+    "split": "holdout",
+    "messages": {
+      "initial": "故事里的角色阿岚周四去海边，暂定北岸。",
+      "current": "故事里的角色阿岚周四去海边，最终确认南岸。",
+      "deleted": "撤回便签故事角色阿岚，临时方案东岸。",
+      "withdrawn": "已废弃选项故事角色阿岚，备份方案西岸。",
+      "other_scope": "隔壁组专属故事角色阿岚，北岸。"
+    },
+    "initial_provenance": {
+      "narrator": "user",
+      "subject": "story_character",
+      "reality_status": "fictional",
+      "story_id": "story-1"
+    },
+    "queries": [
+      {
+        "case": "story2:story:1",
+        "category": "story",
+        "query": "故事里的角色阿岚周四去海边哪里",
+        "expected": "current"
+      },
+      {
+        "case": "story2:reality_wrong:2",
+        "category": "reality_wrong",
+        "query": "真实的我周四去海边哪里",
+        "expected": null
+      },
+      {
+        "case": "story2:subject_wrong:3",
+        "category": "subject_wrong",
+        "query": "我周四去海边哪里",
+        "expected": null
+      },
+      {
+        "case": "story2:no_answer:4",
+        "category": "no_answer",
+        "query": "故事角色的付款凭证",
+        "expected": null
+      },
+      {
+        "case": "story2:paraphrase:5",
+        "category": "paraphrase",
+        "query": "虚构人物周末去海边的地点",
+        "expected": "current"
+      }
+    ]
+  },
+  {
+    "group": "move",
+    "split": "holdout",
+    "messages": {
+      "initial": "搬家改到周六上午，暂定三楼。",
+      "current": "搬家改到周日上午，最终确认五楼。",
+      "deleted": "撤回便签搬家，临时方案一楼。",
+      "withdrawn": "已废弃选项搬家，备份方案二楼。",
+      "other_scope": "隔壁组专属搬家，三楼。"
+    },
+    "initial_provenance": {
+      "narrator": "user",
+      "subject": "user",
+      "reality_status": "real",
+      "story_id": null
+    },
+    "queries": [
+      {
+        "case": "move:time_current:1",
+        "category": "time_current",
+        "query": "现在搬家在周日上午吗",
+        "expected": "current"
+      },
+      {
+        "case": "move:time_old:2",
+        "category": "time_old",
+        "query": "原来搬家在周六上午吗",
+        "expected": null
+      },
+      {
+        "case": "move:correction:3",
+        "category": "correction",
+        "query": "搬家改到几楼了",
+        "expected": "current"
+      },
+      {
+        "case": "move:withdrawal:4",
+        "category": "withdrawal",
+        "query": "已废弃选项搬家",
+        "expected": null
+      },
+      {
+        "case": "move:no_answer:5",
+        "category": "no_answer",
+        "query": "搬家的联系人号码",
+        "expected": null
+      },
+      {
+        "case": "move:paraphrase:6",
+        "category": "paraphrase",
+        "query": "搬迁最终安排在几楼",
+        "expected": "current"
+      }
+    ]
+  }
+]

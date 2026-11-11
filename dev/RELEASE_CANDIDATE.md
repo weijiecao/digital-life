@@ -1,4 +1,4 @@
-# Memory Engine RC2（离线候选包）
+# Memory Engine RC3（离线候选包）
 
 状态：R0 / R1 NO-GO。该包用于隔离验证，不是 V1 生产插件，不自动部署。
 

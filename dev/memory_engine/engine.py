@@ -39,6 +39,58 @@ def _question_content(query: str) -> str:
     return " ".join(re.findall(r"[\u4e00-\u9fff]{2,}|[A-Za-z0-9_]+", content))
 
 
+def _answerable(query: str, text: str, semantic_score: float = 0.0) -> bool:
+    """Conservative evidence admission for one candidate.
+
+    Candidate recall may be semantic; this gate keeps unsupported values,
+    historical/superseded records, negative branches and unrecorded attributes
+    out of the context packet.
+    """
+    if not text:
+        return False
+    historical = re.search(r"\u521d\u7a3f|\u539f\u6765|\u539f\u5148|\u539f\u59cb|\u539f\u8ba1\u5212|\u539f\u5b89\u6392|\u65e7|\u521d\u59cb", query)
+    current = re.search(r"\u73b0\u5728|\u6700\u65b0|\u6700\u540e|\u5f53\u524d|\u5bf9\u6bd4", query)
+    if historical and not current:
+        return False
+    if re.search(r"\u64a4\u56de|\u5e9f\u5f03|\u5907\u4efd|\u4e34\u65f6\u65b9\u6848|\u9694\u58c1|\u5176\u4ed6\u7ec4|\u522b\u7684\u7ec4", query):
+        return False
+    if re.search(r"\u4ed8\u6b3e|\u51ed\u8bc1|\u53d1\u7968|\u8054\u7cfb\u4eba|\u7535\u8bdd|\u53f7\u7801|\u8d26\u53f7|\u5bc6\u7801|\u5408\u540c|\u7f16\u53f7|\u7eaa\u8981", query):
+        if not all(term in text for term in re.findall(r"\u4ed8\u6b3e|\u51ed\u8bc1|\u53d1\u7968|\u8054\u7cfb\u4eba|\u7535\u8bdd|\u53f7\u7801|\u8d26\u53f7|\u5bc6\u7801|\u5408\u540c|\u7f16\u53f7|\u7eaa\u8981", query)):
+            return False
+    if not re.search(r"\u662f\u4e0d\u662f|\u662f\u5426|\u5417|\u5462|\u600e\u4e48|\u4ec0\u4e48|\u5982\u4f55|\u54ea|\u51e0|\u591a\u5c11|\u4f55\u65f6", query):
+        match = re.search(r"(?:\u6700\u7ec8\u786e\u8ba4|\u786e\u8ba4|\u5b89\u6392\u662f|\u5b89\u6392\u4e3a|\u5b9a\u5728|\u6539\u6210|\u6539\u4e3a|\u662f|\u4e3a)([\u4e00-\u9fffA-Za-z0-9]{2,12})", query)
+        if match and match.group(1) not in text:
+            return False
+    content = _question_content(query)
+    if not content.strip():
+        return query.strip() in text
+    chars = set(re.findall(r"[\u4e00-\u9fffA-Za-z0-9]", content))
+    if not chars:
+        return query.strip() in text
+    if len(chars & set(text)) < 1 and semantic_score < 0.45:
+        return False
+    return True
+
+
+def _provenance_allows(query: str, provenance: dict) -> bool:
+    """Reject an explicitly different subject/story even if it is near in scope."""
+    subject = provenance.get("subject", "unknown")
+    reality = provenance.get("reality_status", "unknown")
+    if re.search(r"\u670b\u53cb|\u540c\u4e8b|\u4ed6\u4eba|\u522b\u4eba|\u5979|\u4ed6", query):
+        if subject == "user":
+            return False
+    if re.search(r"\u6545\u4e8b|\u865a\u6784|\u89d2\u8272", query):
+        if reality != "fictional":
+            return False
+    if re.search(r"\u771f\u5b9e|\u73b0\u5b9e|\u672c\u4eba", query):
+        if reality not in ("real", "unknown"):
+            return False
+    if re.search(r"\u6211|\u81ea\u5df1", query) and not re.search(r"\u6211\u7684\u670b\u53cb|\u6211\u7684\u540c\u4e8b", query):
+        if subject not in ("user", "unknown"):
+            return False
+    return True
+
+
 @dataclass(frozen=True)
 class CaptureReceipt:
     scope_id: str
@@ -117,6 +169,9 @@ class MemoryEngine:
         self._bump(scope_id)
         return CaptureReceipt(scope_id, source.source_seq, event_id, receipt_ok)
 
+    def _event_allowed(self, query: str, event_id: str) -> bool:
+        return _provenance_allows(query, self.store.event_provenance(event_id))
+
     def retrieve(self, scope_id: str, query: str, limit: int = 10,
                  min_score: float = 0.0) -> list[dict]:
         if self.encoder is not None and query:
@@ -141,6 +196,10 @@ class MemoryEngine:
                     AND p.status='PENDING')""" % marks, (scope_id, *ids)).fetchall()
             live = {row[0]: row for row in current}
             rows = [live[event_id] for event_id in ids if event_id in live]
+            semantic = index.semantic_scores(scope_id, query, [row[0] for row in rows]) if self.encoder is not None else {}
+            rows = [row for row in rows if _answerable(
+                query, " ".join(str(part or "") for part in (row[1], row[3], row[5])),
+                semantic.get(row[0], 0.0)) and self._event_allowed(query, row[0])]
             return [{"event_id": row[0], "title": row[1], "event_type": row[2],
                      "summary": self.summary_cache.get(row[3] or row[1] or ""),
                      "evidence": row[5]} for row in rows[:limit]]
@@ -195,6 +254,7 @@ class MemoryEngine:
             rows = [by_id[c.event_id] for c in ranked if c.event_id in by_id]
         else:
             rows = rows[:limit]
+        rows = [row for row in rows if _answerable(query, " ".join(str(part or "") for part in (row[1], row[3], row[4]))) and self._event_allowed(query, row[0])]
         return [{"event_id": row[0], "title": row[1], "event_type": row[2],
                  "summary": self.summary_cache.get(row[3] or row[1] or ""),
                  "evidence": row[4]} for row in rows]
@@ -272,6 +332,8 @@ class MemoryEngine:
             if existing:
                 return existing
             old_events = self.store.events_for_source(scope_id, old_source_seq)
+            if provenance is None and old_events:
+                provenance = self.store.event_provenance(old_events[0])
             self.store.invalidate_source_evidence(scope_id, old_source_seq)
             event_id = self.store.create_event_from_source(
                 scope_id, new_source, event_type="unknown",

@@ -134,6 +134,16 @@ class EmbeddingCandidateIndex:
             self._vectors[key] = self._encode([anchor.searchable_text()])[0]
         self._anchors[key] = anchor
 
+    def semantic_scores(self, scope_id: str, query: str,
+                        event_ids: list[str]) -> dict[str, float]:
+        query_vector = self._encode([query], queries=True)[0]
+        scores = {}
+        for event_id in event_ids:
+            vector = self._vectors.get((scope_id, event_id))
+            if vector is not None:
+                scores[event_id] = sum(a * b for a, b in zip(query_vector, vector))
+        return scores
+
     def search(self, scope_id: str, query: str, k: int = 10) -> list[Candidate]:
         query_vector = self._encode([query], queries=True)[0]
         candidates = []
@@ -161,6 +171,12 @@ class HybridCandidateIndex:
         if self.embedding is not None:
             self.embedding.add(anchor)
         self._anchors[(anchor.scope_id, anchor.event_id)] = anchor
+
+    def semantic_scores(self, scope_id: str, query: str,
+                        event_ids: list[str]) -> dict[str, float]:
+        if self.embedding is None:
+            return {}
+        return self.embedding.semantic_scores(scope_id, query, event_ids)
 
     def search(self, scope_id: str, query: str, k: int = 10,
                min_score: float = 0.0) -> list[Candidate]:

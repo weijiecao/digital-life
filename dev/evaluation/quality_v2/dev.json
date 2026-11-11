@@ -1,0 +1,234 @@
+[
+  {
+    "group": "trip",
+    "split": "dev",
+    "messages": {
+      "initial": "周日去木桥市集，暂定南入口。",
+      "current": "周六去木桥市集，最终确认西入口。",
+      "deleted": "撤回便签木桥市集，临时方案北入口。",
+      "withdrawn": "已废弃选项木桥市集，备份方案东入口。",
+      "other_scope": "隔壁组专属木桥市集，集合点西入口。"
+    },
+    "initial_provenance": {
+      "narrator": "user",
+      "subject": "user",
+      "reality_status": "real",
+      "story_id": null
+    },
+    "queries": [
+      {
+        "case": "trip:subject_self:1",
+        "category": "subject_self",
+        "query": "我周六去木桥市集走哪个入口",
+        "expected": "current"
+      },
+      {
+        "case": "trip:subject_other:2",
+        "category": "subject_other",
+        "query": "我朋友周六去木桥市集走哪个入口",
+        "expected": null
+      },
+      {
+        "case": "trip:story_wrong:3",
+        "category": "story_wrong",
+        "query": "故事里的角色周六去木桥市集走哪个入口",
+        "expected": null
+      },
+      {
+        "case": "trip:time_current:4",
+        "category": "time_current",
+        "query": "现在木桥市集定在周六吗",
+        "expected": "current"
+      },
+      {
+        "case": "trip:time_old:5",
+        "category": "time_old",
+        "query": "原来木桥市集定在周日吗",
+        "expected": null
+      },
+      {
+        "case": "trip:correction:6",
+        "category": "correction",
+        "query": "木桥市集改成哪个入口了",
+        "expected": "current"
+      },
+      {
+        "case": "trip:withdrawal:7",
+        "category": "withdrawal",
+        "query": "撤回便签木桥市集",
+        "expected": null
+      },
+      {
+        "case": "trip:no_answer:8",
+        "category": "no_answer",
+        "query": "木桥市集的付款凭证",
+        "expected": null
+      },
+      {
+        "case": "trip:paraphrase:9",
+        "category": "paraphrase",
+        "query": "木拱桥边的周末聚会走哪个入口",
+        "expected": "current"
+      }
+    ]
+  },
+  {
+    "group": "friend",
+    "split": "dev",
+    "messages": {
+      "initial": "朋友周六去医院复查，上午九点。",
+      "current": "朋友周六去医院复查，最终确认上午十点。",
+      "deleted": "撤回便签朋友复查，临时方案下午。",
+      "withdrawn": "已废弃选项朋友复查，备份方案下午三点。",
+      "other_scope": "隔壁组专属朋友复查，上午八点。"
+    },
+    "initial_provenance": {
+      "narrator": "user",
+      "subject": "friend",
+      "reality_status": "real",
+      "story_id": null
+    },
+    "queries": [
+      {
+        "case": "friend:subject_friend:1",
+        "category": "subject_friend",
+        "query": "朋友周六什么时候去医院复查",
+        "expected": "current"
+      },
+      {
+        "case": "friend:subject_self:2",
+        "category": "subject_self",
+        "query": "我周六什么时候去医院复查",
+        "expected": null
+      },
+      {
+        "case": "friend:story_wrong:3",
+        "category": "story_wrong",
+        "query": "故事里的角色周六什么时候去医院复查",
+        "expected": null
+      },
+      {
+        "case": "friend:correction:4",
+        "category": "correction",
+        "query": "朋友复查改成了几点",
+        "expected": "current"
+      },
+      {
+        "case": "friend:no_answer:5",
+        "category": "no_answer",
+        "query": "朋友复查的付款凭证",
+        "expected": null
+      },
+      {
+        "case": "friend:paraphrase:6",
+        "category": "paraphrase",
+        "query": "好友周末去诊所复诊的时间",
+        "expected": "current"
+      }
+    ]
+  },
+  {
+    "group": "fiction",
+    "split": "dev",
+    "messages": {
+      "initial": "故事里的角色林夏周六去木桥市集，暂定南入口。",
+      "current": "故事里的角色林夏周六去木桥市集，最终确认西入口。",
+      "deleted": "撤回便签故事角色，临时方案北入口。",
+      "withdrawn": "已废弃选项故事角色，备份方案东入口。",
+      "other_scope": "隔壁组专属故事角色，集合点西入口。"
+    },
+    "initial_provenance": {
+      "narrator": "user",
+      "subject": "story_character",
+      "reality_status": "fictional",
+      "story_id": "story-1"
+    },
+    "queries": [
+      {
+        "case": "fiction:story:1",
+        "category": "story",
+        "query": "故事里的角色林夏周六去木桥市集走哪个入口",
+        "expected": "current"
+      },
+      {
+        "case": "fiction:reality_wrong:2",
+        "category": "reality_wrong",
+        "query": "真实的我周六去木桥市集走哪个入口",
+        "expected": null
+      },
+      {
+        "case": "fiction:subject_wrong:3",
+        "category": "subject_wrong",
+        "query": "我周六去木桥市集走哪个入口",
+        "expected": null
+      },
+      {
+        "case": "fiction:no_answer:4",
+        "category": "no_answer",
+        "query": "故事角色的付款凭证",
+        "expected": null
+      },
+      {
+        "case": "fiction:paraphrase:5",
+        "category": "paraphrase",
+        "query": "虚构故事角色周末去集市的入口",
+        "expected": "current"
+      }
+    ]
+  },
+  {
+    "group": "meeting",
+    "split": "dev",
+    "messages": {
+      "initial": "会议改到周二下午三点。",
+      "current": "会议改到周四下午四点。",
+      "deleted": "撤回便签会议，临时方案周五。",
+      "withdrawn": "已废弃选项会议，备份方案周一。",
+      "other_scope": "隔壁组专属会议，周二上午。"
+    },
+    "initial_provenance": {
+      "narrator": "user",
+      "subject": "user",
+      "reality_status": "real",
+      "story_id": null
+    },
+    "queries": [
+      {
+        "case": "meeting:time_current:1",
+        "category": "time_current",
+        "query": "现在会议在周四几点",
+        "expected": "current"
+      },
+      {
+        "case": "meeting:time_old:2",
+        "category": "time_old",
+        "query": "原来会议在周二几点",
+        "expected": null
+      },
+      {
+        "case": "meeting:correction:3",
+        "category": "correction",
+        "query": "会议改成了周四吗",
+        "expected": "current"
+      },
+      {
+        "case": "meeting:withdrawal:4",
+        "category": "withdrawal",
+        "query": "已废弃选项会议",
+        "expected": null
+      },
+      {
+        "case": "meeting:no_answer:5",
+        "category": "no_answer",
+        "query": "会议纪要编号",
+        "expected": null
+      },
+      {
+        "case": "meeting:paraphrase:6",
+        "category": "paraphrase",
+        "query": "开会时间改到周四下午",
+        "expected": "current"
+      }
+    ]
+  }
+]

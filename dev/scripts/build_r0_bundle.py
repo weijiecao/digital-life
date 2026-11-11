@@ -9,7 +9,7 @@ import zipfile
 from pathlib import Path
 
 DEV = Path(__file__).resolve().parents[1]
-OUT = DEV.parent / '_publish' / 'digital-life' / 'releases' / 'memory-engine-r0-rc2.zip'
+OUT = DEV.parent / '_publish' / 'digital-life' / 'releases' / 'memory-engine-r0-rc3.zip'
 
 
 def source_files() -> dict[str, bytes]:
@@ -35,7 +35,7 @@ def build(output: Path) -> dict:
     except (FileNotFoundError, subprocess.CalledProcessError):
         revision = 'unavailable' 
     inner = {'schema': 2, 'base_commit': revision, 'source_sha256': source_digest,
-             'file_sha256': hashes, 'status': 'RC2; R0/R1 NO-GO; isolated evaluation only'}
+             'file_sha256': hashes, 'status': 'RC3; R0/R1 NO-GO; isolated evaluation only'}
     files['BUNDLE_MANIFEST.json'] = (json.dumps(inner, ensure_ascii=False, sort_keys=True, indent=2) + '\n').encode()
     output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as bundle:
