@@ -1,7 +1,7 @@
 # Memory Engine 移交说明（2026-11-11）
 
 - 代码：`dev/`
-- R0 包：`_publish/digital-life/releases/memory-engine-r0-rc3.zip`（SHA-256 afcca11a…，38 文件）
+- R0 包：`_publish/digital-life/releases/memory-engine-r0-rc3.zip`（SHA-256 eaed986a…，38 文件）
 - 全量测试：569/569
 - 代码提交：`b5f9846`
 - 最新文档：`pending`
