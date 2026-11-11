@@ -2,7 +2,7 @@
 
 - 状态：**NO-GO（R0/R1 均未通过）**
 - 全量测试：537/537
-- 代码提交：`9586328`
+- 代码提交：`590e4af`
 - CI：Windows 3.10 / 3.11 / 3.12 全绿
 - Memory Engine 真实聊天语料：0
 - 宿主：AstrBot 4.29.3 testbed
@@ -17,7 +17,7 @@ C01/C02/C03 已修复并纳入回归：
 | C02 | 零预算/裁剪元数据/无 tokenizer | 零预算空块；框架装不下空块；裁剪后重建 refs/used/degraded；无 tokenizer 默认 strict；CLI 显式 0 保留 |
 | C03 | 同故事归一化覆盖原判 | 不改原 proposal；DB 保存 raw_label/raw_reasons/normalization_reason/policy_version；explicit [] 原样保留 |
 
-R0-D 已通过同库正常完成→释放→新进程恢复；仍缺提交前/后终止、完整语义快照、自动重评与独立数据。
+R0-D 同库正常完成→释放→新进程恢复已通过；仍缺提交前/后终止、完整语义快照、自动重评与独立数据。
 
 ## 2. M0 基线
 

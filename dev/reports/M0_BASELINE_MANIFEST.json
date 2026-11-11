@@ -1,14 +1,14 @@
 {
   "schema": "m0-baseline-final-5",
   "date": "2026-11-11",
-  "local_commit": "9586328",
-  "remote_last_pushed": "9586328",
+  "local_commit": "590e4af",
+  "remote_last_pushed": "590e4af",
   "python": "3.12.10",
   "sqlite": "3.49.1",
   "plugin_version": "1.0.19",
   "test_command": "python -m unittest discover -q -s tests -t .",
   "tests": {
-    "total": 536,
+    "total": 537,
     "failures": 0,
     "errors": 0
   },
@@ -26,7 +26,9 @@
     "dev/memory_engine/backup.py": "08a26399dbfed8c899eb12794c08527d169e753df2437222ed6cfa7d536a1769",
     "dev/memory_engine/host_budget.py": "9df71acf2e564641db0fc3a028a2e5bb870fc3ae56dfe6bacce7410f66fc038d",
     "dev/memory_engine/projection.py": "549dd7a78b2beae5581f20d6163e8b8fa4c6a89bae866fd100049ad0249209c0",
-    "dev/memory_engine/cli.py": "01cf56b2cbb286798e7e064dea06c8f11ebd950801beabaec8c0b55bb1509fff"
+    "dev/memory_engine/cli.py": "01cf56b2cbb286798e7e064dea06c8f11ebd950801beabaec8c0b55bb1509fff",
+    "dev/evaluation/b4_frozen_replay.py": "10a9985e2f58c1e7ebc652015bd3dbecf3a1061f4e3bc6d713bf33689210a9ae",
+    "dev/tests/test_r0d_replay.py": "257adcec5aa61b6bc83dd7da96f45e1a44d59d30bb0f0d3a873077a401a57eed"
   },
   "status": "LOCAL+REMOTE; CI green",
   "notes": [

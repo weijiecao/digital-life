@@ -100,7 +100,7 @@ def cover(document: Document) -> None:
     r.font.color.rgb = RED
     p = cell.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = p.add_run("C01/C02/C03 已关闭；R0-D 真实重放/独立数据与 R1 真实宿主 72h 仍未完成。")
+    r = p.add_run("C01/C02/C03 已关闭；R0-D 同库正常重跑已通过，提交前/后终止与完整语义快照仍缺；R1 真实宿主 72h 未完成。")
     _east_asia(r)
     r.font.size = Pt(9.5)
     r.font.color.rgb = GREY
@@ -110,7 +110,7 @@ def cover(document: Document) -> None:
     md_add("")
     md_add("**R0 候选评估与 NO-GO 结论** ｜ 版本 1.0 ｜ 2026-11-11")
     md_add("")
-    md_add("> 发布结论：**R0 / R1 NO-GO**。C01/C02/C03 已关闭；R0-D 真实重放/独立数据与 R1 真实宿主 72h 仍未完成。")
+    md_add("> 发布结论：**R0 / R1 NO-GO**。C01/C02/C03 已关闭；R0-D 同库正常重跑已通过，提交前/后终止与完整语义快照仍缺；R1 真实宿主 72h 未完成。")
     md_add("")
 
 
@@ -209,12 +209,13 @@ def build() -> None:
                    "规模可靠性到真实宿主接入的工程证据。所有数字均来自本工作区的测试、"
                    "评测脚本与运行记录；合成数据与真实用户数据严格区分。")
     bullets(document, [
-        "离线回归：536/536；Windows CI 在 Python 3.10 / 3.11 / 3.12 全绿；Linux 有 6 项可选 tiktoken 用例 skipped（530 通过）。",
-        "R0 候选包：31 文件、54,904 bytes、SHA-256 d059e5ec…，整包与逐文件哈希均校验。",
+        "离线回归：537/537；Windows CI 在 Python 3.10 / 3.11 / 3.12 全绿；Linux 有 6 项可选 tiktoken 用例 skipped（531 通过）。",
+        "R0 候选包：31 文件、54,985 bytes、SHA-256 177571b7…，整包与逐文件哈希均校验。",
         "21 例真实模型重判：六次 19–20/21；来源污染 0；T02-S2 稳定错误。",
         "340 合成 trace：词面 F1 约 0.66；BGE top20 F1 0.8740/0.8782；BGE top30 回落到 0.8533。",
         "100k：读 p95 458.8ms；备份 100k；kill 续跑 100k；4×25k 多 scope 续跑 0 重复。",
         "真实宿主：AstrBot 4.29.3 testbed 10 次 shadow，52 events / 13 scopes，0 失败。",
+        "R0-D 同库二跑：第二遍 claim 0 失败、340 回执命中、diff 为空。",
         "结论：R0/R1 NO-GO；不得接入 V1 生产或 Shadow。",
     ])
     table(document, ["维度", "结论", "证据强度"], [
@@ -266,7 +267,7 @@ def build() -> None:
 
     heading(document, "4. 阶段完成情况")
     table(document, ["阶段", "状态", "主要证据", "缺口"], [
-        ["M0 基线", "✅", "536 测试、CI、manifest、R0 包", "—"],
+        ["M0 基线", "✅", "537 测试、CI、manifest、R0 包", "—"],
         ["M1 一致性", "◐", "kill/续跑、pending 重评、provider 重试", "真实模型 340 稳定性"],
         ["M2 数据", "◐", "21 例六次、340 多组、污染 0", "独立真实 gold"],
         ["M3 引擎", "◐", "API/CLI、更正/撤回/历史", "自然更正/时间状态/自动后台"],
@@ -280,7 +281,7 @@ def build() -> None:
     para(document, "统一命令：python -m unittest discover -q -s tests -t .；"
                    "报告脚本：python scripts/report.py。")
     table(document, ["项", "结果"], [
-        ["离线用例", "536（Windows）；Linux 530 通过 + 6 skipped"],
+        ["离线用例", "537（Windows）；Linux 531 通过 + 6 skipped"],
         ["失败/错误", "0 / 0"],
         ["Windows CI", "3.10 / 3.11 / 3.12 全绿"],
         ["耗时", "约 43 s（本机）"],
@@ -405,7 +406,7 @@ def build() -> None:
 
     heading(document, "12. 验收与结论")
     table(document, ["层级", "结论", "原因"], [
-        ["R0 独立离线引擎", "NO-GO", "C01/C02/C03 已关闭；R0-D 真实重放/完整快照/独立数据/可移植包未完成"],
+        ["R0 独立离线引擎", "NO-GO", "C01/C02/C03 已关闭；同库正常重跑已通过；提交前/后终止、完整快照、独立数据未完成"],
         ["R1 目标宿主", "NO-GO", "无真实平台 72h/用户效果"],
         ["Shadow/生产", "禁止", "R0/R1 未通过"],
     ], widths=[4.2, 3.2, 8.4])
@@ -425,10 +426,10 @@ def build() -> None:
     heading(document, "14.1 产物", 2)
     table(document, ["产物", "值"], [
         ["R0 包", "releases/memory-engine-r0-rc1.zip"],
-        ["大小/文件数", "54,904 bytes / 31"],
-        ["SHA-256", "05b66ffc9576ce0e48ce0cd255b03fcaf82570e892581af71a1b14e54c07d501"],
-        ["代码提交", "9586328"],
-        ["测试", "536/536（Windows；Linux 530 通过 + 6 skipped）"],
+        ["大小/文件数", "54,985 bytes / 31"],
+        ["SHA-256", "177571b77c19a1d27a417de9e05d99537dec3ffe8dfdbb48ef673916eb2195ce"],
+        ["代码提交", "590e4af"],
+        ["测试", "537/537（Windows；Linux 531 通过 + 6 skipped）"],
     ], widths=[4.0, 11.8], font_size=8.5)
     heading(document, "14.2 证据索引", 2)
     table(document, ["文档", "内容"], [
