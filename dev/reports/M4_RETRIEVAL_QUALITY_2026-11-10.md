@@ -109,6 +109,13 @@ python -m memory_engine.cli --db x.sqlite3 --bge-model <path> search --scope s -
 
 `--bge-model` 可选；不传时仍走词面 SQL。测试用 fake SentenceTransformer 验证 ingest/search 可走 encoder 路径。
 
+真实 BGE CLI 探针：
+
+- 写入「我喜欢乌龙茶」「今天下雨」；
+- 查询「乌龙茶」；
+- 第一条命中乌龙茶；
+- 但每次 CLI 进程都重新加载 BGE（日志出现 3 次 Loading weights），不适合逐命令生产调用。
+
 ## 3. 边界
 
 - 合成数据，不能代表真实聊天；
