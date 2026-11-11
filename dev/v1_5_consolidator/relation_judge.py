@@ -27,7 +27,7 @@ class RelationProposal:
     label: str
     reason_codes: list[str] = field(default_factory=list)
     raw_label: str | None = None
-    raw_reason_codes: list[str] = field(default_factory=list)
+    raw_reason_codes: list[str] | None = None
     normalization_reason: str = ""
     policy_version: str = ""
 

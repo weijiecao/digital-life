@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -86,6 +87,7 @@ class TestProvenanceGuard(unittest.TestCase):
                 "FROM event_link_proposal").fetchone()
             self.assertEqual(row[0], "RELATED_CONTEXT")
             self.assertEqual(row[1], "DIFFERENT_EVENT")
+            self.assertEqual(json.loads(row[2]), [])
             self.assertEqual(row[3], "same_story_different_event")
             self.assertEqual(store.db.execute(
                 "SELECT COUNT(*) FROM event_cannot_link").fetchone()[0], 0)

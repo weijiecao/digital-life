@@ -93,7 +93,7 @@ class ConstrainedResolver:
                 scope_id, source.source_seq, proposal.candidate_event_id,
                 proposal.label, proposal.reason_codes, model_version, judgment.request_id,
                 raw_label=proposal.raw_label,
-                raw_reason_codes=proposal.raw_reason_codes or None,
+                raw_reason_codes=proposal.raw_reason_codes,
                 normalization_reason=proposal.normalization_reason,
                 policy_version=proposal.policy_version)
             target = proposal.candidate_event_id
