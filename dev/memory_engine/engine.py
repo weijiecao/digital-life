@@ -139,6 +139,28 @@ class MemoryEngine:
             AND (c.title LIKE ? OR r.summary LIKE ? OR e.quote LIKE ?)
             ORDER BY c.updated_at DESC LIMIT ?""",
             (scope_id, pattern, pattern, pattern, max(limit, 100))).fetchall()
+        if query and len(rows) < limit and __import__("re").search(
+                r"怎么|什么|是不是|是否|哪|多少|如何|为什么|吗|呢|回忆|对比|安排", query):
+            index = LexicalCandidateIndex()
+            all_rows = self.store.db.execute("""SELECT DISTINCT c.event_id,c.title,c.event_type,
+                r.summary,e.quote
+                FROM event_candidate c
+                JOIN event_revision r ON r.event_id=c.event_id AND r.rev=c.current_revision
+                JOIN event_evidence e ON e.event_id=c.event_id AND e.rev=c.current_revision
+                WHERE c.scope_id=? AND c.state!='withdrawn' AND e.valid=1
+                AND NOT EXISTS (SELECT 1 FROM resolution_pending p
+                    WHERE p.scope_id=c.scope_id AND p.source_seq=e.source_seq
+                    AND p.status='PENDING')""", (scope_id,)).fetchall()
+            by_id = {row[0]: row for row in all_rows}
+            for row in all_rows:
+                index.add(EventAnchor(
+                    event_id=row[0], scope_id=scope_id,
+                    canonical_title=row[1] or "",
+                    anchor_text=" ".join(str(part or "") for part in
+                                         (row[1], row[3], row[4]))))
+            ranked = index.search(scope_id, query, k=limit, min_score=0.0)
+            if ranked:
+                rows = [by_id[c.event_id] for c in ranked if c.event_id in by_id]
         if min_score > 0 and query:
             index = LexicalCandidateIndex()
             by_id = {}

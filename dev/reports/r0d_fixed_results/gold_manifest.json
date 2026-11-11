@@ -1,0 +1,31 @@
+{
+  "annotation": "single author, generated variants, no human blind rating or actual chats",
+  "scenario_sha256": "610c534e13021526960462eee25c6527d37711f12c35ed30384afc853039fc5b",
+  "selection": "maximize dev top1; minimize dev negative context injection; prefer lower threshold",
+  "source": "offline authored synthetic seed families, independent of engine predictions",
+  "split_rule": "fixed disjoint scenario families; one group is the statistical unit",
+  "splits": {
+    "dev": {
+      "fidelity": 40,
+      "groups": 8,
+      "negative": 80,
+      "positive": 120,
+      "sha256": "a71c886bf7f543b7934070557b66041bc5cd38b2712ad5bead8dd47bcef34cd4"
+    },
+    "holdout": {
+      "fidelity": 100,
+      "groups": 20,
+      "negative": 200,
+      "positive": 300,
+      "sha256": "6e32d924dbeb195b91795dfa2b01856a9c63ac674c2b8f709f65939ff6b1bcd0"
+    }
+  },
+  "threshold_grid": [
+    0.0,
+    0.5,
+    1.0,
+    1.139,
+    1.5,
+    2.0
+  ]
+}

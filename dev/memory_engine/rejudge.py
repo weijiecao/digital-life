@@ -39,6 +39,11 @@ class PendingRejudger:
                         raise
                     if backoff:
                         time.sleep(backoff * (2 ** attempt))
+            stored_provenance = self.store.pending_provenance(
+                scope_id, item["source_seq"])
+            if stored_provenance is not None:
+                judgment.provenance = stored_provenance
+                judgment.provenance_present = True
             with self.store.unit_of_work():
                 if (self.store.ready_generation(scope_id, item["source_seq"])
                         != item["generation"]):

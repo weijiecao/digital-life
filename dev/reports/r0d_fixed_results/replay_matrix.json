@@ -1,0 +1,359 @@
+{
+  "fresh_8": {
+    "faults": [],
+    "resume": {
+      "messages": 340,
+      "receipt_hits": 0,
+      "receipt_conflicts": 0,
+      "scope_claim_failed": 0,
+      "job_claim_failed": 0,
+      "job_commit_failed": 0,
+      "fenced": 0,
+      "already_receipted": 0,
+      "deferred_mapping": 0,
+      "mapping_ambiguous": 0
+    },
+    "snapshot_sha256": "97df747fdb449e5619d09bbe0df65bce2a12ac8a894183083c7f99ff7b96bd8f",
+    "differences": {},
+    "jobs": {
+      "COMMITTED": 50
+    },
+    "same_db_repeat_ok": true,
+    "equal_row_count_mutation_detected": {
+      "event_evidence": {
+        "removed_count": 1,
+        "added_count": 1,
+        "removed_examples": [
+          {
+            "event_id": "event:S01:1",
+            "quote": "我准备走四姑娘山大峰，先研究一下怎么去。",
+            "rev": 1,
+            "scope_id": "S01",
+            "source_seq": 1,
+            "valid": 1
+          }
+        ],
+        "added_examples": [
+          {
+            "event_id": "event:S01:1",
+            "quote": "我准备走四姑娘山大峰，先研究一下怎么去。:control",
+            "rev": 1,
+            "scope_id": "S01",
+            "source_seq": 1,
+            "valid": 1
+          }
+        ]
+      }
+    }
+  },
+  "fresh_20": {
+    "faults": [],
+    "resume": {
+      "messages": 340,
+      "receipt_hits": 0,
+      "receipt_conflicts": 0,
+      "scope_claim_failed": 0,
+      "job_claim_failed": 0,
+      "job_commit_failed": 0,
+      "fenced": 0,
+      "already_receipted": 0,
+      "deferred_mapping": 0,
+      "mapping_ambiguous": 0
+    },
+    "snapshot_sha256": "97df747fdb449e5619d09bbe0df65bce2a12ac8a894183083c7f99ff7b96bd8f",
+    "differences": {},
+    "jobs": {
+      "COMMITTED": 20
+    },
+    "same_db_repeat_ok": true
+  },
+  "fresh_40": {
+    "faults": [],
+    "resume": {
+      "messages": 340,
+      "receipt_hits": 0,
+      "receipt_conflicts": 0,
+      "scope_claim_failed": 0,
+      "job_claim_failed": 0,
+      "job_commit_failed": 0,
+      "fenced": 0,
+      "already_receipted": 0,
+      "deferred_mapping": 0,
+      "mapping_ambiguous": 0
+    },
+    "snapshot_sha256": "97df747fdb449e5619d09bbe0df65bce2a12ac8a894183083c7f99ff7b96bd8f",
+    "differences": {},
+    "jobs": {
+      "COMMITTED": 10
+    },
+    "same_db_repeat_ok": true
+  },
+  "middle_batch_rollback": {
+    "faults": [
+      {
+        "fault": "before_source_commit",
+        "scope": "S03",
+        "seq": 10,
+        "receipt": null,
+        "receipts_before_resume": 77
+      }
+    ],
+    "resume": {
+      "messages": 263,
+      "receipt_hits": 77,
+      "receipt_conflicts": 0,
+      "scope_claim_failed": 0,
+      "job_claim_failed": 1,
+      "job_commit_failed": 0,
+      "fenced": 0,
+      "already_receipted": 69,
+      "deferred_mapping": 0,
+      "mapping_ambiguous": 0
+    },
+    "snapshot_sha256": "97df747fdb449e5619d09bbe0df65bce2a12ac8a894183083c7f99ff7b96bd8f",
+    "differences": {},
+    "jobs": {
+      "COMMITTED": 50
+    },
+    "same_db_repeat_ok": true
+  },
+  "last_source_committed_before_job": {
+    "faults": [
+      {
+        "fault": "after_source_commit",
+        "scope": "S06",
+        "seq": 34,
+        "receipt": [
+          "CREATED"
+        ],
+        "receipts_before_resume": 204
+      }
+    ],
+    "resume": {
+      "messages": 136,
+      "receipt_hits": 204,
+      "receipt_conflicts": 0,
+      "scope_claim_failed": 0,
+      "job_claim_failed": 0,
+      "job_commit_failed": 0,
+      "fenced": 0,
+      "already_receipted": 204,
+      "deferred_mapping": 0,
+      "mapping_ambiguous": 0
+    },
+    "snapshot_sha256": "97df747fdb449e5619d09bbe0df65bce2a12ac8a894183083c7f99ff7b96bd8f",
+    "differences": {},
+    "jobs": {
+      "COMMITTED": 50
+    },
+    "same_db_repeat_ok": true
+  },
+  "middle_job_committed_before_next_job": {
+    "faults": [
+      {
+        "fault": "after_job_commit",
+        "scope": "S08",
+        "seq": 16,
+        "receipt": [
+          "CREATED"
+        ],
+        "receipts_before_resume": 254
+      }
+    ],
+    "resume": {
+      "messages": 86,
+      "receipt_hits": 254,
+      "receipt_conflicts": 0,
+      "scope_claim_failed": 0,
+      "job_claim_failed": 2,
+      "job_commit_failed": 0,
+      "fenced": 0,
+      "already_receipted": 238,
+      "deferred_mapping": 0,
+      "mapping_ambiguous": 0
+    },
+    "snapshot_sha256": "97df747fdb449e5619d09bbe0df65bce2a12ac8a894183083c7f99ff7b96bd8f",
+    "differences": {},
+    "jobs": {
+      "COMMITTED": 50
+    },
+    "same_db_repeat_ok": true
+  },
+  "repeated_crash_same_database": {
+    "faults": [
+      {
+        "fault": "before_source_commit",
+        "scope": "S02",
+        "seq": 10,
+        "receipt": null,
+        "receipts_before_resume": 43
+      },
+      {
+        "fault": "after_source_commit",
+        "scope": "S06",
+        "seq": 18,
+        "receipt": [
+          "ATTACHED"
+        ],
+        "receipts_before_resume": 188
+      }
+    ],
+    "resume": {
+      "messages": 152,
+      "receipt_hits": 188,
+      "receipt_conflicts": 0,
+      "scope_claim_failed": 0,
+      "job_claim_failed": 2,
+      "job_commit_failed": 0,
+      "fenced": 0,
+      "already_receipted": 172,
+      "deferred_mapping": 0,
+      "mapping_ambiguous": 0
+    },
+    "snapshot_sha256": "97df747fdb449e5619d09bbe0df65bce2a12ac8a894183083c7f99ff7b96bd8f",
+    "differences": {},
+    "jobs": {
+      "COMMITTED": 50
+    },
+    "same_db_repeat_ok": true
+  },
+  "resume_with_different_batch_size": {
+    "faults": [
+      {
+        "fault": "after_source_commit",
+        "scope": "S04",
+        "seq": 11,
+        "receipt": [
+          "CREATED"
+        ],
+        "receipts_before_resume": 113
+      }
+    ],
+    "resume": {
+      "messages": 227,
+      "receipt_hits": 113,
+      "receipt_conflicts": 0,
+      "scope_claim_failed": 0,
+      "job_claim_failed": 0,
+      "job_commit_failed": 0,
+      "fenced": 0,
+      "already_receipted": 113,
+      "deferred_mapping": 0,
+      "mapping_ambiguous": 0
+    },
+    "snapshot_sha256": "97df747fdb449e5619d09bbe0df65bce2a12ac8a894183083c7f99ff7b96bd8f",
+    "differences": {},
+    "jobs": {
+      "COMMITTED": 31
+    },
+    "same_db_repeat_ok": true
+  },
+  "split_fresh": {
+    "faults": [],
+    "resume": {
+      "messages": 5,
+      "receipt_hits": 0,
+      "receipt_conflicts": 0,
+      "scope_claim_failed": 0,
+      "job_claim_failed": 0,
+      "job_commit_failed": 0,
+      "fenced": 0,
+      "already_receipted": 0,
+      "deferred_mapping": 1,
+      "mapping_ambiguous": 1
+    },
+    "snapshot_sha256": "7a9e80c98ff0925fc76acf8812ebc129a4c6dd1b28546c7fbcb70b8b2935eca8",
+    "differences": {},
+    "jobs": {
+      "COMMITTED": 3
+    },
+    "same_db_repeat_ok": true,
+    "equal_row_count_mutation_detected": {
+      "resolution_pending": {
+        "removed_count": 1,
+        "added_count": 1,
+        "removed_examples": [
+          {
+            "mapping_json": {
+              "A": [
+                "event:split:1",
+                "event:split:2"
+              ]
+            },
+            "proposals_json": [
+              {
+                "candidate_event_id": "A",
+                "candidate_event_ids": [
+                  "event:split:1",
+                  "event:split:2"
+                ],
+                "label": "SAME_EVENT",
+                "mapping_status": "AMBIGUOUS_SPLIT"
+              }
+            ],
+            "reason": "A:ambiguous_split",
+            "scope_id": "split",
+            "source_seq": 3,
+            "status": "PENDING"
+          }
+        ],
+        "added_examples": [
+          {
+            "mapping_json": {
+              "A": [
+                "event:split:1",
+                "event:split:2"
+              ]
+            },
+            "proposals_json": [
+              {
+                "candidate_event_id": "A",
+                "candidate_event_ids": [
+                  "event:split:1",
+                  "event:split:2"
+                ],
+                "label": "SAME_EVENT",
+                "mapping_status": "AMBIGUOUS_SPLIT"
+              }
+            ],
+            "reason": "A:ambiguous_split:control",
+            "scope_id": "split",
+            "source_seq": 3,
+            "status": "PENDING"
+          }
+        ]
+      }
+    }
+  },
+  "split_pending_committed_before_job": {
+    "faults": [
+      {
+        "fault": "after_source_commit",
+        "scope": "split",
+        "seq": 3,
+        "receipt": [
+          "DEFER_MAPPING"
+        ],
+        "receipts_before_resume": 3
+      }
+    ],
+    "resume": {
+      "messages": 2,
+      "receipt_hits": 3,
+      "receipt_conflicts": 0,
+      "scope_claim_failed": 0,
+      "job_claim_failed": 1,
+      "job_commit_failed": 0,
+      "fenced": 0,
+      "already_receipted": 1,
+      "deferred_mapping": 0,
+      "mapping_ambiguous": 0
+    },
+    "snapshot_sha256": "7a9e80c98ff0925fc76acf8812ebc129a4c6dd1b28546c7fbcb70b8b2935eca8",
+    "differences": {},
+    "jobs": {
+      "COMMITTED": 3
+    },
+    "same_db_repeat_ok": true
+  }
+}

@@ -830,8 +830,18 @@ class V15Store:
                 ("dep_" + uuid.uuid4().hex, scope_id, dep_type, dep_id,
                  old_version, new_version, reason, _now()))
             for seq in affected_seqs:
-                self.enqueue_ready(scope_id, seq, "dependency:" + dep_type)
+                self.bump_ready(scope_id, seq, "dependency:" + dep_type)
         return True
+
+    def bump_ready(self, scope_id: str, source_seq: int, reason: str) -> int:
+        """Advance the READY generation instead of resetting it to 1."""
+        with self._write():
+            row = self.db.execute("""SELECT generation FROM source_ready
+                WHERE scope_id=? AND source_seq=?""", (scope_id, source_seq)).fetchone()
+            generation = (int(row[0]) + 1) if row else 1
+            self.enqueue_ready(scope_id, source_seq, reason, generation=generation)
+            self.bump_scope_epoch(scope_id)
+        return generation
 
     def enqueue_ready(self, scope_id: str, source_seq: int, reason: str,
                       generation: int = 1) -> None:
@@ -864,6 +874,17 @@ class V15Store:
                     AND generation=?""",
                     (_now(), scope_id, source_seq, expected_generation))
         return cursor.rowcount > 0
+
+    def reconcile_completed_scope(self, scope_id: str, frontier: int) -> None:
+        """After receipt recovery, align cursor and close stale CLAIMED jobs."""
+        with self.unit_of_work():
+            current = self.cursor(scope_id)
+            if frontier > current:
+                self.set_cursor(scope_id, frontier)
+            self.db.execute("""UPDATE consolidation_job
+                SET status='COMMITTED',lease_until=NULL,updated_at=?
+                WHERE scope_id=? AND status='CLAIMED' AND to_seq<=?""",
+                (_now(), scope_id, int(frontier)))
 
     def reconcile_ready(self, scope_id: str) -> dict:
         """Enqueue recoverable work without attaching or changing evidence."""
@@ -1089,6 +1110,8 @@ class V15Store:
                 VALUES(?,?,?,?,?,?,?,?)""",
                 ("dec_" + uuid.uuid4().hex, proposal_id, scope_id, source.source_seq,
                  event_id, "ATTACHED" if inserted else "ALREADY_ATTACHED", "", _now()))
+        if inserted:
+            self.bump_scope_epoch(scope_id)
         return inserted
 
     def audit(self, request_id: str, purpose: str, scope_id: str, policy_version: str,

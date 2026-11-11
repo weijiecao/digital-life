@@ -73,6 +73,26 @@ class TestPendingRejudger(unittest.TestCase):
             store.close()
 
 
+    def test_provider_omitting_provenance_uses_stored_pending(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            event_id = self._seed(store)
+            source = SourceEnvelope("s", 1, "sha", "t", "hello")
+            store.save_pending(
+                "s", 1, [{"candidate_event_id": event_id, "label": "SAME_EVENT"}],
+                {event_id: [event_id]}, "split", source=source,
+                provenance=NarrativeProvenance("user", "story_character",
+                                               "fictional", "story-1"))
+            store.enqueue_ready("s", 1, "recheck")
+            def judge(scope, src):
+                return JudgmentResult(source_seq=1, proposals=[
+                    RelationProposal(event_id, "SAME_EVENT")])
+            result = PendingRejudger(store, judge).run_once("s")
+            self.assertEqual(result["deferred"], 1)
+            self.assertEqual(store.events_for_source("s", 1), [])
+            self.assertEqual(store.pending_for_source("s", 1)["status"], "PENDING")
+            store.close()
+
     def test_stale_generation_does_not_commit(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))

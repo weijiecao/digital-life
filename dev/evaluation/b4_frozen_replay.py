@@ -218,8 +218,15 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
                 stats["receipt_hits"] += len(scope_hits)
                 stats["receipt_conflicts"] += scope_conflicts
                 recovery_hits.extend(scope_hits)
-                if len(scope_hits) == len(entries) and scope_conflicts == 0:
+                if scope_conflicts:
+                    frontiers[scope] = store.contiguous_frontier(scope)
+                    release_lease()
+                    continue
+                if len(scope_hits) == len(entries):
                     stats["already_receipted"] += len(entries)
+                    frontier = store.contiguous_frontier(scope)
+                    if frontier == entries[-1]["source_seq"]:
+                        store.reconcile_completed_scope(scope, frontier)
                     frontiers[scope] = store.contiguous_frontier(scope)
                     release_lease()
                     continue

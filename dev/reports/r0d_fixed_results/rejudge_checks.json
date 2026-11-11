@@ -1,0 +1,310 @@
+{
+  "allow": {
+    "pass": true,
+    "checks": {
+      "allowed": true,
+      "relocated": true,
+      "ready_consumed": true
+    },
+    "result": {
+      "processed": 1,
+      "resolved": 1,
+      "deferred": 0,
+      "stale": 0
+    },
+    "initial_ready": [
+      {
+        "source_seq": 2,
+        "reason": "dependency:event",
+        "generation": 1
+      }
+    ],
+    "final_ready": [],
+    "pending": "RELOCATED",
+    "audit": [
+      [
+        "ALLOW",
+        "ATTACHED"
+      ]
+    ],
+    "decisions": [
+      [
+        "ATTACHED",
+        ""
+      ]
+    ],
+    "attached": true,
+    "provider_calls": [
+      2
+    ]
+  },
+  "fiction_blocked": {
+    "pass": true,
+    "checks": {
+      "guard_blocked": true,
+      "no_contamination": true,
+      "pending_retained": true
+    },
+    "result": {
+      "processed": 1,
+      "resolved": 0,
+      "deferred": 1,
+      "stale": 0
+    },
+    "initial_ready": [
+      {
+        "source_seq": 2,
+        "reason": "dependency:event",
+        "generation": 1
+      }
+    ],
+    "final_ready": [],
+    "pending": "PENDING",
+    "audit": [
+      [
+        "REJECT",
+        "PROVENANCE_BLOCKED"
+      ]
+    ],
+    "decisions": [
+      [
+        "PROVENANCE_BLOCKED",
+        "narrative_to_user_event"
+      ]
+    ],
+    "attached": false,
+    "provider_calls": [
+      2
+    ]
+  },
+  "provider_omits_provenance": {
+    "pass": true,
+    "checks": {
+      "guard_blocked": true,
+      "no_contamination": true,
+      "pending_retained": true
+    },
+    "result": {
+      "processed": 1,
+      "resolved": 0,
+      "deferred": 1,
+      "stale": 0
+    },
+    "initial_ready": [
+      {
+        "source_seq": 2,
+        "reason": "dependency:event",
+        "generation": 1
+      }
+    ],
+    "final_ready": [],
+    "pending": "PENDING",
+    "audit": [
+      [
+        "REJECT",
+        "PROVENANCE_BLOCKED"
+      ]
+    ],
+    "decisions": [
+      [
+        "PROVENANCE_BLOCKED",
+        "narrative_to_user_event"
+      ]
+    ],
+    "attached": false,
+    "provider_calls": [
+      2
+    ]
+  },
+  "cannot_link": {
+    "pass": true,
+    "checks": {
+      "allowed_but_conflict": true,
+      "not_attached": true,
+      "pending_retained": true
+    },
+    "result": {
+      "processed": 1,
+      "resolved": 0,
+      "deferred": 1,
+      "stale": 0
+    },
+    "initial_ready": [
+      {
+        "source_seq": 2,
+        "reason": "dependency:event",
+        "generation": 1
+      }
+    ],
+    "final_ready": [],
+    "pending": "PENDING",
+    "audit": [
+      [
+        "ALLOW",
+        "CONFLICT"
+      ]
+    ],
+    "decisions": [
+      [
+        "CONFLICT",
+        "cannot_link:evt_1b75c6165c194db898964445c98e8fa1"
+      ]
+    ],
+    "attached": false,
+    "provider_calls": [
+      2
+    ]
+  },
+  "withdrawn_target": {
+    "pass": true,
+    "checks": {
+      "not_attached": true,
+      "pending_retained": true,
+      "no_false_already_attached": true
+    },
+    "result": {
+      "processed": 1,
+      "resolved": 0,
+      "deferred": 1,
+      "stale": 0
+    },
+    "initial_ready": [
+      {
+        "source_seq": 2,
+        "reason": "dependency:event",
+        "generation": 1
+      }
+    ],
+    "final_ready": [],
+    "pending": "PENDING",
+    "audit": [],
+    "decisions": [
+      [
+        "CONFLICT",
+        "cross_scope_or_missing_event"
+      ]
+    ],
+    "attached": false,
+    "provider_calls": [
+      2
+    ]
+  },
+  "dependency_changes_while_judging": {
+    "pass": true,
+    "checks": {
+      "old_generation_fenced": true,
+      "newer_generation_ready": true,
+      "no_business_writes": true,
+      "pending_retained": true
+    },
+    "result": {
+      "processed": 0,
+      "resolved": 0,
+      "deferred": 0,
+      "stale": 1
+    },
+    "initial_ready": [
+      {
+        "source_seq": 2,
+        "reason": "dependency:event",
+        "generation": 1
+      }
+    ],
+    "final_ready": [
+      {
+        "source_seq": 2,
+        "reason": "dependency:event",
+        "generation": 2
+      }
+    ],
+    "pending": "PENDING",
+    "audit": [],
+    "decisions": [],
+    "attached": false,
+    "provider_calls": [
+      2
+    ]
+  },
+  "hot_context_after_rejudge": {
+    "pass": true,
+    "checks": {
+      "allowed": true,
+      "relocated": true,
+      "ready_consumed": true,
+      "fresh_context_current": true,
+      "cached_context_current": true
+    },
+    "result": {
+      "processed": 1,
+      "resolved": 1,
+      "deferred": 0,
+      "stale": 0
+    },
+    "initial_ready": [
+      {
+        "source_seq": 2,
+        "reason": "dependency:event",
+        "generation": 1
+      }
+    ],
+    "final_ready": [],
+    "pending": "RELOCATED",
+    "audit": [
+      [
+        "ALLOW",
+        "ATTACHED"
+      ]
+    ],
+    "decisions": [
+      [
+        "ATTACHED",
+        ""
+      ]
+    ],
+    "attached": true,
+    "provider_calls": [
+      2
+    ]
+  },
+  "transient_provider_failure": {
+    "pass": true,
+    "checks": {
+      "allowed": true,
+      "relocated": true,
+      "ready_consumed": true,
+      "retried_once": true
+    },
+    "result": {
+      "processed": 1,
+      "resolved": 1,
+      "deferred": 0,
+      "stale": 0
+    },
+    "initial_ready": [
+      {
+        "source_seq": 2,
+        "reason": "dependency:event",
+        "generation": 1
+      }
+    ],
+    "final_ready": [],
+    "pending": "RELOCATED",
+    "audit": [
+      [
+        "ALLOW",
+        "ATTACHED"
+      ]
+    ],
+    "decisions": [
+      [
+        "ATTACHED",
+        ""
+      ]
+    ],
+    "attached": true,
+    "provider_calls": [
+      2,
+      2
+    ]
+  }
+}
