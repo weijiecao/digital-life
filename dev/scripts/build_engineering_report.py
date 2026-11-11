@@ -209,7 +209,7 @@ def build() -> None:
                    "规模可靠性到真实宿主接入的工程证据。所有数字均来自本工作区的测试、"
                    "评测脚本与运行记录；合成数据与真实用户数据严格区分。")
     bullets(document, [
-        "离线回归：537/537；Windows CI 在 Python 3.10 / 3.11 / 3.12 全绿；Linux 有 6 项可选 tiktoken 用例 skipped（531 通过）。",
+        "离线回归：538/538；Windows CI 在 Python 3.10 / 3.11 / 3.12 全绿；Linux 有 6 项可选 tiktoken 用例 skipped（532 通过）。",
         "R0 候选包：31 文件、54,985 bytes、SHA-256 177571b7…，整包与逐文件哈希均校验。",
         "21 例真实模型重判：六次 19–20/21；来源污染 0；T02-S2 稳定错误。",
         "340 合成 trace：词面 F1 约 0.66；BGE top20 F1 0.8740/0.8782；BGE top30 回落到 0.8533。",
@@ -267,7 +267,7 @@ def build() -> None:
 
     heading(document, "4. 阶段完成情况")
     table(document, ["阶段", "状态", "主要证据", "缺口"], [
-        ["M0 基线", "✅", "537 测试、CI、manifest、R0 包", "—"],
+        ["M0 基线", "✅", "538 测试、CI、manifest、R0 包", "—"],
         ["M1 一致性", "◐", "kill/续跑、pending 重评、provider 重试", "真实模型 340 稳定性"],
         ["M2 数据", "◐", "21 例六次、340 多组、污染 0", "独立真实 gold"],
         ["M3 引擎", "◐", "API/CLI、更正/撤回/历史", "自然更正/时间状态/自动后台"],
@@ -281,7 +281,7 @@ def build() -> None:
     para(document, "统一命令：python -m unittest discover -q -s tests -t .；"
                    "报告脚本：python scripts/report.py。")
     table(document, ["项", "结果"], [
-        ["离线用例", "537（Windows）；Linux 531 通过 + 6 skipped"],
+        ["离线用例", "538（Windows）；Linux 532 通过 + 6 skipped"],
         ["失败/错误", "0 / 0"],
         ["Windows CI", "3.10 / 3.11 / 3.12 全绿"],
         ["耗时", "约 43 s（本机）"],
@@ -427,9 +427,9 @@ def build() -> None:
     table(document, ["产物", "值"], [
         ["R0 包", "releases/memory-engine-r0-rc1.zip"],
         ["大小/文件数", "54,985 bytes / 31"],
-        ["SHA-256", "177571b77c19a1d27a417de9e05d99537dec3ffe8dfdbb48ef673916eb2195ce"],
-        ["代码提交", "590e4af"],
-        ["测试", "537/537（Windows；Linux 531 通过 + 6 skipped）"],
+        ["SHA-256", "b3b89e8cda682683e2639ae3ac9f6d12f576345db36421af8944694817d76ab2"],
+        ["代码提交", "09b24a1"],
+        ["测试", "538/538（Windows；Linux 532 通过 + 6 skipped）"],
     ], widths=[4.0, 11.8], font_size=8.5)
     heading(document, "14.2 证据索引", 2)
     table(document, ["文档", "内容"], [

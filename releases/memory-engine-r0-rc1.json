@@ -1,6 +1,6 @@
 {
   "artifact": "memory-engine-r0-rc1.zip",
-  "sha256": "177571b77c19a1d27a417de9e05d99537dec3ffe8dfdbb48ef673916eb2195ce",
+  "sha256": "b3b89e8cda682683e2639ae3ac9f6d12f576345db36421af8944694817d76ab2",
   "bytes": 54985,
   "files": 31,
   "file_sha256": {
@@ -26,7 +26,7 @@
     "reports/M2_DATA_PROGRESS_2026-11-10.md": "2f905409c4d4df03ab7817a6a652e47b4547c7b7d909bcbc5e0bc205b4f0613d",
     "reports/M6_SCALE_SMOKE_2026-11-10.md": "bacb0d5dd0129b30b42cadbcc1f6d60beaa7757530a27a0daae1cf2a7b59c76f",
     "reports/M7_HOST_BUDGET_REAL_2026-11-11.md": "ed70863fbd7d5c9678e1d6a7e538901e5a04af5e585cea96a248489b7d560b1c",
-    "reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md": "9fd41d3aabd762c35a3284ae56e1ab40d28b419cb7bcb63a08569f61221aeda6",
+    "reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md": "e03bcf08b7eb3864e69a811e9817a5de406b2fb7d8bdde1565122613be634c1d",
     "reports/MEMORY_ENGINE_STATUS_2026-11-10.md": "4ed6336bd2ad3ebfa1749437f5947b6eab2822312f77e8cf4aba1b6168c19ffe",
     "v1_5_consolidator/candidate_retriever.py": "09e901ff53cb31b26fcec3ce727a4d9b9114ea4085d5b57c89e64f588b78353d",
     "v1_5_consolidator/contracts.py": "88d11316df1251d82a04fd39ca99826c83f5bdfa64eb2e8c86a5abd3fca3d5d0",
@@ -37,5 +37,5 @@
     "v1_5_consolidator/store.py": "1f13ed95c8c98822d959ebece2e793d9cfaafce84b72554ed4648188e28a6c15"
   },
   "status": "R0 release candidate; NO-GO",
-  "tests": 537
+  "tests": 538
 }
