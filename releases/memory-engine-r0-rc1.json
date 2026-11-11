@@ -1,7 +1,7 @@
 {
   "artifact": "memory-engine-r0-rc1.zip",
-  "sha256": "1ed458425b870d24b11286660603f168002ab722e8bf6a066496ed63eb7421b4",
-  "bytes": 52150,
+  "sha256": "b7f191dfaa0eae4e20d4b823edf8df8e3b378fc96dae2a1a6719aca53e3f50d5",
+  "bytes": 52453,
   "files": 31,
   "file_sha256": {
     "host_shadow/README.md": "65967cbc80d0ba4f3471e15c5523be8c0cd41bab9c24383665446e5cd03d155a",
@@ -12,7 +12,7 @@
     "memory_engine/__init__.py": "c6ec1909f404468641c5535688c3473699075bfccbb8e0c32858de3fe99a9ac3",
     "memory_engine/backup.py": "08a26399dbfed8c899eb12794c08527d169e753df2437222ed6cfa7d536a1769",
     "memory_engine/cache.py": "1d99e10d0a8ab880145501f64d75ca3b2168413b136137c0a20acef4f37e6027",
-    "memory_engine/engine.py": "33110606d31164877505f039f3756a01105614f0316eb805c4b9e556c6991db6",
+    "memory_engine/engine.py": "dac020dc12333980bad63d2285e362d8686fc0d46d003fb330565579f324d88d",
     "memory_engine/host_adapter.py": "bbd70f5f325e928241774927506cc8497cce2b0863453eed38e718c7f3a2bfb1",
     "memory_engine/host_budget.py": "9df71acf2e564641db0fc3a028a2e5bb870fc3ae56dfe6bacce7410f66fc038d",
     "memory_engine/projection.py": "549dd7a78b2beae5581f20d6163e8b8fa4c6a89bae866fd100049ad0249209c0",
@@ -26,7 +26,7 @@
     "reports/M2_DATA_PROGRESS_2026-11-10.md": "adebe095e92ff2f9b2d3bc8046a89a73ce83be045bf4d5a1aff7f4c9cb4b0544",
     "reports/M6_SCALE_SMOKE_2026-11-10.md": "bacb0d5dd0129b30b42cadbcc1f6d60beaa7757530a27a0daae1cf2a7b59c76f",
     "reports/M7_HOST_BUDGET_REAL_2026-11-11.md": "ed70863fbd7d5c9678e1d6a7e538901e5a04af5e585cea96a248489b7d560b1c",
-    "reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md": "5543b42814cd90acb85ab18f5f8f537d5d0e724234b6e695f6083c3d3dd29583",
+    "reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md": "790d162b370cf90edff48ff12d9d4a2320d78ad8581bd1de7d2f0cd330f1d090",
     "reports/MEMORY_ENGINE_STATUS_2026-11-10.md": "4ed6336bd2ad3ebfa1749437f5947b6eab2822312f77e8cf4aba1b6168c19ffe",
     "v1_5_consolidator/candidate_retriever.py": "09e901ff53cb31b26fcec3ce727a4d9b9114ea4085d5b57c89e64f588b78353d",
     "v1_5_consolidator/contracts.py": "88d11316df1251d82a04fd39ca99826c83f5bdfa64eb2e8c86a5abd3fca3d5d0",
@@ -37,5 +37,5 @@
     "v1_5_consolidator/store.py": "b33d251c7b8b90b29c95fcebaf117d1b3e74c879b4ed5a9bc0f677a0d2cae479"
   },
   "status": "R0 release candidate; NO-GO",
-  "tests": 529
+  "tests": 530
 }
