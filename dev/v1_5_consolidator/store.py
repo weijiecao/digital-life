@@ -875,9 +875,21 @@ class V15Store:
                     (_now(), scope_id, source_seq, expected_generation))
         return cursor.rowcount > 0
 
-    def reconcile_completed_scope(self, scope_id: str, frontier: int) -> None:
-        """After receipt recovery, align cursor and close stale CLAIMED jobs."""
-        with self.unit_of_work():
+    def reconcile_completed_scope(self, scope_id: str, *, scope_owner: str,
+                                  scope_token: int) -> int:
+        """Reconcile receipt-covered jobs under the current scope lease.
+
+        Read the frontier inside the write transaction; a caller-supplied cursor
+        is not evidence that a range has been committed.
+        """
+        if self._unit_depth:
+            # This operation must own its commit-time fence. An unfenced outer
+            # transaction could otherwise commit after this method's lease expires.
+            raise RuntimeError("reconciliation requires its own fenced transaction")
+        with self.unit_of_work(scope_id, scope_owner, scope_token):
+            if not self.verify_scope(scope_id, scope_owner, scope_token):
+                raise RuntimeError("scope lease fenced before reconciliation")
+            frontier = self.contiguous_frontier(scope_id)
             current = self.cursor(scope_id)
             if frontier > current:
                 self.set_cursor(scope_id, frontier)
@@ -885,6 +897,9 @@ class V15Store:
                 SET status='COMMITTED',lease_until=NULL,updated_at=?
                 WHERE scope_id=? AND status='CLAIMED' AND to_seq<=?""",
                 (_now(), scope_id, int(frontier)))
+            if not self.verify_scope(scope_id, scope_owner, scope_token):
+                raise RuntimeError("scope lease fenced after reconciliation")
+        return frontier
 
     def reconcile_ready(self, scope_id: str) -> dict:
         """Enqueue recoverable work without attaching or changing evidence."""

@@ -8,6 +8,7 @@ host integration.
 from __future__ import annotations
 
 import json
+import re
 from collections import defaultdict
 from dataclasses import dataclass
 
@@ -19,6 +20,23 @@ from memory_engine.projection import classify_memory
 from memory_engine.summary_cache import SummaryCache
 from v1_5_consolidator.candidate_retriever import (
     EventAnchor, HybridCandidateIndex, LexicalCandidateIndex)
+
+
+def _question_content(query: str) -> str:
+    """Remove question scaffolding before lexical fallback, not topic words.
+
+    Spaces preserve token boundaries: removing words must not synthesize new
+    Chinese bigrams. No remaining content means abstain from fallback.
+    This is a conservative lexical rule, not semantic query understanding.
+    """
+    scaffolding = (
+        r"什么时候|为什么|是不是|麻烦|回忆|之前|原来|现在|最新|最后|最终|"
+        r"怎么|什么|是否|哪个|哪里|多少|如何|对比|自己的|自己|我的|我们|"
+        r"安排|确认|定成|定在|改成|说的|我|的|了|吗|呢|是|在|下"
+    )
+    content = re.sub(scaffolding, " ", query)
+    # Isolated Chinese characters are too weak for automatic context injection.
+    return " ".join(re.findall(r"[\u4e00-\u9fff]{2,}|[A-Za-z0-9_]+", content))
 
 
 @dataclass(frozen=True)
@@ -139,7 +157,7 @@ class MemoryEngine:
             AND (c.title LIKE ? OR r.summary LIKE ? OR e.quote LIKE ?)
             ORDER BY c.updated_at DESC LIMIT ?""",
             (scope_id, pattern, pattern, pattern, max(limit, 100))).fetchall()
-        if query and len(rows) < limit and __import__("re").search(
+        if query and len(rows) < limit and re.search(
                 r"怎么|什么|是不是|是否|哪|多少|如何|为什么|吗|呢|回忆|对比|安排", query):
             index = LexicalCandidateIndex()
             all_rows = self.store.db.execute("""SELECT DISTINCT c.event_id,c.title,c.event_type,
@@ -158,9 +176,11 @@ class MemoryEngine:
                     canonical_title=row[1] or "",
                     anchor_text=" ".join(str(part or "") for part in
                                          (row[1], row[3], row[4]))))
-            ranked = index.search(scope_id, query, k=limit, min_score=0.0)
-            if ranked:
-                rows = [by_id[c.event_id] for c in ranked if c.event_id in by_id]
+            ranked = index.search(scope_id, _question_content(query), k=limit,
+                                  min_score=0.0)
+            # Exact matches keep priority; fallback only adds supported topics.
+            seen = {row[0] for row in rows}
+            rows.extend(by_id[c.event_id] for c in ranked if c.event_id not in seen)
         if min_score > 0 and query:
             index = LexicalCandidateIndex()
             by_id = {}

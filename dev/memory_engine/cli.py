@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -22,7 +23,7 @@ def build_parser() -> argparse.ArgumentParser:
     ingest.add_argument("--scope", required=True)
     ingest.add_argument("--seq", type=int, required=True)
     ingest.add_argument("--text", required=True)
-    ingest.add_argument("--hash", default="cli")
+    ingest.add_argument("--hash", default=None, help="defaults to SHA-256 of text")
 
     search = sub.add_parser("search")
     search.add_argument("--scope", required=True)
@@ -49,7 +50,7 @@ def build_parser() -> argparse.ArgumentParser:
     revise.add_argument("--old-seq", type=int, required=True)
     revise.add_argument("--new-seq", type=int, required=True)
     revise.add_argument("--text", required=True)
-    revise.add_argument("--hash", default="cli-revise")
+    revise.add_argument("--hash", default=None, help="defaults to SHA-256 of text")
 
     withdraw = sub.add_parser("withdraw")
     withdraw.add_argument("--scope", required=True)
@@ -68,10 +69,13 @@ def main(argv=None) -> int:
         engine = MemoryEngine(store, encoder=encoder)
         if args.command == "ingest":
             receipt = engine.ingest(
-                args.scope, SourceEnvelope(args.scope, args.seq, args.hash,
+                args.scope, SourceEnvelope(args.scope, args.seq,
+                                           args.hash or hashlib.sha256(args.text.encode("utf-8")).hexdigest(),
                                            "cli", args.text))
             print(json.dumps({"event_id": receipt.event_id,
                               "receipt_ok": receipt.receipt_ok}, ensure_ascii=False))
+            if not receipt.receipt_ok:
+                return 1
         elif args.command == "search":
             print(json.dumps(engine.retrieve(args.scope, args.query, args.limit,
                                              args.min_score),
@@ -96,7 +100,9 @@ def main(argv=None) -> int:
         elif args.command == "revise":
             event_id = engine.revise_source(
                 args.scope, args.old_seq,
-                SourceEnvelope(args.scope, args.new_seq, args.hash, "cli", args.text))
+                SourceEnvelope(args.scope, args.new_seq,
+                               args.hash or hashlib.sha256(args.text.encode("utf-8")).hexdigest(),
+                               "cli", args.text))
             print(json.dumps({"event_id": event_id}, ensure_ascii=False))
         elif args.command == "withdraw":
             print(json.dumps({"withdrawn": engine.withdraw_event(

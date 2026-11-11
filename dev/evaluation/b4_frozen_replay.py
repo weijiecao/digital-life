@@ -226,7 +226,8 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
                     stats["already_receipted"] += len(entries)
                     frontier = store.contiguous_frontier(scope)
                     if frontier == entries[-1]["source_seq"]:
-                        store.reconcile_completed_scope(scope, frontier)
+                        store.reconcile_completed_scope(
+                            scope, scope_owner=lease_owner, scope_token=lease_token)
                     frontiers[scope] = store.contiguous_frontier(scope)
                     release_lease()
                     continue
@@ -335,6 +336,11 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
                                             scope_token=lease_token):
                         stats["job_commit_failed"] += 1
                     store.db.commit()
+                # Close receipt-covered jobs left by an interrupted older batch
+                # layout on this first resume, before releasing the scope lease.
+                if store.verify_scope(scope, lease_owner, lease_token):
+                    store.reconcile_completed_scope(
+                        scope, scope_owner=lease_owner, scope_token=lease_token)
                 frontiers[scope] = store.contiguous_frontier(scope)
                 release_lease()
             after = snapshot(store)
