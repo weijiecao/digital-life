@@ -43,7 +43,7 @@ class RecordingStore:
     def cannot_link_exists(self, scope_id, event_a, event_b):
         return False
 
-    def record_link_proposal(self, scope_id, seq, target, label, reasons, version, request):
+    def record_link_proposal(self, scope_id, seq, target, label, reasons, version, request, **kwargs):
         self.mutations.append(("proposal", scope_id, seq, target, label))
         return "proposal-" + str(len(self.mutations))
 

@@ -80,9 +80,10 @@ def main(argv=None) -> int:
             if args.rendered:
                 from memory_engine.token_budget import TokenCounter
                 counter = TokenCounter(args.tokenizer)
+                budget = (args.budget_tokens if args.budget_tokens is not None
+                          else args.budget)
                 packet = engine.build_rendered_context(
-                    args.scope, args.query, args.budget_tokens or args.budget,
-                    counter, args.min_score)
+                    args.scope, args.query, budget, counter, args.min_score)
             else:
                 packet = engine.build_context(args.scope, args.query, args.budget,
                                               min_score=args.min_score)

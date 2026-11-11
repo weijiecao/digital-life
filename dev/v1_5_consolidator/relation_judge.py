@@ -26,6 +26,10 @@ class RelationProposal:
     candidate_event_id: str
     label: str
     reason_codes: list[str] = field(default_factory=list)
+    raw_label: str | None = None
+    raw_reason_codes: list[str] = field(default_factory=list)
+    normalization_reason: str = ""
+    policy_version: str = ""
 
 
 @dataclass

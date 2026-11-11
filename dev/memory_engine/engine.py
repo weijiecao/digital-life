@@ -40,6 +40,7 @@ class MemoryEngine:
         self._indexes: dict[str, object] = {}
         self._index_rows: dict[str, dict] = {}
         self._index_generation: dict[str, int] = {}
+        self._index_epoch: dict[str, int] = {}
 
     def _bump(self, scope_id: str) -> None:
         self._generation[scope_id] += 1
@@ -47,10 +48,13 @@ class MemoryEngine:
         self._indexes.pop(scope_id, None)
         self._index_rows.pop(scope_id, None)
         self._index_generation.pop(scope_id, None)
+        self._index_epoch.pop(scope_id, None)
 
     def _ensure_index(self, scope_id: str) -> None:
+        epoch = self.store.scope_epoch(scope_id)
         if (scope_id in self._indexes
-                and self._index_generation.get(scope_id) == self._generation[scope_id]):
+                and self._index_generation.get(scope_id) == self._generation[scope_id]
+                and self._index_epoch.get(scope_id) == epoch):
             return
         index = HybridCandidateIndex(self.encoder)
         rows = self.store.db.execute("""SELECT DISTINCT c.event_id,c.title,c.event_type,
@@ -71,6 +75,7 @@ class MemoryEngine:
         self._indexes[scope_id] = index
         self._index_rows[scope_id] = by_id
         self._index_generation[scope_id] = self._generation[scope_id]
+        self._index_epoch[scope_id] = epoch
 
     def ingest(self, scope_id: str, source: SourceEnvelope,
                provenance: dict | None = None) -> CaptureReceipt:
@@ -102,8 +107,22 @@ class MemoryEngine:
             by_id = self._index_rows[scope_id]
             ranked = index.search(scope_id, query, k=max(limit, 20),
                                   min_score=min_score)
-            rows = [by_id[c.event_id] for c in ranked
-                    if c.event_id in by_id]
+            ids = [c.event_id for c in ranked if c.event_id in by_id]
+            if not ids:
+                return []
+            marks = ",".join("?" for _ in ids)
+            current = self.store.db.execute("""SELECT DISTINCT c.event_id,c.title,
+                c.event_type,r.summary,e.source_seq,e.quote
+                FROM event_candidate c
+                JOIN event_revision r ON r.event_id=c.event_id AND r.rev=c.current_revision
+                JOIN event_evidence e ON e.event_id=c.event_id AND e.rev=c.current_revision
+                WHERE c.scope_id=? AND c.event_id IN (%s)
+                AND c.state!='withdrawn' AND e.valid=1
+                AND NOT EXISTS (SELECT 1 FROM resolution_pending p
+                    WHERE p.scope_id=c.scope_id AND p.source_seq=e.source_seq
+                    AND p.status='PENDING')""" % marks, (scope_id, *ids)).fetchall()
+            live = {row[0]: row for row in current}
+            rows = [live[event_id] for event_id in ids if event_id in live]
             return [{"event_id": row[0], "title": row[1], "event_type": row[2],
                      "summary": self.summary_cache.get(row[3] or row[1] or ""),
                      "evidence": row[5]} for row in rows[:limit]]
@@ -239,14 +258,33 @@ class MemoryEngine:
     def build_rendered_context(self, scope_id: str, query: str,
                                budget_tokens: int, token_counter=None,
                                min_score: float = 0.0,
-                               host_budget=None) -> dict:
-        """Render the final model block and enforce its token budget."""
+                               host_budget=None,
+                               strict_tokenizer: bool = True) -> dict:
+        """Render the final model block and enforce its token budget.
+
+        Without a real counter the default is strict: emit no memory text
+        rather than claiming an estimated block is budget-enforced. Set
+        strict_tokenizer=False only for explicit legacy/estimated callers.
+        """
         from memory_engine.render import fit_packet, render_context
         if host_budget is not None:
             budget_tokens = host_budget.memory_tokens
         packet = self.build_context(scope_id, query, budget=10 ** 9,
                                     min_score=min_score)
         if token_counter is None:
+            if strict_tokenizer:
+                return {
+                    "schema_version": "memory-context-v1",
+                    "scope_id": scope_id, "query": query,
+                    "items": [], "source_refs": [],
+                    "budget_chars": 0, "used_chars": 0,
+                    "budget_tokens": max(0, budget_tokens),
+                    "used_tokens": 0, "tokenizer": None,
+                    "rendered": "", "rendered_tokens": None,
+                    "budget_enforced": True, "estimated": True,
+                    "degraded": True,
+                    "degraded_reasons": ["tokenizer_missing"],
+                }
             rendered = render_context(packet)
             packet = dict(packet)
             packet.update({"rendered": rendered, "rendered_tokens": None,

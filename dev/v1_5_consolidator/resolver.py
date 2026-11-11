@@ -16,7 +16,7 @@ from typing import Any
 
 from .contracts import NarrativeProvenance, SourceEnvelope
 from .provenance_guard import ProvenanceGuard
-from .relation_judge import JudgmentResult
+from .relation_judge import JudgmentResult, RelationProposal
 from .store import V15Store
 
 
@@ -68,6 +68,7 @@ class ConstrainedResolver:
         same_props = [p for p in judgment.proposals if p.label == "SAME_EVENT"]
         ambiguous_same = len(same_props) > 1
         for proposal in judgment.proposals:
+            effective = proposal
             if (proposal.label == "DIFFERENT_EVENT"
                     and judgment.provenance_present
                     and judgment.provenance.subject == "story_character"
@@ -76,13 +77,25 @@ class ConstrainedResolver:
                     proposal.candidate_event_id)
                 candidate = NarrativeProvenance(**candidate_data) if candidate_data else None
                 if candidate and candidate.story_id == judgment.provenance.story_id:
-                    proposal.label = "RELATED_CONTEXT"
-                    if "same_story_different_event" not in proposal.reason_codes:
-                        proposal.reason_codes = list(proposal.reason_codes) + [
-                            "same_story_different_event"]
+                    reasons = list(proposal.reason_codes)
+                    if "same_story_different_event" not in reasons:
+                        reasons.append("same_story_different_event")
+                    effective = RelationProposal(
+                        candidate_event_id=proposal.candidate_event_id,
+                        label="RELATED_CONTEXT",
+                        reason_codes=reasons,
+                        raw_label=proposal.label,
+                        raw_reason_codes=list(proposal.reason_codes),
+                        normalization_reason="same_story_different_event",
+                        policy_version="same-story-related-v1")
+            proposal = effective
             proposal_id = self.store.record_link_proposal(
                 scope_id, source.source_seq, proposal.candidate_event_id,
-                proposal.label, proposal.reason_codes, model_version, judgment.request_id)
+                proposal.label, proposal.reason_codes, model_version, judgment.request_id,
+                raw_label=proposal.raw_label,
+                raw_reason_codes=proposal.raw_reason_codes or None,
+                normalization_reason=proposal.normalization_reason,
+                policy_version=proposal.policy_version)
             target = proposal.candidate_event_id
             if proposal.label == "SAME_EVENT":
                 if not self.store.event_in_scope(target, scope_id):

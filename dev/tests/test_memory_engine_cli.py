@@ -108,6 +108,22 @@ class TestMemoryEngineCli(unittest.TestCase):
                       "--scope", "s", "--query", "杭州"])
             self.assertIn("杭州", out.getvalue())
 
+    @unittest.skipUnless(importlib.util.find_spec("tiktoken"), "tiktoken not installed")
+    def test_rendered_context_explicit_zero_budget(self):
+        with tempfile.TemporaryDirectory() as d:
+            db = str(Path(d) / "v15.sqlite3")
+            with contextlib.redirect_stdout(io.StringIO()):
+                main(["--db", db, "ingest", "--scope", "s", "--seq", "1",
+                      "--text", "tea"])
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                main(["--db", db, "context", "--scope", "s", "--query", "tea",
+                      "--rendered", "--budget-tokens", "0"])
+            packet = json.loads(out.getvalue())
+            self.assertEqual(packet["rendered"], "")
+            self.assertEqual(packet["items"], [])
+            self.assertTrue(packet["budget_enforced"])
+
     def test_health(self):
         with tempfile.TemporaryDirectory() as d:
             db = str(Path(d) / "v15.sqlite3")

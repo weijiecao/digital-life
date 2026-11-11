@@ -77,8 +77,16 @@ class TestProvenanceGuard(unittest.TestCase):
                 source_seq=1, proposals=[RelationProposal(target, "DIFFERENT_EVENT")],
                 provenance=NarrativeProvenance("user", "story_character",
                                                "fictional", "story-1"))
+            original = judgment.proposals[0]
             summary = ConstrainedResolver(store).resolve("s", source, judgment)
+            self.assertEqual(original.label, "DIFFERENT_EVENT")
             self.assertEqual(summary.decisions[0]["decision"], "RELATED_ONLY")
+            row = store.db.execute(
+                "SELECT label,raw_label,raw_reason_codes_json,normalization_reason "
+                "FROM event_link_proposal").fetchone()
+            self.assertEqual(row[0], "RELATED_CONTEXT")
+            self.assertEqual(row[1], "DIFFERENT_EVENT")
+            self.assertEqual(row[3], "same_story_different_event")
             self.assertEqual(store.db.execute(
                 "SELECT COUNT(*) FROM event_cannot_link").fetchone()[0], 0)
             store.close()

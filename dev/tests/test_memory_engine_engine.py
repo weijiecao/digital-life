@@ -147,6 +147,26 @@ class TestMemoryEngine(unittest.TestCase):
             b.close()
 
 
+    def test_other_connection_deletion_invalidates_hybrid_index(self):
+        class Encoder:
+            def encode(self, texts):
+                return [[1.0, 0.0] for _ in texts]
+
+        with tempfile.TemporaryDirectory() as d:
+            path = str(Path(d) / "v15.sqlite3")
+            a = V15Store(path)
+            b = V15Store(path)
+            engine_a = MemoryEngine(a, encoder=Encoder())
+            engine_b = MemoryEngine(b)
+            engine_a.ingest("s", SourceEnvelope("s", 1, "sha", "t", "杭州"))
+            self.assertEqual(len(engine_a.retrieve("s", "杭州")), 1)
+            self.assertEqual(len(engine_a.build_context("s", "杭州")["items"]), 1)
+            engine_b.delete_source("s", 1)
+            self.assertEqual(engine_a.retrieve("s", "杭州"), [])
+            self.assertEqual(engine_a.build_context("s", "杭州")["items"], [])
+            a.close()
+            b.close()
+
     def test_repeated_revise_is_idempotent(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))

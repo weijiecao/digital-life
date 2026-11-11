@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import sys
@@ -10,18 +11,38 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PUBLISH = ROOT.parent / "_publish" / "digital-life"
-ZIP = PUBLISH / "releases" / "memory-engine-r0-rc1.zip"
-MANIFEST = PUBLISH / "releases" / "memory-engine-r0-rc1.json"
+CANDIDATES = [
+    ROOT.parent / "releases" / "memory-engine-r0-rc1.zip",
+    ROOT.parent / "_publish" / "digital-life" / "releases" / "memory-engine-r0-rc1.zip",
+]
 
 
-def main() -> int:
-    digest = hashlib.sha256(ZIP.read_bytes()).hexdigest()
-    expected = json.loads(MANIFEST.read_text(encoding="utf-8"))
+def locate(bundle: str | None) -> tuple[Path, Path]:
+    if bundle:
+        zip_path = Path(bundle).resolve()
+        return zip_path, zip_path.with_suffix(".json")
+    for candidate in CANDIDATES:
+        if candidate.is_file():
+            return candidate, candidate.with_suffix(".json")
+    raise FileNotFoundError(
+        "R0 bundle not found; pass --bundle /path/to/memory-engine-r0-rc1.zip")
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--bundle", default="")
+    args = parser.parse_args(argv)
+    try:
+        zip_path, manifest_path = locate(args.bundle)
+    except FileNotFoundError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    digest = hashlib.sha256(zip_path.read_bytes()).hexdigest()
+    expected = json.loads(manifest_path.read_text(encoding="utf-8"))
     checks = {"sha256": digest == expected["sha256"],
-              "bytes": ZIP.stat().st_size == expected["bytes"]}
+              "bytes": zip_path.stat().st_size == expected["bytes"]}
     with tempfile.TemporaryDirectory(prefix="r0-verify-") as d:
-        with zipfile.ZipFile(ZIP) as bundle:
+        with zipfile.ZipFile(zip_path) as bundle:
             bundle.extractall(d)
             checks["files"] = len(bundle.namelist()) == expected["files"]
         sys.path.insert(0, d)
@@ -30,8 +51,8 @@ def main() -> int:
         from v1_5_consolidator.store import V15Store
         store = V15Store(str(Path(d) / "v15.sqlite3"))
         engine = MemoryEngine(store)
-        engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "茶"))
-        checks["retrieve"] = len(engine.retrieve("s", "茶")) == 1
+        engine.ingest("s", SourceEnvelope("s", 1, "sha", "t", "tea"))
+        checks["retrieve"] = len(engine.retrieve("s", "tea")) == 1
         checks["integrity"] = store.integrity_check() == "ok"
         store.close()
     print(json.dumps(checks, ensure_ascii=False, indent=2))

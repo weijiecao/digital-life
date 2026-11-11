@@ -84,6 +84,8 @@ class V15Store:
           proposal_id TEXT PRIMARY KEY, scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL,
           candidate_event_id TEXT NOT NULL, label TEXT NOT NULL, reason_codes_json TEXT NOT NULL,
           model_version TEXT NOT NULL DEFAULT '', request_id TEXT NOT NULL DEFAULT '',
+          raw_label TEXT NOT NULL DEFAULT '', raw_reason_codes_json TEXT NOT NULL DEFAULT '[]',
+          normalization_reason TEXT NOT NULL DEFAULT '', policy_version TEXT NOT NULL DEFAULT '',
           created_at TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS event_link_decision(
           decision_id TEXT PRIMARY KEY, proposal_id TEXT NOT NULL, scope_id TEXT NOT NULL,
@@ -175,6 +177,16 @@ class V15Store:
         ):
             if column not in event_cols:
                 self.db.execute("ALTER TABLE event_candidate ADD COLUMN %s %s" % (column, ddl))
+        proposal_cols = {row[1] for row in self.db.execute(
+            "PRAGMA table_info(event_link_proposal)")}
+        for column, ddl in (
+            ("raw_label", "TEXT NOT NULL DEFAULT ''"),
+            ("raw_reason_codes_json", "TEXT NOT NULL DEFAULT '[]'"),
+            ("normalization_reason", "TEXT NOT NULL DEFAULT ''"),
+            ("policy_version", "TEXT NOT NULL DEFAULT ''"),
+        ):
+            if column not in proposal_cols:
+                self.db.execute("ALTER TABLE event_link_proposal ADD COLUMN %s %s" % (column, ddl))
         payload_cols = {row[1] for row in self.db.execute("PRAGMA table_info(source_payload)")}
         if "provenance_json" not in payload_cols:
             self.db.execute("ALTER TABLE source_payload ADD COLUMN provenance_json TEXT")
@@ -1018,14 +1030,24 @@ class V15Store:
 
     def record_link_proposal(self, scope_id: str, source_seq: int, candidate_event_id: str,
                              label: str, reason_codes: list[str], model_version: str,
-                             request_id: str) -> str:
+                             request_id: str, raw_label: str | None = None,
+                             raw_reason_codes: list[str] | None = None,
+                             normalization_reason: str = "",
+                             policy_version: str = "") -> str:
         proposal_id = "prop_" + uuid.uuid4().hex
+        raw_label = label if raw_label is None else raw_label
+        raw_reason_codes = (list(reason_codes) if raw_reason_codes is None
+                            else list(raw_reason_codes))
         with self._write():
             self.db.execute("""INSERT INTO event_link_proposal
                 (proposal_id,scope_id,source_seq,candidate_event_id,label,reason_codes_json,
-                 model_version,request_id,created_at) VALUES(?,?,?,?,?,?,?,?,?)""",
+                 model_version,request_id,raw_label,raw_reason_codes_json,
+                 normalization_reason,policy_version,created_at)
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (proposal_id, scope_id, source_seq, candidate_event_id, label,
-                 json.dumps(reason_codes, ensure_ascii=False), model_version, request_id, _now()))
+                 json.dumps(reason_codes, ensure_ascii=False), model_version, request_id,
+                 raw_label, json.dumps(raw_reason_codes, ensure_ascii=False),
+                 normalization_reason, policy_version, _now()))
         return proposal_id
 
     def record_link_decision(self, proposal_id: str, scope_id: str, source_seq: int,
