@@ -60,7 +60,10 @@ class TestFrozenFork(unittest.TestCase):
             db.close()
             second = run(str(root), str(trace), batch_size=2, db_path=db_path)
             self.assertEqual(second["messages"], 0)
-            self.assertGreaterEqual(second["scope_claim_failed"] + second["job_claim_failed"], 1)
+            self.assertEqual(second["scope_claim_failed"], 0)
+            self.assertEqual(second["recovery_scan"], 3)
+            self.assertEqual(second["receipt_hits"], 3)
+            self.assertEqual(second["diff"], {})
             db = sqlite3.connect(db_path)
             try:
                 self.assertEqual(db.execute("SELECT COUNT(*) FROM event_evidence").fetchone()[0],

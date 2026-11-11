@@ -58,6 +58,7 @@ SUITES = (
     'tests.test_m1_provider_timeout',
     'tests.test_shadow_preflight',
     'tests.test_r0_bundle',
+    'tests.test_r0d_replay',
     'tests.test_baseline_alignment',
     'tests.test_preflight',
     'tests.test_auto_jobs',

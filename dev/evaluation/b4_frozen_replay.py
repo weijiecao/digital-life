@@ -88,6 +88,70 @@ def map_proposals(entry: dict, mapping: dict) -> MappingResult:
     return MappingResult(tuple(mapped), safe, tuple(reasons))
 
 
+def _scopes(store) -> list[str]:
+    rows = store.db.execute("""
+        SELECT scope_id FROM source_manifest
+        UNION SELECT scope_id FROM event_candidate
+        UNION SELECT scope_id FROM source_receipt
+        UNION SELECT scope_id FROM resolution_pending
+        ORDER BY scope_id""").fetchall()
+    return [row[0] for row in rows]
+
+
+def snapshot(store) -> dict:
+    """Business-state snapshot used by the same-DB replay contract."""
+    result = {"scopes": {}}
+    for scope in _scopes(store):
+        def count(sql: str, *params) -> int:
+            return int(store.db.execute(sql, params).fetchone()[0])
+        evidence_dupes = count("""SELECT COUNT(*) FROM (
+            SELECT event_id,rev,source_seq,COUNT(*) c FROM event_evidence
+            WHERE scope_id=? GROUP BY event_id,rev,source_seq HAVING c>1)""", scope)
+        receipt_dupes = count("""SELECT COUNT(*) FROM (
+            SELECT scope_id,source_seq,COUNT(*) c FROM source_receipt
+            WHERE scope_id=? GROUP BY scope_id,source_seq HAVING c>1)""", scope)
+        decision_dupes = count("""SELECT COUNT(*) FROM (
+            SELECT proposal_id,decision,COUNT(*) c FROM event_link_decision
+            WHERE scope_id=? GROUP BY proposal_id,decision HAVING c>1)""", scope)
+        result["scopes"][scope] = {
+            "sources": count("SELECT COUNT(*) FROM source_ref WHERE scope_id=?", scope),
+            "receipts": count("SELECT COUNT(*) FROM source_receipt WHERE scope_id=?", scope),
+            "events": count("SELECT COUNT(*) FROM event_candidate WHERE scope_id=?", scope),
+            "revisions": count("SELECT COUNT(*) FROM event_revision WHERE event_id IN "
+                               "(SELECT event_id FROM event_candidate WHERE scope_id=?)", scope),
+            "valid_evidence": count("SELECT COUNT(*) FROM event_evidence WHERE scope_id=? AND valid=1", scope),
+            "proposals": count("SELECT COUNT(*) FROM event_link_proposal WHERE scope_id=?", scope),
+            "decisions": count("SELECT COUNT(*) FROM event_link_decision WHERE scope_id=?", scope),
+            "cannot_links": count("SELECT COUNT(*) FROM event_cannot_link WHERE scope_id=?", scope),
+            "pending": count("SELECT COUNT(*) FROM resolution_pending WHERE scope_id=?", scope),
+            "ready": count("SELECT COUNT(*) FROM source_ready WHERE scope_id=?", scope),
+            "replay_maps": count("SELECT COUNT(*) FROM replay_map WHERE scope_id=?", scope),
+            "frontier": store.contiguous_frontier(scope),
+            "duplicates": {
+                "evidence": evidence_dupes,
+                "receipts": receipt_dupes,
+                "decisions": decision_dupes,
+            },
+        }
+    return result
+
+
+def state_diff(before: dict, after: dict, path: str = "") -> dict:
+    diff = {}
+    keys = set(before) | set(after)
+    for key in sorted(keys):
+        left = before.get(key)
+        right = after.get(key)
+        child = (path + "." + str(key)).lstrip(".")
+        if isinstance(left, dict) and isinstance(right, dict):
+            nested = state_diff(left, right, child)
+            if nested:
+                diff.update(nested)
+        elif left != right:
+            diff[child] = {"before": left, "after": right}
+    return diff
+
+
 def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
         guard_policy: str = "abstain") -> dict:
     fixture = B4Fixture.load(root)
@@ -108,6 +172,9 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
             scope_id TEXT NOT NULL, old_event_id TEXT NOT NULL, event_id TEXT NOT NULL,
             PRIMARY KEY(scope_id,old_event_id,event_id))""")
         store.db.commit()
+        before = snapshot(store)
+        lease_records = []
+        recovery_hits = []
         try:
             for scope, entries in by_scope.items():
                 entries.sort(key=lambda item: item["source_seq"])
@@ -117,6 +184,42 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
                 lease_token = store.claim_scope(scope, lease_owner, ttl=300)
                 if lease_token is None:
                     stats["scope_claim_failed"] += 1
+                    continue
+                lease_record = {"scope_id": scope, "owner": lease_owner,
+                                "token": lease_token, "ttl": 300,
+                                "acquired": True, "released": False}
+                leases = []
+                def release_lease():
+                    ok = store.release_scope(scope, lease_owner, lease_token)
+                    lease_record["released"] = ok
+                    lease_records.append(lease_record)
+                    return ok
+
+                scope_hits = []
+                scope_conflicts = 0
+                for entry in entries:
+                    receipt = store.receipt_for_source(scope, entry["source_seq"])
+                    if receipt is None:
+                        continue
+                    msg = fixture.messages[entry["source_id"]]
+                    hash_match = receipt["input_hash"] == msg["sha256_text"]
+                    scope_hits.append({
+                        "scope_id": scope, "source_seq": entry["source_seq"],
+                        "source_id": entry["source_id"],
+                        "receipt_status": receipt["outcome"],
+                        "hash_match": hash_match,
+                        "event_ids": store.events_for_source(scope, entry["source_seq"]),
+                    })
+                    if not hash_match:
+                        scope_conflicts += 1
+                stats["recovery_scan"] += len(entries)
+                stats["receipt_hits"] += len(scope_hits)
+                stats["receipt_conflicts"] += scope_conflicts
+                recovery_hits.extend(scope_hits)
+                if len(scope_hits) == len(entries) and scope_conflicts == 0:
+                    stats["already_receipted"] += len(entries)
+                    frontiers[scope] = store.contiguous_frontier(scope)
+                    release_lease()
                     continue
                 for start in range(0, len(entries), batch_size):
                     batch = entries[start:start + batch_size]
@@ -216,15 +319,29 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
                         stats["job_commit_failed"] += 1
                     store.db.commit()
                 frontiers[scope] = store.contiguous_frontier(scope)
+                release_lease()
+            after = snapshot(store)
         finally:
+            # Best-effort cleanup so an exception cannot strand a scope lease.
+            try:
+                rows = store.db.execute(
+                    "SELECT scope_id,fencing_token FROM scope_lease WHERE owner_id=?",
+                    (lease_owner,)).fetchall()
+                for scope, token in rows:
+                    store.release_scope(scope, lease_owner, token)
+            except Exception:
+                pass
             store.close()
     for key in ("messages", "attached", "created", "mapping_ambiguous",
                 "mapping_missing", "deferred_mapping", "job_claim_failed",
                 "job_commit_failed", "scope_claim_failed", "fenced",
-                "already_receipted"):
+                "already_receipted", "recovery_scan", "receipt_hits",
+                "receipt_conflicts"):
         stats.setdefault(key, 0)
     return {"suite": "v1.5b-frozen-replay", "batch_size": batch_size,
-            **dict(stats), "frontiers": frontiers, "predictions": predictions}
+            **dict(stats), "frontiers": frontiers, "predictions": predictions,
+            "lease_records": lease_records, "recovery_hits": recovery_hits,
+            "before": before, "after": after, "diff": state_diff(before, after)}
 
 
 def main() -> int:

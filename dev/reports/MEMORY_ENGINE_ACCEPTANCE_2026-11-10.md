@@ -1,7 +1,7 @@
 # Memory Engine 阶段验收矩阵（2026-11-11 复核后）
 
 - 状态：**NO-GO（R0/R1 均未通过）**
-- 全量测试：536/536
+- 全量测试：537/537
 - 代码提交：`9586328`
 - CI：Windows 3.10 / 3.11 / 3.12 全绿
 - Memory Engine 真实聊天语料：0
@@ -17,14 +17,14 @@ C01/C02/C03 已修复并纳入回归：
 | C02 | 零预算/裁剪元数据/无 tokenizer | 零预算空块；框架装不下空块；裁剪后重建 refs/used/degraded；无 tokenizer 默认 strict；CLI 显式 0 保留 |
 | C03 | 同故事归一化覆盖原判 | 不改原 proposal；DB 保存 raw_label/raw_reasons/normalization_reason/policy_version；explicit [] 原样保留 |
 
-R0-D 未完成：真实执行的恢复/重放、完整语义快照、独立数据分割、候选包可移植验证。
+R0-D 已通过同库正常完成→释放→新进程恢复；仍缺提交前/后终止、完整语义快照、自动重评与独立数据。
 
 ## 2. M0 基线
 
 | 验收项 | 证据 | 状态 |
 |---|---|---|
 | 版本/提交冻结 | M0 manifest、R0 包 | ✅ |
-| 全量回归 | 536/536；Linux 有 6 项 tiktoken skip | ✅ |
+| 全量回归 | 537/537；Linux 有 6 项 tiktoken skip | ✅ |
 | 关键源文件 SHA | manifest | ✅ |
 | 契约/CI | Windows 三版本 | ✅ |
 
@@ -42,6 +42,7 @@ Linux 复核为 530 通过 / 6 skipped；Windows 为 536 通过。报告必须�
 | 340 trace | 词面/BGE 多组 | ◐ |
 | 部分批次失败保留 | 第 2 条 READY 重试 | ✅ |
 | 旧 P/B 反例 | 10/10 通过 | ✅ |
+| 同库二次重跑 | 340 回执命中；claim 0；diff {} | ✅ |
 
 仍缺：恢复执行路径、完整依赖快照、自动触发联合验收。
 
