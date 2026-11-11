@@ -8,7 +8,7 @@
   "plugin_version": "1.0.19",
   "test_command": "python -m unittest discover -q -s tests -t .",
   "tests": {
-    "total": 530,
+    "total": 531,
     "failures": 0,
     "errors": 0
   },
@@ -24,7 +24,8 @@
     "dev/memory_engine/cache.py": "1d99e10d0a8ab880145501f64d75ca3b2168413b136137c0a20acef4f37e6027",
     "dev/memory_engine/backup.py": "08a26399dbfed8c899eb12794c08527d169e753df2437222ed6cfa7d536a1769",
     "dev/memory_engine/host_budget.py": "9df71acf2e564641db0fc3a028a2e5bb870fc3ae56dfe6bacce7410f66fc038d",
-    "dev/memory_engine/projection.py": "549dd7a78b2beae5581f20d6163e8b8fa4c6a89bae866fd100049ad0249209c0"
+    "dev/memory_engine/projection.py": "549dd7a78b2beae5581f20d6163e8b8fa4c6a89bae866fd100049ad0249209c0",
+    "dev/memory_engine/cli.py": "21613eb617570e89e3c7d903495f64492d817afec50ca2021f6a6861c633dc53"
   },
   "status": "LOCAL+REMOTE; CI green",
   "notes": [

@@ -14,6 +14,8 @@ from v1_5_consolidator.store import V15Store
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="memory-engine")
     parser.add_argument("--db", required=True)
+    parser.add_argument("--bge-model", default="",
+                        help="optional sentence-transformers model for hybrid retrieval")
     sub = parser.add_subparsers(dest="command", required=True)
 
     ingest = sub.add_parser("ingest")
@@ -59,7 +61,11 @@ def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     store = V15Store(args.db)
     try:
-        engine = MemoryEngine(store)
+        encoder = None
+        if args.bge_model:
+            from sentence_transformers import SentenceTransformer
+            encoder = SentenceTransformer(args.bge_model, device="cpu")
+        engine = MemoryEngine(store, encoder=encoder)
         if args.command == "ingest":
             receipt = engine.ingest(
                 args.scope, SourceEnvelope(args.scope, args.seq, args.hash,

@@ -2,9 +2,12 @@ import contextlib
 import importlib.util
 import io
 import json
+import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from memory_engine.cli import main
 
@@ -82,6 +85,28 @@ class TestMemoryEngineCli(unittest.TestCase):
                 main(["--db", db, "withdraw", "--scope", "s", "--event-id", new])
             self.assertTrue(json.loads(out.getvalue())["withdrawn"])
             self.assertNotEqual(old, new)
+
+    def test_bge_model_option_uses_encoder(self):
+        class FakeTransformer:
+            def __init__(self, *args, **kwargs):
+                pass
+
+            def encode(self, texts):
+                return [[1.0, 0.0] for _ in texts]
+
+        fake = types.SimpleNamespace(SentenceTransformer=FakeTransformer)
+        with tempfile.TemporaryDirectory() as d, \
+                patch.dict(sys.modules, {"sentence_transformers": fake}):
+            db = str(Path(d) / "v15.sqlite3")
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                main(["--db", db, "--bge-model", "fake", "ingest",
+                      "--scope", "s", "--seq", "1", "--text", "杭州"])
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                main(["--db", db, "--bge-model", "fake", "search",
+                      "--scope", "s", "--query", "杭州"])
+            self.assertIn("杭州", out.getvalue())
 
     def test_health(self):
         with tempfile.TemporaryDirectory() as d:

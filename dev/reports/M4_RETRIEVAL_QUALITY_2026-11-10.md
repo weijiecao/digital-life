@@ -101,6 +101,14 @@ BGE 查询 p95 约为词面的 14.8 倍；build 需要 6.4 s/1000。
 
 边界：索引在进程内，按 scope 懒加载；不是持久化向量库。
 
+## 2.4 CLI 入口
+
+```powershell
+python -m memory_engine.cli --db x.sqlite3 --bge-model <path> search --scope s --query q
+```
+
+`--bge-model` 可选；不传时仍走词面 SQL。测试用 fake SentenceTransformer 验证 ingest/search 可走 encoder 路径。
+
 ## 3. 边界
 
 - 合成数据，不能代表真实聊天；
