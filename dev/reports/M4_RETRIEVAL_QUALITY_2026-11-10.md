@@ -90,6 +90,17 @@
 
 BGE 查询 p95 约为词面的 14.8 倍；build 需要 6.4 s/1000。
 
+## 2.3 引擎混合入口
+
+`MemoryEngine(store, encoder=...)` 现在可选构建 `HybridCandidateIndex`：
+
+- 默认 `encoder=None` 仍走词面 SQL；
+- 传入 encoder 后按 scope 建索引并 RRF 融合；
+- ingest/delete/withdraw 会使索引失效并重建；
+- 测试用确定性 fake encoder，检索语义匹配成功。
+
+边界：索引在进程内，按 scope 懒加载；不是持久化向量库。
+
 ## 3. 边界
 
 - 合成数据，不能代表真实聊天；

@@ -17,7 +17,8 @@ from v1_5_consolidator.store import V15Store
 from memory_engine.cache import ContextCache
 from memory_engine.projection import classify_memory
 from memory_engine.summary_cache import SummaryCache
-from v1_5_consolidator.candidate_retriever import EventAnchor, LexicalCandidateIndex
+from v1_5_consolidator.candidate_retriever import (
+    EventAnchor, HybridCandidateIndex, LexicalCandidateIndex)
 
 
 @dataclass(frozen=True)
@@ -30,15 +31,46 @@ class CaptureReceipt:
 
 class MemoryEngine:
     def __init__(self, store: V15Store, cache: ContextCache | None = None,
-                 summary_cache: SummaryCache | None = None):
+                 summary_cache: SummaryCache | None = None, encoder=None):
         self.store = store
         self.cache = cache or ContextCache()
         self.summary_cache = summary_cache or SummaryCache()
+        self.encoder = encoder
         self._generation = defaultdict(int)
+        self._indexes: dict[str, object] = {}
+        self._index_rows: dict[str, dict] = {}
+        self._index_generation: dict[str, int] = {}
 
     def _bump(self, scope_id: str) -> None:
         self._generation[scope_id] += 1
         self.cache.invalidate_scope(scope_id)
+        self._indexes.pop(scope_id, None)
+        self._index_rows.pop(scope_id, None)
+        self._index_generation.pop(scope_id, None)
+
+    def _ensure_index(self, scope_id: str) -> None:
+        if (scope_id in self._indexes
+                and self._index_generation.get(scope_id) == self._generation[scope_id]):
+            return
+        index = HybridCandidateIndex(self.encoder)
+        rows = self.store.db.execute("""SELECT DISTINCT c.event_id,c.title,c.event_type,
+            r.summary,e.source_seq,e.quote
+            FROM event_candidate c
+            JOIN event_revision r ON r.event_id=c.event_id AND r.rev=c.current_revision
+            JOIN event_evidence e ON e.event_id=c.event_id AND e.rev=c.current_revision
+            WHERE c.scope_id=? AND c.state!='withdrawn' AND e.valid=1
+            AND NOT EXISTS (SELECT 1 FROM resolution_pending p
+                WHERE p.scope_id=c.scope_id AND p.source_seq=e.source_seq
+                AND p.status='PENDING')""", (scope_id,)).fetchall()
+        by_id = {}
+        for row in rows:
+            by_id[row[0]] = row
+            text = " ".join(str(part or "") for part in (row[1], row[3], row[5]))
+            index.add(EventAnchor(event_id=row[0], scope_id=scope_id,
+                                  canonical_title=row[1] or "", anchor_text=text))
+        self._indexes[scope_id] = index
+        self._index_rows[scope_id] = by_id
+        self._index_generation[scope_id] = self._generation[scope_id]
 
     def ingest(self, scope_id: str, source: SourceEnvelope,
                provenance: dict | None = None) -> CaptureReceipt:
@@ -64,6 +96,17 @@ class MemoryEngine:
 
     def retrieve(self, scope_id: str, query: str, limit: int = 10,
                  min_score: float = 0.0) -> list[dict]:
+        if self.encoder is not None and query:
+            self._ensure_index(scope_id)
+            index = self._indexes[scope_id]
+            by_id = self._index_rows[scope_id]
+            ranked = index.search(scope_id, query, k=max(limit, 20),
+                                  min_score=min_score)
+            rows = [by_id[c.event_id] for c in ranked
+                    if c.event_id in by_id]
+            return [{"event_id": row[0], "title": row[1], "event_type": row[2],
+                     "summary": self.summary_cache.get(row[3] or row[1] or ""),
+                     "evidence": row[5]} for row in rows[:limit]]
         pattern = "%" + query.replace("%", "").replace("_", "") + "%"
         rows = self.store.db.execute("""SELECT DISTINCT c.event_id,c.title,c.event_type,
             r.summary,e.quote

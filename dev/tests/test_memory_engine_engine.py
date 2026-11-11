@@ -186,6 +186,20 @@ class TestMemoryEngine(unittest.TestCase):
             store.close()
 
 
+    def test_hybrid_encoder_retrieves_semantic_match(self):
+        with tempfile.TemporaryDirectory() as d:
+            store = V15Store(str(Path(d) / "v15.sqlite3"))
+            class Encoder:
+                def encode(self, texts):
+                    return [[1.0, 0.0] if "杭州" in text else [0.0, 1.0]
+                            for text in texts]
+            engine = MemoryEngine(store, encoder=Encoder())
+            engine.ingest("s", SourceEnvelope("s", 1, "sha1", "t", "杭州"))
+            engine.ingest("s", SourceEnvelope("s", 2, "sha2", "t", "上海"))
+            hits = engine.retrieve("s", "杭州", limit=2)
+            self.assertEqual(hits[0]["title"], "杭州")
+            store.close()
+
     def test_retrieve_min_score_can_abstain(self):
         with tempfile.TemporaryDirectory() as d:
             store = V15Store(str(Path(d) / "v15.sqlite3"))
