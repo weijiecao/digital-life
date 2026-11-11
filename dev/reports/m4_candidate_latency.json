@@ -1,0 +1,18 @@
+{
+  "n": 1000,
+  "queries": 100,
+  "lexical": {
+    "label": "lexical",
+    "build_ms": 12.89,
+    "p50_ms": 2.452,
+    "p95_ms": 2.804,
+    "max_ms": 4.216
+  },
+  "bge": {
+    "label": "bge",
+    "build_ms": 6424.1,
+    "p50_ms": 39.101,
+    "p95_ms": 41.445,
+    "max_ms": 46.567
+  }
+}
