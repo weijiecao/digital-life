@@ -1,25 +1,25 @@
 {
   "schema": "m0-baseline-final-5",
   "date": "2026-11-11",
-  "local_commit": "09b24a1",
-  "remote_last_pushed": "09b24a1",
+  "local_commit": "01c484d",
+  "remote_last_pushed": "01c484d",
   "python": "3.12.10",
   "sqlite": "3.49.1",
   "plugin_version": "1.0.19",
   "test_command": "python -m unittest discover -q -s tests -t .",
   "tests": {
-    "total": 538,
+    "total": 539,
     "failures": 0,
     "errors": 0
   },
   "hashes": {
-    "dev/v1_5_consolidator/store.py": "1f13ed95c8c98822d959ebece2e793d9cfaafce84b72554ed4648188e28a6c15",
+    "dev/v1_5_consolidator/store.py": "943b09b4dd591be3e8572f518c47cca818a00a5f93add93c92a61c18895c412e",
     "dev/v1_5_consolidator/resolver.py": "d2a04da0cbf3e76d5bb773c3edafa5e857039cf8eb62477fcc27f8888f4b41e7",
     "dev/v1_5_consolidator/candidate_retriever.py": "09e901ff53cb31b26fcec3ce727a4d9b9114ea4085d5b57c89e64f588b78353d",
     "dev/v1_5_consolidator/gateway.py": "ae8c4d81c764fa55868f6db71b17975a4b6c9691249132abfc3ee7c0ae3ae9c0",
     "dev/v1_5_consolidator/relation_judge.py": "8e3dcda546087c4636d42c6f040430f00b5637f3e60930ea0995bf196fa6be5d",
-    "dev/memory_engine/engine.py": "787e8d87b3bfc2a20cda492873d5d32b2c7b8f5e857d31a3871c29e6230e5195",
-    "dev/memory_engine/rejudge.py": "4ec367552c9de084cebcb46d5ec20be3e2018525c4e10b3b360475f446090e02",
+    "dev/memory_engine/engine.py": "f3a105b8e46d70877f0a14c547c0a8f9cdc6be24b73d510d7c14f4d0094ef726",
+    "dev/memory_engine/rejudge.py": "00154fff928659074d2dbff7fe05e039d8fa6303f20a3855881654a332be7b12",
     "dev/memory_engine/worker.py": "fa11ff7caaa97190a9e2c916abb7339dc36543c3eff393544f250efb3d875667",
     "dev/memory_engine/render.py": "dbe141aebab0f19181d3ab7f80c35e37c0c126c1a74ebb711ce6a12e1aab4473",
     "dev/memory_engine/cache.py": "1d99e10d0a8ab880145501f64d75ca3b2168413b136137c0a20acef4f37e6027",
@@ -30,7 +30,8 @@
     "dev/evaluation/b4_frozen_replay.py": "d0a4e9d597b5d82b7b52bd4b9c0d9c61332303aac8586ca449c002bd5554f356",
     "dev/tests/test_r0d_replay.py": "257adcec5aa61b6bc83dd7da96f45e1a44d59d30bb0f0d3a873077a401a57eed",
     "dev/evaluation/r0d_crash_replay.py": "dcea8a799479e09f85cfd703293e7cbb565b8e262fdccad07dbe9677b1c3fb50",
-    "dev/tests/test_r0d_crash.py": "d870bfde949351639ba370c4e5715481a0279c37b26be599c7aea17ac10cc9cc"
+    "dev/tests/test_r0d_crash.py": "d870bfde949351639ba370c4e5715481a0279c37b26be599c7aea17ac10cc9cc",
+    "dev/memory_engine/summary.py": "02a2258c350d3aee882c100ce952ca051adb2f6ba979d464a01a3d54989ba1c5"
   },
   "status": "LOCAL+REMOTE; CI green",
   "notes": [

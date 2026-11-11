@@ -1,8 +1,8 @@
 # Memory Engine 阶段验收矩阵（2026-11-11 复核后）
 
 - 状态：**NO-GO（R0/R1 均未通过）**
-- 全量测试：538/538
-- 代码提交：`09b24a1`
+- 全量测试：539/539
+- 代码提交：`01c484d`
 - CI：Windows 3.10 / 3.11 / 3.12 全绿
 - Memory Engine 真实聊天语料：0
 - 宿主：AstrBot 4.29.3 testbed
@@ -17,14 +17,14 @@ C01/C02/C03 已修复并纳入回归：
 | C02 | 零预算/裁剪元数据/无 tokenizer | 零预算空块；框架装不下空块；裁剪后重建 refs/used/degraded；无 tokenizer 默认 strict；CLI 显式 0 保留 |
 | C03 | 同故事归一化覆盖原判 | 不改原 proposal；DB 保存 raw_label/raw_reasons/normalization_reason/policy_version；explicit [] 原样保留 |
 
-R0-D 同库正常完成→释放→新进程恢复已通过；仍缺提交前/后终止、完整语义快照、自动重评与独立数据。
+R0-D 同库、提交前/后中断、完整回放矩阵、自动重评、并发与独立 gold 已复核；paraphrase 20/40、单作者合成与真实平台仍缺。
 
 ## 2. M0 基线
 
 | 验收项 | 证据 | 状态 |
 |---|---|---|
 | 版本/提交冻结 | M0 manifest、R0 包 | ✅ |
-| 全量回归 | 538/538；Linux 有 6 项 tiktoken skip | ✅ |
+| 全量回归 | 539/539；Linux 有 6 项 tiktoken skip | ✅ |
 | 关键源文件 SHA | manifest | ✅ |
 | 契约/CI | Windows 三版本 | ✅ |
 
@@ -43,6 +43,10 @@ Linux 复核为 530 通过 / 6 skipped；Windows 为 536 通过。报告必须�
 | 部分批次失败保留 | 第 2 条 READY 重试 | ✅ |
 | 旧 P/B 反例 | 10/10 通过 | ✅ |
 | 同库二次重跑 | 340 回执命中；claim 0；diff {} | ✅ |
+| 提交前/后中断 | 340/340；无重复；frontier 34 | ✅ |
+| 回放矩阵 | 10 场景差异 0；无 CLAIMED job | ✅ |
+| 自动重评 / 并发 | 8/8；2/2 | ✅ |
+| 独立 gold | Top1 280/300；问句 140/140；摘要 100/100 | ◐ paraphrase 20/40 |
 
 仍缺：恢复执行路径、完整依赖快照、自动触发联合验收。
 
