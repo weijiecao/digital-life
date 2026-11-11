@@ -153,7 +153,8 @@ def state_diff(before: dict, after: dict, path: str = "") -> dict:
 
 
 def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
-        guard_policy: str = "abstain") -> dict:
+        guard_policy: str = "abstain", crash_at: str | None = None,
+        lease_ttl: int = 300) -> dict:
     fixture = B4Fixture.load(root)
     trace = json.loads(Path(trace_path).read_text(encoding="utf-8"))["trace"]
     by_scope = defaultdict(list)
@@ -163,6 +164,7 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
     stats = Counter()
     frontiers = {}
     lease_owner = "frozen-" + uuid.uuid4().hex
+    crash_done = False
     temp_dir = tempfile.TemporaryDirectory(prefix="b4-frozen-") if db_path is None else None
     with (temp_dir if temp_dir is not None else contextlib.nullcontext()):
         if db_path is None:
@@ -181,12 +183,12 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
                 store.register_manifest(scope, [(e["source_seq"], e["source_id"])
                                                 for e in entries])
                 mapping = _load_map(store, scope)
-                lease_token = store.claim_scope(scope, lease_owner, ttl=300)
+                lease_token = store.claim_scope(scope, lease_owner, ttl=lease_ttl)
                 if lease_token is None:
                     stats["scope_claim_failed"] += 1
                     continue
                 lease_record = {"scope_id": scope, "owner": lease_owner,
-                                "token": lease_token, "ttl": 300,
+                                "token": lease_token, "ttl": lease_ttl,
                                 "acquired": True, "released": False}
                 leases = []
                 def release_lease():
@@ -230,7 +232,7 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
                         "|".join(e["source_id"] for e in batch).encode()).hexdigest()
                     claim = store.claim_job(scope, batch[0]["source_seq"],
                                              batch[-1]["source_seq"], digest,
-                                             "frozen-replay", 300)
+                                             "frozen-replay", lease_ttl)
                     if claim is None:
                         stats["job_claim_failed"] += 1
                         continue
@@ -309,6 +311,14 @@ def run(root: str, trace_path: str, batch_size: int, db_path: str | None = None,
                             store.record_receipt(scope, source.source_seq,
                                                  "ATTACHED" if attached else "CREATED",
                                                  source.source_hash)
+                            if crash_at == "before_commit" and not crash_done:
+                                crash_done = True
+                                import os
+                                os._exit(17)
+                        if crash_at == "after_commit" and not crash_done:
+                            crash_done = True
+                            import os
+                            os._exit(17)
                         mapping.setdefault(entry["final_event"], set()).add(new_id)
                         predictions[entry["source_id"]] = new_id
                         stats["messages"] += 1
@@ -353,8 +363,12 @@ def main() -> int:
     parser.add_argument("--db", default=None)
     parser.add_argument("--guard-policy", default="abstain",
                         choices=["abstain", "allow_user_real"])
+    parser.add_argument("--crash-at", default="",
+                        choices=["", "before_commit", "after_commit"])
+    parser.add_argument("--lease-ttl", type=int, default=300)
     args = parser.parse_args()
-    result = run(args.root, args.trace, args.batch_size, args.db, args.guard_policy)
+    result = run(args.root, args.trace, args.batch_size, args.db,
+                 args.guard_policy, args.crash_at or None, args.lease_ttl)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")

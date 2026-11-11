@@ -1,0 +1,110 @@
+{
+  "checks": {
+    "before_crash_no_receipt": true,
+    "before_resume_completes_340": true,
+    "before_resume_no_duplicates": true,
+    "after_crash_one_receipt": true,
+    "after_resume_340": true,
+    "after_resume_no_duplicates": true,
+    "after_resume_skips_first": true,
+    "both_leases_claimed": true,
+    "frontier_34_all": true
+  },
+  "pass": true,
+  "cases": {
+    "before_commit": {
+      "label": "before_commit",
+      "crash": {
+        "exit": 17,
+        "stdout": "",
+        "stderr": ""
+      },
+      "before_resume": {
+        "receipts": 0,
+        "events": 0,
+        "evidence": 0,
+        "proposals": 0,
+        "decisions": 0,
+        "frontier": {
+          "S01": 0
+        }
+      },
+      "resume": {
+        "exit": 0,
+        "messages": 340,
+        "already_receipted": 0,
+        "recovery_scan": 340,
+        "receipt_hits": 0,
+        "scope_claim_failed": 0,
+        "job_claim_failed": 0,
+        "diff": 18
+      },
+      "after": {
+        "receipts": 340,
+        "events": 223,
+        "evidence": 340,
+        "proposals": 947,
+        "decisions": 947,
+        "frontier": {
+          "S01": 34,
+          "S02": 34,
+          "S03": 34,
+          "S04": 34,
+          "S05": 34,
+          "S06": 34,
+          "S07": 34,
+          "S08": 34,
+          "S09": 34,
+          "S10": 34
+        }
+      }
+    },
+    "after_commit": {
+      "label": "after_commit",
+      "crash": {
+        "exit": 17,
+        "stdout": "",
+        "stderr": ""
+      },
+      "before_resume": {
+        "receipts": 1,
+        "events": 1,
+        "evidence": 1,
+        "proposals": 0,
+        "decisions": 0,
+        "frontier": {
+          "S01": 1
+        }
+      },
+      "resume": {
+        "exit": 0,
+        "messages": 339,
+        "already_receipted": 1,
+        "recovery_scan": 340,
+        "receipt_hits": 1,
+        "scope_claim_failed": 0,
+        "job_claim_failed": 0,
+        "diff": 18
+      },
+      "after": {
+        "receipts": 340,
+        "events": 223,
+        "evidence": 340,
+        "proposals": 947,
+        "decisions": 947,
+        "frontier": {
+          "S01": 34,
+          "S02": 34,
+          "S03": 34,
+          "S04": 34,
+          "S05": 34,
+          "S06": 34,
+          "S07": 34,
+          "S08": 34,
+          "S09": 34,
+          "S10": 34
+        }
+      }
+    }
+  }
+}
