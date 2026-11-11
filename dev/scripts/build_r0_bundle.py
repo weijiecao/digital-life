@@ -57,7 +57,7 @@ def main() -> int:
                 "file_sha256": {
                     rel: hashlib.sha256((DEV / rel).read_bytes()).hexdigest()
                     for rel in sorted(FILES)},
-                "status": "R0 release candidate; NO-GO", "tests": 531}
+                "status": "R0 release candidate; NO-GO", "tests": 536}
     (OUT.parent / "memory-engine-r0-rc1.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(manifest, ensure_ascii=False, indent=2))

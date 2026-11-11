@@ -209,8 +209,8 @@ def build() -> None:
                    "规模可靠性到真实宿主接入的工程证据。所有数字均来自本工作区的测试、"
                    "评测脚本与运行记录；合成数据与真实用户数据严格区分。")
     bullets(document, [
-        "离线回归：536/536；Windows CI 在 Python 3.10 / 3.11 / 3.12 全绿；Linux 有 5 项可选 tiktoken 用例 skipped。",
-        "R0 候选包：31 文件、54,846 bytes、SHA-256 d059e5ec…，整包与逐文件哈希均校验。",
+        "离线回归：536/536；Windows CI 在 Python 3.10 / 3.11 / 3.12 全绿；Linux 有 6 项可选 tiktoken 用例 skipped（530 通过）。",
+        "R0 候选包：31 文件、54,904 bytes、SHA-256 d059e5ec…，整包与逐文件哈希均校验。",
         "21 例真实模型重判：六次 19–20/21；来源污染 0；T02-S2 稳定错误。",
         "340 合成 trace：词面 F1 约 0.66；BGE top20 F1 0.8740/0.8782；BGE top30 回落到 0.8533。",
         "100k：读 p95 458.8ms；备份 100k；kill 续跑 100k；4×25k 多 scope 续跑 0 重复。",
@@ -269,9 +269,9 @@ def build() -> None:
         ["M0 基线", "✅", "536 测试、CI、manifest、R0 包", "—"],
         ["M1 一致性", "◐", "kill/续跑、pending 重评、provider 重试", "真实模型 340 稳定性"],
         ["M2 数据", "◐", "21 例六次、340 多组、污染 0", "独立真实 gold"],
-        ["M3 引擎", "✅", "API/CLI、更正/撤回/历史", "生产宿主采集"],
+        ["M3 引擎", "◐", "API/CLI、更正/撤回/历史", "自然更正/时间状态/自动后台"],
         ["M4 检索", "◐", "词面/BGE、阈值、延迟", "真实查询集"],
-        ["M5 上下文", "✅", "Packet/摘要/tiktoken/缓存/预算", "宿主真实总预算"],
+        ["M5 上下文", "◐", "Packet/摘要/tiktoken/缓存/预算", "摘要保真/完整依赖契约"],
         ["M6 规模", "◐", "100k 读/写/备份/恢复/续跑", "复杂混合负载/断电另立"],
         ["M7 接入", "◐", "testbed shadow 10 次、回退", "真实 QQ 72h"],
     ], widths=[2.2, 1.3, 9.2, 4.0])
@@ -280,7 +280,7 @@ def build() -> None:
     para(document, "统一命令：python -m unittest discover -q -s tests -t .；"
                    "报告脚本：python scripts/report.py。")
     table(document, ["项", "结果"], [
-        ["离线用例", "536（Windows）；Linux 5 skipped"],
+        ["离线用例", "536（Windows）；Linux 530 通过 + 6 skipped"],
         ["失败/错误", "0 / 0"],
         ["Windows CI", "3.10 / 3.11 / 3.12 全绿"],
         ["耗时", "约 43 s（本机）"],
@@ -317,7 +317,7 @@ def build() -> None:
         ["BGE k30", "192", "128", "2", "378", "28", "102", "0.8533"],
     ], widths=[3.4, 1.6, 1.6, 1.2, 1.4, 1.2, 1.2, 1.2], font_size=8)
     para(document, "BGE 把召回从约 0.49 提到 0.80，F1 从 0.66 提到 0.876；top30 因 FP/mixed 增加回落，"
-                   "说明 20 附近接近饱和。所有数字仍是合成 B4，不是真实用户准确率。")
+                   "在本次少量合成实验里 20 优于 10 和 30，但不能外推为通用最优 k。所有数字仍是合成 B4，不是真实用户准确率。")
     heading(document, "6.3 FN 归因", 2)
     table(document, ["原因", "对数"], [
         ["B1 单边未召回", "124"],
@@ -400,7 +400,7 @@ def build() -> None:
         ["provider 瞬时网络错误", "retries/backoff；HTTPError 不重试", "单测"],
         ["C01 hybrid 索引外部失效", "scope epoch + 返回前 current-row 再核验", "双连接测试"],
         ["C02 零预算/裁剪/无 tokenizer", "空块、重建 refs/used、strict 默认、CLI 0", "六类边界测试"],
-        ["C03 原判被归一化覆盖", "raw_label/raw_reasons 独立保存，输入不变", "审计字段测试"],
+        ["C03 原判被归一化覆盖", "raw_label/raw_reasons 独立保存；explicit [] 原样保留", "审计字段测试"],
     ], widths=[6.3, 6.7, 2.8], font_size=8)
 
     heading(document, "12. 验收与结论")
@@ -425,10 +425,10 @@ def build() -> None:
     heading(document, "14.1 产物", 2)
     table(document, ["产物", "值"], [
         ["R0 包", "releases/memory-engine-r0-rc1.zip"],
-        ["大小/文件数", "54,846 bytes / 31"],
-        ["SHA-256", "d059e5ecfccd23c19d0b4f114cdbd8f1d0aed18854ed2b1f5209f5d2ad67c996"],
-        ["代码提交", "7a8495a"],
-        ["测试", "536/536（Windows；Linux 5 skipped）"],
+        ["大小/文件数", "54,904 bytes / 31"],
+        ["SHA-256", "05b66ffc9576ce0e48ce0cd255b03fcaf82570e892581af71a1b14e54c07d501"],
+        ["代码提交", "9586328"],
+        ["测试", "536/536（Windows；Linux 530 通过 + 6 skipped）"],
     ], widths=[4.0, 11.8], font_size=8.5)
     heading(document, "14.2 证据索引", 2)
     table(document, ["文档", "内容"], [

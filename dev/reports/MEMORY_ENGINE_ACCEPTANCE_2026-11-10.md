@@ -2,7 +2,7 @@
 
 - 状态：**NO-GO（R0/R1 均未通过）**
 - 全量测试：536/536
-- 代码提交：`7a8495a`
+- 代码提交：`9586328`
 - CI：Windows 3.10 / 3.11 / 3.12 全绿
 - Memory Engine 真实聊天语料：0
 - 宿主：AstrBot 4.29.3 testbed
@@ -15,7 +15,7 @@ C01/C02/C03 已修复并纳入回归：
 |---|---|---|
 | C01 | hybrid 索引外部失效后仍返回旧条目 | 索引绑定 scope epoch；返回前按当前 revision/valid/pending/withdrawn 再核验 |
 | C02 | 零预算/裁剪元数据/无 tokenizer | 零预算空块；框架装不下空块；裁剪后重建 refs/used/degraded；无 tokenizer 默认 strict；CLI 显式 0 保留 |
-| C03 | 同故事归一化覆盖原判 | 不改原 proposal；DB 保存 raw_label/raw_reasons/normalization_reason/policy_version |
+| C03 | 同故事归一化覆盖原判 | 不改原 proposal；DB 保存 raw_label/raw_reasons/normalization_reason/policy_version；explicit [] 原样保留 |
 
 R0-D 未完成：真实执行的恢复/重放、完整语义快照、独立数据分割、候选包可移植验证。
 
@@ -24,11 +24,11 @@ R0-D 未完成：真实执行的恢复/重放、完整语义快照、独立数�
 | 验收项 | 证据 | 状态 |
 |---|---|---|
 | 版本/提交冻结 | M0 manifest、R0 包 | ✅ |
-| 全量回归 | 536/536；Linux 有 5 项 tiktoken skip | ✅ |
+| 全量回归 | 536/536；Linux 有 6 项 tiktoken skip | ✅ |
 | 关键源文件 SHA | manifest | ✅ |
 | 契约/CI | Windows 三版本 | ✅ |
 
-Linux 复核为 526 通过 / 5 skipped；Windows 为 536 通过。报告必须同时写出 skip，不能把 skipped 当已执行。
+Linux 复核为 530 通过 / 6 skipped；Windows 为 536 通过。报告必须同时写出 skip，不能把 skipped 当已执行。
 
 ## 3. M1 一致性
 

@@ -1,8 +1,8 @@
 {
   "schema": "m0-baseline-final-5",
   "date": "2026-11-11",
-  "local_commit": "7a8495a",
-  "remote_last_pushed": "7a8495a",
+  "local_commit": "9586328",
+  "remote_last_pushed": "9586328",
   "python": "3.12.10",
   "sqlite": "3.49.1",
   "plugin_version": "1.0.19",
@@ -14,10 +14,10 @@
   },
   "hashes": {
     "dev/v1_5_consolidator/store.py": "1f13ed95c8c98822d959ebece2e793d9cfaafce84b72554ed4648188e28a6c15",
-    "dev/v1_5_consolidator/resolver.py": "47535ae9fd63381e9d032d0316902941d45d48c4a3c6bdba53779cc6ab005cfa",
+    "dev/v1_5_consolidator/resolver.py": "d2a04da0cbf3e76d5bb773c3edafa5e857039cf8eb62477fcc27f8888f4b41e7",
     "dev/v1_5_consolidator/candidate_retriever.py": "09e901ff53cb31b26fcec3ce727a4d9b9114ea4085d5b57c89e64f588b78353d",
     "dev/v1_5_consolidator/gateway.py": "ae8c4d81c764fa55868f6db71b17975a4b6c9691249132abfc3ee7c0ae3ae9c0",
-    "dev/v1_5_consolidator/relation_judge.py": "dd71bb8eadab4600a199899960f94c0b01ac4104993df6f9cec4e2c0d7818653",
+    "dev/v1_5_consolidator/relation_judge.py": "8e3dcda546087c4636d42c6f040430f00b5637f3e60930ea0995bf196fa6be5d",
     "dev/memory_engine/engine.py": "787e8d87b3bfc2a20cda492873d5d32b2c7b8f5e857d31a3871c29e6230e5195",
     "dev/memory_engine/rejudge.py": "4ec367552c9de084cebcb46d5ec20be3e2018525c4e10b3b360475f446090e02",
     "dev/memory_engine/worker.py": "fa11ff7caaa97190a9e2c916abb7339dc36543c3eff393544f250efb3d875667",

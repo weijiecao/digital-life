@@ -3,7 +3,7 @@
 - 代码：`dev/`
 - R0 包：`_publish/digital-life/releases/memory-engine-r0-rc1.zip`
 - 全量测试：536/536
-- 代码提交：`7a8495a`
+- 代码提交：`9586328`
 - 最新文档：`0568630`
 - CI：Windows 3.10 / 3.11 / 3.12 全绿
 
@@ -19,7 +19,7 @@
 | M5 | ContextPacket、摘要、tiktoken、持久缓存、TTL/janitor、HostBudget；C02 零预算/裁剪 |
 | M6 | 100k 读/写/备份/恢复/续跑、并发备份、写锁修复 |
 | M7 | 真实 AstrBot shadow 10 次、宿主预算、preflight、回退 |
-| C01–C03 | hybrid 索引失效、渲染合同、原判审计已修复 |
+| C01–C03 | hybrid 索引失效、渲染合同、原判审计（含 explicit []）已修复 |
 
 ## 2. 明确没有
 
