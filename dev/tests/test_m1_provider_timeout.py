@@ -1,10 +1,14 @@
 import hashlib
+import io
+import json
 import tempfile
 import threading
 import time
 import unittest
+import urllib.error
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+from unittest.mock import patch
 
 from memory_engine.rejudge import PendingRejudger
 from v1_5_consolidator.contracts import NarrativeProvenance, SourceEnvelope
@@ -41,6 +45,26 @@ class TestProviderTimeout(unittest.TestCase):
         finally:
             server.shutdown()
             server.server_close()
+
+    def test_transient_network_error_is_retried(self):
+        class Response:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def read(self):
+                return json.dumps({"choices": [{"message": {"content": "{}"}}],
+                                   "usage": {}}).encode()
+
+        provider = OpenAIProvider("http://example.invalid", "mock", "key",
+                                  retries=1, retry_backoff=0)
+        with patch("urllib.request.urlopen",
+                   side_effect=[urllib.error.URLError("reset"), Response()]) as open_mock:
+            result = provider.generate(type("P", (), {"prompt": "hello"})())
+        self.assertEqual(open_mock.call_count, 2)
+        self.assertEqual(result.text, "{}")
 
     def test_timeout_keeps_pending_then_retry_resolves(self):
         server = HTTPServer(("127.0.0.1", 0), _SlowHandler)

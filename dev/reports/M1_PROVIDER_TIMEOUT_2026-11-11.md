@@ -29,6 +29,14 @@
 - pending 仍 READY；
 - 快速 judge 重试后附着。
 
+## 2.2 瞬时网络重试
+
+`OpenAIProvider` 新增 `retries=2`、`retry_backoff=0.2`：
+
+- `URLError` / `TimeoutError` / `ConnectionError` / `IncompleteRead` 可重试；
+- `HTTPError` 直接抛出，不重试 4xx/5xx；
+- 单测：第一次 URLError、第二次成功，body 正常解析。
+
 ## 3. 边界
 
 - 本地 HTTP，不是 DeepSeek 真实网络；

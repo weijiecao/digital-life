@@ -184,13 +184,19 @@ class MockProvider:
 class OpenAIProvider:
     external = True
 
-    def __init__(self, base_url: str, model: str, api_key: str, timeout: int = 60):
+    def __init__(self, base_url: str, model: str, api_key: str, timeout: int = 60,
+                 retries: int = 2, retry_backoff: float = 0.2):
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.api_key = api_key
         self.timeout = timeout
+        self.retries = max(0, retries)
+        self.retry_backoff = retry_backoff
 
     def generate(self, prepared: PreparedContext) -> ModelResult:
+        import http.client
+        import time
+        import urllib.error
         import urllib.request
         body = json.dumps({
             "model": self.model,
@@ -203,8 +209,19 @@ class OpenAIProvider:
             self.base_url + "/chat/completions", data=body,
             headers={"Content-Type": "application/json",
                      "Authorization": "Bearer " + self.api_key}, method="POST")
-        with urllib.request.urlopen(request, timeout=self.timeout) as response:
-            payload = json.loads(response.read().decode("utf-8"))
+        transient = (urllib.error.URLError, TimeoutError, ConnectionError,
+                     http.client.IncompleteRead)
+        for attempt in range(self.retries + 1):
+            try:
+                with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+                break
+            except urllib.error.HTTPError:
+                raise
+            except transient:
+                if attempt >= self.retries:
+                    raise
+                time.sleep(self.retry_backoff * (2 ** attempt))
         usage = payload.get("usage") or {}
         text = payload["choices"][0]["message"]["content"]
         return ModelResult(text=text, tokens_in=int(usage.get("prompt_tokens", 0)),

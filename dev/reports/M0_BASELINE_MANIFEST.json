@@ -8,7 +8,7 @@
   "plugin_version": "1.0.19",
   "test_command": "python -m unittest discover -q -s tests -t .",
   "tests": {
-    "total": 526,
+    "total": 529,
     "failures": 0,
     "errors": 0
   },
@@ -16,6 +16,7 @@
     "dev/v1_5_consolidator/store.py": "b33d251c7b8b90b29c95fcebaf117d1b3e74c879b4ed5a9bc0f677a0d2cae479",
     "dev/v1_5_consolidator/resolver.py": "c4bca6e1471a18c73bf181fbdc2219565f61334e386db6df1326a8ccc7b33b02",
     "dev/v1_5_consolidator/candidate_retriever.py": "09e901ff53cb31b26fcec3ce727a4d9b9114ea4085d5b57c89e64f588b78353d",
+    "dev/v1_5_consolidator/gateway.py": "ae8c4d81c764fa55868f6db71b17975a4b6c9691249132abfc3ee7c0ae3ae9c0",
     "dev/memory_engine/engine.py": "33110606d31164877505f039f3756a01105614f0316eb805c4b9e556c6991db6",
     "dev/memory_engine/rejudge.py": "4ec367552c9de084cebcb46d5ec20be3e2018525c4e10b3b360475f446090e02",
     "dev/memory_engine/worker.py": "fa11ff7caaa97190a9e2c916abb7339dc36543c3eff393544f250efb3d875667",

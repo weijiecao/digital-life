@@ -1,10 +1,10 @@
 {
   "artifact": "memory-engine-r0-rc1.zip",
-  "sha256": "d0717e323e6ecb838378339ba852b61e2f6743793947eb372cfd9ee8999a580f",
-  "bytes": 50991,
+  "sha256": "3079b3b745efc7aacc9c8eb9260c6bc902e423185367e95b70598307daba2cf5",
+  "bytes": 51635,
   "files": 31,
   "file_sha256": {
-    "host_shadow/README.md": "fb917c6ba055ceba2cfb04ec5d9a7ce3db977e389a432b22a083406da335cdab",
+    "host_shadow/README.md": "65967cbc80d0ba4f3471e15c5523be8c0cd41bab9c24383665446e5cd03d155a",
     "host_shadow/main.py": "de190e7465287b9ba949e2506d9bbcf542bd00c9eef3d8069d5ca194a9ec4403",
     "host_shadow/metadata.yaml": "bca5deeceb380653e436c29305512a79354a2672f57962a28f212e901deefce2",
     "host_shadow/preflight.py": "bdd11789a3e029a336a82d3bd9e8b364678a1ce23a3a40a46c2a6be99a53e14f",
@@ -23,19 +23,19 @@
     "memory_engine/summary_cache.py": "161930edbea00077fec654de560ff70b8c6cc573188313c5c8d94adbae8374d7",
     "memory_engine/token_budget.py": "c33c8f487643cb160d5ae6e0ead50c1c8a706db710cf6fd014bf1ba3712ac3f7",
     "memory_engine/worker.py": "fa11ff7caaa97190a9e2c916abb7339dc36543c3eff393544f250efb3d875667",
-    "reports/M2_DATA_PROGRESS_2026-11-10.md": "0f7d7eb7ade87b4cb51d3b3913fe4f18a30107436c2615e03a9270fdbf6f8012",
+    "reports/M2_DATA_PROGRESS_2026-11-10.md": "62e518579e39455854e616d7d3511426646efdd940a0dc500ed96d86f769e838",
     "reports/M6_SCALE_SMOKE_2026-11-10.md": "bacb0d5dd0129b30b42cadbcc1f6d60beaa7757530a27a0daae1cf2a7b59c76f",
     "reports/M7_HOST_BUDGET_REAL_2026-11-11.md": "ed70863fbd7d5c9678e1d6a7e538901e5a04af5e585cea96a248489b7d560b1c",
-    "reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md": "19e1c487480a2f42784916e9d792fe9b310fac227265d5550fa120c8cdc94036",
+    "reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md": "f7d9460f83323e884239d3c8c9da182c7380f48ccd042e6c44d925a73c8ae70c",
     "reports/MEMORY_ENGINE_STATUS_2026-11-10.md": "4ed6336bd2ad3ebfa1749437f5947b6eab2822312f77e8cf4aba1b6168c19ffe",
     "v1_5_consolidator/candidate_retriever.py": "09e901ff53cb31b26fcec3ce727a4d9b9114ea4085d5b57c89e64f588b78353d",
     "v1_5_consolidator/contracts.py": "88d11316df1251d82a04fd39ca99826c83f5bdfa64eb2e8c86a5abd3fca3d5d0",
-    "v1_5_consolidator/gateway.py": "b39565a2425857fca1ed43d65e80b0ef2dff05d85b1e721b6a7afd382bc2b6b0",
+    "v1_5_consolidator/gateway.py": "ae8c4d81c764fa55868f6db71b17975a4b6c9691249132abfc3ee7c0ae3ae9c0",
     "v1_5_consolidator/provenance_guard.py": "518034acd908fe6fd3b817c52dae0bed1256351cbb075da5243e6465f215d62b",
     "v1_5_consolidator/relation_judge.py": "4a36ba8f85f3e60a8655644c9a1b8988a1c7339c79cdaf54f34565d14d7f6c3e",
     "v1_5_consolidator/resolver.py": "c4bca6e1471a18c73bf181fbdc2219565f61334e386db6df1326a8ccc7b33b02",
     "v1_5_consolidator/store.py": "b33d251c7b8b90b29c95fcebaf117d1b3e74c879b4ed5a9bc0f677a0d2cae479"
   },
   "status": "R0 release candidate; NO-GO",
-  "tests": 528
+  "tests": 529
 }
