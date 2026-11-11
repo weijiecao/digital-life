@@ -403,7 +403,8 @@ pair F1 对比：
 - 代价是 8–16 个 FP、1 个 mixed cluster（约 0.8%）；
 - 这是 B1 召回瓶颈的直接证据；
 - 仍是合成 B4，不是真实语料；
-- engine hybrid 使用 k=max(limit,20)，与该配置一致。
+- engine hybrid 使用 k=max(limit,20)，与该配置一致；
+- top30 反而降到 0.8533，FP 28、mixed 2，说明 20 已接近饱和。
 - 运行成本明显更高（BGE 编码 + 340 次调用）。
 
 ## 3. 结论
