@@ -2,8 +2,8 @@
 
 - 代码：`dev/`
 - R0 包：`_publish/digital-life/releases/memory-engine-r0-rc1.zip`
-- 全量测试：531/531
-- 代码提交：`5dc2d24`
+- 全量测试：536/536
+- 代码提交：`7a8495a`
 - 最新文档：`0568630`
 - CI：Windows 3.10 / 3.11 / 3.12 全绿
 
@@ -13,12 +13,13 @@
 |---|---|
 | M0 | 版本、SHA、测试、CI 基线 |
 | M1 | 原子领取、kill 恢复、pending 重评、provider 超时/重试 |
-| M2 | 21 例五次 19–20/21；340 F1 0.66（词面）/0.85–0.88（BGE） |
+| M2 | 21 例六次 19–20/21；340 F1 0.66（词面）/0.85–0.88（BGE） |
 | M3 | ingest/retrieve/context/delete/revise/withdraw/history |
 | M4 | 词面/BGE、min_score、阈值、分 scope、BGE 延迟 |
-| M5 | ContextPacket、摘要、tiktoken、持久缓存、TTL/janitor、HostBudget |
+| M5 | ContextPacket、摘要、tiktoken、持久缓存、TTL/janitor、HostBudget；C02 零预算/裁剪 |
 | M6 | 100k 读/写/备份/恢复/续跑、并发备份、写锁修复 |
 | M7 | 真实 AstrBot shadow 10 次、宿主预算、preflight、回退 |
+| C01–C03 | hybrid 索引失效、渲染合同、原判审计已修复 |
 
 ## 2. 明确没有
 
