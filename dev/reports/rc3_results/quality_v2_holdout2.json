@@ -1,0 +1,103 @@
+{
+  "overall": {
+    "positive": 12,
+    "negative": 13,
+    "top1_hits": 12,
+    "top5_hits": 12,
+    "positive_context_hits": 12,
+    "negative_context_injections": 0,
+    "invalid_context_injections": 0
+  },
+  "by_category": {
+    "correction": {
+      "positive": 3,
+      "negative": 0,
+      "top1_hits": 3,
+      "top5_hits": 3,
+      "positive_context_hits": 3,
+      "negative_context_injections": 0,
+      "invalid_context_injections": 0
+    },
+    "no_answer": {
+      "positive": 0,
+      "negative": 4,
+      "top1_hits": 0,
+      "top5_hits": 0,
+      "positive_context_hits": 0,
+      "negative_context_injections": 0,
+      "invalid_context_injections": 0
+    },
+    "paraphrase": {
+      "positive": 4,
+      "negative": 0,
+      "top1_hits": 4,
+      "top5_hits": 4,
+      "positive_context_hits": 4,
+      "negative_context_injections": 0,
+      "invalid_context_injections": 0
+    },
+    "reality_wrong": {
+      "positive": 0,
+      "negative": 1,
+      "top1_hits": 0,
+      "top5_hits": 0,
+      "positive_context_hits": 0,
+      "negative_context_injections": 0,
+      "invalid_context_injections": 0
+    },
+    "story": {
+      "positive": 1,
+      "negative": 0,
+      "top1_hits": 1,
+      "top5_hits": 1,
+      "positive_context_hits": 1,
+      "negative_context_injections": 0,
+      "invalid_context_injections": 0
+    },
+    "subject_family": {
+      "positive": 1,
+      "negative": 0,
+      "top1_hits": 1,
+      "top5_hits": 1,
+      "positive_context_hits": 1,
+      "negative_context_injections": 0,
+      "invalid_context_injections": 0
+    },
+    "subject_wrong": {
+      "positive": 0,
+      "negative": 2,
+      "top1_hits": 0,
+      "top5_hits": 0,
+      "positive_context_hits": 0,
+      "negative_context_injections": 0,
+      "invalid_context_injections": 0
+    },
+    "time_current": {
+      "positive": 3,
+      "negative": 0,
+      "top1_hits": 3,
+      "top5_hits": 3,
+      "positive_context_hits": 3,
+      "negative_context_injections": 0,
+      "invalid_context_injections": 0
+    },
+    "time_old": {
+      "positive": 0,
+      "negative": 3,
+      "top1_hits": 0,
+      "top5_hits": 0,
+      "positive_context_hits": 0,
+      "negative_context_injections": 0,
+      "invalid_context_injections": 0
+    },
+    "withdrawal": {
+      "positive": 0,
+      "negative": 3,
+      "top1_hits": 0,
+      "top5_hits": 0,
+      "positive_context_hits": 0,
+      "negative_context_injections": 0,
+      "invalid_context_injections": 0
+    }
+  }
+}

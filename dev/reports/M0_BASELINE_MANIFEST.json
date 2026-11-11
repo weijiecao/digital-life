@@ -1,24 +1,24 @@
 {
   "schema": "m0-baseline-final-5",
   "date": "2026-11-11",
-  "local_commit": "568f44a",
-  "remote_last_pushed": "568f44a",
+  "local_commit": "b5f9846",
+  "remote_last_pushed": "b5f9846",
   "python": "3.12.10",
   "sqlite": "3.49.1",
   "plugin_version": "1.0.19",
   "test_command": "python -m unittest discover -q -s tests -t .",
   "tests": {
-    "total": 559,
+    "total": 569,
     "failures": 0,
     "errors": 0
   },
   "hashes": {
     "dev/v1_5_consolidator/store.py": "4731834a84fc6055e3224b2581b2dc2dbd98cdc3261023de48015b832e1a8abb",
     "dev/v1_5_consolidator/resolver.py": "d2a04da0cbf3e76d5bb773c3edafa5e857039cf8eb62477fcc27f8888f4b41e7",
-    "dev/v1_5_consolidator/candidate_retriever.py": "09e901ff53cb31b26fcec3ce727a4d9b9114ea4085d5b57c89e64f588b78353d",
+    "dev/v1_5_consolidator/candidate_retriever.py": "cffcc9691ea5b613ae40ab94f819f8f39a1a8adfafaccd2017e7cc421b0b27f7",
     "dev/v1_5_consolidator/gateway.py": "ae8c4d81c764fa55868f6db71b17975a4b6c9691249132abfc3ee7c0ae3ae9c0",
     "dev/v1_5_consolidator/relation_judge.py": "8e3dcda546087c4636d42c6f040430f00b5637f3e60930ea0995bf196fa6be5d",
-    "dev/memory_engine/engine.py": "4297839dc33d569129a5976c827192225d68310716b422bf4ce66f3a759ca95e",
+    "dev/memory_engine/engine.py": "82b93e34e00c8faff920760417e1bc9cadf82b7165ee95d30a8f56c016fead37",
     "dev/memory_engine/rejudge.py": "00154fff928659074d2dbff7fe05e039d8fa6303f20a3855881654a332be7b12",
     "dev/memory_engine/worker.py": "fa11ff7caaa97190a9e2c916abb7339dc36543c3eff393544f250efb3d875667",
     "dev/memory_engine/render.py": "dbe141aebab0f19181d3ab7f80c35e37c0c126c1a74ebb711ce6a12e1aab4473",
@@ -37,7 +37,9 @@
     "dev/evaluation/r0_semantic_probe.py": "4c8e686e4b866dbe505454841cb20d3a47fb0fbba16fced45aaeb5ad1ed3c8a7",
     "dev/host_shadow/assess_soak.py": "532deee7154ffbabe59a07b42ce50df60d70e71894737a692be32aa71304d1d7",
     "dev/RELEASE_CANDIDATE.md": "94403b213875f89b1e613fa5b3511a491fce61667a65ac902ef16be054190590",
-    "dev/requirements-release.txt": "110599243b300cefb07b7de138d5c02a54c6625d4755b445fec4e3384ce2bd98"
+    "dev/requirements-release.txt": "110599243b300cefb07b7de138d5c02a54c6625d4755b445fec4e3384ce2bd98",
+    "dev/scripts/package_lifecycle.py": "052ff947e356a4f47b9d0d9b39824e963f790553d8391acdda6ffd28438b6a3b",
+    "dev/evaluation/quality_v2_accept.py": "827b6ec88a147888725ac3103112db04a85017f80209124b18b897f61361935d"
   },
   "status": "LOCAL+REMOTE; CI green",
   "notes": [

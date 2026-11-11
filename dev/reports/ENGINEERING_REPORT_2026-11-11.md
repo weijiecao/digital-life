@@ -8,14 +8,14 @@
 
 本报告汇总 Memory Engine 从基线、一致性、数据质量、检索、上下文、规模可靠性到真实宿主接入的工程证据。所有数字均来自本工作区的测试、评测脚本与运行记录；合成数据与真实用户数据严格区分。
 
-- 离线回归：559/559；Windows/Linux CI 在 Python 3.10 / 3.11 / 3.12 全绿；Linux 3.10 有 1 项 sqlite3.setlimit 依赖跳过。
-- RC2 候选包：38 文件、61,223 bytes、SHA-256 69004fb5…，整包与逐文件哈希均校验；隔离 smoke 7/7。
+- 离线回归：569/569；Windows/Linux CI 在 Python 3.10 / 3.11 / 3.12 全绿；Linux 3.10 有 1 项 sqlite3.setlimit 依赖跳过。
+- RC3 候选包：38 文件、62,451 bytes、SHA-256 afcca11a…，整包与逐文件哈希均校验；隔离 smoke 7/7。
 - 21 例真实模型重判：六次 19–20/21；来源污染 0；T02-S2 稳定错误。
 - 340 合成 trace：词面 F1 约 0.66；BGE top20 F1 0.8740/0.8782；BGE top30 回落到 0.8533。
 - 100k：读 p95 458.8ms；备份 100k；kill 续跑 100k；4×25k 多 scope 续跑 0 重复。
 - 真实宿主：AstrBot 4.29.3 testbed 10 次 shadow，52 events / 13 scopes，0 失败。
 - R0-D 同库二跑、提交前/后中断、10 场回放矩阵均通过；rejudge 8/8、并发 2/2。
-- 独立 gold（RC2）：holdout Top1 261/300、自然问句 140/140、摘要保真 100/100；paraphrase 1/40，较 539 回退。
+- 冻结 quality-v2：dev/holdout 正例 12/12，负例注入 0；旧组合集 BGE Top1 296/300、paraphrase 36/40。
 - 结论：R0/R1 NO-GO；不得接入 V1 生产或 Shadow。
 
 | 维度 | 结论 | 证据强度 |
@@ -72,7 +72,7 @@
 
 | 阶段 | 状态 | 主要证据 | 缺口 |
 |---|---|---|---|
-| M0 基线 | ✅ | 559 测试、CI、manifest、RC2 包 | — |
+| M0 基线 | ✅ | 569 测试、CI、manifest、RC3 包 | — |
 | M1 一致性 | ◐ | kill/续跑、pending 重评、provider 重试 | 真实模型 340 稳定性 |
 | M2 数据 | ◐ | 21 例六次、340 多组、污染 0 | 独立真实 gold |
 | M3 引擎 | ◐ | API/CLI、更正/撤回/历史 | 自然更正/时间状态/自动后台 |
@@ -87,7 +87,7 @@
 
 | 项 | 结果 |
 |---|---|
-| 离线用例 | 559（Windows）；Linux 558 通过 + 1 skipped |
+| 离线用例 | 569（Windows）；Linux 568 通过 + 1 skipped |
 | 失败/错误 | 0 / 0 |
 | Windows CI | 3.10 / 3.11 / 3.12 全绿 |
 | 耗时 | 约 43 s（本机） |
@@ -222,7 +222,7 @@ BGE 是明确的“质量换延迟”：生产需要常驻索引、持久化向�
 
 | 层级 | 结论 | 原因 |
 |---|---|---|
-| R0 独立离线引擎 | NO-GO | C01/C02/C03 已关闭；RC2 独立包/CI 通过；质量回退至 261/300、paraphrase 1/40，单作者合成未关闭 |
+| R0 独立离线引擎 | NO-GO | RC3 质量门槛/闭环/包生命周期通过；单作者合成、纯词面 5/12、真实平台未关闭 |
 | R1 目标宿主 | NO-GO | 无真实平台 72h/用户效果 |
 | Shadow/生产 | 禁止 | R0/R1 未通过 |
 
@@ -242,11 +242,11 @@ BGE 是明确的“质量换延迟”：生产需要常驻索引、持久化向�
 
 | 产物 | 值 |
 |---|---|
-| R0 包 | releases/memory-engine-r0-rc2.zip |
-| 大小/文件数 | 61,223 bytes / 38 |
-| SHA-256 | 69004fb521a61d1349ffa88d5ef12c327ba5df3b06ede7d0676c618e3cf3d2bc |
-| 代码提交 | 568f44a |
-| 测试 | 559/559（Windows；Linux 558 通过 + 1 skipped） |
+| R0 包 | releases/memory-engine-r0-rc3.zip |
+| 大小/文件数 | 62,451 bytes / 38 |
+| SHA-256 | eaed986ad122c95eeb7e5a942c06ce542dd047e6120a2c433708b8c4b05403b5 |
+| 代码提交 | b5f9846 |
+| 测试 | 569/569（Windows；Linux 568 通过 + 1 skipped） |
 
 ### 14.2 证据索引
 
@@ -258,7 +258,7 @@ BGE 是明确的“质量换延迟”：生产需要常驻索引、持久化向�
 | M5_HOST_BUDGET_2026-11-11.md | 宿主预算 |
 | M6_SCALE_SMOKE_2026-11-10.md | 100k/备份/恢复/续跑 |
 | M7_SHADOW_SOAK_2026-11-11.md | shadow 10 次/preflight |
-| RC2_PACKAGE_2026-11-11.md | RC2 包/hash/验证 |
+| RC3_ACCEPTANCE_2026-11-12.md | RC3 质量/闭环/包/GO-NO-GO |
 | FINAL_HANDOFF_2026-11-11.md | 移交说明 |
 
 ### 14.3 复现命令

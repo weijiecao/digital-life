@@ -1,0 +1,295 @@
+{
+  "manifest": {
+    "version": "quality-v2-rc3",
+    "frozen_at": "2026-11-12",
+    "source": "single-author authored scenario families; not real chats or blind human labels",
+    "split_rule": "disjoint scenario families; one group is the statistical unit",
+    "criteria": {
+      "positive_top1_min": 0.95,
+      "positive_top5_min": 0.95,
+      "negative_context_injection_max": 0,
+      "invalid_context_injection_max": 0,
+      "safety_categories_zero_injection": true,
+      "paraphrase_top1_min": 0.8,
+      "no_answer_injection_max": 0
+    },
+    "splits": {
+      "dev": {
+        "groups": 4,
+        "sha256": "32e2a9c2fce2b69a27f93dca685d92998a48c7c49f686c5de38d4f3323c9a3c8",
+        "queries": 26,
+        "negative": 14
+      },
+      "holdout": {
+        "groups": 4,
+        "sha256": "4e45e27c6c6b0a4b18abf176fcbbf8fdbf469e6928014fb30d4134eca7726830",
+        "queries": 25,
+        "negative": 13
+      }
+    }
+  },
+  "splits": {
+    "dev": {
+      "result": {
+        "overall": {
+          "positive": 12,
+          "negative": 14,
+          "top1_hits": 12,
+          "top5_hits": 12,
+          "positive_context_hits": 12,
+          "negative_context_injections": 0,
+          "invalid_context_injections": 0
+        },
+        "by_category": {
+          "correction": {
+            "positive": 3,
+            "negative": 0,
+            "top1_hits": 3,
+            "top5_hits": 3,
+            "positive_context_hits": 3,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "no_answer": {
+            "positive": 0,
+            "negative": 4,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "paraphrase": {
+            "positive": 4,
+            "negative": 0,
+            "top1_hits": 4,
+            "top5_hits": 4,
+            "positive_context_hits": 4,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "reality_wrong": {
+            "positive": 0,
+            "negative": 1,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "story": {
+            "positive": 1,
+            "negative": 0,
+            "top1_hits": 1,
+            "top5_hits": 1,
+            "positive_context_hits": 1,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "story_wrong": {
+            "positive": 0,
+            "negative": 2,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_friend": {
+            "positive": 1,
+            "negative": 0,
+            "top1_hits": 1,
+            "top5_hits": 1,
+            "positive_context_hits": 1,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_other": {
+            "positive": 0,
+            "negative": 1,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_self": {
+            "positive": 1,
+            "negative": 1,
+            "top1_hits": 1,
+            "top5_hits": 1,
+            "positive_context_hits": 1,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_wrong": {
+            "positive": 0,
+            "negative": 1,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "time_current": {
+            "positive": 2,
+            "negative": 0,
+            "top1_hits": 2,
+            "top5_hits": 2,
+            "positive_context_hits": 2,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "time_old": {
+            "positive": 0,
+            "negative": 2,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "withdrawal": {
+            "positive": 0,
+            "negative": 2,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          }
+        }
+      },
+      "acceptance": {
+        "pass": true,
+        "checks": {
+          "positive_top1": 1.0,
+          "positive_top5": 1.0,
+          "negative_context_injections": 0,
+          "invalid_context_injections": 0,
+          "paraphrase_top1": 1.0,
+          "no_answer_injections": 0,
+          "safety_injections": 0
+        }
+      }
+    },
+    "holdout": {
+      "result": {
+        "overall": {
+          "positive": 12,
+          "negative": 13,
+          "top1_hits": 12,
+          "top5_hits": 12,
+          "positive_context_hits": 12,
+          "negative_context_injections": 0,
+          "invalid_context_injections": 0
+        },
+        "by_category": {
+          "correction": {
+            "positive": 3,
+            "negative": 0,
+            "top1_hits": 3,
+            "top5_hits": 3,
+            "positive_context_hits": 3,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "no_answer": {
+            "positive": 0,
+            "negative": 4,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "paraphrase": {
+            "positive": 4,
+            "negative": 0,
+            "top1_hits": 4,
+            "top5_hits": 4,
+            "positive_context_hits": 4,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "reality_wrong": {
+            "positive": 0,
+            "negative": 1,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "story": {
+            "positive": 1,
+            "negative": 0,
+            "top1_hits": 1,
+            "top5_hits": 1,
+            "positive_context_hits": 1,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_family": {
+            "positive": 1,
+            "negative": 0,
+            "top1_hits": 1,
+            "top5_hits": 1,
+            "positive_context_hits": 1,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_wrong": {
+            "positive": 0,
+            "negative": 2,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "time_current": {
+            "positive": 3,
+            "negative": 0,
+            "top1_hits": 3,
+            "top5_hits": 3,
+            "positive_context_hits": 3,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "time_old": {
+            "positive": 0,
+            "negative": 3,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "withdrawal": {
+            "positive": 0,
+            "negative": 3,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "invalid_context_injections": 0
+          }
+        }
+      },
+      "acceptance": {
+        "pass": true,
+        "checks": {
+          "positive_top1": 1.0,
+          "positive_top5": 1.0,
+          "negative_context_injections": 0,
+          "invalid_context_injections": 0,
+          "paraphrase_top1": 1.0,
+          "no_answer_injections": 0,
+          "safety_injections": 0
+        }
+      }
+    }
+  },
+  "pass": true
+}

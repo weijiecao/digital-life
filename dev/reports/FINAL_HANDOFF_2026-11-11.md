@@ -1,10 +1,10 @@
 # Memory Engine 移交说明（2026-11-11）
 
 - 代码：`dev/`
-- R0 包：`_publish/digital-life/releases/memory-engine-r0-rc2.zip`（SHA-256 69004fb5…，38 文件）
-- 全量测试：559/559
-- 代码提交：`568f44a`
-- 最新文档：`608ecad`
+- R0 包：`_publish/digital-life/releases/memory-engine-r0-rc3.zip`（SHA-256 afcca11a…，38 文件）
+- 全量测试：569/569
+- 代码提交：`b5f9846`
+- 最新文档：`pending`
 - CI：Windows/Ubuntu 3.10 / 3.11 / 3.12 全绿
 
 ## 1. 已具备

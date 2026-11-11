@@ -1,7 +1,7 @@
 {
   "verdict": "PACKAGE_VERIFIED_NOT_RELEASE_GO",
-  "sha256": "acaf20ee621cf78fc1c19a3422ca1cf012f3bba1fd0e5683e8d751bf12f36088",
-  "source_sha256": "c55684bd4a4bcb1c1aaa045008c7f3ab268b1e25e64ee1bd39a0b93d37504c3d",
+  "sha256": "eaed986ad122c95eeb7e5a942c06ce542dd047e6120a2c433708b8c4b05403b5",
+  "source_sha256": "4fba7699e6972d80b051c0bafa0d113022ca236a752c631450ce8edbb564ae65",
   "files": 38,
   "smoke": {
     "isolated_import": true,

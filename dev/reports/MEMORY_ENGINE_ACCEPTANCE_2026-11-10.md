@@ -1,8 +1,8 @@
 # Memory Engine 阶段验收矩阵（2026-11-11 复核后）
 
 - 状态：**NO-GO（R0/R1 均未通过）**
-- 全量测试：559/559
-- 代码提交：`568f44a`
+- 全量测试：569/569
+- 代码提交：`b5f9846`
 - CI：Windows 3.10 / 3.11 / 3.12 全绿
 - Memory Engine 真实聊天语料：0
 - 宿主：AstrBot 4.29.3 testbed
@@ -17,14 +17,14 @@ C01/C02/C03 已修复并纳入回归：
 | C02 | 零预算/裁剪元数据/无 tokenizer | 零预算空块；框架装不下空块；裁剪后重建 refs/used/degraded；无 tokenizer 默认 strict；CLI 显式 0 保留 |
 | C03 | 同故事归一化覆盖原判 | 不改原 proposal；DB 保存 raw_label/raw_reasons/normalization_reason/policy_version；explicit [] 原样保留 |
 
-R0-D 同库、提交前/后中断、完整回放矩阵、自动重评、并发已复核；RC2 质量回退至 261/300、paraphrase 1/40，单作者合成与真实平台仍缺。
+R0-D 同库、提交前/后中断、完整回放矩阵、自动重评、并发已复核；RC3 质量门槛在冻结 holdout 上通过；单作者合成、纯词面 5/12 与真实平台仍缺。
 
 ## 2. M0 基线
 
 | 验收项 | 证据 | 状态 |
 |---|---|---|
 | 版本/提交冻结 | M0 manifest、R0 包 | ✅ |
-| 全量回归 | 559/559；Linux 3.10 有 1 项 sqlite3.setlimit skip | ✅ |
+| 全量回归 | 569/569；Linux 3.10 有 1 项 sqlite3.setlimit skip | ✅ |
 | 关键源文件 SHA | manifest | ✅ |
 | 契约/CI | Windows 三版本 | ✅ |
 
@@ -46,7 +46,8 @@ Linux 复核为 530 通过 / 6 skipped；Windows 为 536 通过。报告必须�
 | 提交前/后中断 | 340/340；无重复；frontier 34 | ✅ |
 | 回放矩阵 | 10 场景差异 0；无 CLAIMED job | ✅ |
 | 自动重评 / 并发 | 8/8；2/2 | ✅ |
-| 独立 gold（RC2） | Top1 261/300；问句 140/140；摘要 100/100 | ◐ paraphrase 1/40，较 539 回退 |
+| 冻结 quality-v2 | holdout 12/12；负例注入 0；主体/故事/时间/更正/撤回/无答案通过 | ✅ |
+| 旧 340 组合集（BGE） | Top1 296/300；paraphrase 36/40；负例 0 | ✅ |
 
 仍缺：恢复执行路径、完整依赖快照、自动触发联合验收。
 

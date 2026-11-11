@@ -1,10 +1,10 @@
 {
   "artifact": "memory-engine-r0-rc3.zip",
-  "base_commit": "58c270cb9240dc6fc02994273bb58ebccd440667",
+  "base_commit": "b5f9846c81dcf0e2c36161814f55970a71abe2d4",
   "bytes": 62451,
   "file_sha256": {
-    "BUNDLE_MANIFEST.json": "5ab14fdaf24c1e050e12e743e8196a87e1e130dc09a7b71b24561d9645cf7927",
-    "RELEASE_CANDIDATE.md": "207e795e2a19e78e18050ee2e94793c90396910507ec9e4907e77fea67fe2259",
+    "BUNDLE_MANIFEST.json": "9fc54cfe56f05f5ae83b9be9d7b0a520a9ad369eb5cfab528bc16898a3fe41dd",
+    "RELEASE_CANDIDATE.md": "bb341fa1d0f86b4f5dfb63a2d24297853d12bf6a45627811b68c433b824e379b",
     "host_shadow/README.md": "65967cbc80d0ba4f3471e15c5523be8c0cd41bab9c24383665446e5cd03d155a",
     "host_shadow/assess_soak.py": "532deee7154ffbabe59a07b42ce50df60d70e71894737a692be32aa71304d1d7",
     "host_shadow/main.py": "de190e7465287b9ba949e2506d9bbcf542bd00c9eef3d8069d5ca194a9ec4403",
@@ -44,7 +44,7 @@
   },
   "files": 38,
   "schema": 2,
-  "sha256": "acaf20ee621cf78fc1c19a3422ca1cf012f3bba1fd0e5683e8d751bf12f36088",
-  "source_sha256": "c55684bd4a4bcb1c1aaa045008c7f3ab268b1e25e64ee1bd39a0b93d37504c3d",
+  "sha256": "eaed986ad122c95eeb7e5a942c06ce542dd047e6120a2c433708b8c4b05403b5",
+  "source_sha256": "4fba7699e6972d80b051c0bafa0d113022ca236a752c631450ce8edbb564ae65",
   "status": "RC3; R0/R1 NO-GO; isolated evaluation only"
 }

@@ -19,7 +19,7 @@ python -m memory_engine.cli --db local-test.sqlite3 context --scope demo --query
 使用解压包中的 verify_r0_bundle.py 可验证原 ZIP（需要同目录的外部 JSON 清单）：
 
 ```
-python verify_r0_bundle.py --bundle /path/to/memory-engine-r0-rc2.zip --exact-budget
+python verify_r0_bundle.py --bundle /path/to/memory-engine-r0-rc3.zip --exact-budget
 ```
 
 该验证检查整包与每个文件哈希，并在隔离子进程验证导入、CLI、入库幂等/冲突、更正/历史、重启、撤回和最终 token 预算。
