@@ -1,0 +1,41 @@
+{
+  "retrieval": [
+    {
+      "query": "我的牙科复查怎么安排？",
+      "expected_injection": false,
+      "injected": []
+    },
+    {
+      "query": "宠物手术安排在什么时候？",
+      "expected_injection": false,
+      "injected": []
+    },
+    {
+      "query": "我确认了什么付款日期？",
+      "expected_injection": false,
+      "injected": []
+    },
+    {
+      "query": "木桥市集最后定成什么了？",
+      "expected_injection": true,
+      "injected": [
+        "我已确认木桥市集，我的安排是西入口。木桥市集最终确认，最终确认西入口。"
+      ]
+    }
+  ],
+  "rebatch": {
+    "first_resume_messages": 227,
+    "immediately_after_resume": [],
+    "after_second_resume": [],
+    "second_resume_messages": 0
+  },
+  "reconcile_takeover": {
+    "fenced_error": true,
+    "old_token": 2,
+    "new_token": 3,
+    "old_verified": false,
+    "new_job_status_after_stale_reconcile": "CLAIMED",
+    "new_job_lease_valid_after_stale_reconcile": true,
+    "old_release_result": false
+  }
+}

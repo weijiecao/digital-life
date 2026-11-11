@@ -1,0 +1,77 @@
+{
+  "verdict": "PATCH_SCOPE_PASS_WITH_KNOWN_RECALL_REGRESSION",
+  "release_R0": "NO-GO",
+  "release_R1": "NO-GO",
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "sqlite": "3.49.1",
+  "tests_run": 559,
+  "tests_skipped": 0,
+  "replay_cases": 10,
+  "rejudge_cases": 8,
+  "concurrency_cases": 2,
+  "edge_groups": 3,
+  "holdout": {
+    "invalid_context_injections": 0,
+    "negative": 200,
+    "negative_context_injections": 0,
+    "positive": 300,
+    "positive_context_hits": 261,
+    "top1_hits": 261,
+    "top5_hits": 261
+  },
+  "paraphrase": {
+    "invalid_context_injections": 0,
+    "negative": 0,
+    "negative_context_injections": 0,
+    "positive": 40,
+    "positive_context_hits": 1,
+    "top1_hits": 1,
+    "top5_hits": 1
+  },
+  "commands": [
+    {
+      "name": "unittest",
+      "returncode": 0
+    },
+    {
+      "name": "replay_matrix_first_resume",
+      "returncode": 0
+    },
+    {
+      "name": "rejudge_checks",
+      "returncode": 0
+    },
+    {
+      "name": "concurrency_checks",
+      "returncode": 0
+    },
+    {
+      "name": "offline_gold",
+      "returncode": 0
+    },
+    {
+      "name": "edge_checks",
+      "returncode": 0
+    }
+  ],
+  "files_sha256": {
+    "concurrency_checks.json": "01eae06a45429bfab9188b45afcde98880ac12d4cfa371ed3f761d2f4d2f83de",
+    "concurrency_checks.log": "a6f05d6de15fa5078d29de56ea093b13ffc10bbb74854c516db4fb3825d24772",
+    "dev_gold.json": "a71c886bf7f543b7934070557b66041bc5cd38b2712ad5bead8dd47bcef34cd4",
+    "edge_checks.json": "39c49909e38ce002202b3bbadb6802998191db25880d2e6f5ee99712ae8d15b3",
+    "edge_checks.log": "e9bbc32cd0da7a6cf05fb4ef4b57ee1cc311ad07834283355270eff09bc3feff",
+    "fresh_8_snapshot.json": "bb0ca08aeecfd1b889940a72d8bbe17a76ca41c42a1e86bb61b8c8ebf1171dae",
+    "gold_manifest.json": "309afd2a1742e23a2029cd127786471f1197cd4bfc73c117f2b1d1ad9511b321",
+    "gold_metrics.json": "09d1aa25240b0b9ae34d102b34d8624841877eb69787a013224c3258c7035737",
+    "gold_predictions.json": "bb534b5a0da06e82e7322edb435e3e806122074a1c21de762466e6d3e231c304",
+    "holdout_gold.json": "6e32d924dbeb195b91795dfa2b01856a9c63ac674c2b8f709f65939ff6b1bcd0",
+    "offline_gold.log": "019fdb4cac00ff33fa6e5647301bce70ffd83fcb731b1391f17ec22d6fac1773",
+    "rejudge_checks.json": "a1bee2b7186c0765eebdce58ca458a17c8d9a42f4da5aa2a18c59a7adfc3a55f",
+    "rejudge_checks.log": "13efe0939454155446358ba15530c9a5342c028ec7aeb402fa6efc75a23141fe",
+    "replay_matrix.json": "d78176a18b6e0496c06cd407b63f663f21ea653fc7114f97b61f53e85458b3b7",
+    "replay_matrix_first_resume.log": "ed61e0b9c714f8e743ee90a7dace46aa3c49e522052dd7fafc665dfa3247044e",
+    "split_fresh_snapshot.json": "6365d127dc2d045e5486e0a4b8814636f77434a3b70b3cb8a63ffa0a4c305295",
+    "unittest.log": "0bd0c2461ab949c03041f437daacc8d069abab286cda52a580534df0c605c893"
+  }
+}
