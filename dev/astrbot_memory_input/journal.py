@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from dataclasses import replace
-from .native import Origin, Record, parse_history, canonical
+from .native import Origin, Record, parse_history_with_metadata, canonical
 
 class ImportConflict(ValueError):
     pass
@@ -22,7 +22,7 @@ class ImportJournal:
         ''')
     def close(self):self.db.close()
     def stage(self,payload,origin: Origin):
-        records=parse_history(payload,origin)
+        records,internal=parse_history_with_metadata(payload,origin)
         self.db.execute('BEGIN IMMEDIATE')
         try:
             stream=self.db.execute('SELECT mode FROM native_stream WHERE stream_id=?',(origin.stream_id,)).fetchone()
@@ -49,7 +49,13 @@ class ImportJournal:
                     (record.key,record.stream_id,record.ordinal,record.content_hash,canonical(record.as_dict()))).rowcount
             if records:
                 self.db.execute('INSERT OR IGNORE INTO native_stream VALUES(?,?)',(origin.stream_id,mode))
-            self.db.execute('INSERT INTO import_attempt(stream_id,status,detail) VALUES(?,?,?)',(origin.stream_id,'STAGED',canonical({'new':added,'duplicates':len(records)-added})))
+            staged={'new':added,'duplicates':len(records)-added}
+            if internal.get('internal_segments'):
+                # 内部段只保留游标元数据，不作为用户事实入库。
+                staged['internal_segments']=internal['internal_segments']
+                if internal.get('checkpoint_ids'):
+                    staged['checkpoint_ids']=internal['checkpoint_ids']
+            self.db.execute('INSERT INTO import_attempt(stream_id,status,detail) VALUES(?,?,?)',(origin.stream_id,'STAGED',canonical(staged)))
             self.db.commit()
             return {'new':added,'duplicates':len(records)-added}
         except Exception as exc:

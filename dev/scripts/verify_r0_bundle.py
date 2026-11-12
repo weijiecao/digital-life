@@ -59,10 +59,26 @@ assert engine.ingest('s', source(3, '恢复后补充了一张车票。')).receip
 assert engine.retrieve('s', '车票')
 assert restored.integrity_check() == 'ok'
 restored.close()
+# 新增接线与静态资源：隔离安装后必须能导入并访问控制台页面。
+import astrbot_memory_input, dlm_console, memory_output
+from dlm_console.core import Console
+from memory_engine.native_host import NativeInputService
+from memory_engine.output import MemoryOutputService
+from memory_output import OutputRequest
+for module in (astrbot_memory_input, dlm_console, memory_output):
+    assert pathlib.Path(module.__file__).resolve().is_relative_to(root), module.__file__
+for name in ('dlm_console/web/index.html', 'dlm_console/web/app.js',
+             'dlm_console/web/style.css', 'dlm_console/web/favicon.svg',
+             'host_shadow/views/console/index.html', 'host_shadow/views/console/app.js',
+             'host_shadow/views/console/style.css',
+             'host_shadow/views/console/favicon.svg'):
+    assert (root / name).is_file(), name
 print(json.dumps({'isolated_import': True, 'ingest_repeat_conflict': True,
                   'revision_history_restart': True, 'withdraw': True,
                   'backup_restore_resume': True,
-                  'exact_budget': bool(counter), 'integrity': True}))
+                  'exact_budget': bool(counter), 'integrity': True,
+                  'native_host_import': True, 'output_import': True,
+                  'console_import': True, 'console_assets': True}))
 '''
 
 

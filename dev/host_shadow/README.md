@@ -39,7 +39,7 @@ AstrBot process (systemd/Windows service or launcher).
 |---|---|---|
 | `DIGITAL_LIFE_DEV` | — | Path to the `dev` tree (required). |
 | `ASTRBOT_ROOT` | `.` | AstrBot instance root; data goes to `data/plugin_data/astrbot_plugin_memory_shadow`. |
-| `SHADOW_PERSONA_ID` | `default` | Persona id used in the origin key. Set it to the persona you actually run; it is not inferred. |
+| `SHADOW_PERSONA_ID` | `default` | Fallback persona id only. The origin key normally uses the conversation's own `persona_id`; when this variable is set explicitly, a host persona that differs is refused instead of sharing a scope. |
 | `SHADOW_JUDGE_PROVIDER` | `none` | `none` / `mock` / `astrbot` / `openai`. Only `none` is silent; the others call a model. |
 | `SHADOW_JUDGE_PROVIDER_ID` | — | AstrBot chat provider id (required for `astrbot`). |
 | `SHADOW_JUDGE_MODEL` / `SHADOW_JUDGE_BASE_URL` / `SHADOW_JUDGE_API_KEY` | — | OpenAI-compatible endpoint (required for `openai`). |
@@ -49,7 +49,7 @@ AstrBot process (systemd/Windows service or launcher).
 | `SHADOW_TICK_SECONDS` | `5` | Worker interval. |
 | `SHADOW_TICK_LIMIT` | `10` | Records judged per tick. |
 | `SHADOW_RETRY_EVERY` | `12` | Every N ticks, retry all deferred items. |
-| `SHADOW_HOST_TOTAL_TOKENS` / `SHADOW_OUTPUT_TOKENS` | `8192` / `800` | Host context envelope; the second value is the reply reserve, not the memory budget. |
+| `SHADOW_HOST_TOTAL_TOKENS` / `SHADOW_OUTPUT_TOKENS` | `8192` / `800` | Host context envelope. The memory budget is computed from the actual request: system prompt, contexts, current prompt, other plugins' extra content parts, tool definitions and media are all subtracted before the reply reserve. |
 | `SHADOW_OUTPUT_MODE` | `off` | `off` only observes; `inject` prepares memory and attaches a temporary `TextPart` to the provider request. |
 | `SHADOW_MEMORY_BUDGET` | `512` | Upper bound for the injected memory block, further clamped by the host budget. Requires `tiktoken` via `TokenCounter`. |
 | `SHADOW_CONSOLE_READONLY` | `0` | `1` makes the embedded console reject backup/restore/delete/VACUUM; viewing and integrity checks remain. |

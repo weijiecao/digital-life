@@ -69,13 +69,20 @@ class RelationJudge:
         self.gateway = gateway
         self.provider = provider
 
-    def judge(self, scope_id: str, source: SourceEnvelope,
-              candidates: list[dict[str, Any]],
-              context: list[SourceEnvelope] | None = None) -> JudgmentResult:
+    def prepare(self, scope_id: str, source: SourceEnvelope,
+                candidates: list[dict[str, Any]],
+                context: list[SourceEnvelope] | None = None) -> PreparedRelationContext:
+        """构造判别请求并落审计；这一步只碰数据库，不做网络等待。"""
         prepared = self.gateway.prepare_relation(scope_id, source, candidates, context=context)
         if getattr(self.provider, "external", False) and self.gateway.deny_external:
             raise RuntimeError("ContextGateway 禁止外发；关系判别需要显式允许外部 provider")
-        result = self.provider.generate(prepared)
+        return prepared
+
+    def complete(self, prepared: PreparedRelationContext,
+                 result: Any) -> JudgmentResult:
+        """解析并校验模型输出；纯函数，不碰数据库。"""
+        source = prepared.source
+        candidates = prepared.candidates
         try:
             data = _extract_json(result.text)
         except Exception as exc:
@@ -130,3 +137,9 @@ class RelationJudge:
                               issues=issues, raw=result.text,
                               request_id=prepared.request_id, provenance=provenance,
                               provenance_present=bool(data.get("source_provenance")))
+
+    def judge(self, scope_id: str, source: SourceEnvelope,
+              candidates: list[dict[str, Any]],
+              context: list[SourceEnvelope] | None = None) -> JudgmentResult:
+        prepared = self.prepare(scope_id, source, candidates, context=context)
+        return self.complete(prepared, self.provider.generate(prepared))

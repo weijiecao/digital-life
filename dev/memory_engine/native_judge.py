@@ -68,26 +68,47 @@ class NativeRelationJudge:
         model = _text(getattr(self.provider, "model", "")) or type(self.provider).__name__
         return "%s|%s|%s" % (self.policy_version, model, self.context_limit)
 
-    def __call__(self, source, candidates, record, context) -> JudgmentResult:
+    def prepare(self, source, candidates, record, context):
+        """构造判别请求（落审计，不等待模型）。
+
+        返回 ``PreparedRelationContext``，或在提示词超预算时直接返回带 issues 的
+        ``JudgmentResult``（本次暂缓，不截断候选或原话）。
+        """
         if not isinstance(source, SourceEnvelope):
             raise TypeError("source must be SourceEnvelope")
-        if self._cooldown_until > time.monotonic():
-            raise RuntimeError("relation judge cooling down after repeated failures")
         prepared = [self._candidate(item) for item in candidates or []]
         envelopes = self._context(record, context or [])
         try:
-            judgment = self.judge.judge(record.scope_id, source, prepared, context=envelopes)
+            return self.judge.prepare(record.scope_id, source, prepared, context=envelopes)
         except ValueError as exc:
             # 提示词超过字符预算：暂缓，不截断候选或原话。
             return JudgmentResult(source_seq=source.source_seq, issues=["prompt:" + str(exc)])
+
+    def generate(self, prepared):
+        """独立模型线程：只有网络等待与失败冷却，不碰数据库。"""
+        if self._cooldown_until > time.monotonic():
+            raise RuntimeError("relation judge cooling down after repeated failures")
+        try:
+            result = self.provider.generate(prepared)
         except Exception:
             self._failures += 1
             if self._failures >= self.failure_threshold:
                 self._failures = 0
                 self._cooldown_until = time.monotonic() + self.cooldown_seconds
             raise
+        return result
+
+    def complete(self, prepared, result):
+        """纯解析与校验；不碰数据库，可在模型线程执行。"""
+        judgment = self.judge.complete(prepared, result)
         self._failures = 0
         return judgment
+
+    def __call__(self, source, candidates, record, context) -> JudgmentResult:
+        prepared = self.prepare(source, candidates, record, context)
+        if isinstance(prepared, JudgmentResult):
+            return prepared
+        return self.complete(prepared, self.generate(prepared))
 
     @staticmethod
     def _candidate(item: dict) -> dict:

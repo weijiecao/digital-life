@@ -1174,7 +1174,7 @@ async function refreshCurrent() {
 
 /* --------------------------------------------------------------- 事件绑定 */
 
-view.addEventListener('click', async (event) => {
+async function handleActionClick(event) {
   const el = event.target.closest('[data-act]');
   if (!el) return;
   const action = actions[el.dataset.act];
@@ -1193,7 +1193,13 @@ view.addEventListener('click', async (event) => {
   } finally {
     if (busy) el.disabled = false;
   }
-});
+}
+
+// 详情抽屉与主视图不是祖先关系，必须各自接入同一套事件委托；
+// 否则抽屉里的“删除这条原话”等按钮永远收不到点击。
+for (const root of [view, drawerBody]) {
+  root.addEventListener('click', handleActionClick);
+}
 
 view.addEventListener('keydown', (event) => {
   if (event.key !== 'Enter') return;

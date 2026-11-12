@@ -28,6 +28,33 @@ STORE_STATE_LABELS = {
     "deleted": "已删除",
 }
 
+# 备份必须是应用能直接读取的库：只有表名存在不代表结构可用。
+# 这里显式列出恢复后主链路会读写的关键列与主键，缺一即判定备份无效。
+REQUIRED_SCHEMA = {
+    "store": {
+        "dl_capture": ("seq", "scope", "event_hash", "content", "content_sha",
+                       "recorded_at", "state"),
+    },
+    "engine": {
+        "event_candidate": ("event_id", "scope_id", "event_type", "title",
+                            "state", "current_revision"),
+        "event_revision": ("event_id", "rev", "summary", "status", "modality",
+                           "created_at"),
+        "event_evidence": ("event_id", "rev", "scope_id", "source_seq", "quote",
+                           "valid"),
+    },
+    "journal": {
+        "native_record": ("key", "stream_id", "ordinal", "content_hash",
+                          "payload", "delivered"),
+        "native_stream": ("stream_id", "mode"),
+    },
+}
+REQUIRED_PRIMARY_KEYS = {
+    "store": {"dl_capture": ("seq",)},
+    "engine": {"event_candidate": ("event_id",)},
+    "journal": {"native_record": ("key",)},
+}
+
 
 class ApiError(RuntimeError):
     """带 HTTP 状态码的、可以直接展示给操作者的错误。"""
@@ -1034,6 +1061,47 @@ class Console:
             raise ApiError("备份文件不存在: %s" % name, 404)
         return path
 
+    def _backup_columns(self, con, table: str) -> dict:
+        try:
+            return {row[1]: row for row in con.execute(
+                "PRAGMA table_info(%s)" % table)}
+        except sqlite3.DatabaseError:
+            return {}
+
+    def _backup_schema_version(self, con, kind: str, tables: set, report: dict) -> None:
+        """校验 schema 版本；旧库缺 dl_meta 只记 warning，读不出/非法值记 error。"""
+        if kind == "engine":
+            table, required = "meta", True
+        elif kind == "store":
+            table, required = "dl_meta", False
+        else:
+            return
+        if table not in tables:
+            # 旧版基座库没有 dl_meta；引擎库缺 meta 说明备份结构不完整。
+            if required:
+                report["errors"].append("missing_schema_version")
+            else:
+                report["warnings"].append("legacy_without_schema_version")
+            return
+        try:
+            row = con.execute(
+                "SELECT value FROM %s WHERE key='schema_version'" % table).fetchone()
+        except sqlite3.DatabaseError as exc:
+            report["errors"].append("schema_version_unreadable: %s" % exc)
+            return
+        if row is None:
+            report["errors"].append("missing_schema_version")
+            return
+        try:
+            version = int(row[0])
+        except (TypeError, ValueError):
+            report["errors"].append("invalid_schema_version")
+            return
+        if version < 1:
+            report["errors"].append("invalid_schema_version")
+            return
+        report["counts"]["schema_version"] = version
+
     def _verify_backup_connection(self, con: sqlite3.Connection, kind: str) -> dict:
         report = {"ok": False, "checks": {}, "counts": {}, "errors": [],
                   "warnings": []}
@@ -1047,15 +1115,44 @@ class Console:
             report["errors"].append("sqlite_integrity_failed")
             return report
 
-        tables = {row[0] for row in con.execute(
-            "SELECT name FROM sqlite_master WHERE type='table'")}
-        required = {"store": ("dl_capture",),
-                    "engine": ("event_candidate", "event_revision", "event_evidence"),
-                    "journal": ("native_record",)}.get(kind, ())
+        try:
+            tables = {row[0] for row in con.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'")}
+        except sqlite3.DatabaseError as exc:
+            report["errors"].append("schema_unreadable: %s" % exc)
+            return report
+        required = REQUIRED_SCHEMA.get(kind, {})
         missing = [table for table in required if table not in tables]
         report["checks"]["required_tables"] = not missing
         if missing:
             report["errors"].append("missing_tables: " + ",".join(missing))
+            return report
+
+        self._backup_schema_version(con, kind, tables, report)
+
+        missing_columns = []
+        missing_keys = []
+        for table, columns in required.items():
+            info = self._backup_columns(con, table)
+            if not info:
+                report["errors"].append("schema_unreadable: " + table)
+                continue
+            absent = [column for column in columns if column not in info]
+            if absent:
+                missing_columns.append(table + ":" + ",".join(absent))
+            for column in REQUIRED_PRIMARY_KEYS.get(kind, {}).get(table, ()):
+                row = info.get(column)
+                if row is None or not row[5]:
+                    missing_keys.append(table + "." + column)
+        report["checks"]["required_columns"] = not missing_columns
+        if missing_columns:
+            # 缺列时后续扫描不能算“通过且零异常”，必须让备份判为不可用。
+            report["errors"].append("missing_columns: " + ";".join(missing_columns))
+        report["checks"]["primary_keys"] = not missing_keys
+        if missing_keys:
+            report["errors"].append("missing_primary_key: " + ";".join(missing_keys))
+        if missing_columns:
+            report["ok"] = False
             return report
 
         try:
@@ -1065,7 +1162,8 @@ class Console:
             if violations:
                 report["errors"].append("foreign_key_violations")
         except sqlite3.DatabaseError as exc:
-            report["warnings"].append("foreign_key_check_failed: %s" % exc)
+            report["checks"]["foreign_keys"] = False
+            report["errors"].append("foreign_key_check_failed: %s" % exc)
 
         if kind == "store":
             report["counts"]["captures"] = scalar(
@@ -1075,6 +1173,7 @@ class Console:
             report["counts"]["pending"] = scalar(
                 con, "SELECT COUNT(*) FROM dl_capture WHERE state='pending'") or 0
             mismatches = 0
+            scan_error = None
             try:
                 for row in con.execute("SELECT content,content_sha FROM dl_capture"):
                     try:
@@ -1086,9 +1185,10 @@ class Console:
                     if digest != row[1]:
                         mismatches += 1
             except sqlite3.DatabaseError as exc:
-                report["warnings"].append("capture_hash_scan_failed: %s" % exc)
+                scan_error = str(exc)
+                report["errors"].append("capture_hash_scan_failed: %s" % exc)
             report["counts"]["capture_hash_mismatches"] = mismatches
-            report["checks"]["capture_hashes"] = mismatches == 0
+            report["checks"]["capture_hashes"] = scan_error is None and mismatches == 0
             if mismatches:
                 report["errors"].append("capture_hash_mismatch")
             if "events" not in tables:

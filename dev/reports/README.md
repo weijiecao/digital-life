@@ -9,6 +9,8 @@ required by tests.
   temporary AstrBot injection, 37 targeted tests.
 - `MEMORY_BASE_OUTPUT_0_1_INTEGRATION_2026-11-12.md` — current dev integration: host wiring,
   711-test regression, AstrBot source contract PASS.
+- `REVIEW_FIXES_63e61de_2026-11-13.md` — review snapshot `63e61de` fixes F01–F10,
+  behavior changes and the 742-test regression.
 - `native_input_0_2_{targeted,full,demo}.log` — evidence for the above.
 - `ENGINEERING_REPORT_2026-11-11.{md,docx,pdf}` — current engineering report.
 - `MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md` — acceptance matrix.

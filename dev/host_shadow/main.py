@@ -41,9 +41,9 @@ from memory_engine.engine import MemoryEngine
 from memory_engine.host_budget import HostBudget
 from memory_engine.native_host import (AstrBotProvider, HostInputError,
                                        NativeInputPump, NativeInputService,
-                                       build_origin, event_message,
-                                       journal_path_for, read_conversation,
-                                       revision_for)
+                                       build_origin, conversation_persona,
+                                       event_message, journal_path_for,
+                                       read_conversation_identity, revision_for)
 from memory_engine.native_judge import NativeRelationJudge, build_provider
 from v1_5_consolidator.store import V15Store
 
@@ -54,10 +54,11 @@ except Exception:
 
 try:
     from memory_engine.output import MemoryOutputService
-    from memory_output import OutputRequest
+    from memory_output import OutputRequest, own_output_part
 except Exception:  # 输出模块是可选件；缺失时只观察、不注入。
     MemoryOutputService = None
     OutputRequest = None
+    own_output_part = None
 
 try:
     from .console_api import ConsoleApi
@@ -76,6 +77,17 @@ def _env_int(name: str, default: int, low: int, high: int) -> int:
     return value if low <= value <= high else default
 
 
+# 图片/音频等无法精确分词的部分，按固定保守值预留。
+_MEDIA_TOKENS = 1024
+
+
+def _json_dump(value) -> str:
+    try:
+        return json.dumps(value, ensure_ascii=False, default=str)
+    except (TypeError, ValueError):
+        return str(value)
+
+
 class MemoryShadow(Star):
     def __init__(self, context: Context, config=None):
         super().__init__(context)
@@ -84,8 +96,11 @@ class MemoryShadow(Star):
         self.base.mkdir(parents=True, exist_ok=True)
         self.log = self.base / "shadow_events.jsonl"
         # 操作者显式给出的来源字段；没有就跳过，不由插件猜。
+        # 人格以宿主会话的 persona_id 为准；显式配置只在宿主没有给出时兜底，
+        # 一旦显式固定，宿主人格不匹配就拒绝采集与注入，避免跨人格串记忆。
         self.persona = (os.environ.get("SHADOW_PERSONA_ID", "default").strip()
                         or "default")
+        self.persona_pinned = bool(os.environ.get("SHADOW_PERSONA_ID", "").strip())
         self.judge_kind = (os.environ.get("SHADOW_JUDGE_PROVIDER", "none")
                            .strip().lower() or "none")
         self.judge_provider_id = os.environ.get("SHADOW_JUDGE_PROVIDER_ID", "").strip()
@@ -110,13 +125,16 @@ class MemoryShadow(Star):
         self.console_error = None
         self.lock = threading.Lock()
         self.pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="dlshadow")
+        # 模型等待走独立线程池：聊天路径的数据库线程只做短事务。
+        self.judge_pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="dljudge")
         self.loop = None
         self.store = None
         self.engine = None
         self.service = None
         self.pump = None
         self.error = None
-        self.input_modes = {"conversation": 0, "event": 0, "skipped": 0, "errors": 0}
+        self.input_modes = {"conversation": 0, "event": 0, "skipped": 0,
+                            "persona_mismatch": 0, "errors": 0}
         # 精确分词器在宿主线程池里懒加载，避免首次构造阻塞事件循环。
         self.counter = None
         self.counter_failed = False
@@ -157,6 +175,78 @@ class MemoryShadow(Star):
         if self.counter is not None:
             return self.counter.count(text or "")
         return (len(text or "") + 3) // 4
+
+    def _persona_for(self, host_persona):
+        """本次采集/查询应使用的人格；显式固定且与宿主不一致时返回 ``None``。"""
+        host = (host_persona or "").strip() or None
+        if self.persona_pinned:
+            if host is not None and host != self.persona:
+                return None
+            return self.persona
+        return host or self.persona
+
+    def _part_tokens(self, part):
+        """一个额外内容块占用的 token；无法精确计数的部分按保守值预留。"""
+        if isinstance(part, dict):
+            text, thinking = part.get("text"), part.get("think")
+        else:
+            text, thinking = getattr(part, "text", None), getattr(part, "think", None)
+        if isinstance(text, str):
+            return self._tokens(text)
+        if isinstance(thinking, str):
+            return self._tokens(thinking)
+        return _MEDIA_TOKENS
+
+    def _tool_tokens(self, toolset):
+        """工具定义的开销；宿主没有暴露结构时按保守值预留。"""
+        if toolset is None:
+            return 0
+        empty = getattr(toolset, "empty", None)
+        if callable(empty):
+            try:
+                if empty():
+                    return 0
+            except Exception:
+                pass
+        tools = getattr(toolset, "tools", None)
+        if isinstance(tools, list):
+            if not tools:
+                return 0
+            payload = [{"name": getattr(item, "name", ""),
+                        "description": getattr(item, "description", ""),
+                        "parameters": getattr(item, "parameters", None)}
+                       for item in tools]
+            return self._tokens(_json_dump(payload))
+        return _MEDIA_TOKENS
+
+    def _request_tokens(self, req):
+        """当前请求中除 system/contexts 外已占用的 token。
+
+        包括当前 ``prompt``、其他插件追加的 ``extra_user_content_parts``、图片/音频、
+        工具定义与上次工具调用结果；本插件上一次注入的临时块会被排除，避免重复计数。
+        """
+        tokens = self._tokens(getattr(req, "prompt", None) or "")
+        own = own_output_part(req) if own_output_part is not None else None
+        for part in getattr(req, "extra_user_content_parts", None) or []:
+            if own is not None and part is own:
+                continue
+            tokens += self._part_tokens(part)
+        for name in ("image_urls", "audio_urls"):
+            tokens += _MEDIA_TOKENS * len(getattr(req, name, None) or [])
+        tokens += self._tool_tokens(getattr(req, "func_tool", None))
+        calls = getattr(req, "tool_calls_result", None)
+        if calls:
+            tokens += self._tokens(_json_dump(calls))
+        return tokens
+
+    def host_budget_for(self, req) -> HostBudget:
+        """按当前实际请求计算可分配给记忆的 token；不假设请求只有 system+history。"""
+        reserve = _env_int("SHADOW_OUTPUT_TOKENS", 800, 1, 200000)
+        history = _json_dump(getattr(req, "contexts", None) or [])
+        return HostBudget(self.host_total,
+                          self._tokens(getattr(req, "system_prompt", None) or ""),
+                          self._tokens(history), reserve,
+                          self._request_tokens(req))
 
     def _build_judge(self, store):
         """按显式配置构造判别器；没有配置时返回 None（只入队、不建档）。"""
@@ -215,36 +305,48 @@ class MemoryShadow(Star):
         return True
 
     async def _snapshot(self, event):
-        """(会话标识, 历史, 模式)；拿不到可用的历史时返回 ``(None, None, 原因)``。"""
+        """(会话标识, 历史, 宿主确认的人格, 模式)；不可用时返回 ``(None, None, None, 原因)``。"""
         umo = getattr(event, "unified_msg_origin", None)
         manager = getattr(self.context, "conversation_manager", None)
         if isinstance(umo, str) and callable(
                 getattr(manager, "get_curr_conversation_id", None)):
             try:
-                conversation_id, history = await read_conversation(manager, umo)
+                conversation_id, history, host_persona = await read_conversation_identity(
+                    manager, umo)
             except HostInputError:
-                return None, None, "invalid"
+                return None, None, None, "invalid"
             except Exception:
-                return None, None, "host_error"
+                return None, None, None, "host_error"
             if conversation_id is None or history is None:
-                return None, None, "no_conversation"
-            return conversation_id, history, "conversation"
+                return None, None, None, "no_conversation"
+            return conversation_id, history, host_persona, "conversation"
         # 宿主没有会话管理器：只回退到当前这一条带稳定 ID 的消息。
         if isinstance(umo, str):
-            return "event:" + umo, event_message(event), "event"
-        return None, None, "no_origin"
+            return "event:" + umo, event_message(event), None, "event"
+        return None, None, None, "no_origin"
 
-    async def _conversation_key(self, event):
-        """只取会话 ID，用于让观察钩子与采集钩子落在同一个作用域。"""
+    async def _conversation_identity(self, event):
+        """只取（会话 ID，宿主人格），让观察钩子与采集钩子落在同一个作用域。
+
+        这里不读取历史正文，避免观察路径多解析一份 JSON；人格仍来自宿主会话。
+        """
         umo = getattr(event, "unified_msg_origin", None)
         manager = getattr(self.context, "conversation_manager", None)
         if isinstance(umo, str) and callable(
                 getattr(manager, "get_curr_conversation_id", None)):
             try:
-                return await manager.get_curr_conversation_id(umo)
+                conversation_id = await manager.get_curr_conversation_id(umo)
+                if not conversation_id:
+                    return None, None
+                get_conv = getattr(manager, "get_conversation", None)
+                conversation = (await get_conv(umo, conversation_id)
+                                if callable(get_conv) else None)
+                if conversation is None:
+                    return conversation_id, None
+                return conversation_id, conversation_persona(conversation)
             except Exception:
-                return None
-        return ("event:" + umo) if isinstance(umo, str) else None
+                return None, None
+        return (("event:" + umo) if isinstance(umo, str) else None), None
 
     def _submit(self, history, origin, mode):
         if not self._ensure():
@@ -256,16 +358,17 @@ class MemoryShadow(Star):
             else:
                 self.input_modes["skipped"] += 1
 
-    def _observe_work(self, scope, query, host_memory_tokens, budget):
+    def _observe_work(self, scope, query, budget):
         if not self._ensure():
             return None
         packet = self.engine.build_rendered_context(
-            scope, query, host_memory_tokens, self.counter, host_budget=budget)
+            scope, query, budget.memory_tokens, self.counter, host_budget=budget)
         return {"items": len(packet["items"]),
                 "event_ids": [item["event_id"] for item in packet["items"]],
-                "rendered_tokens": packet.get("rendered_tokens")}
+                "rendered_tokens": packet.get("rendered_tokens"),
+                "host_memory_tokens": budget.memory_tokens}
 
-    def _output_work(self, req, scope, query, budget):
+    def _output_work(self, req, scope, query):
         """在宿主线程池里完成检索、证据复验和临时内容块安装。"""
         if not self._ensure():
             return None
@@ -273,13 +376,17 @@ class MemoryShadow(Star):
             return {"items": 0, "event_ids": [], "rendered_tokens": 0,
                     "output_status": "UNAVAILABLE",
                     "output_reason": self.output_error or "output module unavailable",
-                    "budget_tokens": 0, "output_reasons": []}
+                    "budget_tokens": 0, "output_reasons": [],
+                    "host_memory_tokens": 0}
         try:
+            budget = self.host_budget_for(req)
             request = OutputRequest(uuid.uuid4().hex, scope, query,
                                     self.memory_budget)
             output = self.output_service.prepare(request, host_budget=budget)
+            # 提交前按当前请求复验预算：其他插件可能在准备期间追加内容。
+            final = self.host_budget_for(req)
             receipt = self.output_service.inject(req, output, request,
-                                                 host_budget=budget)
+                                                 host_budget=final)
             return {"items": len(output.items),
                     "event_ids": [item.event_id for item in output.items],
                     "rendered_tokens": output.used_tokens,
@@ -287,12 +394,14 @@ class MemoryShadow(Star):
                     "output_reason": receipt.reason,
                     "budget_tokens": output.budget_tokens,
                     "tokenizer": output.tokenizer,
-                    "output_reasons": list(output.reasons)}
+                    "output_reasons": list(output.reasons),
+                    "host_memory_tokens": final.memory_tokens}
         except Exception as exc:
             return {"items": 0, "event_ids": [], "rendered_tokens": 0,
                     "output_status": "REJECTED",
                     "output_reason": type(exc).__name__ + ": " + str(exc),
-                    "budget_tokens": 0, "output_reasons": []}
+                    "budget_tokens": 0, "output_reasons": [],
+                    "host_memory_tokens": 0}
 
     def _close(self):
         if self.service is not None:
@@ -306,6 +415,7 @@ class MemoryShadow(Star):
         if self.pump is not None or self.service is None:
             return
         self.pump = NativeInputPump(self.service, executor=self.pool,
+                                    judge_executor=self.judge_pool,
                                     interval=self.tick_seconds,
                                     retry_every=self.retry_every,
                                     limit=self.tick_limit)
@@ -314,6 +424,13 @@ class MemoryShadow(Star):
     async def initialize(self):
         self.loop = asyncio.get_running_loop()
         await self.loop.run_in_executor(self.pool, self._ensure)
+        if self.service is not None:
+            # 启动恢复：先把 journal 里上次未投递的记录补投，再开始判别。
+            try:
+                await self.loop.run_in_executor(self.pool,
+                                                self.service.deliver_pending)
+            except Exception:
+                pass
         self._start_pump()
 
     @filter.event_message_type(filter.EventMessageType.PRIVATE_MESSAGE)
@@ -323,12 +440,18 @@ class MemoryShadow(Star):
             return
         if self.loop is None:
             self.loop = asyncio.get_running_loop()
-        conversation_id, history, mode = await self._snapshot(event)
+        conversation_id, history, host_persona, mode = await self._snapshot(event)
         if history is None:
             with self.lock:
                 self.input_modes["skipped"] += 1
             return
-        origin = build_origin(event, persona=self.persona, conversation=conversation_id)
+        persona = self._persona_for(host_persona)
+        if persona is None:
+            # 显式固定的人格与宿主会话不一致：宁可跳过，也不写进别的作用域。
+            with self.lock:
+                self.input_modes["persona_mismatch"] += 1
+            return
+        origin = build_origin(event, persona=persona, conversation=conversation_id)
         if origin is None:
             with self.lock:
                 self.input_modes["skipped"] += 1
@@ -350,32 +473,32 @@ class MemoryShadow(Star):
             return
         if self.loop is None:
             self.loop = asyncio.get_running_loop()
-        conversation_id = await self._conversation_key(event)
+        conversation_id, host_persona = await self._conversation_identity(event)
         if not conversation_id:
             return
-        origin = build_origin(event, persona=self.persona, conversation=conversation_id)
+        persona = self._persona_for(host_persona)
+        if persona is None:
+            # 人格不匹配时不检索、不注入，避免跨人格串记忆。
+            return
+        origin = build_origin(event, persona=persona, conversation=conversation_id)
         if origin is None:
             return
-        total = self.host_total
-        reserve = _env_int("SHADOW_OUTPUT_TOKENS", 800, 1, 200000)
-        history = json.dumps(getattr(req, "contexts", []) or [], ensure_ascii=False)
-        budget = HostBudget(total, self._tokens(req.system_prompt),
-                            self._tokens(history), reserve)
+        budget = self.host_budget_for(req)
         try:
             if self.output_mode == "inject":
                 observed = await self.loop.run_in_executor(
-                    self.pool, self._output_work, req, origin.scope_id, query, budget)
+                    self.pool, self._output_work, req, origin.scope_id, query)
             else:
                 observed = await self.loop.run_in_executor(
-                    self.pool, self._observe_work, origin.scope_id, query,
-                    budget.memory_tokens, budget)
+                    self.pool, self._observe_work, origin.scope_id, query, budget)
         except Exception:
             return
         if observed is None:
             return
         record = {"ts": time.time(), "scope": origin.scope_id, "query": query,
                   "items": observed["items"], "event_ids": observed["event_ids"],
-                  "host_memory_tokens": budget.memory_tokens,
+                  "host_memory_tokens": observed.get("host_memory_tokens",
+                                                     budget.memory_tokens),
                   "rendered_tokens": observed["rendered_tokens"]}
         if self.output_mode == "inject":
             record.update({
@@ -401,4 +524,5 @@ class MemoryShadow(Star):
         if self.console_api is not None:
             self.console_api.close()
             self.console_api = None
+        self.judge_pool.shutdown(wait=True)
         self.pool.shutdown(wait=True)

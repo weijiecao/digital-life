@@ -8,7 +8,12 @@
 - 只读取宿主已经存在、且能明确归属到单个用户的历史；群聊、缺少发送者或
   缺少机器人标识时返回 ``None``，不猜测。
 - 历史按宿主给出的顺序原样提交；去重、前缀校验、冲突拒绝由输入包负责。
+  AstrBot 持久化历史里的 ``_checkpoint`` 内部段由输入包识别并跳过，只保留
+  游标元数据，既不当作用户事实，也不会让整份快照失效。
+- 人格身份以宿主会话的 ``persona_id`` 为准；显式配置只作为兜底，不能把
+  同实例的不同人格混进同一个作用域。
 - 没有判别器时只入队、不建档；不能让「没有模型」变成「模型说这是新事件」。
+- 判别（模型等待）在独立线程里执行，聊天路径的数据库线程只做短事务准备与提交。
 """
 
 from __future__ import annotations
@@ -21,7 +26,8 @@ from typing import Any
 
 from astrbot_memory_input import ImportConflict, ImportJournal, Origin
 from astrbot_memory_input.native import InputError
-from memory_engine.native_input import NativeInputInbox, NativeInputWorker
+from memory_engine.native_input import (NativeInputInbox, NativeInputWorker,
+                                        empty_stats)
 from v1_5_consolidator.gateway import ModelResult
 
 _MAX_FIELD = 512
@@ -51,7 +57,7 @@ def build_origin(event, *, persona: str, bot: str | None = None,
     Args:
         event: 宿主事件对象（鸭子类型）：``unified_msg_origin``、``message_obj``
             （``sender.user_id`` / ``group_id`` / ``self_id``）或 ``get_sender_id()``。
-        persona: 当前人格标识，由宿主配置显式提供。
+        persona: 当前人格标识，由宿主会话确认（配置值只作兜底）。
         bot: 机器人标识的兜底值；事件里已有 ``self_id`` 时以事件为准。
         conversation: 会话/对话标识，用于区分输入流。
 
@@ -95,6 +101,10 @@ def history_from_conversation(conversation) -> list:
     ``{"role": ..., "content": ...}`` 列表；这里也接受已经解析好的列表或
     直接传入列表。内容本身的角色、内容类型和多模态校验交给输入包。
 
+    内部段（``role == "_checkpoint"``）保持原样交给输入包规范化：它被跳过并
+    只保留游标元数据，不参与原话编号，因此插入 checkpoint 不会改变已有原话
+    的身份，也不会让整份历史被拒收。
+
     Args:
         conversation: 带 ``history`` 的会话对象，或消息列表本身。
 
@@ -115,6 +125,31 @@ def history_from_conversation(conversation) -> list:
     return raw
 
 
+def conversation_persona(conversation) -> str | None:
+    """宿主会话当前人格；没有可确认的人格时返回 ``None``。"""
+    return _field(getattr(conversation, "persona_id", None))
+
+
+async def read_conversation_identity(conversation_manager, unified_msg_origin: str):
+    """读取宿主当前对话的（会话 ID，消息列表，人格 ID）。
+
+    不可用时返回 ``(None, None, None)``。调用方据此决定是否回退到单条消息。
+    人格取自会话对象本身，采集与查询因此使用同一个宿主确认过的人格。
+    """
+    get_id = getattr(conversation_manager, "get_curr_conversation_id", None)
+    get_conv = getattr(conversation_manager, "get_conversation", None)
+    if not callable(get_id) or not callable(get_conv):
+        return None, None, None
+    conversation_id = _field(await get_id(unified_msg_origin))
+    if conversation_id is None:
+        return None, None, None
+    conversation = await get_conv(unified_msg_origin, conversation_id)
+    if conversation is None:
+        return None, None, None
+    return (conversation_id, history_from_conversation(conversation),
+            conversation_persona(conversation))
+
+
 async def read_conversation(conversation_manager, unified_msg_origin: str):
     """读取宿主当前对话的（会话 ID，消息列表）；不可用时返回 ``(None, None)``。
 
@@ -128,17 +163,9 @@ async def read_conversation(conversation_manager, unified_msg_origin: str):
     Returns:
         ``(conversation_id, messages)`` 或 ``(None, None)``。
     """
-    get_id = getattr(conversation_manager, "get_curr_conversation_id", None)
-    get_conv = getattr(conversation_manager, "get_conversation", None)
-    if not callable(get_id) or not callable(get_conv):
-        return None, None
-    conversation_id = _field(await get_id(unified_msg_origin))
-    if conversation_id is None:
-        return None, None
-    conversation = await get_conv(unified_msg_origin, conversation_id)
-    if conversation is None:
-        return None, None
-    return conversation_id, history_from_conversation(conversation)
+    conversation_id, messages, _ = await read_conversation_identity(
+        conversation_manager, unified_msg_origin)
+    return conversation_id, messages
 
 
 def event_message(event) -> list | None:
@@ -192,9 +219,12 @@ class NativeInputService:
     """串行化的原生输入服务：入队、投递、判别。
 
     所有方法都不切换线程；宿主必须保证 ``store`` 与 ``journal`` 在**同一个**
-    工作线程里创建和使用（sqlite 连接默认不跨线程）。方法之间用一把锁串行：
-    一轮判别（可能包含模型调用）期间，新的 ``submit`` 会等待，这是有意的——
-    同一个 sqlite 连接不能被两条线程序列化。
+    工作线程里创建和使用（sqlite 连接默认不跨线程）。数据库相关方法用一把锁
+    串行；模型等待由 :meth:`execute` 在**另一个**线程里完成，因此聊天路径
+    （``observe``/``capture``）不必等待一轮判别结束。
+
+    一轮判别的调用顺序是 ``start_tick`` → ``prepare_one`` → ``execute`` →
+    ``commit_one``，每一步之间都可以插入其他数据库任务。
     """
 
     def __init__(self, store, journal_path, *, judge=None, encoder=None,
@@ -208,10 +238,26 @@ class NativeInputService:
         self.deliver_limit = max(1, int(deliver_limit))
         self.lock = threading.Lock()
         self.closed = False
+        self.last_delivery = {"acknowledged": 0, "remaining": 0}
+        self.last_delivery_error = None
         self.stats = {"submitted": 0, "new": 0, "duplicates": 0, "conflicts": 0,
                       "invalid": 0, "created": 0, "attached": 0, "deferred": 0,
-                      "stale": 0, "judge_errors": 0}
+                      "stale": 0, "judge_errors": 0, "delivery_errors": 0}
         self.last_conflict: dict | None = None
+
+    @property
+    def has_judge(self) -> bool:
+        return self.worker is not None
+
+    def _deliver_locked(self) -> dict:
+        """把 journal 中尚未投递的记录继续送进 inbox；失败不终止泵。"""
+        try:
+            self.last_delivery = self.journal.deliver(self.inbox, limit=self.deliver_limit)
+            self.last_delivery_error = None
+        except Exception as exc:
+            self.stats["delivery_errors"] += 1
+            self.last_delivery_error = type(exc).__name__ + ": " + str(exc)
+        return dict(self.last_delivery)
 
     def submit(self, history, origin: Origin) -> dict:
         """校验并入队一份历史快照，然后投递给引擎收件箱。
@@ -233,29 +279,91 @@ class NativeInputService:
             except InputError as exc:
                 self.stats["invalid"] += 1
                 return {"status": "invalid", "reason": str(exc)}
-            delivered = self.journal.deliver(self.inbox, limit=self.deliver_limit)
+            delivered = self._deliver_locked()
             self.stats["submitted"] += 1
             self.stats["new"] += staged["new"]
             self.stats["duplicates"] += staged["duplicates"]
             return {"status": "staged", "new": staged["new"],
                     "duplicates": staged["duplicates"], "delivered": delivered}
 
-    def run_once(self, limit: int = 100, retry_deferred: bool = False) -> dict:
-        """跑一轮判别；没有判别器时什么都不做。"""
-        if self.worker is None:
-            return {"skipped": "no_judge"}
+    def deliver_pending(self, limit: int | None = None) -> dict:
+        """继续投递 journal 积压；返回本次确认数与剩余未投递数。"""
+        if self.closed:
+            raise RuntimeError("native input service is closed")
         with self.lock:
-            result = self.worker.run_once(limit=limit, retry_deferred=retry_deferred)
+            if limit is None:
+                return self._deliver_locked()
+            try:
+                self.last_delivery = self.journal.deliver(
+                    self.inbox, limit=max(0, int(limit)))
+                self.last_delivery_error = None
+            except Exception as exc:
+                self.stats["delivery_errors"] += 1
+                self.last_delivery_error = type(exc).__name__ + ": " + str(exc)
+            return dict(self.last_delivery)
+
+    def start_tick(self, limit: int = 100, retry_deferred: bool = False):
+        """数据库线程：先补投 journal，再开始一轮判别；没有判别器时返回 ``None``。"""
+        if self.closed:
+            raise RuntimeError("native input service is closed")
+        with self.lock:
+            self._deliver_locked()
+            if self.worker is None:
+                return None
+            return self.worker.start_tick(limit=limit, retry_deferred=retry_deferred)
+
+    def prepare_one(self, tick):
+        """数据库线程：取出下一条可处理记录并准备判别输入；不等待模型。"""
+        with self.lock:
+            if self.worker is None or tick is None:
+                return None
+            return self.worker.prepare_one(tick)
+
+    def execute(self, task):
+        """模型线程：执行判别调用；不接触 sqlite，也不持有数据库锁。"""
+        if self.worker is not None and task is not None:
+            self.worker.execute(task)
+        return task
+
+    def commit_one(self, task) -> dict:
+        """数据库线程：短事务复验并写入结果。"""
+        with self.lock:
+            result = self.worker.commit_one(task) if self.worker is not None else empty_stats()
+        self._merge_stats(result)
+        return result
+
+    def _merge_stats(self, result: dict) -> None:
         for key, target in (("created", "created"), ("attached", "attached"),
                             ("deferred", "deferred"), ("stale", "stale"),
                             ("errors", "judge_errors")):
             self.stats[target] += result.get(key, 0)
+
+    def run_once(self, limit: int = 100, retry_deferred: bool = False) -> dict:
+        """同步跑一轮判别；没有判别器时也会补投 journal，然后什么都不做。"""
+        if self.closed:
+            raise RuntimeError("native input service is closed")
+        with self.lock:
+            self._deliver_locked()
+            if self.worker is None:
+                return {"skipped": "no_judge"}
+            result = self.worker.run_once(limit=limit, retry_deferred=retry_deferred)
+        self._merge_stats(result)
         return result
 
     def counts(self) -> dict:
         """各状态条数（含已归档与暂缓），供宿主观察积压。"""
         with self.lock:
             return self.inbox.counts()
+
+    def health(self) -> dict:
+        """宿主健康状态：journal 积压、inbox 队列与重试明细。"""
+        with self.lock:
+            return {"judge": self.worker is not None,
+                    "delivery": dict(self.last_delivery),
+                    "delivery_error": self.last_delivery_error,
+                    "inbox": self.inbox.counts(),
+                    "backlog": self.inbox.backlog(),
+                    "stats": dict(self.stats)}
 
     def close(self) -> None:
         with self.lock:
@@ -268,14 +376,16 @@ class NativeInputService:
 class NativeInputPump:
     """周期性驱动 ``run_once``；定期整批重试暂缓项。
 
-    判别调用可能很慢（模型网络），所以每轮都放到宿主线程池里执行，
-    不阻塞事件循环；单轮异常不会终止循环。
+    判别调用可能很慢（模型网络），所以放到 ``judge_executor`` 里执行，与聊天
+    路径共用的数据库线程（``executor``）分开；单轮异常不会终止循环。
     """
 
     def __init__(self, service: NativeInputService, *, executor=None,
-                 interval: float = 5.0, retry_every: int = 12, limit: int = 10):
+                 judge_executor=None, interval: float = 5.0, retry_every: int = 12,
+                 limit: int = 10):
         self.service = service
         self.executor = executor
+        self.judge_executor = judge_executor
         self.interval = max(0.1, float(interval))
         self.retry_every = max(0, int(retry_every))
         self.limit = max(1, int(limit))
@@ -304,12 +414,33 @@ class NativeInputPump:
                 pass
             tick += 1
 
-    async def tick(self, retry_deferred: bool = False) -> dict:
+    async def _db(self, func, *args):
         loop = asyncio.get_running_loop()
         if self.executor is not None:
-            return await loop.run_in_executor(
-                self.executor, self.service.run_once, self.limit, retry_deferred)
-        return await asyncio.to_thread(self.service.run_once, self.limit, retry_deferred)
+            return await loop.run_in_executor(self.executor, func, *args)
+        return await asyncio.to_thread(func, *args)
+
+    async def _model(self, func, *args):
+        loop = asyncio.get_running_loop()
+        if self.judge_executor is not None:
+            return await loop.run_in_executor(self.judge_executor, func, *args)
+        return await asyncio.to_thread(func, *args)
+
+    async def tick(self, retry_deferred: bool = False) -> dict:
+        """准备（数据库线程）→ 判别（模型线程）→ 提交（数据库线程）。"""
+        scope = await self._db(self.service.start_tick, self.limit, retry_deferred)
+        if scope is None:
+            return {"skipped": "no_judge"}
+        stats = empty_stats()
+        for _ in range(self.limit):
+            task = await self._db(self.service.prepare_one, scope)
+            if task is None:
+                break
+            await self._model(self.service.execute, task)
+            result = await self._db(self.service.commit_one, task)
+            for name, value in result.items():
+                stats[name] += value
+        return stats
 
     async def stop(self) -> None:
         self.stopping = True

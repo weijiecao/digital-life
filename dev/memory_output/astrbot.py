@@ -4,6 +4,13 @@ from .contracts import SCHEMA_VERSION
 from .compose import render
 
 _STATE = '_digital_life_memory_output_v1'
+STATE_ATTR = _STATE
+
+
+def own_output_part(host_request):
+    """本插件上一次安装的临时内容块；预算复算时排除，避免把自己算两遍。"""
+    binding = getattr(host_request, STATE_ATTR, None)
+    return getattr(binding, 'part', None)
 
 
 class OutputRejected(ValueError):
