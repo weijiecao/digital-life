@@ -11,12 +11,9 @@
 
 import argparse
 import json
-import os
 from pathlib import Path
 
-# 可用 --config-dir 或环境变量 NAPCAT_CONFIG_DIR 覆盖
-DEFAULT_CONFIG_DIR = Path(os.environ.get(
-    'NAPCAT_CONFIG_DIR', Path.home() / 'Desktop' / 'NapCat.Shell' / 'config'))
+DEFAULT_CONFIG_DIR = Path(r'C:\Users\205\Desktop\NapCat.Shell\config')
 CLIENT_NAME = 'astrbot-testbed'
 
 

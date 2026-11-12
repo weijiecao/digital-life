@@ -1,4 +1,4 @@
-# 数字记忆引擎 移交说明（2026-11-11）
+# Memory Engine 移交说明（2026-11-11）
 
 - 代码：`dev/`
 - R0 包：`_publish/digital-life/releases/memory-engine-r0-rc3.zip`（SHA-256 eaed986a…，38 文件）

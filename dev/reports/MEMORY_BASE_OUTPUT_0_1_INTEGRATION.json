@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-12",
+  "source_handoff": "MEMORY_BASE_NATIVE_IO_0_1_HANDOFF_fdb7ca4.zip",
+  "implementation_commit": "fdb7ca4",
+  "source_snapshot": "dfdafe3",
+  "base_commit": "a5f3d3b",
+  "integrated_into": "dev",
+  "output_tests": 37,
+  "host_output_tests": 2,
+  "host_console_tests": 4,
+  "full_regression_tests": 715,
+  "full_regression_skipped": 1,
+  "full_regression_verdict": "PASS",
+  "astrbot_contract": {
+    "verdict": "PASS",
+    "provider_sees_memory": true,
+    "persisted_history_excludes_memory": true,
+    "unrelated_content_preserved": true,
+    "repeat_deduplicated": true,
+    "source_sha256": {
+      "message.py": "aaa62b00606dad148a4ece617f2024cc882012d7a4da07439539e9015516b22f",
+      "entities.py": "1d2f1c416f8e5ffd847a2e5424641ddfa2dc6dacdda02453434dc0e3f57b68b3"
+    }
+  },
+  "wheel_sha256": "0ca25be1f5a9549da9e030157335e23728781daa7d160ed85beb8ac80903f585",
+  "default_mode": "off",
+  "enable_env": "SHADOW_OUTPUT_MODE=inject",
+  "memory_budget_env": "SHADOW_MEMORY_BUDGET=512",
+  "live_astrbot": "NOT_RUN",
+  "production_release": "NOT_GRANTED"
+}

@@ -1,10 +1,8 @@
 import io
-import os
 import re
 from pathlib import Path
 
-# 可用环境变量 NAPCAT_STATIC_DIR 覆盖
-root = Path(os.environ.get('NAPCAT_STATIC_DIR', Path.home() / 'Desktop' / 'NapCat.Shell' / 'static'))
+root = Path(r'C:\Users\205\Desktop\NapCat.Shell\static')
 routes = set()
 for path in root.rglob('*.js'):
     text = path.read_text(encoding='utf-8', errors='replace')

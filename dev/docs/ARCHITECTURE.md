@@ -9,3 +9,12 @@
 - 面板与生命周期：`panel.py`、`recovery.py`、`install.ps1`
 
 插件只提供基座能力；候选召回、证据准入和上下文渲染属于数字记忆引擎。
+
+引擎侧的原生历史入口分三层（v0.2）：
+
+- `astrbot_memory_input/`：与 AstrBot 无关的输入契约（校验、原文、来源、去重、journal）；
+- `memory_engine/native_input.py`：收件箱、候选、事务提交；
+- `memory_engine/native_host.py` + `memory_engine/native_judge.py`：宿主会话历史读取、
+  周期泵、来源映射，以及把既有 `RelationJudge` 接成判别协议；
+- `host_shadow/`：在真实 AstrBot 里装配以上三层的 shadow 插件。
+

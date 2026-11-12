@@ -106,9 +106,11 @@ class TextPart:
     def __init__(self, text):
         self.text = text
         self.temporary = False
+        self._no_save = False
 
     def mark_as_temp(self):
         self.temporary = True
+        self._no_save = True
         return self
 
 
@@ -187,11 +189,24 @@ def _build_stubs(registry, settings, profile):
     message_module = types.ModuleType('astrbot.core.agent.message')
     message_module.TextPart = TextPart
 
+    web_module = types.ModuleType('astrbot.api.web')
+
+    class _WebRequest:
+        query = {}
+
+        async def json(self, default=None):
+            return default
+
+    web_module.request = _WebRequest()
+    web_module.json_response = lambda data=None, **kwargs: data
+    web_module.error_response = lambda message, **kwargs: {'error': message}
+
     modules = {
         'astrbot': types.ModuleType('astrbot'),
         'astrbot.api': types.ModuleType('astrbot.api'),
         'astrbot.api.event': event_module,
         'astrbot.api.star': star_module,
+        'astrbot.api.web': web_module,
         'astrbot.core': types.ModuleType('astrbot.core'),
         'astrbot.core.utils': types.ModuleType('astrbot.core.utils'),
         'astrbot.core.utils.astrbot_path': path_module,

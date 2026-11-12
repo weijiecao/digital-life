@@ -32,14 +32,14 @@ jobs:
         run: python -m unittest discover -v -s tests -t .
       - name: Build source-bound candidate
         working-directory: dev
-        run: python scripts/build_r0_bundle.py --out "${{ runner.temp }}/memory-engine-rc3-queryguard.zip"
+        run: python scripts/build_r0_bundle.py --out "${{ runner.temp }}/memory-engine-r0-rc2.zip"
       - name: Verify extracted candidate in isolated process
         working-directory: dev
-        run: python scripts/verify_r0_bundle.py --bundle "${{ runner.temp }}/memory-engine-rc3-queryguard.zip" --exact-budget --out "${{ runner.temp }}/bundle-verification.json"
+        run: python scripts/verify_r0_bundle.py --bundle "${{ runner.temp }}/memory-engine-r0-rc2.zip" --exact-budget --out "${{ runner.temp }}/bundle-verification.json"
       - uses: actions/upload-artifact@v4
         with:
-          name: rc3-queryguard-${{ matrix.os }}-${{ matrix.python-version }}
+          name: rc2-${{ matrix.os }}-${{ matrix.python-version }}
           path: |
-            ${{ runner.temp }}/memory-engine-rc3-queryguard.zip
-            ${{ runner.temp }}/memory-engine-rc3-queryguard.json
+            ${{ runner.temp }}/memory-engine-r0-rc2.zip
+            ${{ runner.temp }}/memory-engine-r0-rc2.json
             ${{ runner.temp }}/bundle-verification.json

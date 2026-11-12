@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "digital-life-astrbot-input"
+version = "0.2.0"
+description = "Independent native AstrBot history input for Digital Life"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+[tool.setuptools]
+packages = ["astrbot_memory_input"]
+package-dir = {"astrbot_memory_input" = "."}

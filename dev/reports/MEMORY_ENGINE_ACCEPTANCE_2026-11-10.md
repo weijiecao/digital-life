@@ -1,10 +1,10 @@
-# 数字记忆引擎 阶段验收矩阵（2026-11-11 复核后）
+# Memory Engine 阶段验收矩阵（2026-11-11 复核后）
 
 - 状态：**NO-GO（R0/R1 均未通过）**
 - 全量测试：569/569
 - 代码提交：`b5f9846`
 - CI：Windows 3.10 / 3.11 / 3.12 全绿
-- 数字记忆引擎 真实聊天语料：0
+- Memory Engine 真实聊天语料：0
 - 宿主：AstrBot 4.29.3 testbed
 
 ## 1. 复核后的状态变化
@@ -124,7 +124,7 @@ Linux 复核为 530 通过 / 6 skipped；Windows 为 536 通过。报告必须�
 |---|---|---|
 | 真实 AstrBot 启动 | 4.29.3 | ✅ |
 | 真实消息链 | OnLLMRequest + 注入 | ✅ |
-| 数字记忆引擎 shadow | 10 次有效短时运行，52 events/13 scopes | ✅ |
+| Memory Engine shadow | 10 次有效短时运行，52 events/13 scopes | ✅ |
 | 回退 | 移出 shadow 后 V1 正常 | ✅ |
 | 真实平台 72h | 无 | ❌ |
 | 用户效果/生产接管 | 无 | ❌ |

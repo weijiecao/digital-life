@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "digital-life-memory-output"
+version = "0.1.0"
+description = "Memory-base evidence output and transient AstrBot request adapter"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+[tool.setuptools]
+packages = ["memory_output"]
+package-dir = {"memory_output" = "."}

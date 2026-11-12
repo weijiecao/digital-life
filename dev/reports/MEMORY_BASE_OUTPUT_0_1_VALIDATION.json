@@ -1,0 +1,46 @@
+{
+  "implementation_commit": "fdb7ca47c8201ccf00a635520f619ebd1020caaf",
+  "base_commit": "a5f3d3b",
+  "python": "3.12.14",
+  "targeted_tests": 37,
+  "full_regression_tests": 655,
+  "full_regression_seconds": 19.021,
+  "independent_wheel_install": "PASS",
+  "no_host_or_engine_runtime_dependency": "PASS",
+  "native_input_to_memory_to_output": "PASS",
+  "isolated_runtime_demo": "PASS",
+  "native_contract": {
+    "verdict": "PASS",
+    "validation": "source-extracted ProviderRequest + unmodified message module",
+    "provider_sees_memory": true,
+    "persisted_history_excludes_memory": true,
+    "unrelated_content_preserved": true,
+    "repeat_deduplicated": true,
+    "used_tokens": 160,
+    "budget_tokens": 512,
+    "tokenizer": "cl100k_base",
+    "source_sha256": {
+      "message.py": "aaa62b00606dad148a4ece617f2024cc882012d7a4da07439539e9015516b22f",
+      "entities.py": "1d2f1c416f8e5ffd847a2e5424641ddfa2dc6dacdda02453434dc0e3f57b68b3"
+    }
+  },
+  "bundle_verification": {
+    "verdict": "PACKAGE_VERIFIED_NOT_RELEASE_GO",
+    "sha256": "518fb15b2acb9e1eb58f3bc4f5cd5f84c4a117a60471ba54b640fa4c08015d54",
+    "source_sha256": "97558ce19d820ea7217396ea5ac598a945a5fe9a3b576b7ef1faa9a4ba7b91c5",
+    "files": 51,
+    "smoke": {
+      "isolated_import": true,
+      "ingest_repeat_conflict": true,
+      "revision_history_restart": true,
+      "withdraw": true,
+      "backup_restore_resume": true,
+      "exact_budget": true,
+      "integrity": true
+    },
+    "cli": true
+  },
+  "live_astrbot": "NOT_RUN",
+  "real_model_semantic_validation": "NOT_RUN",
+  "production_release": "NOT_GRANTED"
+}

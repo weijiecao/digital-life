@@ -13,13 +13,11 @@
 import argparse
 import hashlib
 import json
-import os
 import urllib.error
 import urllib.request
 from pathlib import Path
 
-# 可用环境变量 NAPCAT_DIR 覆盖
-NAPCAT_DIR = Path(os.environ.get('NAPCAT_DIR', Path.home() / 'Desktop' / 'NapCat.Shell'))
+NAPCAT_DIR = Path(r'C:\Users\205\Desktop\NapCat.Shell')
 WEBUI = NAPCAT_DIR / 'config' / 'webui.json'
 CLIENT_NAME = 'astrbot-testbed'
 

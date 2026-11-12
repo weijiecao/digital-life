@@ -51,3 +51,7 @@ dev/reports/v2_after*.txt
 dev/reports/v10_after*.txt
 dev/reports/reply_quality_*.jsonl
 dev/reports/real_messages_judge_eval_run*.json
+
+# 控制台运行痕迹
+.dlm_console/
+

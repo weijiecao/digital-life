@@ -1,11 +1,11 @@
 {
   "artifact": "astrbot_plugin_digital_memory_store-1.0.19.zip",
-  "bytes": 238565,
+  "bytes": 238552,
   "file_sha256": {
     "CHANGELOG.md": "772a19113d87173d45571cbc76c898d399f7e2c29d57e4f62f434bc9c69c7bb7",
-    "INSTALL.md": "4dd879dcba2fb89449b7c80b40b7c89039238c25c58d6f0f750d7e901c67c540",
+    "INSTALL.md": "6dc1d2b719fb6b9db01366ae02242e83471c10d4a5af411ab3a7ac035de79bdf",
     "LICENSE": "aa37d8018c69e58d1999ba7d9927edc7dd7dc3ef66e281a4f5ac996cc9db7b08",
-    "README.md": "71398bdf16c591b29654ac3f93fbb36a879d4a0aaa616575c27d2a64cdf4ad6f",
+    "README.md": "ffdfc075048448804a2b8e026d688910259a1d73e66660116e026921402cd357",
     "RELEASE_NOTES.md": "e5b2c100018aeb72541a109256d9ee437d1fb6351864e8029720a875570278b9",
     "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "_conf_schema.json": "fb137f8cd696cef06d38de80f4da3ddd0fe32aed7d48f9beac929b42bf5cb990",
@@ -17,7 +17,7 @@
     "auto_vector_chunks.py": "b9fd6dd6cb06023f2ec323d53234ea524d6984e25cf55786577376704e22f178",
     "commands.py": "dd61885ae347c4f9f48bf0225fc4aa9a5826c4ef24fedd310d0de3edb1db4474",
     "docs/CODE_ARCHITECTURE.md": "ddabaf7a6d0dd2063c260735193e92406ec86ad9da804afe4b745b3d370a7dcd",
-    "docs/QUICKSTART.md": "f12437507304aa54f3d6bcac3b2bc6c4edf1e75faeac1ee6dbddad92a7246524",
+    "docs/QUICKSTART.md": "41e5d00bab17e663d25c0e0b626761b455692686f85c474451b050a53e67c361",
     "docs/TROUBLESHOOTING.md": "7dc34ac25ced14486e25e2d496324c29673ce286fcd93e893eb26e2c92c22cbe",
     "engine/README.md": "21b6440b77c42a9855503a39d9fac7aefbbde471eee0999cf6924b14f56f8766",
     "engine/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -38,7 +38,7 @@
     "install.ps1": "dda7fd155a506ed97d48c35948fd60f71910fa908a25f3cd030133cde6cdef16",
     "lexical_index.py": "d35c2eb7aa4b8a9ff3971211bde65255dbbf51b0056d34b17c2868ba1e95371b",
     "main.py": "f5ce2f97f6776ad5cacadbf86efdf4eb2240a67b7fe10dcd2d4a0ae4edfce79b",
-    "metadata.yaml": "1f91f1cd41fa9d54ce85f78affa34a34a8e9fbc08807bad8f5cf50c812997761",
+    "metadata.yaml": "bb9b95b994eadd2daebd46a647ba95c384c72c4642a5617d5fba3c1dd6300440",
     "migration.py": "0d9f1f9124677aa0d3a0002085d8333ea96200085f58fc0b664114962f09571f",
     "model_drafts.py": "61386148d71e886ba920b0b3cd347b913397f2255e097f2a167bf80a52112219",
     "model_groups.py": "9f4f8c7a6d91b1f4afd529f1318b08cc9c8b72c2f2e0417a397cb26fbe1fddfd",
@@ -77,6 +77,6 @@
   },
   "files": 72,
   "plugin": "astrbot_plugin_digital_memory_store",
-  "sha256": "52f3e64115879f4b73bb9924185dc58189893eb655d429ac37d02f074834b042",
+  "sha256": "977cb6a143fe8c915f270fb2d646bb1f6746ad168e7fd780b9ae3e3d7dbfddb6",
   "version": "1.0.19"
 }

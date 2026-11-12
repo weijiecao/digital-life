@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>数字记忆控制台</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">忆</div>
+        <div class="brand-text">
+          <strong>数字记忆</strong>
+          <span>控制台</span>
+        </div>
+      </div>
+      <nav id="nav" class="nav">
+        <a href="#/overview" data-page="overview">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm10 7h6v-9h-6v9ZM4 20h6v-3H4v3Zm10-13h6V4h-6v3Z"/></svg>
+          <span>总览</span>
+        </a>
+        <a href="#/store" data-page="store">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5c0-1.1 3.6-2 8-2s8 .9 8 2v14c0 1.1-3.6 2-8 2s-8-.9-8-2V5Zm2 0c1.2.5 3.4.9 6 .9s4.8-.4 6-.9c-1.2-.5-3.4-.9-6-.9s-4.8.4-6 .9Zm0 3v4.8c1.4.5 3.6.9 6 .9s4.6-.4 6-.9V8c-1.4.5-3.6.9-6 .9S7.4 8.5 6 8Zm0 7v4.8c1.4.5 3.6.9 6 .9s4.6-.4 6-.9V15c-1.4.5-3.6.9-6 .9s-4.6-.4-6-.9Z"/></svg>
+          <span>记忆库</span>
+        </a>
+        <a href="#/shadow" data-page="shadow">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.4 3 5.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3c1.8-1.3 3-3.3 3-5.7a7 7 0 0 0-7-7Zm-2 18h4v1a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-1Z"/></svg>
+          <span>影子引擎</span>
+        </a>
+        <a href="#/observations" data-page="observations">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h2v14H3V5Zm4 5h2v9H7v-9Zm4-3h2v12h-2V7Zm4 5h2v7h-2v-7Zm4-7h2v14h-2V5Z"/></svg>
+          <span>观察日志</span>
+        </a>
+        <a href="#/maintenance" data-page="maintenance">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 18-3.5-3.5a6.5 6.5 0 0 0-8.1-8.1L12 9 9 12 5.6 8.6a6.5 6.5 0 0 0 8.1 8.1L17 21l4-3Z"/></svg>
+          <span>备份维护</span>
+        </a>
+        <a href="#/environment" data-page="environment">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm9.4 4a7.6 7.6 0 0 1-.1 1.2l2 1.6-2 3.4-2.4-1a7.4 7.4 0 0 1-2 1.2l-.4 2.6h-4l-.4-2.6a7.4 7.4 0 0 1-2-1.2l-2.4 1-2-3.4 2-1.6a7.6 7.6 0 0 1 0-2.4l-2-1.6 2-3.4 2.4 1a7.4 7.4 0 0 1 2-1.2L10.5 2h4l.4 2.6a7.4 7.4 0 0 1 2 1.2l2.4-1 2 3.4-2 1.6c.06.4.1.8.1 1.2Z"/></svg>
+          <span>环境</span>
+        </a>
+      </nav>
+      <div class="sidebar-foot">
+        <div id="conn" class="conn"><i class="dot"></i><span>连接中…</span></div>
+        <div id="version" class="muted small"></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="page-title">总览</h1>
+          <p id="page-sub" class="muted"></p>
+        </div>
+        <div class="top-actions">
+          <span id="ro-badge" class="chip warn hidden">只读模式</span>
+          <button id="refresh" class="btn ghost" title="重新加载当前页面">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.2L13 11h7V4l-2.3 2.3Z"/></svg>
+            刷新
+          </button>
+        </div>
+      </header>
+      <section id="view" class="view"></section>
+    </main>
+  </div>
+
+  <div id="overlay" class="overlay hidden"></div>
+
+  <aside id="drawer" class="drawer hidden" aria-label="详情">
+    <header class="drawer-head">
+      <h2 id="drawer-title">详情</h2>
+      <button id="drawer-close" class="icon-btn" title="关闭">×</button>
+    </header>
+    <div id="drawer-body" class="drawer-body"></div>
+  </aside>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h2 id="modal-title">确认</h2>
+      <div id="modal-body" class="modal-body"></div>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn ghost">取消</button>
+        <button id="modal-ok" class="btn danger">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

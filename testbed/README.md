@@ -82,7 +82,7 @@ cd testbed
 | 命令路径 | ✅ `/dlm 记忆状态` 返回真实统计 |
 | 真实 BGE | 512 维 / 冷加载 10.9–13.1 s / 3.8–4.0 ms 每条 |
 | 后台任务排空 | 2.06 s（BGE 加载完成后） |
-| **真实 QQ 私聊** | ✅ 小号 `1000000001`（NapCat 4.18.41 / QQNT 9.9.36）反向 WS 连到 6201 |
+| **真实 QQ 私聊** | ✅ 小号 `3266206281`（NapCat 4.18.41 / QQNT 9.9.36）反向 WS 连到 6201 |
 | QQ 采集 | 2 条，独立作用域（seq 3/4） |
 | QQ 注入 | 第 2 条请求体含 `[DL_MEMORY_V040]`，引用待审序号 3「我喜欢吃苹果」 |
 | 模型预热（F1 修复后） | 加载中回复 12 ms、本轮不注入；加载完成首轮注入 89 ms；后台积压 0 s |
@@ -90,19 +90,6 @@ cd testbed
 **冷启动问题（真实环境才暴露）**：首次 BGE 加载占满单线程池 → `dl_auto_jobs` 积压 →
 插件按设计"有积压时不给自动线索" → 前几轮对话拿不到记忆。排空后同一查询 0.13 s 注入。
 详见 `../dev/docs/REAL_ENV_REPORT.md`。
-
-## 一键重建（推荐）
-
-本仓库带环境引导脚本，不用手抄下面的命令：
-
-```powershell
-# 仓库根执行：建 venv → 下 AstrBot 4.29.3 → 装依赖(torch CPU) → 下 BGE → 生成 instance
-powershell -NoProfile -ExecutionPolicy Bypass -File .\env\setup.ps1
-# 只检查不修改
-powershell -NoProfile -ExecutionPolicy Bypass -File .\env\verify_env.ps1
-```
-
-版本锚点、依赖锁定与模板说明见 `../env/README.md`；下面是**手工**重建步骤（脚本等价物，排错时用）。
 
 ## 从零重建（本次实际执行过的命令）
 

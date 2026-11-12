@@ -1,6 +1,9 @@
 name: astrbot_plugin_memory_shadow
 display_name: Memory Engine Shadow
-desc: Offline memory-engine shadow observer; never modifies replies.
-version: 0.1.0
+desc: Native history input, memory-engine shadow observer, opt-in temporary memory injection, and an embedded memory console page.
+version: 0.4.0
 author: DigitalLife_Local_Test
 repo: https://github.com/weijiecao/digital-life
+views:
+  - name: console
+    title: 数字记忆控制台
