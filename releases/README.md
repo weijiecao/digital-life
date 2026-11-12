@@ -1,49 +1,22 @@
-# Memory Engine R0 Release Candidate 1
+# Releases
 
-**Status: NO-GO.** This bundle is for offline engineering review only. It is not
-a production release and must not be connected to V1 or a live chat platform.
+Status: **R0/R1 NO-GO**. Only isolated evaluation artifacts.
 
-## Contents
+| File | Purpose |
+|---|---|
+| `astrbot_plugin_digital_memory_store-1.0.19.zip` | AstrBot plugin package (72 files, 238,552 bytes) |
+| `memory-engine-rc3-queryguard.zip` | Q1 isolated engine package (39 files, 68,022 bytes) |
+| `memory-engine-r0-rc3.zip` | Previous RC3 package, kept only for upgrade/rollback validation |
 
-- `v1_5_consolidator/` — store, resolver, provenance guard, candidate index;
-- `memory_engine/` — ingest/retrieve/context, rejudge, worker, cache, backup,
-  render, host budget;
-- `host_shadow/` — independent AstrBot shadow plugin and soak sampler;
-- selected reports under `reports/`.
+Each ZIP has an adjacent `.json` manifest and (for the plugin) `.sha256`.
 
-## Quick start
-
-```powershell
-# extract
-Expand-Archive .\memory-engine-r0-rc1.zip -DestinationPath .\r0
-cd .\r0
-
-# run one ingest/search
-python -m memory_engine.cli --db .\r0.sqlite3 ingest --scope s --seq 1 --text "我喜欢乌龙茶"
-python -m memory_engine.cli --db .\r0.sqlite3 search --scope s --query "乌龙茶"
-python -m memory_engine.cli --db .\r0.sqlite3 context --scope s --query "乌龙茶"
-```
-
-Python 3.12 is recommended. `tiktoken` is optional; without it token budgets are
-estimated rather than exact.
-
-## Verification
-
-From the repository checkout:
+## Verify
 
 ```powershell
-python dev\scripts\verify_r0_bundle.py
+python dev\scripts\verify_r0_bundle.py --bundle releases\memory-engine-rc3-queryguard.zip --exact-budget
+python dev\scripts\package_lifecycle.py releases\memory-engine-rc3-queryguard.zip --previous-bundle releases\memory-engine-r0-rc3.zip
+python dev\scripts\build_astrbot_plugin.py
 ```
 
-Expected: SHA-256, bytes, file count, unpacked ingest/retrieve and integrity all
-pass.
-
-## Known gaps
-
-- no independent real gold;
-- no 72h real-host soak;
-- no power-loss/fsync evidence;
-- no real QQ/NapCat;
-- M4 thresholds are synthetic.
-
-See `reports/MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md` for the full matrix.
+Do not connect these packages to V1 production or a production Shadow until the
+remaining real-host, independent-quality and 72h gates are satisfied.
