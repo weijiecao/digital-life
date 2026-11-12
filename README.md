@@ -1,4 +1,4 @@
-# 数字记忆工程 · Digital 数字记忆引擎ering
+# 数字记忆工程 · Digital Memory Engineering
 
 数字记忆工程由两个部分组成：
 
