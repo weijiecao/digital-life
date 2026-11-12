@@ -1,0 +1,16 @@
+{
+  "verdict": "PACKAGE_VERIFIED_NOT_RELEASE_GO",
+  "sha256": "82874bf227ce0f5cdd13009119c6e96466e6cd89cdc911c087399b616fa285da",
+  "source_sha256": "5a7fa22b3a85b327bec6a477d130fd09fcd6be250608f8f31068d718c3d078df",
+  "files": 39,
+  "smoke": {
+    "isolated_import": true,
+    "ingest_repeat_conflict": true,
+    "revision_history_restart": true,
+    "withdraw": true,
+    "backup_restore_resume": true,
+    "exact_budget": true,
+    "integrity": true
+  },
+  "cli": true
+}

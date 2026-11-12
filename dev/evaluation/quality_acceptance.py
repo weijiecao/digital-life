@@ -73,6 +73,7 @@ def evaluate(groups: list[dict], encoder=None) -> dict:
                         "context_count": len(context_labels),
                         "invalid_context": any(label != "current" for label in context_labels),
                         "returned": rank_labels,
+                        "context_returned": context_labels,
                     })
             finally:
                 store.close()
@@ -89,12 +90,13 @@ def summarize(rows: list[dict]) -> dict:
             "top5_hits": sum(0 < r["rank"] <= 5 for r in pos),
             "positive_context_hits": sum(r["context_contains_gold"] for r in pos),
             "negative_context_injections": sum(bool(r["context_count"]) for r in neg),
+            "positive_extra_injections": sum(any(label != r["expected"] for label in r.get("context_returned", [])) for r in pos),
             "invalid_context_injections": sum(r["invalid_context"] for r in items),
         }
     categories = defaultdict(list)
     for row in rows:
         categories[row["category"]].append(row)
-    return {"overall": stats(rows),
+    return {"rows": rows, "overall": stats(rows),
             "by_category": {name: stats(items) for name, items in sorted(categories.items())}}
 
 

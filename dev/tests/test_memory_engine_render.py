@@ -32,8 +32,11 @@ class TestRenderedBudget(unittest.TestCase):
             packet = engine.build_rendered_context("s", "tea", 150, counter)
             self.assertTrue(packet["budget_enforced"])
             self.assertLessEqual(packet["rendered_tokens"], 150)
-            self.assertIn("summary:", packet["rendered"])
-            self.assertIn("evidence:", packet["rendered"])
+            self.assertTrue(packet["items"])
+            evidence = packet["items"][0]["evidence"]
+            self.assertIn(evidence, packet["rendered"])
+            self.assertEqual(packet["rendered"].count(evidence), 1)
+            self.assertEqual(packet["items"][0]["admission"]["verdict"], "SUPPORTED")
             store.close()
 
     def test_missing_tokenizer_is_strict_by_default(self):

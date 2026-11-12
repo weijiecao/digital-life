@@ -1,0 +1,1081 @@
+{
+  "manifest": {
+    "version": "quality-v2-rc3",
+    "frozen_at": "2026-11-12",
+    "source": "single-author authored scenario families; not real chats or blind human labels",
+    "split_rule": "disjoint scenario families; one group is the statistical unit",
+    "criteria": {
+      "positive_top1_min": 0.95,
+      "positive_top5_min": 0.95,
+      "negative_context_injection_max": 0,
+      "invalid_context_injection_max": 0,
+      "safety_categories_zero_injection": true,
+      "paraphrase_top1_min": 0.8,
+      "no_answer_injection_max": 0
+    },
+    "splits": {
+      "dev": {
+        "groups": 4,
+        "sha256": "32e2a9c2fce2b69a27f93dca685d92998a48c7c49f686c5de38d4f3323c9a3c8",
+        "queries": 26,
+        "negative": 14
+      },
+      "holdout": {
+        "groups": 4,
+        "sha256": "4e45e27c6c6b0a4b18abf176fcbbf8fdbf469e6928014fb30d4134eca7726830",
+        "queries": 25,
+        "negative": 13
+      }
+    }
+  },
+  "splits": {
+    "dev": {
+      "result": {
+        "rows": [
+          {
+            "case": "trip:subject_self:1",
+            "category": "subject_self",
+            "query": "我周六去木桥市集走哪个入口",
+            "expected": "current",
+            "group": "trip",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "trip:subject_other:2",
+            "category": "subject_other",
+            "query": "我朋友周六去木桥市集走哪个入口",
+            "expected": null,
+            "group": "trip",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "trip:story_wrong:3",
+            "category": "story_wrong",
+            "query": "故事里的角色周六去木桥市集走哪个入口",
+            "expected": null,
+            "group": "trip",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "trip:time_current:4",
+            "category": "time_current",
+            "query": "现在木桥市集定在周六吗",
+            "expected": "current",
+            "group": "trip",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "trip:time_old:5",
+            "category": "time_old",
+            "query": "原来木桥市集定在周日吗",
+            "expected": null,
+            "group": "trip",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "trip:correction:6",
+            "category": "correction",
+            "query": "木桥市集改成哪个入口了",
+            "expected": "current",
+            "group": "trip",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "trip:withdrawal:7",
+            "category": "withdrawal",
+            "query": "撤回便签木桥市集",
+            "expected": null,
+            "group": "trip",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "trip:no_answer:8",
+            "category": "no_answer",
+            "query": "木桥市集的付款凭证",
+            "expected": null,
+            "group": "trip",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "trip:paraphrase:9",
+            "category": "paraphrase",
+            "query": "木拱桥边的周末聚会走哪个入口",
+            "expected": "current",
+            "group": "trip",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "friend:subject_friend:1",
+            "category": "subject_friend",
+            "query": "朋友周六什么时候去医院复查",
+            "expected": "current",
+            "group": "friend",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "friend:subject_self:2",
+            "category": "subject_self",
+            "query": "我周六什么时候去医院复查",
+            "expected": null,
+            "group": "friend",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "friend:story_wrong:3",
+            "category": "story_wrong",
+            "query": "故事里的角色周六什么时候去医院复查",
+            "expected": null,
+            "group": "friend",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "friend:correction:4",
+            "category": "correction",
+            "query": "朋友复查改成了几点",
+            "expected": "current",
+            "group": "friend",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "friend:no_answer:5",
+            "category": "no_answer",
+            "query": "朋友复查的付款凭证",
+            "expected": null,
+            "group": "friend",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "friend:paraphrase:6",
+            "category": "paraphrase",
+            "query": "好友周末去诊所复诊的时间",
+            "expected": "current",
+            "group": "friend",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "fiction:story:1",
+            "category": "story",
+            "query": "故事里的角色林夏周六去木桥市集走哪个入口",
+            "expected": "current",
+            "group": "fiction",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "fiction:reality_wrong:2",
+            "category": "reality_wrong",
+            "query": "真实的我周六去木桥市集走哪个入口",
+            "expected": null,
+            "group": "fiction",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "fiction:subject_wrong:3",
+            "category": "subject_wrong",
+            "query": "我周六去木桥市集走哪个入口",
+            "expected": null,
+            "group": "fiction",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "fiction:no_answer:4",
+            "category": "no_answer",
+            "query": "故事角色的付款凭证",
+            "expected": null,
+            "group": "fiction",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "fiction:paraphrase:5",
+            "category": "paraphrase",
+            "query": "虚构故事角色周末去集市的入口",
+            "expected": "current",
+            "group": "fiction",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "meeting:time_current:1",
+            "category": "time_current",
+            "query": "现在会议在周四几点",
+            "expected": "current",
+            "group": "meeting",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "meeting:time_old:2",
+            "category": "time_old",
+            "query": "原来会议在周二几点",
+            "expected": null,
+            "group": "meeting",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "meeting:correction:3",
+            "category": "correction",
+            "query": "会议改成了周四吗",
+            "expected": "current",
+            "group": "meeting",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "meeting:withdrawal:4",
+            "category": "withdrawal",
+            "query": "已废弃选项会议",
+            "expected": null,
+            "group": "meeting",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "meeting:no_answer:5",
+            "category": "no_answer",
+            "query": "会议纪要编号",
+            "expected": null,
+            "group": "meeting",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "meeting:paraphrase:6",
+            "category": "paraphrase",
+            "query": "开会时间改到周四下午",
+            "expected": "current",
+            "group": "meeting",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          }
+        ],
+        "overall": {
+          "positive": 12,
+          "negative": 14,
+          "top1_hits": 12,
+          "top5_hits": 12,
+          "positive_context_hits": 12,
+          "negative_context_injections": 0,
+          "positive_extra_injections": 0,
+          "invalid_context_injections": 0
+        },
+        "by_category": {
+          "correction": {
+            "positive": 3,
+            "negative": 0,
+            "top1_hits": 3,
+            "top5_hits": 3,
+            "positive_context_hits": 3,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "no_answer": {
+            "positive": 0,
+            "negative": 4,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "paraphrase": {
+            "positive": 4,
+            "negative": 0,
+            "top1_hits": 4,
+            "top5_hits": 4,
+            "positive_context_hits": 4,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "reality_wrong": {
+            "positive": 0,
+            "negative": 1,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "story": {
+            "positive": 1,
+            "negative": 0,
+            "top1_hits": 1,
+            "top5_hits": 1,
+            "positive_context_hits": 1,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "story_wrong": {
+            "positive": 0,
+            "negative": 2,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_friend": {
+            "positive": 1,
+            "negative": 0,
+            "top1_hits": 1,
+            "top5_hits": 1,
+            "positive_context_hits": 1,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_other": {
+            "positive": 0,
+            "negative": 1,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_self": {
+            "positive": 1,
+            "negative": 1,
+            "top1_hits": 1,
+            "top5_hits": 1,
+            "positive_context_hits": 1,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_wrong": {
+            "positive": 0,
+            "negative": 1,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "time_current": {
+            "positive": 2,
+            "negative": 0,
+            "top1_hits": 2,
+            "top5_hits": 2,
+            "positive_context_hits": 2,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "time_old": {
+            "positive": 0,
+            "negative": 2,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "withdrawal": {
+            "positive": 0,
+            "negative": 2,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          }
+        }
+      },
+      "acceptance": {
+        "pass": true,
+        "checks": {
+          "positive_extra_injections": 0,
+          "positive_top1": 1.0,
+          "positive_top5": 1.0,
+          "negative_context_injections": 0,
+          "invalid_context_injections": 0,
+          "paraphrase_top1": 1.0,
+          "no_answer_injections": 0,
+          "safety_injections": 0
+        }
+      }
+    },
+    "holdout": {
+      "result": {
+        "rows": [
+          {
+            "case": "family:subject_family:1",
+            "category": "subject_family",
+            "query": "妈妈周日去银行几点",
+            "expected": "current",
+            "group": "family",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "family:subject_wrong:2",
+            "category": "subject_wrong",
+            "query": "我周日去银行几点",
+            "expected": null,
+            "group": "family",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "family:time_current:3",
+            "category": "time_current",
+            "query": "现在妈妈去银行是周日上午十一点吗",
+            "expected": "current",
+            "group": "family",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "family:time_old:4",
+            "category": "time_old",
+            "query": "原来妈妈去银行是周日上午十点吗",
+            "expected": null,
+            "group": "family",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "family:correction:5",
+            "category": "correction",
+            "query": "妈妈去银行改成了几点",
+            "expected": "current",
+            "group": "family",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "family:withdrawal:6",
+            "category": "withdrawal",
+            "query": "撤回便签妈妈银行",
+            "expected": null,
+            "group": "family",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "family:no_answer:7",
+            "category": "no_answer",
+            "query": "妈妈银行的付款凭证",
+            "expected": null,
+            "group": "family",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "family:paraphrase:8",
+            "category": "paraphrase",
+            "query": "母亲周末去金融机构的时间",
+            "expected": "current",
+            "group": "family",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "repair:time_current:1",
+            "category": "time_current",
+            "query": "现在单车检修在周五吗",
+            "expected": "current",
+            "group": "repair",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "repair:time_old:2",
+            "category": "time_old",
+            "query": "原来单车检修在周三吗",
+            "expected": null,
+            "group": "repair",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "repair:correction:3",
+            "category": "correction",
+            "query": "单车检修改到哪个门了",
+            "expected": "current",
+            "group": "repair",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "repair:withdrawal:4",
+            "category": "withdrawal",
+            "query": "备份方案单车检修",
+            "expected": null,
+            "group": "repair",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "repair:no_answer:5",
+            "category": "no_answer",
+            "query": "单车检修的付款凭证",
+            "expected": null,
+            "group": "repair",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "repair:paraphrase:6",
+            "category": "paraphrase",
+            "query": "自行车送修的最终地点",
+            "expected": "current",
+            "group": "repair",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "story2:story:1",
+            "category": "story",
+            "query": "故事里的角色阿岚周四去海边哪里",
+            "expected": "current",
+            "group": "story2",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "story2:reality_wrong:2",
+            "category": "reality_wrong",
+            "query": "真实的我周四去海边哪里",
+            "expected": null,
+            "group": "story2",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "story2:subject_wrong:3",
+            "category": "subject_wrong",
+            "query": "我周四去海边哪里",
+            "expected": null,
+            "group": "story2",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "story2:no_answer:4",
+            "category": "no_answer",
+            "query": "故事角色的付款凭证",
+            "expected": null,
+            "group": "story2",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "story2:paraphrase:5",
+            "category": "paraphrase",
+            "query": "虚构人物周末去海边的地点",
+            "expected": "current",
+            "group": "story2",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "move:time_current:1",
+            "category": "time_current",
+            "query": "现在搬家在周日上午吗",
+            "expected": "current",
+            "group": "move",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "move:time_old:2",
+            "category": "time_old",
+            "query": "原来搬家在周六上午吗",
+            "expected": null,
+            "group": "move",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "move:correction:3",
+            "category": "correction",
+            "query": "搬家改到几楼了",
+            "expected": "current",
+            "group": "move",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          },
+          {
+            "case": "move:withdrawal:4",
+            "category": "withdrawal",
+            "query": "已废弃选项搬家",
+            "expected": null,
+            "group": "move",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "move:no_answer:5",
+            "category": "no_answer",
+            "query": "搬家的联系人号码",
+            "expected": null,
+            "group": "move",
+            "rank": 0,
+            "context_contains_gold": false,
+            "context_count": 0,
+            "invalid_context": false,
+            "returned": [],
+            "context_returned": []
+          },
+          {
+            "case": "move:paraphrase:6",
+            "category": "paraphrase",
+            "query": "搬迁最终安排在几楼",
+            "expected": "current",
+            "group": "move",
+            "rank": 1,
+            "context_contains_gold": true,
+            "context_count": 1,
+            "invalid_context": false,
+            "returned": [
+              "current"
+            ],
+            "context_returned": [
+              "current"
+            ]
+          }
+        ],
+        "overall": {
+          "positive": 12,
+          "negative": 13,
+          "top1_hits": 11,
+          "top5_hits": 11,
+          "positive_context_hits": 11,
+          "negative_context_injections": 0,
+          "positive_extra_injections": 0,
+          "invalid_context_injections": 0
+        },
+        "by_category": {
+          "correction": {
+            "positive": 3,
+            "negative": 0,
+            "top1_hits": 3,
+            "top5_hits": 3,
+            "positive_context_hits": 3,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "no_answer": {
+            "positive": 0,
+            "negative": 4,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "paraphrase": {
+            "positive": 4,
+            "negative": 0,
+            "top1_hits": 3,
+            "top5_hits": 3,
+            "positive_context_hits": 3,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "reality_wrong": {
+            "positive": 0,
+            "negative": 1,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "story": {
+            "positive": 1,
+            "negative": 0,
+            "top1_hits": 1,
+            "top5_hits": 1,
+            "positive_context_hits": 1,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_family": {
+            "positive": 1,
+            "negative": 0,
+            "top1_hits": 1,
+            "top5_hits": 1,
+            "positive_context_hits": 1,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "subject_wrong": {
+            "positive": 0,
+            "negative": 2,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "time_current": {
+            "positive": 3,
+            "negative": 0,
+            "top1_hits": 3,
+            "top5_hits": 3,
+            "positive_context_hits": 3,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "time_old": {
+            "positive": 0,
+            "negative": 3,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          },
+          "withdrawal": {
+            "positive": 0,
+            "negative": 3,
+            "top1_hits": 0,
+            "top5_hits": 0,
+            "positive_context_hits": 0,
+            "negative_context_injections": 0,
+            "positive_extra_injections": 0,
+            "invalid_context_injections": 0
+          }
+        }
+      },
+      "acceptance": {
+        "pass": false,
+        "checks": {
+          "positive_extra_injections": 0,
+          "positive_top1": 0.9166666666666666,
+          "positive_top5": 0.9166666666666666,
+          "negative_context_injections": 0,
+          "invalid_context_injections": 0,
+          "paraphrase_top1": 0.75,
+          "no_answer_injections": 0,
+          "safety_injections": 0
+        }
+      }
+    }
+  },
+  "pass": false
+}

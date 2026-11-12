@@ -28,6 +28,7 @@ def build_parser() -> argparse.ArgumentParser:
     search = sub.add_parser("search")
     search.add_argument("--scope", required=True)
     search.add_argument("--query", required=True)
+    search.add_argument("--explain", action="store_true", help="return candidate ranks and source-bound admission decisions")
     search.add_argument("--limit", type=int, default=10)
     search.add_argument("--min-score", type=float, default=0.0)
 
@@ -77,7 +78,8 @@ def main(argv=None) -> int:
             if not receipt.receipt_ok:
                 return 1
         elif args.command == "search":
-            print(json.dumps(engine.retrieve(args.scope, args.query, args.limit,
+            search_fn = engine.retrieve_with_audit if args.explain else engine.retrieve
+            print(json.dumps(search_fn(args.scope, args.query, args.limit,
                                              args.min_score),
                              ensure_ascii=False, indent=2))
         elif args.command == "context":

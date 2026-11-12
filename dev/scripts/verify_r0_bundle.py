@@ -30,6 +30,10 @@ event = engine.ingest('s', original).event_id
 assert engine.ingest('s', original).event_id == event
 assert not engine.ingest('s', source(1, '改写旧输入')).receipt_ok
 assert engine.retrieve('s', '木桥市集')
+if hasattr(engine, 'retrieve_with_audit'):
+    trace = engine.retrieve_with_audit('s', '木桥市集')
+    assert trace['items'][0]['admission']['supporting_spans'][0]['source_hash'] == original.source_hash
+    assert not engine.retrieve('s', '木桥市集门票多少钱')
 new_event = engine.revise_source('s', 1, source(2, '周六去木桥市集，周五的计划取消。'))
 assert not engine.retrieve('s', '周五去')
 assert engine.history('s', event)

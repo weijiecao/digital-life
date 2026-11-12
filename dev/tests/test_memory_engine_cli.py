@@ -45,7 +45,8 @@ class TestMemoryEngineCli(unittest.TestCase):
             packet = json.loads(out.getvalue())
             self.assertTrue(packet["budget_enforced"])
             self.assertLessEqual(packet["rendered_tokens"], 150)
-            self.assertIn("summary:", packet["rendered"])
+            self.assertIn(packet["items"][0]["evidence"], packet["rendered"])
+            self.assertEqual(packet["items"][0]["admission"]["verdict"], "SUPPORTED")
 
     def test_history_command(self):
         with tempfile.TemporaryDirectory() as d:

@@ -1,0 +1,1737 @@
+{
+  "kind": "development_counterexamples_not_blind",
+  "encoder": "BGE",
+  "positive_hits": 11,
+  "positive_count": 11,
+  "positive_extra_injections": 0,
+  "negative_injections": 0,
+  "negative_count": 12,
+  "pass": true,
+  "rows": [
+    {
+      "group": "missing",
+      "query": "木桥市集在哪里集合",
+      "expected": "market",
+      "returned": [
+        "market"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "81cd8936b909b9fea37eed2ea57885463666aad480019fa73a3d581d8b6d3ae9",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "semantic_rank": 1,
+            "semantic_score": 0.832251,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "revision": 1,
+            "query_hash": "81cd8936b909b9fea37eed2ea57885463666aad480019fa73a3d581d8b6d3ae9",
+            "snapshot_hash": "c1666c011b303b8a1e58c11c89a17d9075fbb00399b99a15e806aeac54012d10",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "place"
+            ],
+            "semantic_score": 0.832251,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 1,
+                "source_hash": "5b19fa9afdda1228c436743377cdf8d3fddb8ea2dedd3c7838f9eb069d904d1a",
+                "start": 0,
+                "end": 11,
+                "text": "木桥市集在西入口集合。"
+              }
+            ]
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "title": "木桥市集在西入口集合。",
+            "event_type": "unknown",
+            "summary": "木桥市集在西入口集合。",
+            "evidence": "木桥市集在西入口集合。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+              "revision": 1,
+              "query_hash": "81cd8936b909b9fea37eed2ea57885463666aad480019fa73a3d581d8b6d3ae9",
+              "snapshot_hash": "c1666c011b303b8a1e58c11c89a17d9075fbb00399b99a15e806aeac54012d10",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "place"
+              ],
+              "semantic_score": 0.832251,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 1,
+                  "source_hash": "5b19fa9afdda1228c436743377cdf8d3fddb8ea2dedd3c7838f9eb069d904d1a",
+                  "start": 0,
+                  "end": 11,
+                  "text": "木桥市集在西入口集合。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "missing",
+      "query": "木桥市集几点集合",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "589274c9873d9c1242d9e654e5125b91f49918e21a1650b29f9f47d6fb51fad8",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "semantic_rank": 1,
+            "semantic_score": 0.765935,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "revision": 1,
+            "query_hash": "589274c9873d9c1242d9e654e5125b91f49918e21a1650b29f9f47d6fb51fad8",
+            "snapshot_hash": "c1666c011b303b8a1e58c11c89a17d9075fbb00399b99a15e806aeac54012d10",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.765935,
+            "verdict": "RELATED_ONLY",
+            "reason": "missing_clock",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "missing",
+      "query": "木桥市集门票多少钱",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "672854382828463f8f2350656ae71e4979051c7ba02c0f835e5667e64030e3ff",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "semantic_rank": 1,
+            "semantic_score": 0.670989,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "revision": 1,
+            "query_hash": "672854382828463f8f2350656ae71e4979051c7ba02c0f835e5667e64030e3ff",
+            "snapshot_hash": "c1666c011b303b8a1e58c11c89a17d9075fbb00399b99a15e806aeac54012d10",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "money"
+            ],
+            "semantic_score": 0.670989,
+            "verdict": "RELATED_ONLY",
+            "reason": "missing_money",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "missing",
+      "query": "木桥市集要多久",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "6ce455d055ec63eb27c4a9025ac68c414b3114768968381f4bee07bce793f1b5",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "semantic_rank": 1,
+            "semantic_score": 0.730232,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "revision": 1,
+            "query_hash": "6ce455d055ec63eb27c4a9025ac68c414b3114768968381f4bee07bce793f1b5",
+            "snapshot_hash": "c1666c011b303b8a1e58c11c89a17d9075fbb00399b99a15e806aeac54012d10",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "duration"
+            ],
+            "semantic_score": 0.730232,
+            "verdict": "RELATED_ONLY",
+            "reason": "missing_duration",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "missing",
+      "query": "为什么选木桥市集",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "35ca176aac8feec58af0c449ef416330621d6b9c2df2d354ecb107d290927b1c",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "semantic_rank": 1,
+            "semantic_score": 0.725472,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "revision": 1,
+            "query_hash": "35ca176aac8feec58af0c449ef416330621d6b9c2df2d354ecb107d290927b1c",
+            "snapshot_hash": "c1666c011b303b8a1e58c11c89a17d9075fbb00399b99a15e806aeac54012d10",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "reason"
+            ],
+            "semantic_score": 0.725472,
+            "verdict": "RELATED_ONLY",
+            "reason": "missing_reason",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "missing",
+      "query": "木桥市集的付款凭证编号是什么",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "3ea742be9d57ed7c2afb95d54ea6a203d60f23c857eafaf4ae23d65a8bd68352",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "semantic_rank": 1,
+            "semantic_score": 0.628765,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "revision": 1,
+            "query_hash": "3ea742be9d57ed7c2afb95d54ea6a203d60f23c857eafaf4ae23d65a8bd68352",
+            "snapshot_hash": "c1666c011b303b8a1e58c11c89a17d9075fbb00399b99a15e806aeac54012d10",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "id"
+            ],
+            "semantic_score": 0.628765,
+            "verdict": "INSUFFICIENT",
+            "reason": "legacy_policy_rejected",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "missing",
+      "query": "我的牙科复查怎么安排",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "1e369571207c2ca04737be408baf11710099fe90c8f65d66159747d508b3852a",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "semantic_rank": 1,
+            "semantic_score": 0.309113,
+            "lexical_rank": null
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_1d2f5cb0694b465fb6c0f37bb093fb7f",
+            "revision": 1,
+            "query_hash": "1e369571207c2ca04737be408baf11710099fe90c8f65d66159747d508b3852a",
+            "snapshot_hash": "c1666c011b303b8a1e58c11c89a17d9075fbb00399b99a15e806aeac54012d10",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [],
+            "semantic_score": 0.309113,
+            "verdict": "INSUFFICIENT",
+            "reason": "subject_unestablished",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "subject",
+      "query": "我周六去银行几点",
+      "expected": "me",
+      "returned": [
+        "me"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "87c918d33d0313e218c1124ccd4fba2a31e463e9163007e2f4e7f9401f4f4b8f",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 4,
+        "candidates": [
+          {
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "semantic_rank": 1,
+            "semantic_score": 0.872313,
+            "lexical_rank": 2
+          },
+          {
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "semantic_rank": 2,
+            "semantic_score": 0.867935,
+            "lexical_rank": 1
+          },
+          {
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "semantic_rank": 3,
+            "semantic_score": 0.832381,
+            "lexical_rank": 4
+          },
+          {
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "semantic_rank": 4,
+            "semantic_score": 0.771185,
+            "lexical_rank": 3
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "revision": 1,
+            "query_hash": "87c918d33d0313e218c1124ccd4fba2a31e463e9163007e2f4e7f9401f4f4b8f",
+            "snapshot_hash": "aa7857ebdd6ddf5ccd604d30362cb78a998ade6ad73cc26bb1dbc43aed1a0552",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.872313,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "revision": 1,
+            "query_hash": "87c918d33d0313e218c1124ccd4fba2a31e463e9163007e2f4e7f9401f4f4b8f",
+            "snapshot_hash": "adb47166421bae6756f6d63a1d3b2eee6761579be70bdf9b1fe13293c19ba1e1",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.867935,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 1,
+                "source_hash": "59df1759014b13a26455f3b2641fdc6f021c9deaf23c32ee4a33737d6037ac09",
+                "start": 0,
+                "end": 12,
+                "text": "我周六去银行，上午十点。"
+              }
+            ]
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "revision": 1,
+            "query_hash": "87c918d33d0313e218c1124ccd4fba2a31e463e9163007e2f4e7f9401f4f4b8f",
+            "snapshot_hash": "64d0552d5facf285cf50f040a39546d2cecd13eb3a65ddf86401d3450ea2c56b",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.832381,
+            "verdict": "CONFLICT",
+            "reason": "weekday_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "revision": 1,
+            "query_hash": "87c918d33d0313e218c1124ccd4fba2a31e463e9163007e2f4e7f9401f4f4b8f",
+            "snapshot_hash": "bb74ae24c91702ed6993745d16a3fa2720846b2d92a6278c9bef84b6234eb5b2",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.771185,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "title": "我周六去银行，上午十点。",
+            "event_type": "unknown",
+            "summary": "我周六去银行，上午十点。",
+            "evidence": "我周六去银行，上午十点。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+              "revision": 1,
+              "query_hash": "87c918d33d0313e218c1124ccd4fba2a31e463e9163007e2f4e7f9401f4f4b8f",
+              "snapshot_hash": "adb47166421bae6756f6d63a1d3b2eee6761579be70bdf9b1fe13293c19ba1e1",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "clock"
+              ],
+              "semantic_score": 0.867935,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 1,
+                  "source_hash": "59df1759014b13a26455f3b2641fdc6f021c9deaf23c32ee4a33737d6037ac09",
+                  "start": 0,
+                  "end": 12,
+                  "text": "我周六去银行，上午十点。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "subject",
+      "query": "妈妈周六去银行几点",
+      "expected": "mother",
+      "returned": [
+        "mother"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "716322d0afa14973ede2a58d24698119f7cb2113633b3814839a907812db0d07",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 4,
+        "candidates": [
+          {
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "semantic_rank": 1,
+            "semantic_score": 0.882961,
+            "lexical_rank": 1
+          },
+          {
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "semantic_rank": 2,
+            "semantic_score": 0.815346,
+            "lexical_rank": 3
+          },
+          {
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "semantic_rank": 3,
+            "semantic_score": 0.775103,
+            "lexical_rank": 2
+          },
+          {
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "semantic_rank": 4,
+            "semantic_score": 0.725536,
+            "lexical_rank": 4
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "revision": 1,
+            "query_hash": "716322d0afa14973ede2a58d24698119f7cb2113633b3814839a907812db0d07",
+            "snapshot_hash": "bb74ae24c91702ed6993745d16a3fa2720846b2d92a6278c9bef84b6234eb5b2",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.882961,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 2,
+                "source_hash": "44b1ddef1be74b49bdc0876176460c8a278c267d4d306c3a3f80dd2fc12664ba",
+                "start": 0,
+                "end": 14,
+                "text": "妈妈周六去银行，上午十一点。"
+              }
+            ]
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "revision": 1,
+            "query_hash": "716322d0afa14973ede2a58d24698119f7cb2113633b3814839a907812db0d07",
+            "snapshot_hash": "aa7857ebdd6ddf5ccd604d30362cb78a998ade6ad73cc26bb1dbc43aed1a0552",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.815346,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "revision": 1,
+            "query_hash": "716322d0afa14973ede2a58d24698119f7cb2113633b3814839a907812db0d07",
+            "snapshot_hash": "adb47166421bae6756f6d63a1d3b2eee6761579be70bdf9b1fe13293c19ba1e1",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.775103,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "revision": 1,
+            "query_hash": "716322d0afa14973ede2a58d24698119f7cb2113633b3814839a907812db0d07",
+            "snapshot_hash": "64d0552d5facf285cf50f040a39546d2cecd13eb3a65ddf86401d3450ea2c56b",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.725536,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "title": "妈妈周六去银行，上午十一点。",
+            "event_type": "unknown",
+            "summary": "妈妈周六去银行，上午十一点。",
+            "evidence": "妈妈周六去银行，上午十一点。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+              "revision": 1,
+              "query_hash": "716322d0afa14973ede2a58d24698119f7cb2113633b3814839a907812db0d07",
+              "snapshot_hash": "bb74ae24c91702ed6993745d16a3fa2720846b2d92a6278c9bef84b6234eb5b2",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "clock"
+              ],
+              "semantic_score": 0.882961,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 2,
+                  "source_hash": "44b1ddef1be74b49bdc0876176460c8a278c267d4d306c3a3f80dd2fc12664ba",
+                  "start": 0,
+                  "end": 14,
+                  "text": "妈妈周六去银行，上午十一点。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "subject",
+      "query": "朋友周六去银行几点",
+      "expected": "friend",
+      "returned": [
+        "friend"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "408fb8904e1443b8e29811a402fa640ee465cf154bff0ba8794efd28a9c7443d",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 4,
+        "candidates": [
+          {
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "semantic_rank": 1,
+            "semantic_score": 0.896381,
+            "lexical_rank": 1
+          },
+          {
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "semantic_rank": 2,
+            "semantic_score": 0.786798,
+            "lexical_rank": 2
+          },
+          {
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "semantic_rank": 3,
+            "semantic_score": 0.75096,
+            "lexical_rank": 4
+          },
+          {
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "semantic_rank": 4,
+            "semantic_score": 0.740621,
+            "lexical_rank": 3
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "revision": 1,
+            "query_hash": "408fb8904e1443b8e29811a402fa640ee465cf154bff0ba8794efd28a9c7443d",
+            "snapshot_hash": "aa7857ebdd6ddf5ccd604d30362cb78a998ade6ad73cc26bb1dbc43aed1a0552",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.896381,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 3,
+                "source_hash": "fff38bd16df96413f9995d426e0d00d9a4f5645fa8d060d945957bc239e3983f",
+                "start": 0,
+                "end": 13,
+                "text": "朋友周六去银行，下午两点。"
+              }
+            ]
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "revision": 1,
+            "query_hash": "408fb8904e1443b8e29811a402fa640ee465cf154bff0ba8794efd28a9c7443d",
+            "snapshot_hash": "adb47166421bae6756f6d63a1d3b2eee6761579be70bdf9b1fe13293c19ba1e1",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.786798,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "revision": 1,
+            "query_hash": "408fb8904e1443b8e29811a402fa640ee465cf154bff0ba8794efd28a9c7443d",
+            "snapshot_hash": "64d0552d5facf285cf50f040a39546d2cecd13eb3a65ddf86401d3450ea2c56b",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.75096,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "revision": 1,
+            "query_hash": "408fb8904e1443b8e29811a402fa640ee465cf154bff0ba8794efd28a9c7443d",
+            "snapshot_hash": "bb74ae24c91702ed6993745d16a3fa2720846b2d92a6278c9bef84b6234eb5b2",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.740621,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "title": "朋友周六去银行，下午两点。",
+            "event_type": "unknown",
+            "summary": "朋友周六去银行，下午两点。",
+            "evidence": "朋友周六去银行，下午两点。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+              "revision": 1,
+              "query_hash": "408fb8904e1443b8e29811a402fa640ee465cf154bff0ba8794efd28a9c7443d",
+              "snapshot_hash": "aa7857ebdd6ddf5ccd604d30362cb78a998ade6ad73cc26bb1dbc43aed1a0552",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "clock"
+              ],
+              "semantic_score": 0.896381,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 3,
+                  "source_hash": "fff38bd16df96413f9995d426e0d00d9a4f5645fa8d060d945957bc239e3983f",
+                  "start": 0,
+                  "end": 13,
+                  "text": "朋友周六去银行，下午两点。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "subject",
+      "query": "我周日去银行几点",
+      "expected": "sunday",
+      "returned": [
+        "sunday"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "c10a610efdccf4fcb5e314ce328b9203d38a63cabf74e8c57c599224f660efca",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 4,
+        "candidates": [
+          {
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "semantic_rank": 1,
+            "semantic_score": 0.867497,
+            "lexical_rank": 1
+          },
+          {
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "semantic_rank": 2,
+            "semantic_score": 0.839481,
+            "lexical_rank": 2
+          },
+          {
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "semantic_rank": 3,
+            "semantic_score": 0.835099,
+            "lexical_rank": 3
+          },
+          {
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "semantic_rank": 4,
+            "semantic_score": 0.747043,
+            "lexical_rank": 4
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "revision": 1,
+            "query_hash": "c10a610efdccf4fcb5e314ce328b9203d38a63cabf74e8c57c599224f660efca",
+            "snapshot_hash": "64d0552d5facf285cf50f040a39546d2cecd13eb3a65ddf86401d3450ea2c56b",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.867497,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 4,
+                "source_hash": "6d44d97612e04aa5b35ed114509fac0ea39a8762fc378444363f4ac08399be01",
+                "start": 0,
+                "end": 12,
+                "text": "我周日去银行，下午三点。"
+              }
+            ]
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "revision": 1,
+            "query_hash": "c10a610efdccf4fcb5e314ce328b9203d38a63cabf74e8c57c599224f660efca",
+            "snapshot_hash": "adb47166421bae6756f6d63a1d3b2eee6761579be70bdf9b1fe13293c19ba1e1",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.839481,
+            "verdict": "CONFLICT",
+            "reason": "weekday_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "revision": 1,
+            "query_hash": "c10a610efdccf4fcb5e314ce328b9203d38a63cabf74e8c57c599224f660efca",
+            "snapshot_hash": "aa7857ebdd6ddf5ccd604d30362cb78a998ade6ad73cc26bb1dbc43aed1a0552",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.835099,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "revision": 1,
+            "query_hash": "c10a610efdccf4fcb5e314ce328b9203d38a63cabf74e8c57c599224f660efca",
+            "snapshot_hash": "bb74ae24c91702ed6993745d16a3fa2720846b2d92a6278c9bef84b6234eb5b2",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.747043,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "title": "我周日去银行，下午三点。",
+            "event_type": "unknown",
+            "summary": "我周日去银行，下午三点。",
+            "evidence": "我周日去银行，下午三点。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+              "revision": 1,
+              "query_hash": "c10a610efdccf4fcb5e314ce328b9203d38a63cabf74e8c57c599224f660efca",
+              "snapshot_hash": "64d0552d5facf285cf50f040a39546d2cecd13eb3a65ddf86401d3450ea2c56b",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "clock"
+              ],
+              "semantic_score": 0.867497,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 4,
+                  "source_hash": "6d44d97612e04aa5b35ed114509fac0ea39a8762fc378444363f4ac08399be01",
+                  "start": 0,
+                  "end": 12,
+                  "text": "我周日去银行，下午三点。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "subject",
+      "query": "爸爸周六去银行几点",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "35056055ad940ccae40cd098505272bcc82b6e4ef3dcc88a11642748cd0f5afb",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 4,
+        "candidates": [
+          {
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "semantic_rank": 1,
+            "semantic_score": 0.806473,
+            "lexical_rank": 2
+          },
+          {
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "semantic_rank": 2,
+            "semantic_score": 0.786886,
+            "lexical_rank": 3
+          },
+          {
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "semantic_rank": 3,
+            "semantic_score": 0.766946,
+            "lexical_rank": 1
+          },
+          {
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "semantic_rank": 4,
+            "semantic_score": 0.721402,
+            "lexical_rank": 4
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "revision": 1,
+            "query_hash": "35056055ad940ccae40cd098505272bcc82b6e4ef3dcc88a11642748cd0f5afb",
+            "snapshot_hash": "aa7857ebdd6ddf5ccd604d30362cb78a998ade6ad73cc26bb1dbc43aed1a0552",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.806473,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "revision": 1,
+            "query_hash": "35056055ad940ccae40cd098505272bcc82b6e4ef3dcc88a11642748cd0f5afb",
+            "snapshot_hash": "bb74ae24c91702ed6993745d16a3fa2720846b2d92a6278c9bef84b6234eb5b2",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.786886,
+            "verdict": "INSUFFICIENT",
+            "reason": "family_member_unestablished",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "revision": 1,
+            "query_hash": "35056055ad940ccae40cd098505272bcc82b6e4ef3dcc88a11642748cd0f5afb",
+            "snapshot_hash": "adb47166421bae6756f6d63a1d3b2eee6761579be70bdf9b1fe13293c19ba1e1",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.766946,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "revision": 1,
+            "query_hash": "35056055ad940ccae40cd098505272bcc82b6e4ef3dcc88a11642748cd0f5afb",
+            "snapshot_hash": "64d0552d5facf285cf50f040a39546d2cecd13eb3a65ddf86401d3450ea2c56b",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.721402,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "subject",
+      "query": "我周五去银行几点",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "9e001706ce4c7612b77ec6b38aacfd8e9eebba20254102e369d679878853ebc8",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 4,
+        "candidates": [
+          {
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "semantic_rank": 1,
+            "semantic_score": 0.839761,
+            "lexical_rank": 1
+          },
+          {
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "semantic_rank": 2,
+            "semantic_score": 0.838965,
+            "lexical_rank": 2
+          },
+          {
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "semantic_rank": 3,
+            "semantic_score": 0.836729,
+            "lexical_rank": 3
+          },
+          {
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "semantic_rank": 4,
+            "semantic_score": 0.740493,
+            "lexical_rank": 4
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_6d8fa864fae141c49cf0984f998a1af8",
+            "revision": 1,
+            "query_hash": "9e001706ce4c7612b77ec6b38aacfd8e9eebba20254102e369d679878853ebc8",
+            "snapshot_hash": "adb47166421bae6756f6d63a1d3b2eee6761579be70bdf9b1fe13293c19ba1e1",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.839761,
+            "verdict": "CONFLICT",
+            "reason": "weekday_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_511f3c8f62764050812dd5850987b1b2",
+            "revision": 1,
+            "query_hash": "9e001706ce4c7612b77ec6b38aacfd8e9eebba20254102e369d679878853ebc8",
+            "snapshot_hash": "64d0552d5facf285cf50f040a39546d2cecd13eb3a65ddf86401d3450ea2c56b",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.838965,
+            "verdict": "CONFLICT",
+            "reason": "weekday_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_f07072016a8e47519c63313173d14fc2",
+            "revision": 1,
+            "query_hash": "9e001706ce4c7612b77ec6b38aacfd8e9eebba20254102e369d679878853ebc8",
+            "snapshot_hash": "aa7857ebdd6ddf5ccd604d30362cb78a998ade6ad73cc26bb1dbc43aed1a0552",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.836729,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          },
+          {
+            "scope_id": "s",
+            "event_id": "evt_dcde53eb6d614ccb8d76641430697046",
+            "revision": 1,
+            "query_hash": "9e001706ce4c7612b77ec6b38aacfd8e9eebba20254102e369d679878853ebc8",
+            "snapshot_hash": "bb74ae24c91702ed6993745d16a3fa2720846b2d92a6278c9bef84b6234eb5b2",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.740493,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "unknown",
+      "query": "我周六去银行几点",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "87c918d33d0313e218c1124ccd4fba2a31e463e9163007e2f4e7f9401f4f4b8f",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_22dab6ea015348b6af643162427684bc",
+            "semantic_rank": 1,
+            "semantic_score": 0.862321,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_22dab6ea015348b6af643162427684bc",
+            "revision": 1,
+            "query_hash": "87c918d33d0313e218c1124ccd4fba2a31e463e9163007e2f4e7f9401f4f4b8f",
+            "snapshot_hash": "b0709e191490e39fabddbea3803af90562b79dc3ef2f2c8ab0534c71958daf31",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.862321,
+            "verdict": "INSUFFICIENT",
+            "reason": "subject_unestablished",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "unknown",
+      "query": "银行周六几点去",
+      "expected": "unknown",
+      "returned": [
+        "unknown"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "9d5fdcc4a3b90a04b881a6872df807d0406580b1a55f52e6519b3755affee52d",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_22dab6ea015348b6af643162427684bc",
+            "semantic_rank": 1,
+            "semantic_score": 0.868385,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_22dab6ea015348b6af643162427684bc",
+            "revision": 1,
+            "query_hash": "9d5fdcc4a3b90a04b881a6872df807d0406580b1a55f52e6519b3755affee52d",
+            "snapshot_hash": "b0709e191490e39fabddbea3803af90562b79dc3ef2f2c8ab0534c71958daf31",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.868385,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 1,
+                "source_hash": "03a191a9a2efe57f17d4ad86edec8c19821bb03c0f18f17ab8bcdcd50f41a06a",
+                "start": 0,
+                "end": 11,
+                "text": "周六去银行，上午十点。"
+              }
+            ]
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_22dab6ea015348b6af643162427684bc",
+            "title": "周六去银行，上午十点。",
+            "event_type": "unknown",
+            "summary": "周六去银行，上午十点。",
+            "evidence": "周六去银行，上午十点。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_22dab6ea015348b6af643162427684bc",
+              "revision": 1,
+              "query_hash": "9d5fdcc4a3b90a04b881a6872df807d0406580b1a55f52e6519b3755affee52d",
+              "snapshot_hash": "b0709e191490e39fabddbea3803af90562b79dc3ef2f2c8ab0534c71958daf31",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "clock"
+              ],
+              "semantic_score": 0.868385,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 1,
+                  "source_hash": "03a191a9a2efe57f17d4ad86edec8c19821bb03c0f18f17ab8bcdcd50f41a06a",
+                  "start": 0,
+                  "end": 11,
+                  "text": "周六去银行，上午十点。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "attributes",
+      "query": "木桥市集门票多少钱",
+      "expected": "market",
+      "returned": [
+        "market"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "672854382828463f8f2350656ae71e4979051c7ba02c0f835e5667e64030e3ff",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "semantic_rank": 1,
+            "semantic_score": 0.771326,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "revision": 1,
+            "query_hash": "672854382828463f8f2350656ae71e4979051c7ba02c0f835e5667e64030e3ff",
+            "snapshot_hash": "454576a859da07f44b477be5b2d7fde7440d706eac86bad5d04b3de416d65134",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "money"
+            ],
+            "semantic_score": 0.771326,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 1,
+                "source_hash": "5773ed330c892901dcaddc4076b0eb51a43a56df3c34b781d96c5b2926f9f4b7",
+                "start": 0,
+                "end": 35,
+                "text": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。"
+              }
+            ]
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "title": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "event_type": "unknown",
+            "summary": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "evidence": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+              "revision": 1,
+              "query_hash": "672854382828463f8f2350656ae71e4979051c7ba02c0f835e5667e64030e3ff",
+              "snapshot_hash": "454576a859da07f44b477be5b2d7fde7440d706eac86bad5d04b3de416d65134",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "money"
+              ],
+              "semantic_score": 0.771326,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 1,
+                  "source_hash": "5773ed330c892901dcaddc4076b0eb51a43a56df3c34b781d96c5b2926f9f4b7",
+                  "start": 0,
+                  "end": 35,
+                  "text": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "attributes",
+      "query": "木桥市集活动多久",
+      "expected": "market",
+      "returned": [
+        "market"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "8fd311f82447218db837aaaa28d600d1c7b8c706ee60159d8e3f3da0a114d7ed",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "semantic_rank": 1,
+            "semantic_score": 0.753156,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "revision": 1,
+            "query_hash": "8fd311f82447218db837aaaa28d600d1c7b8c706ee60159d8e3f3da0a114d7ed",
+            "snapshot_hash": "454576a859da07f44b477be5b2d7fde7440d706eac86bad5d04b3de416d65134",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "duration"
+            ],
+            "semantic_score": 0.753156,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 1,
+                "source_hash": "5773ed330c892901dcaddc4076b0eb51a43a56df3c34b781d96c5b2926f9f4b7",
+                "start": 0,
+                "end": 35,
+                "text": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。"
+              }
+            ]
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "title": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "event_type": "unknown",
+            "summary": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "evidence": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+              "revision": 1,
+              "query_hash": "8fd311f82447218db837aaaa28d600d1c7b8c706ee60159d8e3f3da0a114d7ed",
+              "snapshot_hash": "454576a859da07f44b477be5b2d7fde7440d706eac86bad5d04b3de416d65134",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "duration"
+              ],
+              "semantic_score": 0.753156,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 1,
+                  "source_hash": "5773ed330c892901dcaddc4076b0eb51a43a56df3c34b781d96c5b2926f9f4b7",
+                  "start": 0,
+                  "end": 35,
+                  "text": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "attributes",
+      "query": "为什么取消木桥市集",
+      "expected": "market",
+      "returned": [
+        "market"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "27be2bb3a0da8338806c38d099d38520458dd1a57325dde38acc7d985644584f",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "semantic_rank": 1,
+            "semantic_score": 0.736293,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "revision": 1,
+            "query_hash": "27be2bb3a0da8338806c38d099d38520458dd1a57325dde38acc7d985644584f",
+            "snapshot_hash": "454576a859da07f44b477be5b2d7fde7440d706eac86bad5d04b3de416d65134",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "reason"
+            ],
+            "semantic_score": 0.736293,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 1,
+                "source_hash": "5773ed330c892901dcaddc4076b0eb51a43a56df3c34b781d96c5b2926f9f4b7",
+                "start": 0,
+                "end": 35,
+                "text": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。"
+              }
+            ]
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "title": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "event_type": "unknown",
+            "summary": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "evidence": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+              "revision": 1,
+              "query_hash": "27be2bb3a0da8338806c38d099d38520458dd1a57325dde38acc7d985644584f",
+              "snapshot_hash": "454576a859da07f44b477be5b2d7fde7440d706eac86bad5d04b3de416d65134",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "reason"
+              ],
+              "semantic_score": 0.736293,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 1,
+                  "source_hash": "5773ed330c892901dcaddc4076b0eb51a43a56df3c34b781d96c5b2926f9f4b7",
+                  "start": 0,
+                  "end": 35,
+                  "text": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "attributes",
+      "query": "木桥市集几点集合",
+      "expected": "market",
+      "returned": [
+        "market"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "589274c9873d9c1242d9e654e5125b91f49918e21a1650b29f9f47d6fb51fad8",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "semantic_rank": 1,
+            "semantic_score": 0.726198,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "revision": 1,
+            "query_hash": "589274c9873d9c1242d9e654e5125b91f49918e21a1650b29f9f47d6fb51fad8",
+            "snapshot_hash": "454576a859da07f44b477be5b2d7fde7440d706eac86bad5d04b3de416d65134",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "clock"
+            ],
+            "semantic_score": 0.726198,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 1,
+                "source_hash": "5773ed330c892901dcaddc4076b0eb51a43a56df3c34b781d96c5b2926f9f4b7",
+                "start": 0,
+                "end": 35,
+                "text": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。"
+              }
+            ]
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "title": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "event_type": "unknown",
+            "summary": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "evidence": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+              "revision": 1,
+              "query_hash": "589274c9873d9c1242d9e654e5125b91f49918e21a1650b29f9f47d6fb51fad8",
+              "snapshot_hash": "454576a859da07f44b477be5b2d7fde7440d706eac86bad5d04b3de416d65134",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "clock"
+              ],
+              "semantic_score": 0.726198,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 1,
+                  "source_hash": "5773ed330c892901dcaddc4076b0eb51a43a56df3c34b781d96c5b2926f9f4b7",
+                  "start": 0,
+                  "end": 35,
+                  "text": "木桥市集周六十点在西入口集合。门票50元，活动两小时。因为下雨而取消。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "attributes",
+      "query": "木桥市集联系人号码是什么",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "d472250b101154369fbff06fdc13bc95c4a36ba68a943035deaf23bd26693deb",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "semantic_rank": 1,
+            "semantic_score": 0.643314,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_bb48a21048fd4c27ab2f2020fe875cb3",
+            "revision": 1,
+            "query_hash": "d472250b101154369fbff06fdc13bc95c4a36ba68a943035deaf23bd26693deb",
+            "snapshot_hash": "454576a859da07f44b477be5b2d7fde7440d706eac86bad5d04b3de416d65134",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "contact",
+              "phone"
+            ],
+            "semantic_score": 0.643314,
+            "verdict": "INSUFFICIENT",
+            "reason": "legacy_policy_rejected",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "story",
+      "query": "故事角色周四去海边哪里",
+      "expected": "story",
+      "returned": [
+        "story"
+      ],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "c66793580eeba01b32ed122897118d8923c1d3c26f623a724f0cc52ad4f83e37",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_5da2754cdc3b4299b8e19989bcf14571",
+            "semantic_rank": 1,
+            "semantic_score": 0.684129,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_5da2754cdc3b4299b8e19989bcf14571",
+            "revision": 1,
+            "query_hash": "c66793580eeba01b32ed122897118d8923c1d3c26f623a724f0cc52ad4f83e37",
+            "snapshot_hash": "7c8ecb84c4301d060b11bf85fee260477e16a7d1205c5013320a7f1496e97305",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "place"
+            ],
+            "semantic_score": 0.684129,
+            "verdict": "SUPPORTED",
+            "reason": "local_policy_supported",
+            "supporting_spans": [
+              {
+                "source_seq": 1,
+                "source_hash": "ff301dfae68113b5e536f318e46689b85bd8ef9ff7aadf3321754e7c5ef9493b",
+                "start": 0,
+                "end": 17,
+                "text": "故事里的阿岚周四去海边，南岸集合。"
+              }
+            ]
+          }
+        ],
+        "items": [
+          {
+            "event_id": "evt_5da2754cdc3b4299b8e19989bcf14571",
+            "title": "故事里的阿岚周四去海边，南岸集合。",
+            "event_type": "unknown",
+            "summary": "故事里的阿岚周四去海边，南岸集合。",
+            "evidence": "故事里的阿岚周四去海边，南岸集合。",
+            "admission": {
+              "scope_id": "s",
+              "event_id": "evt_5da2754cdc3b4299b8e19989bcf14571",
+              "revision": 1,
+              "query_hash": "c66793580eeba01b32ed122897118d8923c1d3c26f623a724f0cc52ad4f83e37",
+              "snapshot_hash": "7c8ecb84c4301d060b11bf85fee260477e16a7d1205c5013320a7f1496e97305",
+              "policy_version": "query-evidence-v4",
+              "requested_information": [
+                "place"
+              ],
+              "semantic_score": 0.684129,
+              "verdict": "SUPPORTED",
+              "reason": "local_policy_supported",
+              "supporting_spans": [
+                {
+                  "source_seq": 1,
+                  "source_hash": "ff301dfae68113b5e536f318e46689b85bd8ef9ff7aadf3321754e7c5ef9493b",
+                  "start": 0,
+                  "end": 17,
+                  "text": "故事里的阿岚周四去海边，南岸集合。"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "group": "story",
+      "query": "故事角色周末去海边哪里",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "747ce802f0aaa6eb7c0d155e98264c25b963f09c0d83e0ace2c4c968f7dad209",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_5da2754cdc3b4299b8e19989bcf14571",
+            "semantic_rank": 1,
+            "semantic_score": 0.660995,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_5da2754cdc3b4299b8e19989bcf14571",
+            "revision": 1,
+            "query_hash": "747ce802f0aaa6eb7c0d155e98264c25b963f09c0d83e0ace2c4c968f7dad209",
+            "snapshot_hash": "7c8ecb84c4301d060b11bf85fee260477e16a7d1205c5013320a7f1496e97305",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "place"
+            ],
+            "semantic_score": 0.660995,
+            "verdict": "CONFLICT",
+            "reason": "weekend_mismatch",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    },
+    {
+      "group": "story",
+      "query": "真实的我周四去海边哪里",
+      "expected": null,
+      "returned": [],
+      "pass": true,
+      "audit": {
+        "scope_id": "s",
+        "query_hash": "f0d1dc92979ad30acb7047ca5eff351e6f9b77c8e8ae9c6bd66ed6bc99e0b544",
+        "policy_version": "query-evidence-v4",
+        "scope_epoch": 1,
+        "candidates": [
+          {
+            "event_id": "evt_5da2754cdc3b4299b8e19989bcf14571",
+            "semantic_rank": 1,
+            "semantic_score": 0.570864,
+            "lexical_rank": 1
+          }
+        ],
+        "decisions": [
+          {
+            "scope_id": "s",
+            "event_id": "evt_5da2754cdc3b4299b8e19989bcf14571",
+            "revision": 1,
+            "query_hash": "f0d1dc92979ad30acb7047ca5eff351e6f9b77c8e8ae9c6bd66ed6bc99e0b544",
+            "snapshot_hash": "7c8ecb84c4301d060b11bf85fee260477e16a7d1205c5013320a7f1496e97305",
+            "policy_version": "query-evidence-v4",
+            "requested_information": [
+              "place"
+            ],
+            "semantic_score": 0.570864,
+            "verdict": "CONFLICT",
+            "reason": "subject_mismatch",
+            "supporting_spans": []
+          }
+        ],
+        "items": []
+      }
+    }
+  ]
+}

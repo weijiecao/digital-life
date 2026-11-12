@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import hashlib
 from pathlib import Path
 
 from evaluation.quality_acceptance import _encoder, evaluate
@@ -18,6 +19,7 @@ def check(result: dict, manifest: dict) -> dict:
     safety = ("subject_wrong", "story_wrong", "reality_wrong", "time_old",
               "withdrawal", "cross_scope", "deleted")
     checks = {
+        "positive_extra_injections": overall.get("positive_extra_injections", 0),
         "positive_top1": overall["top1_hits"] / max(1, overall["positive"]),
         "positive_top5": overall["top5_hits"] / max(1, overall["positive"]),
         "negative_context_injections": overall["negative_context_injections"],
@@ -29,7 +31,8 @@ def check(result: dict, manifest: dict) -> dict:
                                  for name in safety),
     }
     passed = (
-        checks["positive_top1"] >= criteria["positive_top1_min"]
+        checks["positive_extra_injections"] == 0
+        and checks["positive_top1"] >= criteria["positive_top1_min"]
         and checks["positive_top5"] >= criteria["positive_top5_min"]
         and checks["negative_context_injections"] <= criteria["negative_context_injection_max"]
         and checks["invalid_context_injections"] <= criteria["invalid_context_injection_max"]
@@ -46,6 +49,14 @@ def main(argv=None) -> int:
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     manifest = json.loads((DATA / "manifest.json").read_text(encoding="utf-8"))
+    for split, info in manifest['splits'].items():
+        raw = (DATA / f'{split}.json').read_bytes()
+        # The original Windows manifest hashes CRLF bytes; git checks out LF
+        # on Linux. Permit only that exact line-ending transformation.
+        candidates = {hashlib.sha256(raw).hexdigest(),
+                      hashlib.sha256(raw.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')).hexdigest()}
+        if info['sha256'] not in candidates:
+            raise ValueError(f'frozen split hash mismatch: {split}')
     encoder = _encoder(args.model_dir)
     payload = {"manifest": manifest, "splits": {}}
     for split in ("dev", "holdout"):

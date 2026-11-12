@@ -1,4 +1,4 @@
-# Memory Engine RC3（离线候选包）
+# Memory Engine RC3-Q1（离线候选包）
 
 状态：R0 / R1 NO-GO。该包用于隔离验证，不是 V1 生产插件，不自动部署。
 
@@ -19,10 +19,12 @@ python -m memory_engine.cli --db local-test.sqlite3 context --scope demo --query
 使用解压包中的 verify_r0_bundle.py 可验证原 ZIP（需要同目录的外部 JSON 清单）：
 
 ```
-python verify_r0_bundle.py --bundle /path/to/memory-engine-r0-rc3.zip --exact-budget
+python verify_r0_bundle.py --bundle /path/to/memory-engine-rc3-queryguard.zip --exact-budget
 ```
 
 该验证检查整包与每个文件哈希，并在隔离子进程验证导入、CLI、入库幂等/冲突、更正/历史、重启、撤回和最终 token 预算。
 BUNDLE_MANIFEST.json 的 source_sha256 标识实际打包源码；base_commit 仅表示补丁起点，不冒充已提交的源码。
 
-上线仍需要：独立质量验收、目标 Windows CI、真实平台 72h 与用户效果记录。离线 smoke PASS 不构成上线许可。
+本补丁新增结构化证据准入与 `search --explain`；原文引用绑定 scope、query hash、event revision、source hash。确定性规则不是通用语义蕴含模型。
+
+本补丁上线仍需要：独立质量验收、本次改动的目标 Windows CI、真实平台 72h 与用户效果记录。RC3 的 Windows 通过证据不回写为本补丁实测。离线 smoke PASS 不构成上线许可。

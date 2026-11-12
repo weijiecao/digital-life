@@ -5,6 +5,10 @@ from __future__ import annotations
 
 def render_item(item: dict) -> str:
     event_id = item.get("event_id", "")
+    if item.get("admission", {}).get("verdict") == "SUPPORTED":
+        # Evidence is already a verified extract. Repeating title and summary
+        # wastes budget and can introduce unsupported derived prose.
+        return "- [%s] %s" % (event_id, item.get("evidence", ""))
     title = item.get("title", "")
     summary = item.get("summary", "")
     evidence = item.get("evidence", "")

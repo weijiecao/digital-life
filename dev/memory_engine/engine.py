@@ -16,6 +16,7 @@ from v1_5_consolidator.contracts import SourceEnvelope
 from v1_5_consolidator.store import V15Store
 
 from memory_engine.cache import ContextCache
+from memory_engine import admission
 from memory_engine.projection import classify_memory
 from memory_engine.summary_cache import SummaryCache
 from v1_5_consolidator.candidate_retriever import (
@@ -106,6 +107,8 @@ class MemoryEngine:
         self.cache = cache or ContextCache()
         self.summary_cache = summary_cache or SummaryCache()
         self.encoder = encoder
+        import uuid
+        self._retrieval_profile = "lexical" if encoder is None else "semantic:" + uuid.uuid4().hex
         self._generation = defaultdict(int)
         self._indexes: dict[str, object] = {}
         self._index_rows: dict[str, dict] = {}
@@ -137,10 +140,14 @@ class MemoryEngine:
                 WHERE p.scope_id=c.scope_id AND p.source_seq=e.source_seq
                 AND p.status='PENDING')""", (scope_id,)).fetchall()
         by_id = {}
+        grouped = defaultdict(list)
         for row in rows:
             by_id[row[0]] = row
-            text = " ".join(str(part or "") for part in (row[1], row[3], row[5]))
-            index.add(EventAnchor(event_id=row[0], scope_id=scope_id,
+            grouped[row[0]].append(row)
+        for event_id, evidence_rows in grouped.items():
+            row = evidence_rows[0]
+            text = "\n".join(str(r[5] or "") for r in evidence_rows)
+            index.add(EventAnchor(event_id=event_id, scope_id=scope_id,
                                   canonical_title=row[1] or "", anchor_text=text))
         self._indexes[scope_id] = index
         self._index_rows[scope_id] = by_id
@@ -172,15 +179,22 @@ class MemoryEngine:
     def _event_allowed(self, query: str, event_id: str) -> bool:
         return _provenance_allows(query, self.store.event_provenance(event_id))
 
-    def retrieve(self, scope_id: str, query: str, limit: int = 10,
+    def _retrieve_candidates(self, scope_id: str, query: str, limit: int = 10,
                  min_score: float = 0.0) -> list[dict]:
         if self.encoder is not None and query:
             self._ensure_index(scope_id)
             index = self._indexes[scope_id]
             by_id = self._index_rows[scope_id]
-            ranked = index.search(scope_id, query, k=max(limit, 20),
-                                  min_score=min_score)
-            ids = [c.event_id for c in ranked if c.event_id in by_id]
+            semantic_ranked = index.embedding.search(scope_id, query, k=max(limit, 20))
+            lexical_ranked = index.lexical.search(scope_id, _question_content(query), k=max(limit, 20))
+            semantic_meta = {c.event_id: {"semantic_rank": rank, "semantic_score": c.score}
+                             for rank,c in enumerate(semantic_ranked,1)}
+            lexical_meta = {c.event_id: rank for rank,c in enumerate(lexical_ranked,1)}
+            ids = list(dict.fromkeys(c.event_id for c in [*semantic_ranked, *lexical_ranked]
+                                    if c.event_id in by_id))
+            if min_score > 0:
+                allowed = {c.event_id for c in index.search(scope_id, query, k=len(ids), min_score=min_score)}
+                ids = [event_id for event_id in ids if event_id in allowed]
             if not ids:
                 return []
             marks = ",".join("?" for _ in ids)
@@ -196,13 +210,11 @@ class MemoryEngine:
                     AND p.status='PENDING')""" % marks, (scope_id, *ids)).fetchall()
             live = {row[0]: row for row in current}
             rows = [live[event_id] for event_id in ids if event_id in live]
-            semantic = index.semantic_scores(scope_id, query, [row[0] for row in rows]) if self.encoder is not None else {}
-            rows = [row for row in rows if _answerable(
-                query, " ".join(str(part or "") for part in (row[1], row[3], row[5])),
-                semantic.get(row[0], 0.0)) and self._event_allowed(query, row[0])]
             return [{"event_id": row[0], "title": row[1], "event_type": row[2],
                      "summary": self.summary_cache.get(row[3] or row[1] or ""),
-                     "evidence": row[5]} for row in rows[:limit]]
+                     "evidence": row[5], "candidate": {
+                         **semantic_meta.get(row[0], {}), "lexical_rank": lexical_meta.get(row[0])}}
+                    for row in rows]
         pattern = "%" + query.replace("%", "").replace("_", "") + "%"
         rows = self.store.db.execute("""SELECT DISTINCT c.event_id,c.title,c.event_type,
             r.summary,e.quote
@@ -217,7 +229,7 @@ class MemoryEngine:
             ORDER BY c.updated_at DESC LIMIT ?""",
             (scope_id, pattern, pattern, pattern, max(limit, 100))).fetchall()
         if query and len(rows) < limit and re.search(
-                r"怎么|什么|是不是|是否|哪|多少|如何|为什么|吗|呢|回忆|对比|安排", query):
+                r"怎么|什么|是不是|是否|哪|几|多久|多少|如何|为什么|吗|呢|回忆|对比|安排", query):
             index = LexicalCandidateIndex()
             all_rows = self.store.db.execute("""SELECT DISTINCT c.event_id,c.title,c.event_type,
                 r.summary,e.quote
@@ -254,10 +266,103 @@ class MemoryEngine:
             rows = [by_id[c.event_id] for c in ranked if c.event_id in by_id]
         else:
             rows = rows[:limit]
-        rows = [row for row in rows if _answerable(query, " ".join(str(part or "") for part in (row[1], row[3], row[4]))) and self._event_allowed(query, row[0])]
         return [{"event_id": row[0], "title": row[1], "event_type": row[2],
                  "summary": self.summary_cache.get(row[3] or row[1] or ""),
                  "evidence": row[4]} for row in rows]
+
+    def _snapshot(self, scope_id: str, event_id: str):
+        rows = self.store.db.execute("""SELECT c.event_id,c.current_revision,c.title,c.event_type,
+            c.narrator,c.subject,c.reality_status,c.story_id,e.source_seq,s.source_hash,e.quote
+            FROM event_candidate c
+            JOIN event_evidence e ON e.event_id=c.event_id AND e.rev=c.current_revision
+                AND e.scope_id=c.scope_id
+            JOIN source_ref s ON s.scope_id=e.scope_id AND s.source_seq=e.source_seq
+            WHERE c.scope_id=? AND c.event_id=? AND c.state!='withdrawn'
+                AND e.valid=1 AND s.deleted_at IS NULL
+                AND NOT EXISTS (SELECT 1 FROM resolution_pending p WHERE p.scope_id=c.scope_id
+                    AND p.source_seq=e.source_seq AND p.status='PENDING')
+            ORDER BY e.source_seq,e.quote""", (scope_id,event_id)).fetchall()
+        if not rows:
+            return None
+        row = rows[0]
+        return admission.Snapshot(scope_id,row[0],row[1],row[2],row[3],
+            tuple(zip(('narrator','subject','reality_status','story_id'), row[4:8])),
+            tuple(admission.Evidence(r[8],r[9],r[10]) for r in rows))
+
+    def _admit(self, query, snapshot, semantic_score):
+        return admission.decide(query,snapshot,semantic_score,_answerable,_question_content)
+
+    def retrieve_with_audit(self, scope_id: str, query: str, limit: int = 10,
+                            min_score: float = 0.0) -> dict:
+        epoch = self.store.scope_epoch(scope_id)
+        trace = {"scope_id": scope_id, "query_hash": admission.digest(query),
+                 "policy_version": admission.POLICY_VERSION, "scope_epoch": epoch,
+                 "candidates": [], "decisions": [], "items": []}
+        if limit <= 0:
+            return trace
+        try:
+            candidates = self._retrieve_candidates(scope_id,query,max(limit,20),min_score)
+        except Exception:
+            # Encoder/index errors are not evidence of an answer. The trace
+            # distinguishes unavailable retrieval from a valid no-match result.
+            trace['abstained_reason'] = 'candidate_retrieval_error'
+            return trace
+        ids = list(dict.fromkeys(item['event_id'] for item in candidates))
+        metadata = {item['event_id']: item.get('candidate',{}) for item in candidates}
+        trace['candidates'] = [{"event_id":event_id,**metadata[event_id]} for event_id in ids]
+        semantic = {event_id:metadata[event_id].get('semantic_score',0.0) for event_id in ids}
+        for event_id in ids:
+            snapshot = self._snapshot(scope_id,event_id)
+            if snapshot is None:
+                continue
+            try:
+                decision = self._admit(query,snapshot,semantic.get(event_id,0.0))
+            except Exception:
+                decision = {"event_id":event_id,"verdict":"INSUFFICIENT","reason":"admission_error"}
+                trace["abstained_reason"] = "admission_error"
+            valid = admission.validate(decision,query,snapshot)
+            if not isinstance(decision,dict):
+                decision = {"event_id":event_id,"verdict":"INSUFFICIENT","reason":"malformed_decision"}
+            if valid and self._snapshot(scope_id,event_id) != snapshot:
+                valid = False
+                decision = {**decision,"verdict":"INSUFFICIENT","reason":"snapshot_changed"}
+            if decision.get('verdict') == 'SUPPORTED' and not valid:
+                decision = {**decision,"verdict":"INSUFFICIENT","reason":"invalid_certificate"}
+            trace['decisions'].append(decision)
+            if not valid:
+                continue
+            evidence = "\n".join(dict.fromkeys(span['text'] for span in decision['supporting_spans']))
+            trace['items'].append({"event_id":event_id,"title":evidence[:80],
+                "event_type":snapshot.event_type,"summary":self.summary_cache.get(evidence),
+                "evidence":evidence,"admission":decision})
+        # A mutation during candidate encoding / policy evaluation invalidates the
+        # whole answer; never cache a mixture of two database states.
+        if self.store.scope_epoch(scope_id) != epoch:
+            trace['items'] = []
+            trace['abstained_reason'] = 'scope_changed'
+        trace['items'] = [item for item in trace['items']
+            if (live := self._snapshot(scope_id,item['event_id'])) is not None
+            and admission.validate(item['admission'],query,live)][:limit]
+        return trace
+
+    def retrieve(self, scope_id: str, query: str, limit: int = 10,
+                 min_score: float = 0.0) -> list[dict]:
+        return self.retrieve_with_audit(scope_id,query,limit,min_score)['items']
+
+    def _packet_current(self, packet):
+        for item in packet.get('items', []):
+            live = self._snapshot(packet['scope_id'], item['event_id'])
+            if live is None or not admission.validate(item.get('admission'),packet['query'],live):
+                return False
+        return True
+
+    @staticmethod
+    def _stale_packet(packet):
+        result = dict(packet)
+        result.update(items=[], source_refs=[], used_chars=0, used_tokens=0,
+                      rendered="", rendered_tokens=0, degraded=True,
+                      degraded_reasons=["scope_changed"])
+        return result
 
     def build_context(self, scope_id: str, query: str, budget: int = 2000,
                       budget_tokens: int | None = None,
@@ -268,20 +373,21 @@ class MemoryEngine:
         db_version = self.store.db.execute("PRAGMA data_version").fetchone()[0]
         epoch = self.store.scope_epoch(scope_id)
         key = (scope_id, query, budget, budget_tokens, tokenizer_name,
-               db_version, epoch, min_score)
+               db_version, epoch, min_score, admission.POLICY_VERSION,
+               self._retrieval_profile)
         generation = self._generation[scope_id]
         cached = self.cache.get(key, generation)
-        if cached is not None:
+        if cached is not None and self._packet_current(cached):
             return cached
-        items = self.retrieve(scope_id, query, limit=10, min_score=min_score)
+        retrieval = self.retrieve_with_audit(scope_id, query, limit=10, min_score=min_score)
+        items = retrieval["items"]
         selected = []
         used = 0
         used_tokens = 0
         for item in items:
             chars = len(item.get("summary", "")) + len(item.get("evidence", ""))
-            tokens = (token_counter.count(item.get("summary", ""))
-                      + token_counter.count(item.get("evidence", ""))
-                      if token_counter is not None else None)
+            from memory_engine.render import render_item
+            tokens = token_counter.count(render_item(item)) if token_counter is not None else None
             if token_counter is not None and budget_tokens is not None:
                 if used_tokens + tokens > budget_tokens:
                     break
@@ -302,6 +408,12 @@ class MemoryEngine:
         if token_counter is not None and budget_tokens is not None:
             from memory_engine.render import fit_packet
             packet = fit_packet(packet, token_counter, budget_tokens)
+        if self.store.scope_epoch(scope_id) != epoch or not self._packet_current(packet):
+            return self._stale_packet(packet)
+        if retrieval.get("abstained_reason"):
+            packet["degraded"] = True
+            packet["degraded_reasons"] = [retrieval["abstained_reason"]]
+            return packet
         self.cache.put(key, generation, packet)
         return packet
 
@@ -393,10 +505,10 @@ class MemoryEngine:
             packet = dict(packet)
             packet.update({"rendered": rendered, "rendered_tokens": None,
                            "budget_enforced": False, "estimated": True})
-            return packet
+            return packet if self._packet_current(packet) else self._stale_packet(packet)
         packet = fit_packet(packet, token_counter, budget_tokens)
         packet["estimated"] = False
-        return packet
+        return packet if self._packet_current(packet) else self._stale_packet(packet)
 
     def history(self, scope_id: str, event_id: str) -> dict:
         rows = self.store.db.execute("""SELECT from_event,to_event FROM event_relation

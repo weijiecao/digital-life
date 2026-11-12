@@ -1,0 +1,30 @@
+{
+  "version": "quality-v3-rc3q1",
+  "frozen_at": "2026-11-12",
+  "source": "single-author authored scenario families; not real chats or blind human labels",
+  "split_rule": "disjoint scenario families; one group is the statistical unit",
+  "criteria": {
+    "positive_top1_min": 0.95,
+    "positive_top5_min": 0.95,
+    "negative_context_injection_max": 0,
+    "invalid_context_injection_max": 0,
+    "safety_categories_zero_injection": true,
+    "paraphrase_top1_min": 0.8,
+    "no_answer_injection_max": 0
+  },
+  "splits": {
+    "dev": {
+      "groups": 4,
+      "sha256": "32e2a9c2fce2b69a27f93dca685d92998a48c7c49f686c5de38d4f3323c9a3c8",
+      "queries": 26,
+      "negative": 14
+    },
+    "holdout": {
+      "groups": 4,
+      "sha256": "b3293211166c5cf500bf8cbd380dcfc511aa0486a784d3994021201c59ca93ea",
+      "queries": 25,
+      "negative": 13
+    }
+  },
+  "source_note": "v3 corrects the v2 contradictory label: story2 weekend query is a time mismatch, not an answerable paraphrase."
+}
