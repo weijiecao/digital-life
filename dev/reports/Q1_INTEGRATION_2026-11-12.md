@@ -43,8 +43,8 @@ quality-v2 的失败没有被改写：`story2` 的“虚构人物周末去海边
 ### AstrBot 插件包
 
 - 文件：`releases/astrbot_plugin_digital_memory_store-1.0.19.zip`
-- 72 文件、238,553 bytes
-- SHA-256：`b96a72114293c5eccd47a989f7592b9f2cbc0c230c0366636198da7151ff21b2`
+- 72 文件、238,552 bytes
+- SHA-256：`977cb6a143fe8c915f270fb2d646bb1f6746ad168e7fd780b9ae3e3d7dbfddb6`
 - 顶层目录：`astrbot_plugin_digital_memory_store/`
 - 已校验：metadata、必需文件、无 `.git`/`__pycache__`、52 个 Python 文件语法编译通过
 - 已生成同名 `.json` 与 `.sha256`

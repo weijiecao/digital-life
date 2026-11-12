@@ -1,12 +1,12 @@
 {
   "artifact": "astrbot_plugin_digital_memory_store-1.0.19.zip",
-  "bytes": 238553,
+  "bytes": 238552,
   "file_sha256": {
-    "CHANGELOG.md": "b6746274649f01b7b86e4b164503470507287033e3cb784398f379c96dc21e88",
+    "CHANGELOG.md": "772a19113d87173d45571cbc76c898d399f7e2c29d57e4f62f434bc9c69c7bb7",
     "INSTALL.md": "6dc1d2b719fb6b9db01366ae02242e83471c10d4a5af411ab3a7ac035de79bdf",
     "LICENSE": "aa37d8018c69e58d1999ba7d9927edc7dd7dc3ef66e281a4f5ac996cc9db7b08",
     "README.md": "ffdfc075048448804a2b8e026d688910259a1d73e66660116e026921402cd357",
-    "RELEASE_NOTES.md": "505a213b73e1c591760a975cf48c0a71085f99e1b5ff6949be9121a5866be0ce",
+    "RELEASE_NOTES.md": "e5b2c100018aeb72541a109256d9ee437d1fb6351864e8029720a875570278b9",
     "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "_conf_schema.json": "fb137f8cd696cef06d38de80f4da3ddd0fe32aed7d48f9beac929b42bf5cb990",
     "auto_cross_update.py": "8eead6fb3c90dc6e4de87d3e112aae93b7870e66e004128a20c743f15b50436c",
@@ -77,6 +77,6 @@
   },
   "files": 72,
   "plugin": "astrbot_plugin_digital_memory_store",
-  "sha256": "b96a72114293c5eccd47a989f7592b9f2cbc0c230c0366636198da7151ff21b2",
+  "sha256": "977cb6a143fe8c915f270fb2d646bb1f6746ad168e7fd780b9ae3e3d7dbfddb6",
   "version": "1.0.19"
 }
