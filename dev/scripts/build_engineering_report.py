@@ -210,7 +210,7 @@ def build() -> None:
                    "评测脚本与运行记录；合成数据与真实用户数据严格区分。")
     bullets(document, [
         "离线回归：590/590；Windows/Linux CI 在 Python 3.10 / 3.11 / 3.12 全绿；Linux 3.10 有 1 项 sqlite3.setlimit 依赖跳过。",
-        "Q1 运行包：39 文件、68,022 bytes、SHA-256 82874bf2…；AstrBot 插件包 72 文件、238,553 bytes、SHA-256 b96a7211…。",
+        "Q1 运行包：39 文件、68,022 bytes、SHA-256 82874bf2…；AstrBot 插件包 72 文件、238,552 bytes、SHA-256 977cb6a1…。",
         "21 例真实模型重判：六次 19–20/21；来源污染 0；T02-S2 稳定错误。",
         "340 合成 trace：词面 F1 约 0.66；BGE top20 F1 0.8740/0.8782；BGE top30 回落到 0.8533。",
         "100k：读 p95 458.8ms；备份 100k；kill 续跑 100k；4×25k 多 scope 续跑 0 重复。",
