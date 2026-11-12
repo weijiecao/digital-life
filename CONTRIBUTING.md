@@ -1,72 +1,59 @@
-# 参与开发
+# Contributing
 
-这个仓库同时装着“给用户装的插件”和“证明它可信的证据”。贡献前请先看下面五条**不能破坏**的原则。
+本仓库同时维护独立 Memory Engine、验收脚本和 AstrBot 插件源码。
 
-## 五条原则（改动前先对照）
+## 原则
 
-1. **不自动确认事实**：注入内容只作为“未确认线索”，任何自动改写事实、自动合并关系的改动都不接受；
-2. **默认关闭**：新增能力默认 `false`，由用户显式开启；
-3. **默认不联网**：除用户显式开启的候选筛选器外，不外发原话；
-4. **只处理私聊纯文本**：群聊、图片、语音、多设备同步是明确的 Non-goals；
-5. **不夸大**：没有真实语料验证的准确率，不写进 README；测试数字只引 `dev/STATUS.md`。
-
-## 报问题
-
-提 issue 前先跑插件文档里的三条诊断命令（
-[`docs/TROUBLESHOOTING.md`](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/blob/main/docs/TROUBLESHOOTING.md)），
-并附：AstrBot 版本、插件版本、`/dlm 上下文状态` 输出、相关日志（**不要贴真实聊天内容或 QQ 号**）。
+1. 不自动确认事实；注入内容保持“未确认”语义；
+2. 新能力默认关闭，不默认联网；
+3. 无真实证据不写准确率；
+4. 平台相关结论必须附 `dev/reports/` 或测试输出；
+5. 不提交 `.venv`、模型权重、AstrBot 实例数据或 SQLite 运行库。
 
 ## 本地开发
 
 ```powershell
-git clone https://github.com/weijiecao/digital-life.git
-cd digital-life
-powershell -NoProfile -ExecutionPolicy Bypass -File .\env\setup.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\env\verify_env.ps1
+cd dev
+python -m pip install -r requirements-release.txt
+python -m unittest discover -q -s tests -t .
 ```
 
-环境约 1.6 GB（venv + AstrBot 源码 + BGE 模型），全部由脚本重建，不入库。
+当前基线：590 项；Windows/Ubuntu CI 覆盖 Python 3.10/3.11/3.12。
 
-## 改代码
+## 改动位置
 
-| 想改 | 改哪里 |
+| 改动 | 位置 |
 |---|---|
-| 插件行为 | `dev/astrbot_plugin_digital_memory_store/` |
-| 测试 | `dev/test_*.py`（unittest 风格） |
-| 用户文档 | 插件内 `README.md`、`INSTALL.md`、`docs/QUICKSTART.md`、`docs/TROUBLESHOOTING.md` |
-| 环境脚本 | `env/`（`.ps1` 必须带 UTF-8 BOM，PowerShell 5.1 才不乱码） |
-| 维护流程 | `docs/MAINTAINER_FLOW.md` |
+| 引擎 | `dev/memory_engine/` |
+| 事件/证据/Resolver | `dev/v1_5_consolidator/` |
+| AstrBot 插件 | `dev/astrbot_plugin_digital_memory_store/` |
+| 质量/恢复验收 | `dev/evaluation/` |
+| 当前报告与证据 | `dev/reports/` |
+| 打包/校验 | `dev/scripts/` |
 
-**不要动**只读基线目录（`E5.0-F_0.15.116_工程包/`、`_e50f_standalone/`），它们是历史对照；
-也不要手改 `dev/STATUS.md`（脚本生成）。
+历史报告已清理；需要时由脚本重生成或从 Git 历史取回。当前交付说明见
+`dev/reports/Q1_INTEGRATION_2026-11-12.md`。
 
-## 测试要求
+## 提交
 
-改行为就必须有用例；跑全量并刷新 STATUS：
+- 使用 `feat:` / `fix:` / `docs:` / `test:` / `chore:`；
+- 一个 PR 做一件事；
+- 改行为必须有测试；
+- 平台/真实环境结论必须附原始输出，不用口头说明代替。
+
+## 打包
 
 ```powershell
-cd dev
-..\testbed\.venv\Scripts\python.exe scripts\report.py
+python dev/scripts/build_r0_bundle.py --out releases/memory-engine-rc3-queryguard.zip
+python dev/scripts/verify_r0_bundle.py --bundle releases/memory-engine-rc3-queryguard.zip --exact-budget
+python dev/scripts/build_astrbot_plugin.py
 ```
-
-- 用 `unittest`，不是 `pytest`；
-- 新增测试会被 `report.py` 的 `SUITES` 收集吗？只有列在里面的才会进全量，记得加；
-- 涉及真实环境（AstrBot/BGE/QQ）的结论，请附 `dev/reports/` 下的证据文件，而不是口头说明。
-
-## 提交与 PR
-
-- 提交信息用 `feat:` / `fix:` / `docs:` / `test:` / `chore:` 前缀，写清“为什么”而不只是“改了什么”；
-- 一个 PR 只做一件事；文档改动和代码改动尽量分开，方便回滚；
-- PR 描述里贴：跑了哪些测试、是否有真实环境证据、有没有破坏上面五条原则；
-- 版本号只在发版时改（`metadata.yaml`），日常提交不要动。
 
 ## 不接受
 
-- 把 `.venv`、模型、AstrBot 源码、实例数据库提交进仓库（体积 + 可移植性）；
-- 默认联网 / 默认上传原话 / 默认自动确认事实；
-- 为了“看起来更好”而修改测试或跳过失败用例；
-- 在 README 里写未经验证的准确率。
+- 把测试 skip 当通过；
+- 未验证的“生产可用”结论；
+- 把模型权重或用户真实聊天入库；
+- 直接修改冻结标签来让验收通过。
 
-## 许可
-
-贡献即同意以 MIT 许可发布（见 [`LICENSE`](LICENSE)）。
+License: MIT.
