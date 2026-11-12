@@ -1,4 +1,4 @@
-﻿# Reports index
+# Reports index
 
 This directory keeps only current delivery evidence and the frozen B4 trace
 required by tests.

@@ -1,4 +1,4 @@
-# Q1 查询准入补丁集成与插件交付（2026-11-12）
+# 数字记忆工程 · Q1 查询准入集成与插件交付（2026-11-12）
 
 - 补丁：`from_9565524.patch`（15 文件，21 项专项）
 - 基线：`9565524`
@@ -43,8 +43,8 @@ quality-v2 的失败没有被改写：`story2` 的“虚构人物周末去海边
 ### AstrBot 插件包
 
 - 文件：`releases/astrbot_plugin_digital_memory_store-1.0.19.zip`
-- 72 文件、238,552 bytes
-- SHA-256：`977cb6a143fe8c915f270fb2d646bb1f6746ad168e7fd780b9ae3e3d7dbfddb6`
+- 72 文件、238,565 bytes
+- SHA-256：`52f3e64115879f4b73bb9924185dc58189893eb655d429ac37d02f074834b042`
 - 顶层目录：`astrbot_plugin_digital_memory_store/`
 - 已校验：metadata、必需文件、无 `.git`/`__pycache__`、52 个 Python 文件语法编译通过
 - 已生成同名 `.json` 与 `.sha256`

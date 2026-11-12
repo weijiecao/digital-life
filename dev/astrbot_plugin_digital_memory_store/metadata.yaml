@@ -1,7 +1,7 @@
 name: astrbot_plugin_digital_memory_store
-display_name: 数字生命独立记忆库（自用版）
-short_desc: 私聊原话存本机，每轮给模型一段有界且标注“未确认”的上下文
-desc: 默认每轮给模型有界上下文：本地 BGE 召回 + 未确认标注，不自动确认事实。
+display_name: 数字记忆基座（AstrBot 插件）
+short_desc: 数字记忆基座的 AstrBot 接入：原话入库、有界召回、未确认上下文
+desc: 数字记忆工程 · 数字记忆基座。默认每轮给模型有界上下文：本地 BGE 召回 + 未确认标注，不自动确认事实。
 version: 1.0.19
 author: DigitalLife_Local_Test
 repo: https://github.com/weijiecao/astrbot_plugin_digital_memory_store

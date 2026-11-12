@@ -1,6 +1,6 @@
 # v1.0.19 静默版安装流程
 
-> 适用：已有 AstrBot 机器人，新增/升级数字生命记忆库。
+> 适用：已有 AstrBot 机器人，新增/升级数字记忆基座。
 > **用户聊天面完全静默**：没有 `/dlm`，没有待审/关联/删除/备份/状态命令。
 > **v1.0.19 数据安全层**：升级前会备份 `plugin_data`；schema 比代码新时拒绝写入；
 > 启动 `quick_check`；单实例锁；旧库迁移前自动备份。
@@ -57,7 +57,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 `
 
 ## 4. 配置
 
-WebUI → 插件 → 数字生命记忆库 → 配置：
+WebUI → 插件 → 数字记忆基座 → 配置：
 
 ```json
 {

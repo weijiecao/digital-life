@@ -4,7 +4,7 @@ Status: **R0/R1 NO-GO**. Only isolated evaluation artifacts.
 
 | File | Purpose |
 |---|---|
-| `astrbot_plugin_digital_memory_store-1.0.19.zip` | AstrBot plugin package (72 files, 238,552 bytes) |
+| `astrbot_plugin_digital_memory_store-1.0.19.zip` | AstrBot plugin package (72 files, 238,565 bytes) |
 | `memory-engine-rc3-queryguard.zip` | Q1 isolated engine package (39 files, 68,022 bytes) |
 | `memory-engine-r0-rc3.zip` | Previous RC3 package, kept only for upgrade/rollback validation |
 

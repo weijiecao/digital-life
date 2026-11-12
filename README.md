@@ -1,22 +1,27 @@
-# 数字生命 · Digital Life
+# 数字记忆工程 · Digital 数字记忆引擎ering
 
-独立于 V1 生产插件的 Memory Engine 与 AstrBot 记忆库插件工程。
+数字记忆工程由两个部分组成：
+
+- **数字记忆基座**：事件、证据、来源、Resolver、租约/回执/连续水位，以及 AstrBot 接入插件；
+- **数字记忆引擎**：候选召回、证据准入、重评、上下文与渲染。
+
+两者都独立于 V1 生产插件；当前只用于隔离验收。
 
 **当前状态：R0 / R1 NO-GO。** 运行包与插件包只用于隔离验收；不要接入 V1
 生产或生产 Shadow。
 
-## 仓库结构
+## 组件与目录
 
 ```text
 dev/
-  memory_engine/         独立离线引擎（ingest/retrieve/context/rejudge/worker）
-  v1_5_consolidator/     事件、证据、Resolver、lease/receipt/frontier
+  memory_engine/         数字记忆引擎：召回/准入/重评/上下文
+  v1_5_consolidator/     数字记忆基座：事件/证据/Resolver/租约/回执/水位
   host_shadow/           AstrBot shadow 与长期采样工具
   tests/                 590 项回归
   evaluation/            当前质量/恢复验收脚本与冻结数据
   reports/               当前交付报告与证据
   scripts/               构建、校验、安装生命周期、AstrBot 打包
-  astrbot_plugin_digital_memory_store/  AstrBot 插件源码
+  astrbot_plugin_digital_memory_store/  数字记忆基座的 AstrBot 插件源码
 releases/                AstrBot 插件包与 Q1 运行包
 testbed/                 AstrBot/NapCat 测试床说明与 harness
 env/                     环境模板与锁文件
@@ -47,7 +52,7 @@ python -m evaluation.quality_v3_accept --model-dir <BGE目录> --out quality-v3.
 
 | 文件 | 说明 |
 |---|---|
-| `releases/astrbot_plugin_digital_memory_store-1.0.19.zip` | AstrBot 插件包（72 文件，238,552 bytes，SHA-256 `977cb6a1…`） |
+| `releases/astrbot_plugin_digital_memory_store-1.0.19.zip` | 数字记忆基座 AstrBot 插件包（72 文件，238,565 bytes，SHA-256 `52f3e641…`） |
 | `releases/memory-engine-rc3-queryguard.zip` | Q1 独立运行包（39 文件，68,022 bytes，SHA-256 `82874bf2…`） |
 | `releases/memory-engine-r0-rc3.zip` | 上一版，仅用于升级/回退复验 |
 | `dev/reports/Q1_INTEGRATION_2026-11-12.md` | Q1 集成、质量、包和 GO/NO-GO |

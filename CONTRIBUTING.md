@@ -1,6 +1,6 @@
 # Contributing
 
-本仓库同时维护独立 Memory Engine、验收脚本和 AstrBot 插件源码。
+本仓库同时维护独立 数字记忆引擎、验收脚本和 AstrBot 插件源码。
 
 ## 原则
 

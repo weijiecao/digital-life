@@ -1,7 +1,7 @@
-# Memory Engine Shadow Host Plugin
+# 数字记忆引擎 Shadow Host Plugin
 
 Independent AstrBot plugin that observes private text and LLM requests, writes
-its own Memory Engine DB/log, and never modifies the request or reply.
+its own 数字记忆引擎 DB/log, and never modifies the request or reply.
 
 ## Install
 
@@ -25,7 +25,7 @@ start a soak.
 
 ## Files
 
-- `shadow.sqlite3` — Memory Engine shadow DB;
+- `shadow.sqlite3` — 数字记忆引擎 shadow DB;
 - `shadow_events.jsonl` — one observation per LLM request.
 
 ## Guarantees

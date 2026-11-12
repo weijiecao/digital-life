@@ -355,7 +355,7 @@ finally:
 如果这是你自己的 AstrBot（不是 testbed），且 WebUI 可用：
 
 1. 重启 AstrBot；日志应出现 `Loading plugin astrbot_plugin_digital_memory_store`；
-2. WebUI → 插件 → 数字生命记忆库 → 配置：确认 `enabled=true`、`automatic_memory_enabled=true`、白名单；
+2. WebUI → 插件 → 数字记忆基座 → 配置：确认 `enabled=true`、`automatic_memory_enabled=true`、白名单；
 3. 用白名单号私聊发送：
    - `/dlm 上下文状态`（看模型/开关/预算）
    - `/dlm 记忆状态`（看采集/事件/任务）

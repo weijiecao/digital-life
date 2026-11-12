@@ -69,7 +69,7 @@ Copy-Item "$env:TEMP\dlm\astrbot_plugin_digital_memory_store" "C:\AstrBot\data\p
 
 | # | 检查 | 通过标准 | 不通过 |
 |---|---|---|---|
-| 1 | 插件被加载 | 日志出现 `Loading plugin astrbot_plugin_digital_memory_store`；插件列表有「数字生命独立记忆库（自用版）」 | 看目录名是否为 `astrbot_plugin_digital_memory_store` |
+| 1 | 插件被加载 | 日志出现 `Loading plugin astrbot_plugin_digital_memory_store`；插件列表有「数字记忆基座（AstrBot 插件）」 | 看目录名是否为 `astrbot_plugin_digital_memory_store` |
 | 2 | 命令通道 | 白名单号私聊 `/dlm 上下文状态` 有回复，显示“本地模型：就绪 / 加载中 / 未配置” | 检查 `enabled`、是否私聊、是否在白名单 |
 | 3 | 采集生效 | 再发一条普通消息，然后 `/dlm 记忆状态`，采集计数 +1 | 检查白名单格式（纯数字、英文逗号、无空格） |
 | 4 | 注入生效 | 换一句与历史相关的话，回复里出现“[DL_MEMORY …] 未确认”片段（或 WebUI 日志可见） | 没有模型时注入退化为字面/背景路径，见下一步 |

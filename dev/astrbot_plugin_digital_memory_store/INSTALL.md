@@ -38,7 +38,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 `
 
 1. 解压，把整个 `astrbot_plugin_digital_memory_store\` 放进 `<AstrBot根>\data\plugins\`；
 2. 重启 AstrBot；
-3. WebUI → 插件 → 数字生命记忆库 → 配置，至少：
+3. WebUI → 插件 → 数字记忆基座 → 配置，至少：
 
 ```json
 {
@@ -76,7 +76,7 @@ v1.0.18 **没有** `/dlm 上下文状态`、`/dlm 采集状态`。请用：
 
 ### 备份/维护
 
-WebUI → 插件 → 数字生命记忆库 → panel：
+WebUI → 插件 → 数字记忆基座 → panel：
 
 - 立即备份；
 - 轮转备份；
