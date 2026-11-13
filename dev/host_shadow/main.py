@@ -138,6 +138,10 @@ class MemoryShadow(Star):
         self.pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="dlshadow")
         # 模型等待走独立线程池：聊天路径的数据库线程只做短事务。
         self.judge_pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="dljudge")
+        # NEW -> RUNNING -> CLOSING -> CLOSED. Callbacks must not revive work
+        # after CLOSING starts, even if they entered while RUNNING.
+        self.lifecycle = "NEW"
+        self._terminate_task = None
         self.loop = None
         self.store = None
         self.engine = None
@@ -372,6 +376,8 @@ class MemoryShadow(Star):
 
     def _ensure(self):
         """在宿主线程池线程里打开引擎与输入服务（sqlite 连接不跨线程）。"""
+        if self.lifecycle in ("CLOSING", "CLOSED"):
+            return False
         if self.store is not None:
             return True
         if self.error is not None:
@@ -449,6 +455,8 @@ class MemoryShadow(Star):
         return (("event:" + umo) if isinstance(umo, str) else None), None
 
     def _submit(self, history, origin, mode):
+        if self.lifecycle != "RUNNING":
+            return
         if not self._ensure():
             return
         result = self.service.submit(history, origin)
@@ -459,7 +467,7 @@ class MemoryShadow(Star):
                 self.input_modes["skipped"] += 1
 
     def _observe_work(self, scope, query, budget):
-        if not self._ensure():
+        if self.lifecycle != "RUNNING" or not self._ensure():
             return None
         packet = self.engine.build_rendered_context(
             scope, query, budget.memory_tokens, self.counter, host_budget=budget)
@@ -470,7 +478,7 @@ class MemoryShadow(Star):
 
     def _output_work(self, req, scope, query, provider=None):
         """在宿主线程池里完成检索、证据复验和临时内容块安装。"""
-        if not self._ensure():
+        if self.lifecycle != "RUNNING" or not self._ensure():
             return None
         if self.output_service is None or OutputRequest is None:
             return {"items": 0, "event_ids": [], "rendered_tokens": 0,
@@ -512,7 +520,7 @@ class MemoryShadow(Star):
             self.store = None
 
     def _start_pump(self):
-        if self.pump is not None or self.service is None:
+        if self.lifecycle != "RUNNING" or self.pump is not None or self.service is None:
             return
         self.pump = NativeInputPump(self.service, executor=self.pool,
                                     judge_executor=self.judge_pool,
@@ -522,6 +530,9 @@ class MemoryShadow(Star):
         self.pump.start()
 
     async def initialize(self):
+        if self.lifecycle != "NEW":
+            return
+        self.lifecycle = "RUNNING"
         self.loop = asyncio.get_running_loop()
         await self.loop.run_in_executor(self.pool, self._ensure)
         if self.service is not None:
@@ -535,12 +546,16 @@ class MemoryShadow(Star):
 
     @filter.event_message_type(filter.EventMessageType.PRIVATE_MESSAGE)
     async def capture(self, event):
+        if self.lifecycle != "RUNNING":
+            return
         text = (getattr(event, "message_str", "") or "").strip()
         if not text or text.startswith(("/", "!")):
             return
         if self.loop is None:
             self.loop = asyncio.get_running_loop()
         conversation_id, history, host_persona, mode = await self._snapshot(event)
+        if self.lifecycle != "RUNNING":
+            return
         if history is None:
             with self.lock:
                 self.input_modes["skipped"] += 1
@@ -556,6 +571,8 @@ class MemoryShadow(Star):
             with self.lock:
                 self.input_modes["skipped"] += 1
             return
+        if self.lifecycle != "RUNNING":
+            return
         try:
             await self.loop.run_in_executor(self.pool, self._submit, history, origin, mode)
         except Exception:
@@ -565,6 +582,8 @@ class MemoryShadow(Star):
 
     @filter.on_llm_request()
     async def observe(self, event, req):
+        if self.lifecycle != "RUNNING":
+            return
         text = (getattr(event, "message_str", "") or "").strip()
         prompt = getattr(req, "prompt", None)
         # 输出模块要求 query 与 ProviderRequest.prompt 完全一致；观察也记录真正发送的文本。
@@ -574,7 +593,7 @@ class MemoryShadow(Star):
         if self.loop is None:
             self.loop = asyncio.get_running_loop()
         conversation_id, host_persona = await self._conversation_identity(event)
-        if not conversation_id:
+        if self.lifecycle != "RUNNING" or not conversation_id:
             return
         persona = self._persona_for(host_persona)
         if persona is None:
@@ -584,6 +603,8 @@ class MemoryShadow(Star):
         if origin is None:
             return
         provider = await self._active_provider(event)
+        if self.lifecycle != "RUNNING":
+            return
         budget = self.host_budget_for(req, provider)
         try:
             if self.output_mode == "inject":
@@ -615,25 +636,37 @@ class MemoryShadow(Star):
                 handle.write(json.dumps(record, ensure_ascii=False) + "\n")
 
     async def terminate(self):
-        if self.pump is not None:
-            await self.pump.stop()
-            self.pump = None
-        loop = self.loop or asyncio.get_running_loop()
-        # A judge thread may be waiting on run_coroutine_threadsafe() into this
-        # loop, so shutdown must not run synchronously on the loop. Off-load the
-        # wait, then close the store only after no judge can commit.
+        """Stop accepting work, drain judges, then close storage (idempotent)."""
+        if self.lifecycle == "CLOSED":
+            return
+        self.lifecycle = "CLOSING"
+        if self._terminate_task is None:
+            self._terminate_task = asyncio.create_task(self._terminate())
+        await self._terminate_task
+
+    async def _terminate(self):
         try:
-            await asyncio.to_thread(self.judge_pool.shutdown, True)
-        except Exception:
-            pass
-        try:
-            await loop.run_in_executor(self.pool, self._close)
-        except Exception:
-            pass
-        if self.console_api is not None:
-            self.console_api.close()
-            self.console_api = None
-        try:
-            await asyncio.to_thread(self.pool.shutdown, True)
-        except Exception:
-            pass
+            if self.pump is not None:
+                await self.pump.stop()
+                self.pump = None
+            loop = self.loop or asyncio.get_running_loop()
+            # A judge thread may be waiting on run_coroutine_threadsafe() into this
+            # loop, so shutdown must not run synchronously on the loop. Off-load the
+            # wait, then close the store only after no judge can commit.
+            try:
+                await asyncio.to_thread(self.judge_pool.shutdown, True)
+            except Exception:
+                pass
+            try:
+                await loop.run_in_executor(self.pool, self._close)
+            except Exception:
+                pass
+            if self.console_api is not None:
+                self.console_api.close()
+                self.console_api = None
+            try:
+                await asyncio.to_thread(self.pool.shutdown, True)
+            except Exception:
+                pass
+        finally:
+            self.lifecycle = "CLOSED"

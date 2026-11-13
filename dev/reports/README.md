@@ -14,6 +14,9 @@ required by tests.
 - `REREVIEW_29A1FE6_FIX_2026-11-13.md` — second-review R01–R03 fixes: active
   provider budget, engine source-chain backup validation, non-blocking shutdown;
   11 new regressions, 753-test full regression.
+- `REREVIEW_CB3921E_FIX_2026-11-13.md` — third-review R04 fix: lifecycle
+  CLOSING/CLOSED blocks capture/observe/pump restart during terminate;
+  3 new regressions, 756-test full regression.
 - `native_input_0_2_{targeted,full,demo}.log` — evidence for the above.
 - `ENGINEERING_REPORT_2026-11-11.{md,docx,pdf}` — current engineering report.
 - `MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md` — acceptance matrix.

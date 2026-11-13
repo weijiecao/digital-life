@@ -258,5 +258,91 @@ class ShutdownNonBlockingTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(self.completed)
 
 
+class ShutdownRaceTests(unittest.IsolatedAsyncioTestCase):
+    """R04: callbacks must not revive the pump after terminate starts."""
+
+    async def asyncSetUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        (self.root / "data").mkdir(parents=True)
+        self.ready = asyncio.Event()
+        self.release = asyncio.Event()
+
+        original = FakeHostContext
+
+        class SlowContext(original):
+            async def llm_generate(inner, chat_provider_id, prompt):
+                self.ready.set()
+                await self.release.wait()
+                return SimpleNamespace(completion_text='{"relations": []}')
+
+        self.context = SlowContext(FakeConversation(
+            "c1", [{"role": "user", "content": "周六去海边。"}]))
+        values = {"ASTRBOT_ROOT": str(self.root), "SHADOW_PERSONA_ID": "",
+                  "SHADOW_JUDGE_PROVIDER": "astrbot",
+                  "SHADOW_JUDGE_PROVIDER_ID": "fake",
+                  "SHADOW_JUDGE_TIMEOUT": "3"}
+        patcher = patch.dict(os.environ, values)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.plugin = MODULE.MemoryShadow(self.context, {})
+        await self.plugin.initialize()
+        await self.plugin.pump.stop()
+        await self.plugin.capture(Event("周六去海边。"))
+        await self.plugin.pump.stop()
+        self.plugin.pump.task = asyncio.create_task(self.plugin.pump.tick())
+        await asyncio.wait_for(self.ready.wait(), 2)
+
+    async def asyncTearDown(self):
+        self.release.set()
+        if self.plugin.lifecycle != "CLOSED":
+            await asyncio.wait_for(self.plugin.terminate(), 3)
+
+    async def _start_closing(self):
+        closing = asyncio.create_task(self.plugin.terminate())
+        for _ in range(100):
+            if self.plugin.pump is None:
+                break
+            await asyncio.sleep(0)
+        self.assertEqual(self.plugin.lifecycle, "CLOSING")
+        self.assertIsNone(self.plugin.pump)
+        return closing
+
+    async def test_capture_during_closing_does_not_restart_pump(self):
+        closing = await self._start_closing()
+        await self.plugin.capture(Event("又收到一条消息。", message_id="during-close"))
+        self.assertIsNone(self.plugin.pump)
+        self.release.set()
+        await asyncio.wait_for(closing, 3)
+        self.assertEqual(self.plugin.lifecycle, "CLOSED")
+        self.assertIsNone(self.plugin.store)
+        self.assertIsNone(self.plugin.service)
+        self.assertIsNone(self.plugin.pump)
+
+    async def test_observe_during_closing_does_not_inject(self):
+        closing = await self._start_closing()
+        request = SimpleNamespace(
+            prompt="周六去海边。", system_prompt="人格", contexts=[],
+            extra_user_content_parts=[], image_urls=[], audio_urls=[])
+        await self.plugin.observe(Event("周六去海边。", message_id="obs-close"),
+                                  request)
+        self.assertEqual(request.extra_user_content_parts, [])
+        self.release.set()
+        await asyncio.wait_for(closing, 3)
+        self.assertEqual(self.plugin.lifecycle, "CLOSED")
+
+
+class IdempotentTerminateTests(HostCase):
+    async def test_repeated_terminate_and_post_close_callbacks(self):
+        await self.plugin.terminate()
+        await self.plugin.terminate()
+        self.assertEqual(self.plugin.lifecycle, "CLOSED")
+        await self.plugin.capture(Event("关闭后消息。", message_id="closed"))
+        self.assertEqual(self.plugin.lifecycle, "CLOSED")
+        self.assertIsNone(self.plugin.store)
+        self.assertIsNone(self.plugin.pump)
+
+
 if __name__ == "__main__":
     unittest.main()
