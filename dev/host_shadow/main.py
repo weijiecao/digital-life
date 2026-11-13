@@ -142,6 +142,13 @@ class MemoryShadow(Star):
         # after CLOSING starts, even if they entered while RUNNING.
         self.lifecycle = "NEW"
         self._terminate_task = None
+        self._pump_stopped = False
+        self._judge_shutdown = False
+        self._store_closed = False
+        self._console_closed = False
+        self._pool_shutdown = False
+        self._cleanup_errors = []
+        self.terminate_error = None
         self.loop = None
         self.store = None
         self.engine = None
@@ -636,37 +643,59 @@ class MemoryShadow(Star):
                 handle.write(json.dumps(record, ensure_ascii=False) + "\n")
 
     async def terminate(self):
-        """Stop accepting work, drain judges, then close storage (idempotent)."""
+        """Stop accepting work, drain judges, then close storage (retryable)."""
         if self.lifecycle == "CLOSED":
             return
         self.lifecycle = "CLOSING"
-        if self._terminate_task is None:
+        if self._terminate_task is None or self._terminate_task.done():
             self._terminate_task = asyncio.create_task(self._terminate())
-        await self._terminate_task
+        task = self._terminate_task
+        try:
+            # A caller cancelling its wait must not cancel the shared cleanup.
+            await asyncio.shield(task)
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            raise RuntimeError(
+                self.terminate_error or "cleanup incomplete") from exc
+        if self.lifecycle != "CLOSED":
+            raise RuntimeError(self.terminate_error or "cleanup incomplete")
 
     async def _terminate(self):
+        self.terminate_error = None
+        self._cleanup_errors = []
         try:
-            if self.pump is not None:
-                await self.pump.stop()
+            if not self._pump_stopped:
+                if self.pump is not None:
+                    await self.pump.stop()
                 self.pump = None
+                self._pump_stopped = True
             loop = self.loop or asyncio.get_running_loop()
             # A judge thread may be waiting on run_coroutine_threadsafe() into this
             # loop, so shutdown must not run synchronously on the loop. Off-load the
             # wait, then close the store only after no judge can commit.
-            try:
+            if not self._judge_shutdown:
                 await asyncio.to_thread(self.judge_pool.shutdown, True)
-            except Exception:
-                pass
-            try:
+                self._judge_shutdown = True
+            if not self._store_closed:
                 await loop.run_in_executor(self.pool, self._close)
-            except Exception:
-                pass
-            if self.console_api is not None:
-                self.console_api.close()
-                self.console_api = None
-            try:
+                self._store_closed = True
+            if not self._console_closed:
+                if self.console_api is not None:
+                    self.console_api.close()
+                    self.console_api = None
+                self._console_closed = True
+            if not self._pool_shutdown:
+                # Only close the executor that owns the store after the store is
+                # actually closed; otherwise a retry has no thread to run on.
                 await asyncio.to_thread(self.pool.shutdown, True)
-            except Exception:
-                pass
-        finally:
+                self._pool_shutdown = True
             self.lifecycle = "CLOSED"
+        except asyncio.CancelledError:
+            self.terminate_error = "cleanup cancelled"
+            self._cleanup_errors.append(self.terminate_error)
+            raise
+        except Exception as exc:
+            self.terminate_error = "%s: %s" % (type(exc).__name__, exc)
+            self._cleanup_errors.append(self.terminate_error)
+            raise

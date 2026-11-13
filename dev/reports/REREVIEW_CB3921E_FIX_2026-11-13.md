@@ -38,6 +38,8 @@ python -m unittest discover -q -s tests -t .
 - 当前源码运行包：75 文件，SHA-256
   `10e33dee5d026708efcdb7c75f7aa04f6f42cd9b55a8de84d730a7c01c03b8ab`，
   隔离导入、精确预算、备份恢复、native_host/output/console 导入与 CLI 均通过；
+  （后续 R05 修复了 `build/`/`egg-info` 未排除的问题；从源码提交复现为 71 文件，
+  见 `REREVIEW_CB3921E_FIX_R05_2026-11-13.md`。）
 - 未启动真实 AstrBot/NapCat/模型 API。
 
 复审证据包中的 `shutdown_race.py` 断言的是修复前竞态存在（pump 被重建、关闭后任务存活）；

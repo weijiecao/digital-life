@@ -52,6 +52,8 @@ dev/reports/v10_after*.txt
 dev/reports/reply_quality_*.jsonl
 dev/reports/real_messages_judge_eval_run*.json
 
-# ¿ØÖÆÌ¨ÔËĞĞºÛ¼£
+# æ§åˆ¶å°è¿è¡Œç—•è¿¹
 .dlm_console/
 
+# Python æ„å»ºäº§ç‰©
+build/

@@ -369,8 +369,10 @@ class NativeInputService:
         with self.lock:
             if self.closed:
                 return
-            self.closed = True
+            # Mark closed only after the journal closes so a failed attempt can
+            # be retried by the host lifecycle.
             self.journal.close()
+            self.closed = True
 
 
 class NativeInputPump:

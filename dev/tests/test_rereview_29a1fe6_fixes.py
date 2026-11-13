@@ -344,5 +344,98 @@ class IdempotentTerminateTests(HostCase):
         self.assertIsNone(self.plugin.pump)
 
 
+class CancelWaitersTests(unittest.IsolatedAsyncioTestCase):
+    """R05: canceling one waiter must not cancel shared cleanup."""
+
+    async def asyncSetUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        (self.root / "data").mkdir(parents=True)
+        self.ready = asyncio.Event()
+        self.release = asyncio.Event()
+
+        original = FakeHostContext
+
+        class SlowContext(original):
+            async def llm_generate(inner, chat_provider_id, prompt):
+                self.ready.set()
+                await self.release.wait()
+                return SimpleNamespace(completion_text='{"relations": []}')
+
+        self.context = SlowContext(FakeConversation(
+            "c1", [{"role": "user", "content": "周六去海边。"}]))
+        values = {"ASTRBOT_ROOT": str(self.root), "SHADOW_PERSONA_ID": "",
+                  "SHADOW_JUDGE_PROVIDER": "astrbot",
+                  "SHADOW_JUDGE_PROVIDER_ID": "fake",
+                  "SHADOW_JUDGE_TIMEOUT": "3"}
+        patcher = patch.dict(os.environ, values)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.plugin = MODULE.MemoryShadow(self.context, {})
+        await self.plugin.initialize()
+        await self.plugin.pump.stop()
+        await self.plugin.capture(Event("周六去海边。"))
+        await self.plugin.pump.stop()
+        self.plugin.pump.task = asyncio.create_task(self.plugin.pump.tick())
+        await asyncio.wait_for(self.ready.wait(), 2)
+
+    async def asyncTearDown(self):
+        self.release.set()
+        if self.plugin.lifecycle != "CLOSED":
+            await asyncio.wait_for(self.plugin.terminate(), 3)
+
+    async def test_cancelled_waiter_does_not_cancel_shared_cleanup(self):
+        first = asyncio.create_task(self.plugin.terminate())
+        second = asyncio.create_task(self.plugin.terminate())
+        for _ in range(100):
+            if self.plugin.lifecycle == "CLOSING" and self.plugin.pump is None:
+                break
+            await asyncio.sleep(0)
+        first.cancel()
+        try:
+            await first
+        except asyncio.CancelledError:
+            pass
+        else:
+            self.fail("first waiter was not cancelled")
+        self.release.set()
+        await asyncio.wait_for(second, 3)
+        self.assertEqual(self.plugin.lifecycle, "CLOSED")
+        self.assertIsNone(self.plugin.store)
+        self.assertIsNone(self.plugin.service)
+        self.assertTrue(self.plugin.pool._shutdown)
+
+
+class CleanupFailureTests(HostCase):
+    """R05: cleanup errors keep CLOSING and can be retried."""
+
+    async def test_cleanup_failure_is_not_marked_closed_and_retries(self):
+        original = self.plugin._close
+        attempts = []
+
+        def flaky_close():
+            attempts.append(1)
+            if len(attempts) == 1:
+                raise RuntimeError("injected close failure")
+            return original()
+
+        self.plugin._close = flaky_close
+        with self.assertRaises(RuntimeError):
+            await self.plugin.terminate()
+        self.assertEqual(self.plugin.lifecycle, "CLOSING")
+        self.assertIsNotNone(self.plugin.store)
+        self.assertIsNotNone(self.plugin.service)
+        self.assertFalse(self.plugin.pool._shutdown)
+        self.assertIn("injected close failure", self.plugin.terminate_error)
+
+        await self.plugin.terminate()
+        self.assertEqual(self.plugin.lifecycle, "CLOSED")
+        self.assertEqual(len(attempts), 2)
+        self.assertIsNone(self.plugin.store)
+        self.assertIsNone(self.plugin.service)
+        self.assertTrue(self.plugin.pool._shutdown)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -27,7 +27,8 @@ EXTRA_FILES = ('requirements-release.txt', 'RELEASE_CANDIDATE.md', 'README.md')
 # 递归收集的静态资源与控制台视图；缺一个控制台页面就打不开。
 STATIC_SUFFIXES = frozenset({'.py', '.yaml', '.yml', '.md', '.toml',
                              '.html', '.js', '.css', '.svg'})
-EXCLUDED_PARTS = frozenset({'__pycache__', '.git', '.dlm_console', 'node_modules'})
+EXCLUDED_PARTS = frozenset({'__pycache__', '.git', '.dlm_console', 'node_modules',
+                            'build', 'dist'})
 EXCLUDED_SUFFIXES = frozenset({'.pyc', '.pyo'})
 
 _IMPORT_CHECK = r'''
@@ -55,6 +56,8 @@ print('ok')
 
 def _included(relative: Path) -> bool:
     if any(part in EXCLUDED_PARTS for part in relative.parts):
+        return False
+    if any(part.endswith('.egg-info') for part in relative.parts):
         return False
     suffix = relative.suffix.lower()
     return suffix in STATIC_SUFFIXES and suffix not in EXCLUDED_SUFFIXES
