@@ -77,6 +77,17 @@ def _env_int(name: str, default: int, low: int, high: int) -> int:
     return value if low <= value <= high else default
 
 
+def _positive_int(value) -> int | None:
+    """Parse a positive integer limit, rejecting bools and junk."""
+    if isinstance(value, bool):
+        return None
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return None
+    return number if number > 0 else None
+
+
 # 图片/音频等无法精确分词的部分，按固定保守值预留。
 _MEDIA_TOKENS = 1024
 
@@ -139,17 +150,31 @@ class MemoryShadow(Star):
         self.counter = None
         self.counter_failed = False
         self.host_total = _env_int("SHADOW_HOST_TOTAL_TOKENS", 8192, 512, 2000000)
+        self.host_total_explicit = bool(
+            os.environ.get("SHADOW_HOST_TOTAL_TOKENS", "").strip())
+        # Provider budgets are resolved from the active request, never from the
+        # first entry in cmd_config.json: config order must not change safety.
+        self.provider_budgets = []
         config_path = root / "data" / "cmd_config.json"
         if config_path.exists():
             try:
                 config = json.loads(config_path.read_text(encoding="utf-8"))
-                for provider in config.get("provider", []):
-                    value = provider.get("max_context_tokens")
-                    if value:
-                        self.host_total = int(value)
-                        break
+                for entry in config.get("provider", []):
+                    limit = _positive_int(entry.get("max_context_tokens"))
+                    if limit is None:
+                        continue
+                    models = entry.get("model")
+                    if isinstance(models, str):
+                        models = [models]
+                    elif not isinstance(models, list):
+                        models = []
+                    names = {str(item) for item in models if item}
+                    pid = str(entry.get("id", "") or "")
+                    if pid:
+                        names.add(pid)
+                    self.provider_budgets.append((pid, frozenset(names), limit))
             except (OSError, ValueError, TypeError):
-                pass
+                self.provider_budgets = []
         self._register_console_apis(root)
 
     def _register_console_apis(self, root):
@@ -239,11 +264,86 @@ class MemoryShadow(Star):
             tokens += self._tokens(_json_dump(calls))
         return tokens
 
-    def host_budget_for(self, req) -> HostBudget:
-        """按当前实际请求计算可分配给记忆的 token；不假设请求只有 system+history。"""
+    async def _active_provider(self, event):
+        """Resolve the provider actually used for this request.
+
+        The hook only receives the request, so the event is the only place the
+        host can expose an explicitly selected provider. If the host exposes a
+        provider resolver, prefer it; otherwise fall back to the configured
+        model match in ``_provider_limit``.
+        """
+        context = self.context
+        selected = None
+        get_extra = getattr(event, "get_extra", None)
+        if callable(get_extra):
+            try:
+                selected = get_extra("selected_provider")
+            except Exception:
+                selected = None
+        if isinstance(selected, str) and selected:
+            getter = getattr(context, "get_provider_by_id", None)
+            if callable(getter):
+                try:
+                    provider = getter(selected)
+                except Exception:
+                    provider = None
+                if provider is not None:
+                    return provider
+        getter = getattr(context, "get_using_provider_async", None)
+        if callable(getter):
+            try:
+                return await getter(umo=event.unified_msg_origin)
+            except TypeError:
+                try:
+                    return await getter(event.unified_msg_origin)
+                except Exception:
+                    return None
+            except Exception:
+                return None
+        getter = getattr(context, "get_using_provider", None)
+        if callable(getter):
+            try:
+                return getter(event.unified_msg_origin)
+            except TypeError:
+                try:
+                    return getter()
+                except Exception:
+                    return None
+            except Exception:
+                return None
+        return None
+
+    def _provider_limit(self, provider, req) -> int | None:
+        """Read a provider's context limit, falling back to a unique model match."""
+        if provider is not None:
+            config = getattr(provider, "provider_config", None)
+            if isinstance(config, dict):
+                limit = _positive_int(config.get("max_context_tokens"))
+                if limit is not None:
+                    return limit
+            limit = _positive_int(getattr(provider, "max_context_tokens", None))
+            if limit is not None:
+                return limit
+        model = getattr(req, "model", None)
+        if isinstance(model, str) and model:
+            limits = {limit for _pid, names, limit in self.provider_budgets
+                      if model in names}
+            if len(limits) == 1:
+                return limits.pop()
+        return None
+
+    def host_budget_for(self, req, provider=None) -> HostBudget:
+        """按当前实际 provider 计算可分配给记忆的 token；不假设配置顺序。"""
+        limit = self._provider_limit(provider, req)
+        if limit is None:
+            total = self.host_total
+        elif self.host_total_explicit:
+            total = min(self.host_total, limit)
+        else:
+            total = limit
         reserve = _env_int("SHADOW_OUTPUT_TOKENS", 800, 1, 200000)
         history = _json_dump(getattr(req, "contexts", None) or [])
-        return HostBudget(self.host_total,
+        return HostBudget(total,
                           self._tokens(getattr(req, "system_prompt", None) or ""),
                           self._tokens(history), reserve,
                           self._request_tokens(req))
@@ -368,7 +468,7 @@ class MemoryShadow(Star):
                 "rendered_tokens": packet.get("rendered_tokens"),
                 "host_memory_tokens": budget.memory_tokens}
 
-    def _output_work(self, req, scope, query):
+    def _output_work(self, req, scope, query, provider=None):
         """在宿主线程池里完成检索、证据复验和临时内容块安装。"""
         if not self._ensure():
             return None
@@ -379,12 +479,12 @@ class MemoryShadow(Star):
                     "budget_tokens": 0, "output_reasons": [],
                     "host_memory_tokens": 0}
         try:
-            budget = self.host_budget_for(req)
+            budget = self.host_budget_for(req, provider)
             request = OutputRequest(uuid.uuid4().hex, scope, query,
                                     self.memory_budget)
             output = self.output_service.prepare(request, host_budget=budget)
             # 提交前按当前请求复验预算：其他插件可能在准备期间追加内容。
-            final = self.host_budget_for(req)
+            final = self.host_budget_for(req, provider)
             receipt = self.output_service.inject(req, output, request,
                                                  host_budget=final)
             return {"items": len(output.items),
@@ -483,11 +583,13 @@ class MemoryShadow(Star):
         origin = build_origin(event, persona=persona, conversation=conversation_id)
         if origin is None:
             return
-        budget = self.host_budget_for(req)
+        provider = await self._active_provider(event)
+        budget = self.host_budget_for(req, provider)
         try:
             if self.output_mode == "inject":
                 observed = await self.loop.run_in_executor(
-                    self.pool, self._output_work, req, origin.scope_id, query)
+                    self.pool, self._output_work, req, origin.scope_id, query,
+                    provider)
             else:
                 observed = await self.loop.run_in_executor(
                     self.pool, self._observe_work, origin.scope_id, query, budget)
@@ -517,6 +619,13 @@ class MemoryShadow(Star):
             await self.pump.stop()
             self.pump = None
         loop = self.loop or asyncio.get_running_loop()
+        # A judge thread may be waiting on run_coroutine_threadsafe() into this
+        # loop, so shutdown must not run synchronously on the loop. Off-load the
+        # wait, then close the store only after no judge can commit.
+        try:
+            await asyncio.to_thread(self.judge_pool.shutdown, True)
+        except Exception:
+            pass
         try:
             await loop.run_in_executor(self.pool, self._close)
         except Exception:
@@ -524,5 +633,7 @@ class MemoryShadow(Star):
         if self.console_api is not None:
             self.console_api.close()
             self.console_api = None
-        self.judge_pool.shutdown(wait=True)
-        self.pool.shutdown(wait=True)
+        try:
+            await asyncio.to_thread(self.pool.shutdown, True)
+        except Exception:
+            pass

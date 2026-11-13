@@ -42,6 +42,20 @@ REQUIRED_SCHEMA = {
                            "created_at"),
         "event_evidence": ("event_id", "rev", "scope_id", "source_seq", "quote",
                            "valid"),
+        # The retrieval path joins evidence to source_ref. A backup without this
+        # table can reopen "successfully" but every retrieval silently returns 0.
+        "source_ref": ("scope_id", "source_seq", "source_hash", "recorded_at",
+                       "deleted_at"),
+        "source_receipt": ("scope_id", "source_seq", "outcome", "input_hash",
+                           "created_at"),
+        "scope_epoch": ("scope_id", "epoch"),
+        "resolution_pending": ("pending_id", "scope_id", "source_seq",
+                               "proposals_json", "mapping_json", "reason",
+                               "status", "created_at", "updated_at"),
+        "event_relation": ("id", "scope_id", "from_event", "to_event",
+                           "relation_type", "status", "created_at"),
+        "event_cannot_link": ("id", "scope_id", "event_a", "event_b",
+                              "created_at"),
     },
     "journal": {
         "native_record": ("key", "stream_id", "ordinal", "content_hash",
@@ -51,7 +65,15 @@ REQUIRED_SCHEMA = {
 }
 REQUIRED_PRIMARY_KEYS = {
     "store": {"dl_capture": ("seq",)},
-    "engine": {"event_candidate": ("event_id",)},
+    "engine": {
+        "event_candidate": ("event_id",),
+        "source_ref": ("scope_id", "source_seq"),
+        "source_receipt": ("scope_id", "source_seq"),
+        "scope_epoch": ("scope_id",),
+        "resolution_pending": ("pending_id",),
+        "event_relation": ("id",),
+        "event_cannot_link": ("id",),
+    },
     "journal": {"native_record": ("key",)},
 }
 
@@ -1218,6 +1240,23 @@ class Console:
             report["counts"]["orphan_revisions"] = revisions
             if revisions:
                 report["errors"].append("orphan_revisions")
+            report["counts"]["source_refs"] = scalar(
+                con, "SELECT COUNT(*) FROM source_ref") or 0
+            missing_sources = scalar(
+                con, "SELECT COUNT(*) FROM event_evidence e LEFT JOIN source_ref s "
+                     "ON s.scope_id=e.scope_id AND s.source_seq=e.source_seq "
+                     "WHERE e.valid=1 AND (s.scope_id IS NULL OR s.deleted_at IS NOT NULL)") or 0
+            report["counts"]["evidence_without_source"] = missing_sources
+            report["checks"]["evidence_sources"] = missing_sources == 0
+            if missing_sources:
+                report["errors"].append("missing_source_ref")
+            mismatched = scalar(
+                con, "SELECT COUNT(*) FROM event_evidence e JOIN event_candidate c "
+                     "ON c.event_id=e.event_id WHERE e.valid=1 AND c.scope_id<>e.scope_id") or 0
+            report["counts"]["evidence_scope_mismatch"] = mismatched
+            report["checks"]["evidence_scopes"] = mismatched == 0
+            if mismatched:
+                report["errors"].append("evidence_scope_mismatch")
         else:
             report["counts"]["records"] = scalar(
                 con, "SELECT COUNT(*) FROM native_record") or 0

@@ -91,7 +91,7 @@ $env:SHADOW_MEMORY_BUDGET = '512'
 | `dev/releases/digital_life_memory_output-0.1.0-py3-none-any.whl` | 独立输出协议/临时注入包（10,045 bytes，SHA-256 `0ca25be1…`） |
 | `dev/reports/Q1_INTEGRATION_2026-11-12.md` | Q1 集成、质量、包和 GO/NO-GO |
 | `dev/reports/MEMORY_BASE_OUTPUT_0_1_2026-11-12.md` | 输出模块协议、证据复验与注入验证 |
-| `dev/reports/MEMORY_BASE_OUTPUT_0_1_INTEGRATION_2026-11-12.md` | 输出模块并入当前 dev、宿主接线与 715 项回归 |
+| `dev/reports/MEMORY_BASE_OUTPUT_0_1_INTEGRATION_2026-11-12.md` | 输出模块并入当前 dev、宿主接线与 753 项回归 |
 | `dev/reports/ENGINEERING_REPORT_2026-11-11.pdf` | 当前工程报告 |
 
 ## 已知边界

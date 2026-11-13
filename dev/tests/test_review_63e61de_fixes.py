@@ -497,6 +497,25 @@ class BackupSchemaTests(unittest.TestCase):
         CREATE TABLE event_evidence(event_id TEXT NOT NULL, rev INTEGER NOT NULL,
           scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL, quote TEXT NOT NULL,
           valid INTEGER NOT NULL DEFAULT 1);
+        CREATE TABLE source_ref(scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL,
+          source_hash TEXT NOT NULL, recorded_at TEXT NOT NULL, deleted_at TEXT,
+          PRIMARY KEY(scope_id, source_seq));
+        CREATE TABLE source_receipt(scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL,
+          outcome TEXT NOT NULL, input_hash TEXT NOT NULL, created_at TEXT NOT NULL,
+          PRIMARY KEY(scope_id, source_seq));
+        CREATE TABLE scope_epoch(scope_id TEXT PRIMARY KEY, epoch INTEGER NOT NULL);
+        CREATE TABLE resolution_pending(pending_id TEXT PRIMARY KEY,
+          scope_id TEXT NOT NULL, source_seq INTEGER NOT NULL,
+          proposals_json TEXT NOT NULL, mapping_json TEXT NOT NULL,
+          reason TEXT NOT NULL, status TEXT NOT NULL, created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL);
+        CREATE TABLE event_relation(id INTEGER PRIMARY KEY AUTOINCREMENT,
+          scope_id TEXT NOT NULL, from_event TEXT NOT NULL, to_event TEXT NOT NULL,
+          relation_type TEXT NOT NULL, status TEXT NOT NULL, source_seq INTEGER,
+          created_at TEXT NOT NULL);
+        CREATE TABLE event_cannot_link(id INTEGER PRIMARY KEY AUTOINCREMENT,
+          scope_id TEXT NOT NULL, event_a TEXT NOT NULL, event_b TEXT NOT NULL,
+          source_seq INTEGER, created_at TEXT NOT NULL);
     """
     JOURNAL_SCHEMA = """
         CREATE TABLE native_stream(stream_id TEXT PRIMARY KEY, mode TEXT NOT NULL);
