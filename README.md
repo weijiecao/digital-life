@@ -96,7 +96,6 @@ python -m dlm_console
 |---|---|
 | `releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip` | 最新单插件开发版（78 文件，222,031 bytes，SHA-256 `06756a5f…`） |
 | `archive/releases/` | 旧插件与旧引擎发布包（仅历史查阅） |
-| `dev/releases/digital_life_memory_output-0.1.0-py3-none-any.whl` | 独立输出协议/临时注入包（10,045 bytes，SHA-256 `0ca25be1…`） |
 | `dev/reports/Q1_INTEGRATION_2026-11-12.md` | Q1 集成、质量、包和 GO/NO-GO |
 | `dev/reports/MEMORY_BASE_OUTPUT_0_1_2026-11-12.md` | 输出模块协议、证据复验与注入验证 |
 | `dev/reports/MEMORY_BASE_OUTPUT_0_1_INTEGRATION_2026-11-12.md` | 输出模块并入当前 dev、宿主接线与 758 项回归 |
