@@ -90,6 +90,8 @@ class NativeInputInbox:
                             (record.scope_id,)).fetchone()[0])
                     seq = max(maxima) + 1
                     self.store.source_ref_upsert(record.scope_id, seq, record.content_hash, record.recorded_at or '')
+                if state == 'QUEUED' and raw.get('migration_hold') is True:
+                    state = 'MIGRATION_HELD'
                 self.store.db.execute('INSERT INTO native_input_inbox VALUES(?,?,?,?,?,?)',
                                      (record.key, record.content_hash, record.scope_id, seq,
                                       canonical(record.as_dict()), state))

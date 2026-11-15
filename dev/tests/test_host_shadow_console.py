@@ -52,7 +52,7 @@ class HostShadowConsoleTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(overview["app"]["read_only"])
         environment = await self.plugin.console_api._environment()
         self.assertTrue(environment["output"]["available"])
-        self.assertEqual(environment["output"]["schema_version"], "memory-output-v1")
+        self.assertEqual(environment["output"]["schema_version"], "memory-output-v2")
 
     def test_view_assets_exist(self):
         view = Path(MODULE.__file__).resolve().parent / "views" / "console"

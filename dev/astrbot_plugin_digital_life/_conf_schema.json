@@ -1,0 +1,72 @@
+{
+  "mode": {
+    "description": "运行模式：OFF 不采集；COLLECT 采集与后台整理；ASSIST 额外执行临时记忆注入。",
+    "type": "string",
+    "default": "COLLECT"
+  },
+  "allowed_sender_ids": {
+    "description": "允许采集的私聊用户 ID，英文逗号分隔；留空表示不采集任何用户。",
+    "type": "string",
+    "default": ""
+  },
+  "judge_provider_id": {
+    "description": "用于关系判别的 AstrBot provider ID。auto 使用兼容环境变量；显式留空表示关闭判别器、只入队不建档。",
+    "type": "string",
+    "default": "auto"
+  },
+  "memory_budget_tokens": {
+    "description": "临时记忆注入的 token 上限；仍受当前模型上下文预算约束。",
+    "type": "int",
+    "default": 512
+  },
+  "judge_timeout_seconds": {
+    "description": "单次判别模型调用超时秒数。",
+    "type": "int",
+    "default": 20
+  },
+  "judge_budget_chars": {
+    "description": "判别提示词字符上限；超过则暂缓而不是截断。",
+    "type": "int",
+    "default": 6000
+  },
+  "host_total_tokens": {
+    "description": "宿主上下文总预算上限；0 表示按当前 provider 自动取值，正数才作为显式上限。",
+    "type": "int",
+    "default": 0
+  },
+  "tick_seconds": {
+    "description": "后台 worker 周期秒数。",
+    "type": "int",
+    "default": 5
+  },
+  "tick_limit": {
+    "description": "每轮处理记录数。",
+    "type": "int",
+    "default": 10
+  },
+  "retry_every": {
+    "description": "每 N 轮重试全部暂缓记录。",
+    "type": "int",
+    "default": 12
+  },
+  "console_read_only": {
+    "description": "控制台只读，禁用备份/恢复/删除/VACUUM。",
+    "type": "bool",
+    "default": false
+  },
+  "preference_rank_enabled": {
+    "description": "对已通过证据校验的候选优先排列偏好，不自动生成偏好事实。",
+    "type": "bool",
+    "default": true
+  },
+  "followup_enabled": {
+    "description": "同用户、人格、会话内，五分钟内的短指代使用最近明确话题作为检索锚点。",
+    "type": "bool",
+    "default": true
+  },
+  "proactive_enabled": {
+    "description": "允许其他宿主组件显式调用 inject_proactive；本插件不主动发送消息。",
+    "type": "bool",
+    "default": false
+  }
+}

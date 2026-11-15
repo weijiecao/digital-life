@@ -5,7 +5,7 @@ import hashlib
 import json
 from dataclasses import asdict, dataclass
 
-SCHEMA_VERSION = 'memory-output-v1'
+SCHEMA_VERSION = 'memory-output-v2'
 
 
 def canonical(value):
@@ -22,8 +22,14 @@ class OutputRequest:
     scope_id: str
     query: str
     budget_tokens: int = 1024
+    store_generation: int = 0
+    retrieval_query: str | None = None
 
     def __post_init__(self):
+        if type(self.store_generation) is not int or self.store_generation < 0:
+            raise ValueError('invalid store generation')
+        if self.retrieval_query is not None and (not isinstance(self.retrieval_query,str) or not self.retrieval_query.strip()):
+            raise ValueError('invalid retrieval query')
         for name in ('request_id', 'scope_id', 'query'):
             value = getattr(self, name)
             if not isinstance(value, str) or not value.strip():

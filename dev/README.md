@@ -14,6 +14,7 @@
 - `examples/astrbot_native/`：原生输入线路演示
 - `examples/memory_output/`：输入→基座→预算输出→临时注入演示
 - `host_shadow/`：AstrBot shadow、soak、原生输入装配、可选输出注入与插件页控制台
+- `astrbot_plugin_digital_life/`：0.7.0-dev.2 单插件融合版（迁移/实时追加/恢复/统一管理）
 - `dlm_console/`：数字记忆系统独立本地 Web 控制台（仅标准库）
 - `tests/`：758 项回归
 - `evaluation/`：当前质量与恢复验收脚本、冻结数据

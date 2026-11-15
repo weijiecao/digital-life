@@ -1,4 +1,4 @@
-# 记忆基座匹配输出模块 v0.1
+# 记忆基座匹配输出模块 v0.2
 
 本模块把数字生命记忆基座的检索证据转成标准上下文输出，再适配到 AstrBot 的本轮请求。输入模块负责接入原生历史；输出模块负责将记忆基座已经组织好的内容交还宿主。事件、证据与真实性判断仍由引擎统一管理。
 
@@ -13,10 +13,16 @@
 
 `digital-life-memory-output` 可独立安装，运行依赖仅 Python 标准库。不导入 AstrBot、不打开数据库、不调用模型。默认 AstrBot 适配器只在实际注入时延迟导入 TextPart。配套输出服务依赖当前记忆引擎；使用现有 TokenCounter 时还需要 tiktoken。
 
+## v0.2 变更
+
+`store_generation` 绑定实际数据代次，恢复前的输出不能在恢复后的存储中使用；输出服务和请求的代次必须一致。独立使用默认值为 0；统一插件显式传入持久代次。
+
+`retrieval_query` 是可信调用方提供的检索意图（例如同会话短指代的上下文）；证据证书绑定该查询，宿主 prompt 仍必须与原始 `query` 完全相同。协议明确升为 v2，不接收伪装成 v1 的新字段。本次统一插件包捆绑该模块；历史 v0.1 wheel 不包含这些字段。
+
 ## 标准输出协议
 
-- OutputRequest：request_id、scope_id、query、budget_tokens。宿主应自行提供可信范围和每次请求的唯一 ID。
-- ContextOutput：协议版本 memory-output-v1、请求绑定、scope_epoch、items、text、used_tokens、budget_tokens、tokenizer、reasons；persist 恒为 false。
+- OutputRequest：request_id、scope_id、query、budget_tokens、store_generation，以及可选 retrieval_query。宿主应自行提供可信范围和每次请求的唯一 ID。
+- ContextOutput：协议版本 memory-output-v2、请求绑定、scope_epoch、items、text、used_tokens、budget_tokens、tokenizer、reasons；persist 恒为 false。
 - MemoryItem：event_id、revision、snapshot_hash、provenance、证据片段及准入证书。
 - SourceSpan：source_seq、source_hash、start、end、text、recorded_at；可追踪回记忆基座原始证据。
 - `output.as_dict()` / `output.to_json()`：脱离内部对象的结构化导出，供其他宿主读取。JSON 导出本身不是可跨进程执行的授权凭证；当前 AstrBot 交付要求与引擎同进程复验。
@@ -51,7 +57,7 @@ receipt = service.inject(req, output, request)
 
 输入模块与输出模块必须共享同一记忆存储及 scope 映射。不同用户、机器人和人格的范围应来自宿主身份信息，不能取自模型生成文本。当前输出包不负责自动初始化引擎或注册插件生命周期。
 
-独立安装包（`dev/releases/digital_life_memory_output-0.1.0-py3-none-any.whl`）：
+历史 v0.1 独立安装包（不用于本次 v0.2 接线）：
 
 ```sh
 python -m pip install --no-index --no-deps digital_life_memory_output-0.1.0-py3-none-any.whl

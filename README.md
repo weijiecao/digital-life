@@ -13,6 +13,16 @@
 **当前状态：R0 / R1 NO-GO。** 运行包与插件包只用于隔离验收；不要接入 V1
 生产或生产 Shadow。
 
+## 统一插件开发版 0.7.0-dev.2
+
+完整单插件源码位于 `dev/astrbot_plugin_digital_life/`，安装包位于
+`releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip`。
+
+- 版本：`0.7.0-dev.2`
+- SHA-256：`06756a5f79f172e70e6be596b45047b64047a12d72f53d6d25b1ac9e0f02a929`
+- 已包含：旧基座迁移、实时追加、恢复切换、偏好排序/短指代/主动请求记忆入口、统一管理页
+- 仍是开发版：真实 AstrBot/NapCat、Windows 和长跑验收未完成
+
 ## 组件与目录
 
 ```text

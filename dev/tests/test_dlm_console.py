@@ -247,7 +247,7 @@ class TestOverview(ConsoleFixture):
         self.assertIn("store", data["tables"])
         self.assertIn("shadow", data["tables"])
         self.assertTrue(data["output"]["available"])
-        self.assertEqual(data["output"]["schema_version"], "memory-output-v1")
+        self.assertEqual(data["output"]["schema_version"], "memory-output-v2")
         self.assertFalse(data["app"]["read_only"])
 
 

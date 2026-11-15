@@ -228,14 +228,16 @@ class NativeInputService:
     """
 
     def __init__(self, store, journal_path, *, judge=None, encoder=None,
-                 judge_revision: str = "v1", deliver_limit: int = 200):
+                 judge_revision: str = "v1", deliver_limit: int = 200,
+                 on_commit=None, journal_factory=ImportJournal):
         self.store = store
-        self.journal = ImportJournal(journal_path)
+        self.journal = journal_factory(journal_path)
         self.inbox = NativeInputInbox(store)
         self.worker = (NativeInputWorker(self.inbox, judge, encoder=encoder,
                                          judge_revision=judge_revision)
                        if judge is not None else None)
         self.deliver_limit = max(1, int(deliver_limit))
+        self.on_commit = on_commit
         self.lock = threading.Lock()
         self.closed = False
         self.last_delivery = {"acknowledged": 0, "remaining": 0}
@@ -302,6 +304,14 @@ class NativeInputService:
                 self.last_delivery_error = type(exc).__name__ + ": " + str(exc)
             return dict(self.last_delivery)
 
+    def submit_message(self, message, origin):
+        if self.closed:
+            raise RuntimeError('native input service is closed')
+        with self.lock:
+            result = self.journal.append(message, origin)
+            result['delivery'] = self._deliver_locked()
+            return result
+
     def start_tick(self, limit: int = 100, retry_deferred: bool = False):
         """数据库线程：先补投 journal，再开始一轮判别；没有判别器时返回 ``None``。"""
         if self.closed:
@@ -325,11 +335,23 @@ class NativeInputService:
             self.worker.execute(task)
         return task
 
-    def commit_one(self, task) -> dict:
+    def commit_one(self, task, allow_commit=None) -> dict:
         """数据库线程：短事务复验并写入结果。"""
+        if allow_commit is not None and not allow_commit():
+            # Ownership was revoked while the model was running; leave the
+            # prepared task uncommitted for a later permitted retry.
+            return empty_stats()
         with self.lock:
             result = self.worker.commit_one(task) if self.worker is not None else empty_stats()
         self._merge_stats(result)
+        if (self.on_commit is not None
+                and (result.get("created") or result.get("attached"))):
+            try:
+                # Runs on the database thread immediately after the commit;
+                # the host can persist the real commit time here.
+                self.on_commit(dict(result))
+            except Exception:
+                pass
         return result
 
     def _merge_stats(self, result: dict) -> None:
@@ -384,13 +406,15 @@ class NativeInputPump:
 
     def __init__(self, service: NativeInputService, *, executor=None,
                  judge_executor=None, interval: float = 5.0, retry_every: int = 12,
-                 limit: int = 10):
+                 limit: int = 10, guard=None, commit_guard=None):
         self.service = service
         self.executor = executor
         self.judge_executor = judge_executor
         self.interval = max(0.1, float(interval))
         self.retry_every = max(0, int(retry_every))
         self.limit = max(1, int(limit))
+        self.guard = guard
+        self.commit_guard = commit_guard
         self.task = None
         self.stopping = False
 
@@ -430,6 +454,15 @@ class NativeInputPump:
 
     async def tick(self, retry_deferred: bool = False) -> dict:
         """准备（数据库线程）→ 判别（模型线程）→ 提交（数据库线程）。"""
+        if self.guard is not None:
+            try:
+                allowed = await self.guard()
+            except asyncio.CancelledError:
+                return {"skipped": "cancelled"}
+            except Exception:
+                allowed = False
+            if not allowed:
+                return {"skipped": "guard"}
         scope = await self._db(self.service.start_tick, self.limit, retry_deferred)
         if scope is None:
             return {"skipped": "no_judge"}
@@ -439,7 +472,19 @@ class NativeInputPump:
             if task is None:
                 break
             await self._model(self.service.execute, task)
-            result = await self._db(self.service.commit_one, task)
+            if self.guard is not None:
+                try:
+                    allowed = await self.guard()
+                except asyncio.CancelledError:
+                    return {"skipped": "cancelled"}
+                except Exception:
+                    allowed = False
+                if not allowed:
+                    # The model call finished, but ownership changed while it
+                    # was in flight: do not commit the stale result.
+                    return {"skipped": "guard_after_model"}
+            result = await self._db(self.service.commit_one, task,
+                                    self.commit_guard)
             for name, value in result.items():
                 stats[name] += value
         return stats

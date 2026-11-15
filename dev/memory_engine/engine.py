@@ -107,6 +107,7 @@ class MemoryEngine:
         self.cache = cache or ContextCache()
         self.summary_cache = summary_cache or SummaryCache()
         self.encoder = encoder
+        self.preference_rank_enabled = False
         import uuid
         self._retrieval_profile = "lexical" if encoder is None else "semantic:" + uuid.uuid4().hex
         self._generation = defaultdict(int)
@@ -343,6 +344,9 @@ class MemoryEngine:
         trace['items'] = [item for item in trace['items']
             if (live := self._snapshot(scope_id,item['event_id'])) is not None
             and admission.validate(item['admission'],query,live)][:limit]
+        if self.preference_rank_enabled:
+            # 只重排已经取得有效证书的候选，不把偏好关键词当作事实验证。
+            trace['items'].sort(key=lambda item: classify_memory(item['evidence'])[0] != 'preference')
         return trace
 
     def retrieve(self, scope_id: str, query: str, limit: int = 10,

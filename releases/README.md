@@ -1,5 +1,15 @@
 # Releases
 
+## 0.7.0-dev.2 统一插件
+
+| File | Purpose |
+|---|---|
+| `astrbot_plugin_digital_life-0.7.0-dev.2.zip` | 单插件开发版（78 files, 222,031 bytes） |
+| `astrbot_plugin_digital_life-0.7.0-dev.2.sha256` | SHA-256 `06756a5f…` |
+| `astrbot_plugin_digital_life-0.7.0-dev.2.json` | Build manifest |
+
+开发版，不是 RC；安装后完整重启 AstrBot。
+
 Status: **R0/R1 NO-GO**. Only isolated evaluation artifacts.
 
 | File | Purpose |

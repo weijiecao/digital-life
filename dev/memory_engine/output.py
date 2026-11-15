@@ -10,7 +10,8 @@ from memory_engine import admission
 
 
 class MemoryOutputService:
-    def __init__(self, engine, token_counter=None, adapter=None):
+    def __init__(self, engine, token_counter=None, adapter=None, generation=0):
+        self.generation = generation
         self.engine = engine
         self.store = engine.store
         self.counter = token_counter
@@ -44,16 +45,19 @@ class MemoryOutputService:
                           canonical(certificate))
 
     def prepare(self, request: OutputRequest, host_budget=None):
+        if request.store_generation != self.generation:
+            raise ValueError("store generation mismatch")
+        query = request.retrieval_query or request.query
         budget = self._budget(request, host_budget)
         epoch = self.store.scope_epoch(request.scope_id)
         if budget == 0 or self.counter is None:
             return fit_output(request, epoch, (), self.counter, budget)
         try:
-            trace = self.engine.retrieve_with_audit(request.scope_id, request.query)
+            trace = self.engine.retrieve_with_audit(request.scope_id, query)
             if trace.get('abstained_reason'):
                 return fit_output(request, epoch, (), self.counter, budget,
                                   (trace['abstained_reason'],))
-            items = tuple(self._item(request.scope_id, request.query, item['event_id'], item['admission'])
+            items = tuple(self._item(request.scope_id, query, item['event_id'], item['admission'])
                           for item in trace['items'])
         except Exception:
             return fit_output(request, epoch, (), self.counter, budget, ('retrieval_or_evidence_error',))
@@ -66,6 +70,7 @@ class MemoryOutputService:
     def validate(self, output, expected):
         try:
             if (not isinstance(output, ContextOutput) or output.request != expected
+                    or expected.store_generation != self.generation
                     or output.schema_version != SCHEMA_VERSION or output.persist is not False
                     or type(output.budget_tokens) is not int
                     or not 0 <= output.budget_tokens <= expected.budget_tokens
@@ -85,7 +90,7 @@ class MemoryOutputService:
                 if item.event_id in ids:
                     return False
                 ids.add(item.event_id)
-                current = self._item(expected.scope_id, expected.query, item.event_id,
+                current = self._item(expected.scope_id, expected.retrieval_query or expected.query, item.event_id,
                                      json.loads(item.certificate_json))
                 if current != item:
                     return False
