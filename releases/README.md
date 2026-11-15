@@ -10,15 +10,13 @@
 
 开发版，不是 RC；安装后完整重启 AstrBot。
 
-Status: **R0/R1 NO-GO**. Only isolated evaluation artifacts.
+历史发布包已统一移入 `archive/releases/`：
 
-| File | Purpose |
-|---|---|
-| `astrbot_plugin_digital_memory_store-1.0.19.zip` | AstrBot plugin package (72 files, 238,565 bytes) |
-| `memory-engine-rc3-queryguard.zip` | Q1 isolated engine package (39 files, 68,022 bytes) |
-| `memory-engine-r0-rc3.zip` | Previous RC3 package, kept only for upgrade/rollback validation |
+- `astrbot_plugin_digital_memory_store-1.0.19.*`
+- `memory-engine-rc3-queryguard.*`
+- `memory-engine-r0-rc3.*`
 
-Each ZIP has an adjacent `.json` manifest and (for the plugin) `.sha256`.
+当前目录只保留最新插件 `astrbot_plugin_digital_life-0.7.0-dev.2.*`。
 
 ## Verify
 

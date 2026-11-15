@@ -30,20 +30,20 @@ dev/
   memory_engine/         数字记忆引擎：召回/准入/重评/上下文/输出
   memory_output/         记忆输出协议与 AstrBot 临时注入适配（独立包）
   v1_5_consolidator/     数字记忆基座：事件/证据/Resolver/租约/回执/水位
-  host_shadow/           AstrBot shadow、长期采样与可选输出注入
+  astrbot_plugin_digital_life/  最新单插件（0.7.0-dev.2）
   dlm_console/           独立本地 Web 控制台（基座/引擎/输入/观察/维护）
-  tests/                 全量回归
+  tests/                 当前活动回归
   evaluation/            当前质量/恢复验收脚本与冻结数据
   reports/               当前交付报告与证据
-  scripts/               构建、校验、安装生命周期、AstrBot 打包
-  astrbot_plugin_digital_memory_store/  数字记忆基座的 AstrBot 插件源码
-releases/                AstrBot 插件包与 Q1 运行包
+  scripts/               当前构建、校验、安装生命周期
+archive/                 旧插件源码、旧发布包、旧测试与旧脚本
+releases/                最新插件包（旧包已移入 archive/releases）
 testbed/                 AstrBot/NapCat 测试床说明与 harness
 env/                     环境模板与锁文件
 ```
 
-插件源码也独立维护在
-[`weijiecao/astrbot_plugin_digital_memory_store`](https://github.com/weijiecao/astrbot_plugin_digital_memory_store)。
+最新插件源码在本仓库 `dev/astrbot_plugin_digital_life/`；对应的独立发布仓库为
+[`weijiecao/astrbot_plugin_digital_life`](https://github.com/weijiecao/astrbot_plugin_digital_life)。
 
 ## 快速验证
 
@@ -53,8 +53,8 @@ python -m pip install -r requirements-release.txt
 python -m unittest discover -q -s tests -t .
 ```
 
-当前结果：**715 项 OK（1 项跳过）**（Windows 本地；Linux 3.10 另有一项
-`sqlite3.Connection.setlimit` 依赖跳过）。
+当前活动 `dev/tests` 结果：**333 项 OK（1 项跳过）**（Windows 本地）。旧插件相关
+测试已随源码移入 `archive/tests/`，不计入活动回归。
 
 质量验收需要本机 BGE 目录：
 
@@ -77,30 +77,25 @@ python -m dlm_console
 
 它也可以直接作为 AstrBot 插件页运行：WebUI → 插件 → **Memory Engine Shadow** →
 **数字记忆控制台**，无需额外端口或令牌。独立启动方式保留给离线场景。
-详见 `dev/dlm_console/README.md` 与 `dev/host_shadow/README.md`。
+详见 `dev/dlm_console/README.md` 与 `dev/astrbot_plugin_digital_life/README.md`。
 
 ## 输出与注入
 
 `memory_output` 把引擎已准入的证据组装成预算内、可复验的临时上下文块。
-宿主注入由 `host_shadow` 接线，默认关闭：
-
-```powershell
-$env:SHADOW_OUTPUT_MODE = 'inject'   # off 时只观察
-$env:SHADOW_MEMORY_BUDGET = '512'
-```
+宿主注入由 `dev/astrbot_plugin_digital_life` 统一接线，默认 `COLLECT` 不注入；
+只有显式切换 `ASSIST` 才注入。
 
 开启后只修改 `ProviderRequest.extra_user_content_parts`：记忆块标记为临时、
 不写入持久化历史，`prompt` / `system_prompt` / `contexts` 与回复保持不变。
 证据删除、撤回、修订、scope 变化或预算缩水时，旧块会被拒绝并移除。
-详见 `dev/memory_output/README.md` 与 `dev/host_shadow/README.md`。
+详见 `dev/memory_output/README.md` 与 `dev/astrbot_plugin_digital_life/README.md`。
 
 ## 交付物
 
 | 文件 | 说明 |
 |---|---|
-| `releases/astrbot_plugin_digital_memory_store-1.0.19.zip` | 数字记忆基座 AstrBot 插件包（72 文件，238,565 bytes，SHA-256 `52f3e641…`） |
-| `releases/memory-engine-rc3-queryguard.zip` | Q1 独立运行包（39 文件，68,022 bytes，SHA-256 `82874bf2…`） |
-| `releases/memory-engine-r0-rc3.zip` | 上一版，仅用于升级/回退复验 |
+| `releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip` | 最新单插件开发版（78 文件，222,031 bytes，SHA-256 `06756a5f…`） |
+| `archive/releases/` | 旧插件与旧引擎发布包（仅历史查阅） |
 | `dev/releases/digital_life_memory_output-0.1.0-py3-none-any.whl` | 独立输出协议/临时注入包（10,045 bytes，SHA-256 `0ca25be1…`） |
 | `dev/reports/Q1_INTEGRATION_2026-11-12.md` | Q1 集成、质量、包和 GO/NO-GO |
 | `dev/reports/MEMORY_BASE_OUTPUT_0_1_2026-11-12.md` | 输出模块协议、证据复验与注入验证 |
