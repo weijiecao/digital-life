@@ -23,6 +23,8 @@
 | --- | --- | --- |
 | 实现 | 已实现 | 迁移、实时追加、恢复切换、撤回、运行权、输出 v2、统一管理页的代码都在 `dev/` |
 | 离线验证 | 通过 | 401 项源码回归 + 204 项包级用例（47＋137＋20）全部通过，0 跳过（Windows 11 / Python 3.12.10） |
+| 最新正式验收 | 0.8.0-dev.2（被测提交 `c42ceff`）：401 源码 + 47/137/20 包级 + 7 条 DOM；`formal=true`，证据在 `dev/reports/acceptance/c42ceff…/` |
+| 工程验收问题 | A01–A04 已关闭并复核，记录见 [`dev/reports/AUDIT_CLOSURE_2026-11-16.md`](../dev/reports/AUDIT_CLOSURE_2026-11-16.md) |
 | DOM 接线 | 通过（非浏览器） | 7 条管理路径（迁移创建/批次/放行、备份、校验、恢复、撤回）在解压包上通过；jsdom 26.1.0 / Node 20.18.1；**真实浏览器未运行** |
 | 包级验证 | 通过（真实 AstrBot 源码） | 79 文件候选包 16 项结构检查通过；插件模块用 AstrBot 4.29.3 源码导入（`host: astrbot-source`），并通过 AstrBot 自带 `inspect_plugin_archive` 校验 |
 | 真实宿主验证 | 部分（未启动实例） | 已用真实 AstrBot 4.29.3 源码完成插件导入与归档校验；但未启动 AstrBot/NapCat 实例、无 Windows 实机安装、无浏览器页面操作 |
