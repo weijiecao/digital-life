@@ -3,7 +3,17 @@ name: tests
 on:
   push:
     branches: [main]
-    paths: ['dev/**', 'testbed/**', '.github/workflows/tests.yml']
+    paths:
+      - 'dev/**'
+      - 'tools/**'
+      - 'docs/**'
+      - 'releases/**'
+      - 'archive/**'
+      - '.github/workflows/tests.yml'
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - '.gitattributes'
+      - '.gitignore'
   pull_request:
   workflow_dispatch:
 
@@ -12,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unittest:
+  regression:
     name: Regression ${{ matrix.os }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -27,19 +37,49 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install exact tokenizer
         run: python -m pip install -r dev/requirements-release.txt
+      - name: Repository entrypoints and links
+        run: python tools/check_repository.py
       - name: Full discovered regression
-        working-directory: dev
-        run: python -m unittest discover -v -s tests -t .
-      - name: Build source-bound candidate
-        working-directory: dev
-        run: python scripts/build_r0_bundle.py --out "${{ runner.temp }}/memory-engine-r0-rc2.zip"
-      - name: Verify extracted candidate in isolated process
-        working-directory: dev
-        run: python scripts/verify_r0_bundle.py --bundle "${{ runner.temp }}/memory-engine-r0-rc2.zip" --exact-budget --out "${{ runner.temp }}/bundle-verification.json"
+        run: >
+          python tools/run_regression.py
+          --json-out "${{ runner.temp }}/regression.json"
+          --log-out "${{ runner.temp }}/regression.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: regression-${{ matrix.os }}-${{ matrix.python-version }}
+          path: |
+            ${{ runner.temp }}/regression.json
+            ${{ runner.temp }}/regression.log
+          if-no-files-found: warn
+
+  package:
+    name: Canonical package and export (ubuntu-latest / 3.12)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build the candidate from the canonical environment
+        run: python tools/build_unified_plugin.py --out-dir dist --require-clean
+      - name: Verify the archive and write the report
+        run: >
+          python tools/verify_unified_plugin.py
+          --dist dist --report dist/package_verification.json
+      - name: Prove invalid archives are rejected
+        run: python tools/verify_unified_plugin.py --dist dist --self-test --host skip
+      - name: Export the distribution tree twice and compare
+        run: |
+          python tools/export_astrbot_plugin.py --output "${{ runner.temp }}/export-a"
+          python tools/export_astrbot_plugin.py --output "${{ runner.temp }}/export-b"
+          python tools/export_astrbot_plugin.py --check "${{ runner.temp }}/export-a"
       - uses: actions/upload-artifact@v4
         with:
-          name: rc2-${{ matrix.os }}-${{ matrix.python-version }}
+          name: package-${{ github.sha }}
           path: |
-            ${{ runner.temp }}/memory-engine-r0-rc2.zip
-            ${{ runner.temp }}/memory-engine-r0-rc2.json
-            ${{ runner.temp }}/bundle-verification.json
+            dist/*.zip
+            dist/*.sha256
+            dist/build_manifest.json
+            dist/package_verification.json
+          if-no-files-found: error

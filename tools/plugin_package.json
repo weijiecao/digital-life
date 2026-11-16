@@ -1,0 +1,99 @@
+{
+  "schema": "digital-life-plugin-package/1",
+  "build_rules_version": "1",
+  "name": "astrbot_plugin_digital_life",
+  "version_source": "dev/astrbot_plugin_digital_life/metadata.yaml",
+  "top_level": "astrbot_plugin_digital_life",
+  "plugin_dir": "dev/astrbot_plugin_digital_life",
+  "shared_packages": [
+    {
+      "source": "dev/astrbot_memory_input",
+      "target": "astrbot_memory_input"
+    },
+    {
+      "source": "dev/dlm_console",
+      "target": "dlm_console"
+    },
+    {
+      "source": "dev/memory_engine",
+      "target": "memory_engine"
+    },
+    {
+      "source": "dev/memory_output",
+      "target": "memory_output"
+    },
+    {
+      "source": "dev/v1_5_consolidator",
+      "target": "v1_5_consolidator"
+    }
+  ],
+  "exclude": [
+    "**/__pycache__/**",
+    "**/*.pyc",
+    "**/*.pyo",
+    "**/.github/**",
+    "**/.pytest_cache/**",
+    "**/.mypy_cache/**",
+    "**/*.egg-info/**",
+    "**/.DS_Store",
+    "dlm_console/docs/**",
+    "dlm_console/web/*.map"
+  ],
+  "required": [
+    "README.md",
+    "metadata.yaml",
+    "main.py",
+    "config.py",
+    "console_api.py",
+    "_conf_schema.json",
+    "requirements.txt",
+    "views/console/index.html",
+    "views/console/app.js",
+    "views/console/style.css",
+    "application/__init__.py",
+    "application/migration.py",
+    "application/service.py",
+    "application/storage.py",
+    "runtime/__init__.py",
+    "runtime/ownership.py",
+    "astrbot_memory_input/__init__.py",
+    "astrbot_memory_input/unified.py",
+    "dlm_console/__init__.py",
+    "dlm_console/core.py",
+    "dlm_console/web/index.html",
+    "memory_engine/__init__.py",
+    "memory_engine/engine.py",
+    "memory_output/__init__.py",
+    "memory_output/contracts.py",
+    "v1_5_consolidator/__init__.py",
+    "v1_5_consolidator/store.py"
+  ],
+  "importable_packages": [
+    "astrbot_memory_input",
+    "dlm_console",
+    "memory_engine",
+    "memory_output",
+    "v1_5_consolidator"
+  ],
+  "host_independent_modules": [
+    "application.compatibility",
+    "application.migration",
+    "application.service",
+    "application.storage",
+    "runtime.ownership"
+  ],
+  "zip": {
+    "compression": "deflate",
+    "compress_level": 9,
+    "date_time": [
+      2026,
+      11,
+      13,
+      0,
+      0,
+      0
+    ],
+    "create_system": 0,
+    "external_attr": 420
+  }
+}

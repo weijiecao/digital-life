@@ -30,6 +30,15 @@ backups/
 # 打包产物
 dist/
 *.zip
+# 交付包与历史包是有意入库的，按目录单独放行
+!releases/*.zip
+!archive/releases/*.zip
+!archive/releases/dev/*.zip
+!archive/history/**/*.zip
+
+# 本机工作目录：旧克隆、临时产物、工具链与桌面材料搬迁
+.local/
+.tools/
 
 # 编辑器 / 系统
 .vscode/
