@@ -1,0 +1,22 @@
+{
+  "schema": "digital-life-regression/1",
+  "suite": "source-regression",
+  "target": "source",
+  "ok": true,
+  "tested_commit": "c42ceff338ce2857db2314a696a64d25cc970700",
+  "dirty": false,
+  "command": "python tools/run_regression.py",
+  "working_directory": "dev (top-level)",
+  "started_at": "2026-11-16T17:29:30+08:00",
+  "finished_at": "2026-11-16T17:30:08+08:00",
+  "duration_seconds": 37.766,
+  "python": "3.12.10",
+  "platform": "win32",
+  "total": 401,
+  "passed": 401,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "skip_reasons": [],
+  "log_reference": "dist/regression.log"
+}

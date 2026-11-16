@@ -1,0 +1,44 @@
+{
+  "artifact_sha256": "6706578c2e1c46ed00e856ef7d1b9bb1de1b723b1149bf44ae8b1eedd84981b3",
+  "plugin_version": "0.8.0-dev.2",
+  "records": {
+    "astrbot_install_check.json": {
+      "bytes": 1387,
+      "sha256": "2797c1926eb425d19de5c8d2bc8c7745699fc3e359c44e668ae0493f7c85d26a"
+    },
+    "build_manifest.json": {
+      "bytes": 15728,
+      "sha256": "66d42c00f3238937a5501d97feaaa8482f4eeed627e997865bcd229a4e0faa19"
+    },
+    "export_SOURCE_MANIFEST.json": {
+      "bytes": 14180,
+      "sha256": "9f734ed890f421f0c52306c61d0e8fef1aa24f368a983771c4acd944921c7f52"
+    },
+    "package_regression.json": {
+      "bytes": 2901,
+      "sha256": "2ef79210ead8d744df78cd814c51dff5c6b987d7ac548ff7b4b3604f68359090"
+    },
+    "package_verification.json": {
+      "bytes": 2741,
+      "sha256": "e948755e2cb9bb7ddc1b5ee816a4d6f292ee52e946aa2bd83244ce5cf51c5968"
+    },
+    "regression.json": {
+      "bytes": 592,
+      "sha256": "44caa644bd06cb6e29b9e41e086292bc3793c27cde21ec85bdab86c437b08de7"
+    },
+    "selftest.json": {
+      "bytes": 1028,
+      "sha256": "b51e16930227aa0e99a3150bdab19745a4888ff95ddf053e63f4b5157625b772"
+    },
+    "summary.json": {
+      "bytes": 3020,
+      "sha256": "be8cd0857d2bb128c04e97a3aed525a74bffc6689256dda527bc05832e2e5f33"
+    },
+    "ui_dom.json": {
+      "bytes": 742,
+      "sha256": "3bfa0494b96e80f127c75c1bfc667aebe51566ee49a15af40ccfa6361f80f61a"
+    }
+  },
+  "schema": "digital-life-acceptance-evidence/2",
+  "tested_commit": "c42ceff338ce2857db2314a696a64d25cc970700"
+}
