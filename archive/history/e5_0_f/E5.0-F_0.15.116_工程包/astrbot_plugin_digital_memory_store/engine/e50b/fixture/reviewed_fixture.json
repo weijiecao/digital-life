@@ -1,0 +1,56 @@
+{
+  "format": "digitallife-reviewed-snapshot-v1",
+  "scope": "fictional:e50b",
+  "review_attestation": {
+    "reviewed_by": "FIXTURE_SIMULATED",
+    "reviewed_at": "2026-10-01T10:00:00+08:00",
+    "basis": "fictional manually labeled event/source links"
+  },
+  "events": [
+    {
+      "external_id": "bookstore",
+      "title": "周末书店",
+      "sources": [
+        {
+          "external_source_id": "old-book-01",
+          "speaker": "user",
+          "content": "【事件：周末书店】原计划周六去书店寻找编程资料；店员送了蓝色贴纸。",
+          "phase": "earliest",
+          "recorded_at": "2026-10-01T10:00:00+08:00",
+          "review_state": "approved_link",
+          "sha256": "c2628b9618a7d3de3ec0c49f4c6348a9ab7d8db1fa645f617a5aa8fb5de04518"
+        }
+      ]
+    },
+    {
+      "external_id": "football",
+      "title": "周末足球",
+      "sources": [
+        {
+          "external_source_id": "old-foot-01",
+          "speaker": "user",
+          "content": "【事件：周末足球】计划周日足球训练，队友送了橙色护腕。",
+          "phase": "earliest",
+          "recorded_at": "2026-10-01T11:00:00+08:00",
+          "review_state": "approved_link",
+          "sha256": "34e116875fcf50e3674c8dbf8384c0ae9a09b4a7f9d3e3c46afa7cbdf1b72b32"
+        }
+      ]
+    },
+    {
+      "external_id": "movie",
+      "title": "电影交流",
+      "sources": [
+        {
+          "external_source_id": "old-movie-01",
+          "speaker": "user",
+          "content": "【事件：电影交流】计划周三看电影，结束后遇到了红色雨伞。",
+          "phase": "earliest",
+          "recorded_at": "2026-10-01T12:00:00+08:00",
+          "review_state": "approved_link",
+          "sha256": "44c434bacd2f89709d439641453ee75aa6f771f04f08e44500fa67e0a40d78eb"
+        }
+      ]
+    }
+  ]
+}

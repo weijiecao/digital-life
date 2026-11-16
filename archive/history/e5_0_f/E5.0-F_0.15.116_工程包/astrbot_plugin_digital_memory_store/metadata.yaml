@@ -1,0 +1,5 @@
+name: astrbot_plugin_digital_memory_store
+display_name: 数字生命独立记忆库 E5.0-F
+desc: 手动记录和本地语义检索的独立测试插件
+version: 0.15.116
+author: DigitalLife_Local_Test
