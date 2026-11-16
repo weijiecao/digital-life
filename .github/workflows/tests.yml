@@ -117,6 +117,10 @@ jobs:
           --suites completion,core,legacy
           --report dist/package_regression.json
           --log dist/package_regression.log
+      - name: Source regression for the acceptance record
+        run: >
+          python tools/run_regression.py
+          --json-out dist/regression.json --log-out dist/regression.log
       - name: Record the acceptance result
         run: python tools/record_acceptance.py
       - uses: actions/upload-artifact@v4
@@ -129,6 +133,8 @@ jobs:
             dist/build_manifest.json
             dist/package_verification.json
             dist/selftest.json
+            dist/regression.json
+            dist/regression.log
             dist/package_regression.json
             dist/package_regression.log
             dist/release_set.json
