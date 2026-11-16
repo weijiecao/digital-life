@@ -168,7 +168,7 @@ jobs:
       - name: Run the package suites on the verified candidate
         run: |
           mkdir -p dist
-          cp downloaded/*.zip downloaded/*.sha256 downloaded/build_manifest.json dist/
+          cp -r downloaded/dist/. dist/
           python tools/run_package_regression.py --dist dist --suites completion,core,legacy --report "${{ runner.temp }}/package_regression.json" --log "${{ runner.temp }}/package_regression.log"
       - uses: actions/upload-artifact@v4
         if: always()
