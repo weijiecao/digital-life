@@ -84,7 +84,10 @@ def main(argv: list[str] | None = None) -> int:
             "os": platform.platform(),
             "python": regression["python"],
             "platform": regression["platform"],
-            "astrbot": "not installed",
+            "astrbot": ("source checkout: %s (imported, not a live instance)"
+                        % verification.get("host_path"))
+                       if verification.get("host") == "astrbot-source"
+                       else "not installed",
             "git": "not available in PATH for this run"
                    if build.get("source_commit") is None else "available",
         },
