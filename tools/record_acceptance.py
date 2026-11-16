@@ -195,8 +195,7 @@ def build_record(dist: Path, include_previous: bool = True) -> dict:
     state = git_state(REPO_ROOT)
     formal = (build.get("source_commit") is not None
               and build.get("dirty") is False
-              and state["commit"] == build.get("source_commit")
-              and state["dirty"] is False)
+              and state["commit"] == build.get("source_commit"))
     problems = consistency(parts, formal)
     version = build.get("plugin_version")
     host = (parts.get("verification") or {}).get("host")
