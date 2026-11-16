@@ -1,0 +1,11 @@
+{
+  "name": "digital-life-verification",
+  "private": true,
+  "description": "UI verification dependencies for the digital-life plugin console",
+  "devDependencies": {
+    "jsdom": "26.1.0"
+  },
+  "scripts": {
+    "check": "node console_dom_check.cjs"
+  }
+}
