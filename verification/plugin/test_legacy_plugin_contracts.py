@@ -163,7 +163,8 @@ class ConsoleDataDirTests(unittest.TestCase):
                              plugin_name="astrbot_plugin_digital_life")
             try:
                 paths = api.console_instance().paths
-                self.assertEqual(paths.shadow_dir, new_dir.resolve())
+                # Normalise Windows 8.3 short names on both sides.
+                self.assertEqual(Path(paths.shadow_dir).resolve(), new_dir.resolve())
                 self.assertIsNotNone(paths.shadow_db)
             finally:
                 api.close()
