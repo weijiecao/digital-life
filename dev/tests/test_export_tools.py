@@ -5,7 +5,9 @@ safety, layout switching and the formal-export cleanliness gate.
 """
 
 import json
+import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -161,6 +163,84 @@ class CompareDistributionTests(unittest.TestCase):
             self.assertIn(managed[1], result["missing_in_repository"])
             self.assertGreaterEqual(result["unmanaged"], 2)
             self.assertIn("tests", result["unmanaged_by_group"])
+
+
+class SymlinkSafetyTests(unittest.TestCase):
+    """A link anywhere in the managed path must be refused, with or without --force."""
+
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.base = Path(self.directory.name)
+        self.export = self.base / "export"
+        exporter.export(self.export, "archive")
+
+    def tearDown(self):
+        self.directory.cleanup()
+
+    def _link(self, target: Path, link: Path, directory: bool = False) -> None:
+        try:
+            link.symlink_to(target, target_is_directory=directory)
+        except (OSError, NotImplementedError):
+            if sys.platform == "win32" and directory:
+                # Windows file symlinks need elevation, directory junctions do not.
+                completed = subprocess.run(
+                    ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+                    capture_output=True, text=True)
+                if completed.returncode == 0:
+                    return
+            if not directory:
+                # Hard links need no privilege and are also an escape vector.
+                try:
+                    os.link(target, link)
+                    return
+                except OSError:
+                    pass
+            self.skipTest("links are unavailable on this host")
+
+    def test_manifest_replaced_by_a_link_is_refused(self):
+        outside = self.base / "outside-manifest.json"
+        manifest = self.export / "SOURCE_MANIFEST.json"
+        outside.write_bytes(manifest.read_bytes())
+        manifest.unlink()
+        self._link(outside, manifest)
+        with self.assertRaises(PackagingError) as caught:
+            exporter.export(self.export, "archive")
+        self.assertIn("link", str(caught.exception))
+        self.assertEqual(outside.read_bytes(),
+                         (self.export / "SOURCE_MANIFEST.json").read_bytes())
+
+    def test_linked_managed_directory_is_refused_even_with_force(self):
+        plugin = self.export / "astrbot_plugin_digital_life"
+        outside = self.base / "outside-plugin"
+        shutil.copytree(plugin, outside)
+        shutil.rmtree(plugin)
+        self._link(outside, plugin, directory=True)
+        with self.assertRaises(PackagingError) as caught:
+            exporter.export(self.export, "archive", force=True)
+        self.assertIn("link", str(caught.exception))
+
+    def test_empty_manifest_with_linked_directory_is_refused(self):
+        target = self.base / "empty-export"
+        target.mkdir()
+        outside = self.base / "outside"
+        outside.mkdir()
+        (target / "SOURCE_MANIFEST.json").write_text(json.dumps({
+            "schema": exporter.SCHEMA,
+            "files": [],
+        }), encoding="utf-8")
+        self._link(outside, target / "shared", directory=True)
+        with self.assertRaises(PackagingError) as caught:
+            exporter.export(target, "engineering", force=True)
+        self.assertIn("link", str(caught.exception))
+        self.assertEqual(list(outside.iterdir()), [])
+
+    def test_malformed_manifest_is_refused(self):
+        (self.export / "SOURCE_MANIFEST.json").write_text(json.dumps({
+            "schema": exporter.SCHEMA,
+            "files": [{"path": "a.txt"}],
+        }), encoding="utf-8")
+        with self.assertRaises(PackagingError):
+            exporter.export(self.export, "archive", force=True)
 
 
 if __name__ == "__main__":

@@ -102,18 +102,76 @@ def build_manifest(spec: dict, layout: str) -> tuple[dict, dict[str, bytes]]:
 
 def _previous_manifest(target: Path) -> dict | None:
     path = target / MANIFEST_NAME
+    if _is_link(path):
+        raise PackagingError("%s is a link; refusing to follow it" % MANIFEST_NAME)
     if not path.is_file():
         return None
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
     except ValueError:
         return None
-    return value if value.get("schema") == SCHEMA else None
+    if value.get("schema") != SCHEMA:
+        return None
+    if not _valid_manifest(value):
+        raise PackagingError("%s is malformed; refusing to overwrite" % MANIFEST_NAME)
+    return value
 
 
 def _existing_files(target: Path) -> set[str]:
     return {path.relative_to(target).as_posix()
             for path in target.rglob("*") if path.is_file()}
+
+
+def _is_link(path: Path) -> bool:
+    """True for symbolic links, Windows junctions and hard-linked files."""
+    if path.is_symlink():
+        return True
+    is_junction = getattr(__import__("os").path, "isjunction", None)
+    if is_junction and is_junction(path):
+        return True
+    if path.is_file():
+        try:
+            return path.stat().st_nlink > 1
+        except OSError:
+            return False
+    return False
+
+
+def _reject_links(output: Path, relative: str) -> None:
+    """Refuse any link on the path from the export root to the leaf.
+
+    A manifest can be replaced by a link, or a directory inside the export can
+    be swapped for a link that points outside; checking only the leaf would let
+    writes escape. Every existing component is checked, and the check cannot be
+    bypassed with ``--force``.
+    """
+    if _is_link(output):
+        raise PackagingError("export root is a link: %s" % output)
+    current = output
+    for part in Path(relative).parts:
+        current = current / part
+        if _is_link(current):
+            raise PackagingError("export path contains a link at %s"
+                                 % current.relative_to(output).as_posix())
+
+
+def _valid_manifest(value: dict) -> bool:
+    if value.get("schema") != SCHEMA:
+        return False
+    files = value.get("files")
+    if not isinstance(files, list):
+        return False
+    seen: set[str] = set()
+    for item in files:
+        if not isinstance(item, dict):
+            return False
+        path = item.get("path")
+        if not isinstance(path, str) or not path or path in seen:
+            return False
+        if not isinstance(item.get("sha256"), str):
+            return False
+        seen.add(path)
+    return True
 
 
 def _managed_path(output: Path, relative: str) -> Path:
@@ -123,12 +181,11 @@ def _managed_path(output: Path, relative: str) -> Path:
     candidate = Path(relative)
     if candidate.is_absolute() or ".." in candidate.parts:
         raise PackagingError("managed path escapes the export: %r" % relative)
+    _reject_links(output, relative)
     target = (output / candidate).resolve()
     root = output.resolve()
     if target != root and root not in target.parents:
         raise PackagingError("managed path escapes the export: %r" % relative)
-    if target.is_symlink():
-        raise PackagingError("managed path is a symbolic link: %r" % relative)
     return target
 
 
@@ -189,9 +246,11 @@ def export(output: Path, layout: str, force: bool = False,
     output.mkdir(parents=True, exist_ok=True)
 
     for path, data in sorted(files.items()):
+        _reject_links(output, path)
         destination = output / path
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(data)
+    _reject_links(output, MANIFEST_NAME)
     (output / MANIFEST_NAME).write_bytes(manifest_bytes)
     return {"output": str(output), "files": len(files),
             "plugin_version": manifest["plugin_version"],

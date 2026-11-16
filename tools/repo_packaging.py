@@ -119,10 +119,14 @@ def load_attribute_rules(repo_root: Path) -> list[AttributeRule]:
         pattern, attrs = fields[0], fields[1:]
         binary = "binary" in attrs
         eol = None
+        # ``text`` and ``text=auto`` both mean "text file"; the repository
+        # policy is LF, so an unspecified eol must still be normalised. This is
+        # what makes a build independent of the checkout's core.autocrlf/eol.
+        is_text = any(attr == "text" or attr == "text=auto" for attr in attrs)
         for attr in attrs:
             if attr.startswith("eol="):
                 eol = attr.split("=", 1)[1]
-        if not binary and eol is None and "text" in attrs:
+        if not binary and eol is None and is_text:
             eol = "lf"
         rules.append(AttributeRule(pattern, binary, eol))
     return rules

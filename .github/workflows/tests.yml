@@ -62,14 +62,19 @@ jobs:
           if-no-files-found: warn
 
   candidate:
-    name: Candidate build and offline verification (ubuntu-latest / 3.12)
+    name: Candidate, suites, DOM and evidence (ubuntu-latest / 3.12)
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: verification/plugin/package-lock.json
       - name: Install exact tokenizer
         run: python -m pip install -r dev/requirements-release.txt
       - name: Version source is consistent
@@ -107,24 +112,29 @@ jobs:
           diff -r dist/export-a dist/export-b
           python tools/export_astrbot_plugin.py --layout engineering --output dist/plugin_export
           python tools/export_astrbot_plugin.py --layout engineering --check dist/plugin_export
-      - name: Build the complete release set
-        run: python tools/build_engineering_bundle.py --dist dist --out-dir dist/release
-      - name: Check the release set
-        run: >
-          python tools/check_release_set.py --release-dir dist/release
-          --report dist/release_set.json
       - name: Package suites on the same candidate
         run: >
           python tools/run_package_regression.py --dist dist
           --suites completion,core,legacy
           --report dist/package_regression.json
           --log dist/package_regression.log
+      - name: Install locked UI dependencies
+        working-directory: verification/plugin
+        run: npm ci
+      - name: DOM wiring check (jsdom, not a browser)
+        run: python tools/run_dom_check.py --dist dist --report dist/ui_dom.json --node node
       - name: Source regression for the acceptance record
         run: >
           python tools/run_regression.py
           --json-out dist/regression.json --log-out dist/regression.log
       - name: Record the acceptance result
         run: python tools/record_acceptance.py
+      - name: Build the complete release set (after the evidence)
+        run: python tools/build_engineering_bundle.py --dist dist --out-dir dist/release
+      - name: Check the release set, including a rebuild from the source zip
+        run: >
+          python tools/check_release_set.py --release-dir dist/release
+          --report dist/release_set.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -139,12 +149,13 @@ jobs:
             dist/regression.log
             dist/package_regression.json
             dist/package_regression.log
+            dist/ui_dom.json
             dist/release_set.json
+            dist/repository_check.json
             dist/release/*
-            dist/export-engineering/SOURCE_MANIFEST.json
             dist/plugin_export/SOURCE_MANIFEST.json
             dev/reports/current_acceptance.json
-            dist/repository_check.json
+            dev/reports/acceptance/**
           if-no-files-found: warn
 
   package-suites:

@@ -263,6 +263,7 @@ def check_archive_releases(checks: list[dict]) -> None:
     release_dir = REPO_ROOT / "archive" / "releases"
     problems = []
     verified = 0
+    external = 0
     for manifest_path in sorted(release_dir.glob("*.json")):
         if manifest_path.name.endswith(".verify.json"):
             continue
@@ -273,6 +274,21 @@ def check_archive_releases(checks: list[dict]) -> None:
             continue
         artifact = manifest.get("artifact") or manifest.get("archive")
         if not artifact:
+            # Release-set manifests list their attachments instead.
+            for item in manifest.get("attachments") or []:
+                name = item.get("name")
+                target = release_dir / name if name else None
+                if not target or not target.is_file():
+                    # Source/engineering zips live only as release assets.
+                    external += 1
+                    continue
+                if item.get("sha256") and hashlib.sha256(
+                        target.read_bytes()).hexdigest() != item["sha256"]:
+                    problems.append("%s: %s sha256 mismatch" % (manifest_path.name, name))
+                if item.get("bytes") and target.stat().st_size != item["bytes"]:
+                    problems.append("%s: %s size mismatch" % (manifest_path.name, name))
+            if manifest.get("attachments"):
+                verified += 1
             continue
         bundle = release_dir / artifact
         if not bundle.is_file():
@@ -304,9 +320,11 @@ def check_archive_releases(checks: list[dict]) -> None:
                     if hashlib.sha256(archive.read(member)).hexdigest() != sha:
                         problems.append("%s: %s content changed" % (artifact, name))
         verified += 1
-    checks.append({"id": "archive-releases", "ok": not problems,
-                   "detail": "problems: %s" % problems[:8] if problems else
-                   "%d archived packages match their manifests" % verified})
+    detail = ("problems: %s" % problems[:8] if problems else
+              "%d archived packages match their manifests" % verified)
+    if external:
+        detail += " (%d release-only attachments not stored here)" % external
+    checks.append({"id": "archive-releases", "ok": not problems, "detail": detail})
 
 
 def run_checks() -> list[dict]:

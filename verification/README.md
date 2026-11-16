@@ -45,7 +45,7 @@ node console_dom_check.cjs <python> <解压后的插件目录>
 ```
 
 **当前状态（2026-11-16）：DOM 接线通过，浏览器未运行。** 环境为 Node v20.18.1、
-npm 10.8.2、jsdom 26.1.0；对象是 0.8.0-dev.1 候选包，7 条管理路径
+npm 10.8.2、jsdom 26.1.0；对象是 0.8.0-dev.2 候选包，7 条管理路径
 （迁移创建/批次/放行、备份、校验、恢复、撤回）全部通过，`visual_browser_validation: false`。
 结果见 `dev/reports/DOM_WIRING_2026-11-16.md`。
 
@@ -55,7 +55,7 @@ DOM 通过只说明页面事件到真实 `ConsoleApi`/`ApplicationService` 的�
 
 ## 与当前回归的关系
 
-- `dev/tests/`：386 项（源码回归，`python tools/run_regression.py`）。
+- `dev/tests/`：401 项（源码回归，`python tools/run_regression.py`）。
 - 本目录：47 + 137 + 20 = 204 项**包级**用例，针对同一个候选 ZIP。
 - 数字不重复计为独立覆盖：131 个核心文件与 `dev/tests/` 同源，47/20 项沿用历史工程包。
 - 旧的 20/47 项已适配到当前布局与构建接口，不再调用旧构建器；历史原始文件保留在

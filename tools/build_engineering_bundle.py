@@ -59,8 +59,12 @@ def _git_source_zip(root: Path, target: Path) -> None:
     if state["dirty"]:
         raise PackagingError("refusing to archive a dirty tree; commit first")
     target.parent.mkdir(parents=True, exist_ok=True)
+    # ``git archive`` honours the text/eol attributes; without an explicit LF
+    # eol it writes the Windows native CRLF, which made the released source zip
+    # rebuild a different plugin. Force the canonical form for the archive.
     result = subprocess.run(
-        ["git", "archive", "--format=zip", "-o", str(target), "HEAD"],
+        ["git", "-c", "core.autocrlf=false", "-c", "core.eol=lf",
+         "archive", "--format=zip", "-o", str(target), "HEAD"],
         cwd=str(root), capture_output=True, text=True)
     if result.returncode != 0:
         raise PackagingError("git archive failed: %s" % result.stderr.strip())
@@ -149,8 +153,21 @@ def build(root: Path = REPO_ROOT, dist: str = "dist", out_dir: str = "dist/relea
             "# Acceptance summary\n\nversion: %s\nsource_commit: %s\ndirty: %s\n\n%s\n"
             % (version, build.get("source_commit"), build.get("dirty"), summary),
             encoding="utf-8", newline="\n")
-        inner = [(path.name, path.read_bytes())
-                 for path in sorted(staging.iterdir()) if path.is_file()]
+        # The reports are part of the deliverable, not just of dist/.
+        evidence = staging / "EVIDENCE"
+        evidence.mkdir()
+        for name in ("regression.json", "package_regression.json",
+                     "package_verification.json", "selftest.json",
+                     "astrbot_install_check.json", "ui_dom.json",
+                     "release_set.json"):
+            source = dist_path / name
+            if source.is_file():
+                shutil.copy2(source, evidence / name)
+        export_manifest = dist_path / "plugin_export" / "SOURCE_MANIFEST.json"
+        if export_manifest.is_file():
+            shutil.copy2(export_manifest, evidence / "export_SOURCE_MANIFEST.json")
+        inner = [(path.relative_to(staging).as_posix(), path.read_bytes())
+                 for path in sorted(staging.rglob("*")) if path.is_file()]
         checksums = "\n".join("%s  %s" % (hashlib.sha256(data).hexdigest(), name)
                               for name, data in inner) + "\n"
         (staging / "INNER_SHA256SUMS.txt").write_text(checksums, encoding="utf-8",
