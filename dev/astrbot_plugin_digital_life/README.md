@@ -1,6 +1,6 @@
 # 数字生命：统一 AstrBot 插件
 
-开发版 `0.7.0-dev.2`，基于 `abbfceae5b2a0ef4659310a2c1d7791946d48f3c`（alpha.6）。新增迁移、实时追加、恢复切换、偏好排序、短指代和主动请求记忆入口。当前交付是可安装的开发版；真实 AstrBot/NapCat/Windows 及长期运行验收仍需完成，未发布 RC。
+开发版 `0.7.0-dev.3`，功能与 `0.7.0-dev.2` 相同（同样基于 `abbfceae5b2a0ef4659310a2c1d7791946d48f3c`，alpha.6）：迁移、实时追加、恢复切换、偏好排序、短指代和主动请求记忆入口。dev.3 是仓库整理后的重新发布：版本号改为只从 `metadata.yaml` 读取，构建/验包/导出入口补齐，文档与回归同步。当前交付是可安装的开发版；真实 AstrBot/NapCat/Windows 及长期运行验收仍需完成，未发布 RC。
 
 ## dev.2 修复
 
@@ -15,7 +15,7 @@ python tools/build_unified_plugin.py --out-dir dist
 python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
 ```
 
-安装：AstrBot WebUI → 插件 → 上传 `dist/astrbot_plugin_digital_life-0.7.0-dev.2.zip`。
+安装：AstrBot WebUI → 插件 → 上传 `dist/astrbot_plugin_digital_life-0.7.0-dev.3.zip`。
 安装包包含全部共享模块，不需要设置 `DIGITAL_LIFE_DEV`。
 
 从 alpha.6 升级后请完整重启 AstrBot 服务；仅热重载不能可靠清除既有顶层共享模块的 Python 导入缓存。

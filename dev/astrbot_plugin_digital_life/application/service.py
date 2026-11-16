@@ -6,6 +6,12 @@ import time
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+
+try:
+    from ..config import plugin_version
+except ImportError:  # plugin directory is the import root (bundled layout)
+    from config import plugin_version
+
 from .storage import atomic_json, read_json, validate_database
 
 
@@ -189,7 +195,7 @@ class ApplicationService:
                 self.phase = "SNAPSHOT"
                 return await self.db(
                     lambda: p.generations.create_backup(
-                        {"mode": p.mode, "plugin_version": "0.7.0-dev.2"}
+                        {"mode": p.mode, "plugin_version": plugin_version()}
                     )
                 )
             await self.db(

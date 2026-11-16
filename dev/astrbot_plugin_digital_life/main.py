@@ -67,8 +67,10 @@ except Exception:
         ConsoleApi = None
 
 try:
+    from .config import plugin_version as _plugin_version
     from .config import resolve as resolve_config
 except Exception:
+    from config import plugin_version as _plugin_version
     from config import resolve as resolve_config
 
 try:
@@ -322,7 +324,7 @@ class DigitalLifePlugin(Star):
         """Return a secret-free snapshot; never touches SQLite from the loop."""
         return {
             "schema_version": 1,
-            "plugin_version": "0.7.0-dev.2",
+            "plugin_version": _plugin_version(),
             "config_generation": self.config_generation,
             "store_generation": self.store_generation,
             "mode": self.mode,

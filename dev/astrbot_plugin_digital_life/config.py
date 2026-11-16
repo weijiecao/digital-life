@@ -8,8 +8,22 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
+from pathlib import Path
 
 MODES = ("OFF", "COLLECT", "ASSIST")
+
+
+def plugin_version() -> str:
+    """Single version source: the metadata.yaml shipped next to this module."""
+    try:
+        text = (Path(__file__).resolve().parent / "metadata.yaml").read_text(
+            encoding="utf-8")
+    except OSError:
+        return "unknown"
+    for line in text.splitlines():
+        if line.startswith("version:"):
+            return line.split(":", 1)[1].strip().strip("'\"")
+    return "unknown"
 
 
 def _as_bool(value, default: bool) -> bool:

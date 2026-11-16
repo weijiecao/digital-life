@@ -1,4 +1,4 @@
-"""Specialised regression for the unified plugin (0.7.0-dev.2).
+"""Specialised regression for the unified plugin.
 
 The old engineering package kept these checks in a separate tree that was never
 run by the active suite, so regressions in migration, recovery, ownership and the

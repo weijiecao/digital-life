@@ -1,6 +1,6 @@
 # dev — 数字记忆工程开发树
 
-- 状态：`0.7.0-dev.2` 开发候选，R0/R1 NO-GO；能力与证据见
+- 状态：`0.7.0-dev.3` 开发候选，R0/R1 NO-GO；能力与证据见
   [`../docs/CURRENT_STATUS.md`](../docs/CURRENT_STATUS.md)。
 - 活动回归：在仓库根目录执行 `python tools/run_regression.py`
   （结果写入 `dist/regression.json`）。

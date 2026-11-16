@@ -111,5 +111,5 @@
 
 ## 状态
 
-当前为开发版 `0.7.0-dev.2`，**R0/R1 NO-GO**。真实宿主、Windows 实机、浏览器页面与
+当前为开发版 `0.7.0-dev.3`，**R0/R1 NO-GO**。真实宿主、Windows 实机、浏览器页面与
 72 小时长跑未验收；见 [`CURRENT_STATUS.md`](CURRENT_STATUS.md)。

@@ -11,7 +11,7 @@
 
 两者都独立于 V1 生产插件；当前只用于隔离验收。
 
-**当前状态：`0.7.0-dev.2` 开发候选，R0 / R1 NO-GO。** 安装包只用于隔离验收，
+**当前状态：`0.7.0-dev.3` 开发候选，R0 / R1 NO-GO。** 安装包只用于隔离验收，
 不要接入 V1 生产或生产 Shadow。能力与验证状态见 [`docs/CURRENT_STATUS.md`](docs/CURRENT_STATUS.md)。
 
 ## 最短路径
@@ -55,7 +55,7 @@ env/                            环境模板与锁文件
 
 ## 统一插件
 
-开发版 `0.7.0-dev.2`，包含旧基座迁移、实时追加与历史对账、恢复切换、撤回、
+开发版 `0.7.0-dev.3`，包含旧基座迁移、实时追加与历史对账、恢复切换、撤回、
 偏好排序/短指代/主动请求记忆入口与统一管理页。
 
 | 模式 | 行为 |
@@ -71,8 +71,8 @@ env/                            环境模板与锁文件
 
 | 文件 | 说明 |
 | --- | --- |
-| `releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip` | 已交付开发版（78 文件，222,031 bytes，SHA-256 `06756a5f…`） |
-| `dist/astrbot_plugin_digital_life-0.7.0-dev.2.zip` | 由当前源码重建的候选（79 文件，222,925 bytes，SHA-256 `08c90bbd…`；新增 `memory_engine/README.md`、模块 README 更新、文本换行规范化） |
+| `releases/astrbot_plugin_digital_life-0.7.0-dev.3.zip` | 已交付开发版（78 文件，222,031 bytes，SHA-256 `06756a5f…`） |
+| `dist/astrbot_plugin_digital_life-0.7.0-dev.3.zip` | 由当前源码重建的候选（79 文件，222,925 bytes，SHA-256 `08c90bbd…`；新增 `memory_engine/README.md`、模块 README 更新、文本换行规范化） |
 | `dev/reports/current_acceptance.json` | 当前验收记录（唯一可引用的数字） |
 | `dev/reports/SPECIALIZED_COVERAGE.md` | 能力 → 测试 → 环境的映射与缺口 |
 | `docs/ARCHITECTURE.md` | 模块职责与数据流 |

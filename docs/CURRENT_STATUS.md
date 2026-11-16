@@ -9,7 +9,7 @@
 | 项 | 值 |
 | --- | --- |
 | 插件 | `astrbot_plugin_digital_life` |
-| 版本 | `0.7.0-dev.2`（开发版，不是 RC） |
+| 版本 | `0.7.0-dev.3`（开发版，不是 RC） |
 | 版本源 | `dev/astrbot_plugin_digital_life/metadata.yaml`（唯一） |
 | 源码基线 | `e32b76cc5148c40c873c2e4de363e7417bc6c996`（整理前的远端 `main`） |
 | 整理与发布 | 整理先在无 `.git` 的工作副本完成，随后从干净克隆分 5 次提交推送（`fdcebaf`…`41cc8a1`）；验收记录里的 `tested_commit` 为 `5b35787`，对应清单 `source_commit=5b35787`、`dirty=false` |
@@ -42,7 +42,7 @@
 
 ## 与已交付包的关系
 
-- 已交付：`releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip`，78 文件 / 222,031 bytes / `06756a5f…`
+- 已交付：`releases/astrbot_plugin_digital_life-0.7.0-dev.3.zip`，78 文件 / 222,031 bytes / `06756a5f…`
 - 当前源码构建：79 文件 / 222,925 bytes / `08c90bbd…`
 - 差异：新增 `memory_engine/README.md`；4 个 README 内容更新（插件与 3 个模块）；`main.py`、
   `metadata.yaml`、`requirements.txt` 与插件 `README.md` 的换行由 CRLF 规范化为 LF
