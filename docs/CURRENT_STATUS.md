@@ -9,10 +9,10 @@
 | 项 | 值 |
 | --- | --- |
 | 插件 | `astrbot_plugin_digital_life` |
-| 版本 | `0.8.0-dev.1`（开发版，不是 RC） |
+| 版本 | `0.8.0-dev.2`（开发版，不是 RC） |
 | 版本源 | 仓库根 `VERSION`（唯一人工版本源）；`metadata.yaml` 由 `tools/sync_version.py` 派生并由 CI 校验 |
 | 源码基线 | `e32b76cc5148c40c873c2e4de363e7417bc6c996`（整理前的远端 `main`） |
-| 整理与发布 | 整理先在无 `.git` 的工作副本完成，随后从干净克隆分 5 次提交推送（`fdcebaf`…`41cc8a1`）；验收记录里的 `tested_commit` 为 `5b35787`，对应清单 `source_commit=5b35787`、`dirty=false` |
+| 发布记录 | 被测提交、包哈希与各套件结果只在 [`dev/reports/current_acceptance.json`](../dev/reports/current_acceptance.json) 中给出；历史版本的数字标明所属版本，不复用 |
 
 没有 `.git` 时构建会如实记录 `source_commit: null`，`--require-clean` 会拒绝这种构建；发布构建是在干净克隆上执行的，所以清单里有真实提交号。
 正式交付必须从干净提交构建，并在清单里写明该提交。
@@ -22,7 +22,7 @@
 | 维度 | 状态 | 说明 |
 | --- | --- | --- |
 | 实现 | 已实现 | 迁移、实时追加、恢复切换、撤回、运行权、输出 v2、统一管理页的代码都在 `dev/` |
-| 离线验证 | 通过 | 386 项源码回归 + 204 项包级用例（47＋137＋20）全部通过，0 跳过（Windows 11 / Python 3.12.10） |
+| 离线验证 | 通过 | 401 项源码回归 + 204 项包级用例（47＋137＋20）全部通过，0 跳过（Windows 11 / Python 3.12.10） |
 | DOM 接线 | 通过（非浏览器） | 7 条管理路径（迁移创建/批次/放行、备份、校验、恢复、撤回）在解压包上通过；jsdom 26.1.0 / Node 20.18.1；**真实浏览器未运行** |
 | 包级验证 | 通过（真实 AstrBot 源码） | 79 文件候选包 16 项结构检查通过；插件模块用 AstrBot 4.29.3 源码导入（`host: astrbot-source`），并通过 AstrBot 自带 `inspect_plugin_archive` 校验 |
 | 真实宿主验证 | 部分（未启动实例） | 已用真实 AstrBot 4.29.3 源码完成插件导入与归档校验；但未启动 AstrBot/NapCat 实例、无 Windows 实机安装、无浏览器页面操作 |
@@ -32,9 +32,9 @@
 
 | 证据 | 位置 | 内容 |
 | --- | --- | --- |
-| 源码回归 | `dist/regression.json`、`dist/regression.log` | 386 ran / 386 passed / 0 failed / 0 errors / 0 skipped |
+| 源码回归 | `dist/regression.json`、`dist/regression.log` | 401 ran / 401 passed / 0 failed / 0 errors / 0 skipped |
 | 包级用例 | `dist/package_regression.json` | completion 47/47、core 137/137、legacy 20/20，全部对同一候选 ZIP |
-| 构建清单 | `dist/build_manifest.json` | 79 文件、223,274 bytes、SHA-256 `631e114a…`、逐文件哈希、构建环境 |
+| 构建清单 | `dist/build_manifest.json` | 文件数、字节数、SHA-256、逐文件哈希与构建环境；当前值以验收记录为准 |
 | 包验证 | `dist/package_verification.json` | 16 项检查全部通过，`host: astrbot-source`（`testbed/AstrBot-4.29.3`） |
 | AstrBot 归档校验 | `dist/astrbot_install_check.json` | `_PluginUpdater.inspect_plugin_archive` 通过，metadata 入口为 `astrbot_plugin_digital_life/metadata.yaml` |
 | 包级负例 | `python tools/verify_unified_plugin.py --self-test` | 缺文件 / 篡改 / 路径穿越 / 重复成员均被拒绝 |
@@ -54,7 +54,7 @@
 | `digital-life-release-<V>.json` | 版本、来源提交、附件哈希、验证边界 |
 | `SHA256SUMS-<V>.txt` | 上述附件校验值 |
 
-当前候选为 `0.8.0-dev.1`，用户下载入口是分发仓库的 [同名 Release](https://github.com/weijiecao/astrbot_plugin_digital_life/releases/tag/v0.8.0-dev.1)。它的插件包与哈希由构建清单给出，记录在
+当前候选为 `0.8.0-dev.2`，用户下载入口是分发仓库的 [同名 Release](https://github.com/weijiecao/astrbot_plugin_digital_life/releases/tag/v0.8.0-dev.2)。它的插件包与哈希由构建清单给出，记录在
 `dev/reports/current_acceptance.json`；已发布的 `0.7.0-dev.2` / `0.7.0-dev.3`
 保留原字节在 `archive/releases/`，仅作追溯，不得与新版本共用同一附件名。
 

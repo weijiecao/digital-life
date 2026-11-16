@@ -111,5 +111,5 @@
 
 ## 状态
 
-当前整体版本为 `0.8.0-dev.1`（唯一来源是仓库根 `VERSION`），**R0/R1 NO-GO**。真实宿主、Windows 实机、浏览器页面与
+当前整体版本为 `0.8.0-dev.2`（唯一来源是仓库根 `VERSION`），**R0/R1 NO-GO**。真实宿主、Windows 实机、浏览器页面与
 72 小时长跑未验收；见 [`CURRENT_STATUS.md`](CURRENT_STATUS.md)。

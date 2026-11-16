@@ -11,7 +11,7 @@
 
 两者都独立于 V1 生产插件；当前只用于隔离验收。
 
-**当前状态：`0.8.0-dev.1` 开发基线（R0 / R1 NO-GO）。** 安装包只用于隔离验收，
+**当前状态：`0.8.0-dev.2` 开发基线（R0 / R1 NO-GO）。** 安装包只用于隔离验收，
 不要接入 V1 生产或生产 Shadow。能力与验证状态见 [`docs/CURRENT_STATUS.md`](docs/CURRENT_STATUS.md)。
 
 ## 最短路径
@@ -20,7 +20,7 @@
 python -m pip install -r dev/requirements-release.txt
 # 版本只有一个来源：仓库根 VERSION；metadata 由工具同步
 python tools/sync_version.py --check
-python tools/run_regression.py                          # 386 项源码回归
+python tools/run_regression.py                          # 401 项源码回归
 python tools/check_repository.py                        # 入口/链接/归档隔离检查
 python tools/build_unified_plugin.py --out-dir dist     # 构建插件包
 python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
@@ -57,7 +57,7 @@ env/                            环境模板与锁文件
 
 ## 统一插件
 
-整体版本 `0.8.0-dev.1`（记忆基座、引擎、输入、输出、应用服务与 UI 同一版本号），包含旧基座迁移、实时追加与历史对账、恢复切换、撤回、
+整体版本 `0.8.0-dev.2`（记忆基座、引擎、输入、输出、应用服务与 UI 同一版本号），包含旧基座迁移、实时追加与历史对账、恢复切换、撤回、
 偏好排序/短指代/主动请求记忆入口与统一管理页。
 
 | 模式 | 行为 |
@@ -71,7 +71,7 @@ env/                            环境模板与锁文件
 
 ## 交付物
 
-版本只由仓库根 `VERSION` 决定（当前 `0.8.0-dev.1`）。一次交付是一整个集合，不是单个补丁包：
+版本只由仓库根 `VERSION` 决定（当前 `0.8.0-dev.2`）。一次交付是一整个集合，不是单个补丁包：
 
 | 文件 | 说明 |
 | --- | --- |
@@ -88,7 +88,7 @@ env/                            环境模板与锁文件
 
 ```powershell
 python tools/sync_version.py --check
-python tools/run_regression.py                 # 386 项源码回归
+python tools/run_regression.py                 # 401 项源码回归
 python tools/build_unified_plugin.py --out-dir dist --require-clean
 python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
 python tools/run_package_regression.py --dist dist --suites completion,core,legacy

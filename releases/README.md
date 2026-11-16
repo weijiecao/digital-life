@@ -6,23 +6,23 @@
 ## 下载入口
 
 用户下载固定在分发仓库的 Release：
-[数字生命 0.8.0-dev.1](https://github.com/weijiecao/astrbot_plugin_digital_life/releases/tag/v0.8.0-dev.1)。
+[数字生命 0.8.0-dev.2](https://github.com/weijiecao/astrbot_plugin_digital_life/releases/tag/v0.8.0-dev.2)。
 附件是完整的五件套（插件 ZIP、源码 ZIP、工程 ZIP、发布 JSON、`SHA256SUMS`）。
 主仓库只保留同名 tag 与来源记录，不另做一份内容不同的公开 Release。
 
-## 当前版本：0.8.0-dev.1
+## 当前版本：0.8.0-dev.2
 
 版本号来自仓库根 `VERSION`；`dev/astrbot_plugin_digital_life/metadata.yaml` 由
 `python tools/sync_version.py` 派生，CI 校验两者一致。
 
-`astrbot_plugin_digital_life-0.8.0-dev.1.zip` —— 统一插件开发版，**79 个文件，
+`astrbot_plugin_digital_life-0.8.0-dev.2.zip` —— 统一插件开发版，**79 个文件，
 223,273 bytes，SHA-256 `05ba15e9d98792220c7ddf1615bad8448c178175626a6ebbc529c57a9ec90cff`**。
 
 | 文件 | 说明 |
 | --- | --- |
-| `astrbot_plugin_digital_life-0.8.0-dev.1.zip` | 安装包（AstrBot WebUI 上传这个文件） |
-| `astrbot_plugin_digital_life-0.8.0-dev.1.sha256` | 上述包的 SHA-256 |
-| `digital-life-release-0.8.0-dev.1.json` | 发布清单：版本、来源提交、附件哈希与大小、验证边界 |
+| `astrbot_plugin_digital_life-0.8.0-dev.2.zip` | 安装包（AstrBot WebUI 上传这个文件） |
+| `astrbot_plugin_digital_life-0.8.0-dev.2.sha256` | 上述包的 SHA-256 |
+| `digital-life-release-0.8.0-dev.2.json` | 发布清单：版本、来源提交、附件哈希与大小、验证边界 |
 | `README.md` | 本文件 |
 
 这是整体开发基线，不是 RC。安装或升级后应完整重启 AstrBot，热重载不能清除既有顶层模块。
@@ -31,7 +31,7 @@
 
 功能与 `0.7.0-dev.3` / `0.7.0-dev.2` 相同；本版的变化是工程契约：
 
-- 整体版本从 `0.7.0-dev.3` 升到 `0.8.0-dev.1`，唯一版本源改为仓库根 `VERSION`；
+- 整体版本从 `0.7.0-dev.3` 升到 `0.8.0-dev.2`，唯一版本源改为仓库根 `VERSION`；
 - 插件、基座、引擎、输入、输出、应用服务与 UI 共用一个对外版本号；
 - 新增包级验收入口（47＋137＋20）与完整交付集合（源码 ZIP、工程 ZIP、发布 JSON、校验值）；
 - 导出工具补齐清单校验与覆盖保护，验收记录绑定同一提交与同一包哈希。
