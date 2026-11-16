@@ -8,11 +8,11 @@
 | 项 | 值 |
 | --- | --- |
 | 计划基线 | `e32b76cc5148c40c873c2e4de363e7417bc6c996`（整理前的远端 `main`） |
-| 本轮工作副本 | 一个**没有 `.git`** 的工作目录，因此 `tested_commit`/`dirty` 记为 `null` |
+| 本轮工作副本 | 整理在无 `.git` 的工作目录完成；随后从干净克隆提交并推送，验收记录绑定 `tested_commit=5b35787` |
 | 环境 | Windows 11 / Python 3.12.10；未安装 AstrBot；`git` 不在 PATH |
 | 历史交付 | `releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip`，78 文件 / 222,031 bytes / `06756a5f…` |
 
-因为没有 `.git`，本轮**没有提交、没有推送、没有改 tag**；改动全部是工作树内容。
+整理阶段没有 `git`，所以先在工作树完成；发布阶段从干净克隆分 5 次提交推送（`fdcebaf`、`88b886b`、`00a3d0d`、`5b35787`、`41cc8a1`），没有改写历史、没有动 tag。构建在 `5b35787` 上以 `--require-clean` 执行，清单记录真实提交且 `dirty=false`。
 正式交付前应在干净克隆上重新执行 §4 的命令，让清单记录真实提交号。
 
 ## 2. PR1：恢复构建与验收入口
@@ -85,14 +85,14 @@
 
 ## 5. 与计划的偏差
 
-1. **没有 Git 操作**：计划要求按三个 PR 提交并记录提交号；本轮环境没有 `git`，
-   因此只交付工作树。建议按 §6 的分组提交。
-2. **`source_commit` 为 `null`**：构建工具在无 `.git` 时如实记录，不伪造提交号；
-   `--require-clean` 会拒绝这种构建。
+1. **提交分组**：计划建议三个 PR；实际按内容分成 5 个提交（工具、测试、文档、归档、记录），
+   都直接落在 `main`，没有新建分支或 PR。
+2. **`source_commit`**：发布构建在干净克隆上执行，清单记录 `5b35787` 且 `dirty=false`；
+   无 `.git` 的副本构建仍记录 `null`，`--require-clean` 会拒绝。
 3. **新包与已交付包字节不同**：79 vs 78 文件（新增 `memory_engine/README.md`），
    4 个模块 README 更新，`main.py`/`metadata.yaml`/`requirements.txt`/插件 README 的换行
    规范化为 LF。旧包保留原字节，新字节没有覆盖它。
-4. **CI 未远端验证**：工作流已改为只调用存在的入口，但本轮没有推送，未观察到 Actions 结果。
+4. **CI 远端验证**：推送后已触发新的 `tests` 工作流（基线 `e32b76c` 的 failure 正是入口失效）；结果以 GitHub Actions 为准。
 5. **真实旧库未演练**：迁移写路径已用合成旧库夹具自动化，但真实旧库（真实分组/摘要/撤回）仍需一次演练。
 6. **模块重命名**：`tools/packaging.py` 改名为 `tools/repo_packaging.py`。原因：`python tools/x.py` 会把
    `tools/` 放进 `sys.path[0]`，遮蔽 PyPI 的 `packaging` 包（AstrBot 依赖它），导致宿主校验失败。
@@ -130,7 +130,7 @@
 
 ## 8. 下一步
 
-1. 在干净克隆上按 §6 分三次提交，记录真实提交号，重新生成 `current_acceptance.json`。
+1. ~~在干净克隆上分次提交并重新生成记录~~ —— 已完成：`fdcebaf`…`41cc8a1`，`current_acceptance.json` 绑定 `5b35787`。
 2. 用真实脱敏旧库演练一次迁移（同一组用例已就绪）。
 3. 在真实 AstrBot/NapCat 与 Windows 实机上执行安装、采集、注入与浏览器页面验收。
 4. 分发仓库：两端差异已比较（`DISTRIBUTION_SYNC_2026-11-16.md`），下一步按该文件的

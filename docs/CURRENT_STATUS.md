@@ -12,9 +12,9 @@
 | 版本 | `0.7.0-dev.2`（开发版，不是 RC） |
 | 版本源 | `dev/astrbot_plugin_digital_life/metadata.yaml`（唯一） |
 | 源码基线 | `e32b76cc5148c40c873c2e4de363e7417bc6c996`（整理前的远端 `main`） |
-| 本轮整理 | 在一个**没有 `.git`** 的工作副本上进行，因此清单里的 `source_commit` 为 `null`、`dirty` 为 `null` |
+| 整理与发布 | 整理先在无 `.git` 的工作副本完成，随后从干净克隆分 5 次提交推送（`fdcebaf`…`41cc8a1`）；验收记录里的 `tested_commit` 为 `5b35787`，对应清单 `source_commit=5b35787`、`dirty=false` |
 
-没有 `.git` 时构建会如实记录 `source_commit: null`，`--require-clean` 会拒绝这种构建。
+没有 `.git` 时构建会如实记录 `source_commit: null`，`--require-clean` 会拒绝这种构建；发布构建是在干净克隆上执行的，所以清单里有真实提交号。
 正式交付必须从干净提交构建，并在清单里写明该提交。
 
 ## 状态分列
