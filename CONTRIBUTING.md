@@ -15,7 +15,9 @@
 
 ```powershell
 python -m pip install -r dev/requirements-release.txt
+python tools/sync_version.py --check
 python tools/run_regression.py
+python tools/run_package_regression.py --dist dist --suites completion,core,legacy
 ```
 
 `dist/regression.json` 是数字的唯一来源；不要把它手抄到文档里。
@@ -51,7 +53,7 @@ python tools/check_astrbot_install.py --dist dist --astrbot-root testbed/AstrBot
 python tools/check_repository.py
 ```
 
-版本只改 `dev/astrbot_plugin_digital_life/metadata.yaml` 的 `version`。
+版本只改仓库根 `VERSION`，然后执行 `python tools/sync_version.py`；CI 用 `--check` 拒绝漂移。
 字节发生变化时必须使用新的候选标识，不得覆盖 `releases/` 里已有的交付物。
 
 ## 分发导出

@@ -9,6 +9,7 @@
 | --- | --- |
 | 当前状态、能力与未完成验收 | [`../docs/CURRENT_STATUS.md`](../docs/CURRENT_STATUS.md) |
 | 当前验收记录（唯一可引用数字） | [`reports/current_acceptance.json`](reports/current_acceptance.json) |
+| 包级用例（47＋137＋20） | [`../verification/README.md`](../verification/README.md) |
 | 旧快照原文（590 项、1.0.19） | [`reports/history/STATUS_2026-11-11.md`](reports/history/STATUS_2026-11-11.md) |
 | 旧报告里的其它数字 | [`reports/README.md`](reports/README.md) |
 
@@ -16,6 +17,7 @@
 
 ```powershell
 # 仓库根目录
+python tools/sync_version.py --check  # VERSION 与派生字段一致
 python tools/run_regression.py        # dist/regression.json + dist/regression.log
 python tools/build_unified_plugin.py --out-dir dist
 python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json

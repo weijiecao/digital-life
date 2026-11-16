@@ -51,17 +51,27 @@ def load_spec(path: Path = SPEC_PATH) -> dict:
 
 
 def read_version(repo_root: Path, spec: dict) -> str:
-    """Read the single version source; metadata.yaml is the only place allowed."""
-    metadata = repo_root / spec["version_source"]
-    if not metadata.is_file():
-        raise PackagingError("version source missing: %s" % spec["version_source"])
-    version = None
-    for line in metadata.read_text(encoding="utf-8").splitlines():
-        if line.startswith("version:"):
-            version = line.split(":", 1)[1].strip().strip("'\"")
-            break
-    if not version:
-        raise PackagingError("%s has no version field" % spec["version_source"])
+    """Read the single product version and require the plugin metadata to match.
+
+    ``VERSION`` is the only hand-edited source; ``metadata.yaml`` is derived by
+    ``tools/sync_version.py`` and verified here so a build can never ship a
+    stale plugin version.
+    """
+    from tools.project_version import (VersionError, read_metadata_version,
+                                       read_version as read_product_version)
+
+    try:
+        version = read_product_version(repo_root)
+    except VersionError as exc:
+        raise PackagingError(str(exc)) from exc
+    metadata = repo_root / spec["plugin_dir"] / "metadata.yaml"
+    found = read_metadata_version(metadata)
+    if found is None:
+        raise PackagingError("plugin metadata missing: %s" % metadata)
+    if found != version:
+        raise PackagingError(
+            "plugin metadata version %r does not match VERSION %r; "
+            "run python tools/sync_version.py" % (found, version))
     return version
 
 

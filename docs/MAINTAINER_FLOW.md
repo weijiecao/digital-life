@@ -146,13 +146,41 @@ CI 证明"离线逻辑没坏"，不能代替 `testbed/` 的真实宿主验证。
 
 ## 8. 发布
 
-1. 改版本：只改 `dev/astrbot_plugin_digital_life/metadata.yaml` 的 `version`
-   （文件名、清单、校验和都从它派生）。
-2. 从干净提交构建并验包（见上）。
-3. 把新包放进 `releases/` 并更新 `releases/README.md`；**不要**覆盖已有同名交付物。
-   字节变化时必须用新的候选标识（例如 `0.7.0-dev.3`）。
-4. 更新 `docs/CURRENT_STATUS.md` 与 `dev/reports/current_acceptance.json`。
-5. 打 tag、建 Release（附件：ZIP + `.sha256` + `build_manifest.json`）。
+1. 定版本：编辑仓库根 `VERSION`，执行 `python tools/sync_version.py`。
+   非法格式、空值、派生漂移都会让 `--check` 失败。
+2. 从干净提交构建并验包：
+
+   ```powershell
+   python tools/sync_version.py --check
+   python tools/run_regression.py
+   python tools/build_unified_plugin.py --out-dir dist --require-clean
+   python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
+   python tools/run_package_regression.py --dist dist --suites completion,core,legacy
+   python tools/export_astrbot_plugin.py --layout engineering --output dist/plugin_export
+   ```
+
+3. 生成并校验完整交付集合：
+
+   ```powershell
+   python tools/build_engineering_bundle.py --dist dist --out-dir dist/release --notes <说明.md>
+   python tools/check_release_set.py --release-dir dist/release
+   ```
+
+4. 生成验收记录（自动从报告读取数字，并与构建/用例/导出交叉校验）：
+
+   ```powershell
+   python tools/record_acceptance.py
+   ```
+
+   正式记录要求干净提交；本地诊断可用 `--allow-uncommitted`，但 `ok` 会保持 false。
+   小型报告会复制到 `dev/reports/acceptance/<提交>/`，即使 `dist/` 被清掉也能追溯。
+
+5. 把当前插件包、发布清单与校验值放进 `releases/`，更新 `releases/README.md`；
+   完整交付集合的 3 个 ZIP 作为 Release 附件。旧版本移到 `archive/releases/`，
+   **不要**覆盖已有同名交付物。
+6. 打 tag 在**被测源码提交 S** 上：`git tag v<VERSION> <S>`。证据归档提交 R 在标签之后，
+   不改动 tag。用户下载入口固定在分发仓库的 Release；主仓库保留同名 tag 与索引，
+   不另做内容不同的公开 Release。
 
 ## 9. 单向导出到分发仓库
 
@@ -191,7 +219,7 @@ python tools/export_astrbot_plugin.py --check dist/plugin_export
 ## 11. 已知坑
 
 1. **换行**：`.gitattributes` 决定入库与打包的换行。直接对任意字节做替换会破坏二进制。
-2. **版本号**：`metadata.yaml` 是唯一来源；不要在脚本或文档里再写一份版本常量。
+2. **版本号**：仓库根 `VERSION` 是唯一人工来源；`metadata.yaml` 由 `tools/sync_version.py` 派生。不要在任何脚本或文档里再写一份版本常量。
 3. **`dist/` 与 `*.zip` 被忽略**：构建产物不进源码提交，交付包放在 `releases/`。
 4. **归档不是后备路径**：需要旧实现时迁回 `dev/` 并补测试，不要在活动脚本里加路径绕回。
 5. **PowerShell 编码**：含中文的 `.ps1` 保存为 UTF-8 带 BOM，否则 Windows PowerShell 5.1 会乱码。

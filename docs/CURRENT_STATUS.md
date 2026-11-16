@@ -9,8 +9,8 @@
 | 项 | 值 |
 | --- | --- |
 | 插件 | `astrbot_plugin_digital_life` |
-| 版本 | `0.7.0-dev.3`（开发版，不是 RC） |
-| 版本源 | `dev/astrbot_plugin_digital_life/metadata.yaml`（唯一） |
+| 版本 | `0.8.0-dev.1`（开发版，不是 RC） |
+| 版本源 | 仓库根 `VERSION`（唯一人工版本源）；`metadata.yaml` 由 `tools/sync_version.py` 派生并由 CI 校验 |
 | 源码基线 | `e32b76cc5148c40c873c2e4de363e7417bc6c996`（整理前的远端 `main`） |
 | 整理与发布 | 整理先在无 `.git` 的工作副本完成，随后从干净克隆分 5 次提交推送（`fdcebaf`…`41cc8a1`）；验收记录里的 `tested_commit` 为 `5b35787`，对应清单 `source_commit=5b35787`、`dirty=false` |
 
@@ -22,7 +22,7 @@
 | 维度 | 状态 | 说明 |
 | --- | --- | --- |
 | 实现 | 已实现 | 迁移、实时追加、恢复切换、撤回、运行权、输出 v2、统一管理页的代码都在 `dev/` |
-| 离线验证 | 通过 | 367 项活动回归全部通过，0 跳过（Windows 11 / Python 3.12.10；耗时见验收记录） |
+| 离线验证 | 通过 | 386 项源码回归 + 204 项包级用例（47＋137＋20）全部通过，0 跳过（Windows 11 / Python 3.12.10） |
 | 包级验证 | 通过（真实 AstrBot 源码） | 79 文件候选包 16 项结构检查通过；插件模块用 AstrBot 4.29.3 源码导入（`host: astrbot-source`），并通过 AstrBot 自带 `inspect_plugin_archive` 校验 |
 | 真实宿主验证 | 部分（未启动实例） | 已用真实 AstrBot 4.29.3 源码完成插件导入与归档校验；但未启动 AstrBot/NapCat 实例、无 Windows 实机安装、无浏览器页面操作 |
 | 发布判断 | 开发候选 | 不满足 RC 条件；不得对外宣称"生产可用" |
@@ -31,7 +31,8 @@
 
 | 证据 | 位置 | 内容 |
 | --- | --- | --- |
-| 回归结果 | `dist/regression.json`、`dist/regression.log` | 367 ran / 367 passed / 0 failed / 0 errors / 0 skipped |
+| 源码回归 | `dist/regression.json`、`dist/regression.log` | 386 ran / 386 passed / 0 failed / 0 errors / 0 skipped |
+| 包级用例 | `dist/package_regression.json` | completion 47/47、core 137/137、legacy 20/20，全部对同一候选 ZIP |
 | 构建清单 | `dist/build_manifest.json` | 79 文件、223,274 bytes、SHA-256 `631e114a…`、逐文件哈希、构建环境 |
 | 包验证 | `dist/package_verification.json` | 16 项检查全部通过，`host: astrbot-source`（`testbed/AstrBot-4.29.3`） |
 | AstrBot 归档校验 | `dist/astrbot_install_check.json` | `_PluginUpdater.inspect_plugin_archive` 通过，metadata 入口为 `astrbot_plugin_digital_life/metadata.yaml` |
@@ -40,17 +41,21 @@
 
 汇总记录：`dev/reports/current_acceptance.json`。
 
-## 与已交付包的关系
+## 交付集合
 
-- 已交付：`releases/astrbot_plugin_digital_life-0.7.0-dev.3.zip`，79 文件 / 223,274 bytes / `631e114a…`
-  （`source_commit=c1ae7f8`，干净树构建；发布清单见 `releases/astrbot_plugin_digital_life-0.7.0-dev.3.json`）
-- 上一版：`archive/releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip`，78 文件 / 222,031 bytes / `06756a5f…`
-- 差异：版本号 `0.7.0-dev.2 → 0.7.0-dev.3`；版本改为只从 `metadata.yaml` 读取（不再有两处硬编码）；
-  新增 `memory_engine/README.md`；4 个 README 更新；文本换行按 `.gitattributes` 规范化。
-  **没有运行行为改动。**
+一个版本对应一个完整集合（`tools/build_engineering_bundle.py` 生成，`check_release_set.py` 校验）：
 
-旧包保留原字节，用于追溯；新版本不覆盖旧交付物。详见
-[`releases/README.md`](../releases/README.md)。
+| 文件 | 内容 |
+| --- | --- |
+| `astrbot_plugin_digital_life-<V>.zip` | 可安装插件（79 文件） |
+| `digital-life-source-<V>.zip` | 该提交的完整源码 |
+| `digital-life-engineering-<V>.zip` | 源码 ZIP + 插件 ZIP + 说明 + 验收摘要 |
+| `digital-life-release-<V>.json` | 版本、来源提交、附件哈希、验证边界 |
+| `SHA256SUMS-<V>.txt` | 上述附件校验值 |
+
+当前候选为 `0.8.0-dev.1`。它的插件包与哈希由构建清单给出，记录在
+`dev/reports/current_acceptance.json`；已发布的 `0.7.0-dev.2` / `0.7.0-dev.3`
+保留原字节在 `archive/releases/`，仅作追溯，不得与新版本共用同一附件名。
 
 ## 未完成的验收
 

@@ -1,9 +1,10 @@
 # dev — 数字记忆工程开发树
 
-- 状态：`0.7.0-dev.3` 开发候选，R0/R1 NO-GO；能力与证据见
+- 状态：`0.8.0-dev.1` 开发基线，R0/R1 NO-GO；能力与证据见
   [`../docs/CURRENT_STATUS.md`](../docs/CURRENT_STATUS.md)。
-- 活动回归：在仓库根目录执行 `python tools/run_regression.py`
-  （结果写入 `dist/regression.json`）。
+- 源码回归：在仓库根目录执行 `python tools/run_regression.py`（386 项，结果写入 `dist/regression.json`）。
+- 包级用例：`python tools/run_package_regression.py --dist dist --suites completion,core,legacy`
+  （47＋137＋20，针对同一个候选 ZIP；见 `verification/README.md`）。
 - 当前验收记录：[`reports/current_acceptance.json`](reports/current_acceptance.json)。
 - 专项覆盖映射：[`reports/SPECIALIZED_COVERAGE.md`](reports/SPECIALIZED_COVERAGE.md)。
 

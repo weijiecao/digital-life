@@ -2,7 +2,7 @@
   "schema": "digital-life-plugin-package/1",
   "build_rules_version": "1",
   "name": "astrbot_plugin_digital_life",
-  "version_source": "dev/astrbot_plugin_digital_life/metadata.yaml",
+  "version_source": "VERSION",
   "top_level": "astrbot_plugin_digital_life",
   "plugin_dir": "dev/astrbot_plugin_digital_life",
   "shared_packages": [

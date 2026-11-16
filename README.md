@@ -11,14 +11,16 @@
 
 两者都独立于 V1 生产插件；当前只用于隔离验收。
 
-**当前状态：`0.7.0-dev.3` 开发候选，R0 / R1 NO-GO。** 安装包只用于隔离验收，
+**当前状态：`0.8.0-dev.1` 开发基线（R0 / R1 NO-GO）。** 安装包只用于隔离验收，
 不要接入 V1 生产或生产 Shadow。能力与验证状态见 [`docs/CURRENT_STATUS.md`](docs/CURRENT_STATUS.md)。
 
 ## 最短路径
 
 ```powershell
 python -m pip install -r dev/requirements-release.txt
-python tools/run_regression.py                          # 367 项活动回归
+# 版本只有一个来源：仓库根 VERSION；metadata 由工具同步
+python tools/sync_version.py --check
+python tools/run_regression.py                          # 386 项源码回归
 python tools/check_repository.py                        # 入口/链接/归档隔离检查
 python tools/build_unified_plugin.py --out-dir dist     # 构建插件包
 python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
@@ -55,7 +57,7 @@ env/                            环境模板与锁文件
 
 ## 统一插件
 
-开发版 `0.7.0-dev.3`，包含旧基座迁移、实时追加与历史对账、恢复切换、撤回、
+整体版本 `0.8.0-dev.1`（记忆基座、引擎、输入、输出、应用服务与 UI 同一版本号），包含旧基座迁移、实时追加与历史对账、恢复切换、撤回、
 偏好排序/短指代/主动请求记忆入口与统一管理页。
 
 | 模式 | 行为 |
@@ -69,14 +71,31 @@ env/                            环境模板与锁文件
 
 ## 交付物
 
+版本只由仓库根 `VERSION` 决定（当前 `0.8.0-dev.1`）。一次交付是一整个集合，不是单个补丁包：
+
 | 文件 | 说明 |
 | --- | --- |
-| `releases/astrbot_plugin_digital_life-0.7.0-dev.3.zip` | 当前交付开发版（79 文件，223,274 bytes，SHA-256 `631e114a…`） |
-| `archive/releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip` | 上一版（78 文件，222,031 bytes，`06756a5f…`，仅追溯） |
-| `dev/reports/current_acceptance.json` | 当前验收记录（唯一可引用的数字） |
+| `VERSION` | 唯一人工版本源；`metadata.yaml` 由 `tools/sync_version.py` 派生 |
+| `releases/` | 当前版本的安装包、发布清单与校验值（构建后写入，旧版本移到 `archive/releases/`） |
+| `dist/release/` | 完整交付集合：插件 ZIP、源码 ZIP、工程 ZIP、发布 JSON、`SHA256SUMS-<版本>.txt` |
+| `dev/reports/current_acceptance.json` | 当前验收记录（含 suites、证据索引与一致性问题） |
+| `dev/reports/acceptance/<提交>/` | 持久证据：回归、包级用例、构建清单、验包与导出的小型报告 |
 | `dev/reports/SPECIALIZED_COVERAGE.md` | 能力 → 测试 → 环境的映射与缺口 |
-| `docs/ARCHITECTURE.md` | 模块职责与数据流 |
-| `docs/MIGRATION_RECOVERY.md` | 迁移、备份、恢复切换、撤回的操作前提与失败处理 |
+| `verification/README.md` | 包级与 UI 验收资产（47＋137＋20） |
+| `docs/ARCHITECTURE.md`、`docs/MIGRATION_RECOVERY.md` | 架构与迁移/恢复/撤回操作 |
+
+构建与验收：
+
+```powershell
+python tools/sync_version.py --check
+python tools/run_regression.py                 # 386 项源码回归
+python tools/build_unified_plugin.py --out-dir dist --require-clean
+python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
+python tools/run_package_regression.py --dist dist --suites completion,core,legacy
+python tools/build_engineering_bundle.py --dist dist --out-dir dist/release
+python tools/check_release_set.py --release-dir dist/release
+python tools/record_acceptance.py
+```
 
 ## 已知边界
 

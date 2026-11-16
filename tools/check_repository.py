@@ -93,29 +93,34 @@ def check_test_split(checks: list[dict]) -> None:
 
 
 def check_version(manifest: dict, checks: list[dict]) -> None:
+    """VERSION is the only hand-edited version; metadata and releases derive."""
+    from tools.project_version import VersionError, check as version_check
+    from tools.project_version import read_version as read_product_version
+
     try:
         spec = load_spec(REPO_ROOT / manifest["package_spec"])
-        version = read_version(REPO_ROOT, spec)
-    except (PackagingError, FileNotFoundError) as exc:
+        version = read_product_version(REPO_ROOT)
+    except (PackagingError, FileNotFoundError, VersionError) as exc:
         checks.append({"id": "version-source", "ok": False, "detail": str(exc)})
         return
-    problems = []
+    problems = [item.get("problem", "") + ": " + item.get("field", "")
+                if item.get("field") else item.get("problem", "")
+                for item in version_check(REPO_ROOT)["problems"]]
     release_dir = REPO_ROOT / manifest["release_dir"]
-    archive = release_dir / ("%s-%s.zip" % (spec["name"], version))
-    if not archive.is_file():
-        problems.append("no release archive for the current version: %s"
-                        % archive.relative_to(REPO_ROOT).as_posix())
     for meta in release_dir.glob("*.json"):
         try:
             value = json.loads(meta.read_text(encoding="utf-8"))
         except ValueError:
             problems.append("invalid release manifest: %s" % meta.name)
             continue
-        if value.get("name") == spec["name"] and value.get("version") != version:
-            problems.append("%s declares version %r" % (meta.name, value.get("version")))
+        if value.get("name") == spec["name"]:
+            declared = value.get("version") or value.get("plugin_version")
+            if declared != version:
+                problems.append("%s declares version %r" % (meta.name, declared))
     checks.append({"id": "version-source", "ok": not problems,
                    "detail": "problems: %s" % problems if problems else
-                   "metadata.yaml version %s is the only version source" % version})
+                   "VERSION %s is the only version source; metadata and release "
+                   "manifests agree" % version})
 
 
 def _local_target(doc: Path, target: str) -> Path | None:
