@@ -54,7 +54,7 @@
 | `digital-life-release-<V>.json` | 版本、来源提交、附件哈希、验证边界 |
 | `SHA256SUMS-<V>.txt` | 上述附件校验值 |
 
-当前候选为 `0.8.0-dev.1`。它的插件包与哈希由构建清单给出，记录在
+当前候选为 `0.8.0-dev.1`，用户下载入口是分发仓库的 [同名 Release](https://github.com/weijiecao/astrbot_plugin_digital_life/releases/tag/v0.8.0-dev.1)。它的插件包与哈希由构建清单给出，记录在
 `dev/reports/current_acceptance.json`；已发布的 `0.7.0-dev.2` / `0.7.0-dev.3`
 保留原字节在 `archive/releases/`，仅作追溯，不得与新版本共用同一附件名。
 

@@ -3,6 +3,13 @@
 本目录保存**当前整体版本**的安装包、发布清单与校验值。完整交付集合（源码 ZIP、工程 ZIP）
 在 `dist/release/` 生成后作为 Release 附件分发；旧版本一律移到 `archive/releases/`。
 
+## 下载入口
+
+用户下载固定在分发仓库的 Release：
+[数字生命 0.8.0-dev.1](https://github.com/weijiecao/astrbot_plugin_digital_life/releases/tag/v0.8.0-dev.1)。
+附件是完整的五件套（插件 ZIP、源码 ZIP、工程 ZIP、发布 JSON、`SHA256SUMS`）。
+主仓库只保留同名 tag 与来源记录，不另做一份内容不同的公开 Release。
+
 ## 当前版本：0.8.0-dev.1
 
 版本号来自仓库根 `VERSION`；`dev/astrbot_plugin_digital_life/metadata.yaml` 由
