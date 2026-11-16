@@ -13,7 +13,8 @@
 | `SPECIALIZED_COVERAGE.md` | 能力 → 测试文件 → 用例 → 运行环境的映射，以及明确的缺口 |
 | `M0_BASELINE_MANIFEST.json` | 2026-11-11 的 M0 基线（旧版本、旧哈希），只作历史对照 |
 | `REPOSITORY_ORGANIZATION_2026-11-15.md` | 本轮仓库整理记录：改动、证据、偏差与计划 §8 清单状态 |
-| `DISTRIBUTION_SYNC_2026-11-16.md` | 分发仓库逐文件比较结果、三种导出布局与首次导出方案 |
+| `DISTRIBUTION_SYNC_2026-11-16.md` | 分发同步与 Release 记录：S→D2、逐文件差异、附件哈希复核 |
+| `DOM_WIRING_2026-11-16.md` | DOM 接线验证结果（7 条路径）、环境与“非浏览器”边界 |
 
 活动日志由命令生成在 `dist/`（Git 忽略）：`dist/regression.json`、`dist/regression.log`、
 `dist/build_manifest.json`、`dist/package_verification.json`、`dist/selftest.json`、

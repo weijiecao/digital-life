@@ -1,69 +1,75 @@
-# 分发仓库对齐记录（2026-11-16）
+# 分发仓库同步记录（2026-11-16）
 
-PR3 的前提是"先比较两端指定提交，再启用单向导出"。本文件记录对
-`weijiecao/astrbot_plugin_digital_life` 的实际比较结果与首次导出方案。
-本轮**没有推送、没有建 Release**，只做只读比较与本地导出。
+按 0.8.0 方案 PR-C 执行：从**已验收的干净提交**导出，先用 `compare_distribution.py` 只读比较，
+只同步托管文件与明确列出的根 README 更新，保留其他文件；随后在分发仓库发布同版本 Release。
 
-## 1. 两端现状
+## 1. 固定标识
 
-| 项 | 本仓库（源码） | 分发仓库 |
+| 对象 | 标识 | 说明 |
 | --- | --- | --- |
-| 布局 | `dev/` 开发树 + `tools/` + `releases/` | 旧"工程包"布局：根 `astrbot_plugin_digital_life/` + `shared/` + `tests/` + `tools/` + `verification/` + `docs/` + `archive/` |
-| 版本 | `0.7.0-dev.2` | `0.7.0-dev.2`（`metadata.yaml`） |
-| 文件数 | 导出 79（+`SOURCE_MANIFEST.json`） | 199 |
-| 角色 | 唯一源码来源 | 用户分发副本（不是源码来源） |
+| 主仓库被测源码 S | `b245057501ac5081316eb6e4e69155ec7d37b326` | `v0.8.0-dev.1` tag 所指提交；源码回归 386、包级 47＋137＋20 都在此验证 |
+| 插件包 | `05ba15e9d98792220c7ddf1615bad8448c178175626a6ebbc529c57a9ec90cff` | 79 文件 / 223,273 bytes |
+| 分发仓库同步前 D | `d703a09bf1bb83181ea1ac1944c2e11d9642aa50` | 旧的工程包布局 |
+| 分发仓库同步后 D2 | `f0b30758720c18c8b9a407f11ecbdbf8155b5caf` | 托管 79 文件 + `SOURCE_MANIFEST.json` |
 
-分发仓库的 `tests/`、`tools/`、`verification/`、`archive/`、`docs/` 是上一版工程包的脚手架，
-不属于插件运行内容；它们不应由导出工具写入，也不应被本仓库覆盖。
+## 2. 导出与只读比较（同步前）
 
-## 2. 内容比较（engineering 布局，逐文件）
+从 `v0.8.0-dev.1` 的干净检出构建（`--require-clean`，`source_commit=b245057`、`dirty=false`），
+用 `--layout engineering` 导出 79 个文件 + `SOURCE_MANIFEST.json`。
 
-导出到 `dist/plugin_export_engineering/` 后与分发仓库逐文件比较（忽略 CRLF/LF 差异）：
+`compare_distribution.py` 同步前结果：
 
-| 结果 | 数量 | 说明 |
+| 类别 | 数量 | 内容 |
 | --- | --- | --- |
-| 路径对齐且内容一致 | **74** | `astrbot_plugin_digital_life/` 19 个 + `shared/` 55 个 |
-| 路径对齐但内容不同 | **4** | 见下 |
-| 仅本仓库导出有 | **2** | `SOURCE_MANIFEST.json`、`shared/memory_engine/README.md` |
-| 仅分发仓库有 | **121** | `archive/` 91、`verification/` 16、`tests/` 8、`tools/` 2、`docs/` 1、根 `.gitignore`/`LICENSE`/`README.md` 3 |
+| 内容一致 | 69 | 插件目录与 `shared/` 多数文件 |
+| 内容变化 | 8 | 插件 `README.md`、`main.py`、`config.py`、`application/service.py`、`metadata.yaml`；`shared/{astrbot_memory_input,dlm_console,memory_output}/README.md` |
+| 仅导出有 | 1 | `shared/memory_engine/README.md`（新增） |
+| 换行差异 | 1 | `astrbot_plugin_digital_life/requirements.txt`（分发侧 CRLF） |
+| 非托管 | 121 | `archive/` 91、`verification/` 16、`tests/` 8、`tools/` 2、`docs/` 1、根 `.gitignore`/`LICENSE`/`README.md` 3 |
 
-内容不同的 4 个文件都是文档，差异来自本轮 PR2 的同步：
+变化全部可解释：版本号统一到 `VERSION`（`metadata.yaml`、`config.py`、`main.py`、`service.py`）、
+文档同步（4 个 README）、新增引擎说明（`memory_engine/README.md`）。**没有分发仓库独有的代码修复。**
 
-- `astrbot_plugin_digital_life/README.md`（构建/验包命令、删失效测试引用）
-- `shared/astrbot_memory_input/README.md`（旧 `host_shadow` 接线 → 统一插件）
-- `shared/dlm_console/README.md`（插件页关系、去掉已归档的同步脚本）
-- `shared/memory_output/README.md`（注入接线改为 ASSIST 模式）
+## 3. 同步内容
 
-**没有发现分发仓库独有的代码修复**：74 个对齐文件内容一致，说明插件与共享包没有在分发
-仓库里被单独改过（或改动已包含在当前源码里）。
+| 动作 | 范围 |
+| --- | --- |
+| 写入托管文件 | 79 个（`astrbot_plugin_digital_life/` + `shared/`），逐字节来自导出目录 |
+| 写入来源清单 | `SOURCE_MANIFEST.json`（来源提交、逐文件哈希、包哈希、布局、工具版本） |
+| 明确列出的额外改动 | **只有根 `README.md`**：版本改 0.8.0-dev.1、安装与校验、托管/非托管边界、指向主仓库 |
+| 保留不动 | `tests/`、`tools/`、`verification/`、`docs/`、`archive/`、`.gitignore`、`LICENSE` |
+| 删除 | 无（首次同步，没有过期托管文件） |
 
-## 3. 三种导出布局
+同步后再次比较：**79/79 内容一致，0 变化、0 缺失、0 换行差异，非托管 122 项保持原样**
+（121 + `SOURCE_MANIFEST.json`）。随后从远端重新克隆核对，结果相同（D2）。
 
-`tools/export_astrbot_plugin.py --layout` 支持三种映射，内容都来自同一份打包清单：
+## 4. 本轮修复：结账依赖的换行
 
-| 布局 | 路径结构 | 用途 | 验证状态 |
-| --- | --- | --- | --- |
-| `archive`（默认） | `astrbot_plugin_digital_life/<pkg>/…`，与 ZIP 完全一致 | 与已验包字节对应、可追溯 | 已验证（导出 79 文件，`--check` 通过） |
-| `engineering` | 根 `astrbot_plugin_digital_life/` + `shared/<pkg>/` | 对齐分发仓库现状，差异可审查 | 已验证（74 一致 / 4 文档差异 / 2 新增） |
-| `flat` | 插件文件在仓库根 | 仓库安装（AstrBot 要求根目录有 `metadata.yaml`） | **未验证**：没有真实仓库安装结果，不声明可用 |
+用一个干净克隆构建时发现同一个提交产出了不同字节：`.gitignore`、`.toml`、`.svg` 等未被
+`.gitattributes` 覆盖的文本文件在 Windows 上以 CRLF 检出，构建直接打包了这些字节。
+已在主仓库修正 `.gitattributes`（`* text=auto eol=lf` 并显式列出 `toml/svg/cjs/jsonl` 等），
+提交 `f9a1637`。修正后同一提交在 LF 结账下重新构建得到 `05ba15e9`，与已发布包一致。
+tag 未移动；该修复在 tag 之后。
 
-## 4. 首次导出方案（待人工执行）
+## 5. 分发仓库 Release
 
-```powershell
-python tools/export_astrbot_plugin.py --layout engineering --output dist/plugin_export_engineering
-python tools/export_astrbot_plugin.py --layout engineering --check dist/plugin_export_engineering
-```
+- 分发仓库 tag：`v0.8.0-dev.1` → `f0b3075`（内容来自 `b245057`，两仓库 SHA 不同属正常）
+- Release：<https://github.com/weijiecao/astrbot_plugin_digital_life/releases/tag/v0.8.0-dev.1>
+  标记为 pre-release，附件 5 个：
 
-1. 把 `dist/plugin_export_engineering/` 与分发仓库工作树做一次人工 diff：
-   预期只有上表 4 个文档差异 + 2 个新增文件；
-2. 确认 `archive/`、`tests/`、`tools/`、`verification/` 的处置（保留、单独归档或另开 PR 退役），
-   导出工具不会删除它们；
-3. 用 `SOURCE_MANIFEST.json` 记录来源提交（本轮为 `null`，因为工作树没有 `.git`）；
-4. 由人提交并推送，工具本身不推送、不建 Release。
+| 附件 | 大小 | SHA-256（下载后复核） |
+| --- | --- | --- |
+| `astrbot_plugin_digital_life-0.8.0-dev.1.zip` | 223,273 | `05ba15e9…cff` |
+| `digital-life-source-0.8.0-dev.1.zip` | 5,435,996 | `b3e40ea3…dd5` |
+| `digital-life-engineering-0.8.0-dev.1.zip` | 5,566,182 | `40dd725a…011` |
+| `digital-life-release-0.8.0-dev.1.json` | 1,250 | `cd36aa1a…e36` |
+| `SHA256SUMS-0.8.0-dev.1.txt` | 423 | `f3817f06…b59` |
 
-## 5. 结论与限制
+上传后重新下载全部附件，按 `SHA256SUMS` 逐项复核，5/5 一致；GitHub 记录的 asset digest 与之一致。
 
-- 两端差异已可解释：74 一致、4 文档落后、2 新增、121 属旧工程包脚手架。
-- 首次导出应使用 `engineering` 布局，把差异压到文档更新，便于评审。
-- `flat` 布局（仓库安装）尚未验证，不能在文档里声明"可从仓库安装"。
-- 本轮没有推送权限/没有 `git`，分发仓库尚未更新；下次在干净克隆上重跑导出并写入真实来源提交。
+## 6. 边界
+
+- `flat` 布局（仓库安装）仍未验证，不声明可用；本次使用 `engineering` 布局。
+- DOM 接线验证另行记录（`DOM_WIRING_2026-11-16.md`），真实浏览器与真实宿主仍未验收。
+- 分发仓库的 `tests/tools/verification/docs/archive` 保留为历史工程材料，不再更新；
+  修复必须回到主仓库，再从新提交导出。
