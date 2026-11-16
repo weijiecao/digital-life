@@ -2,7 +2,7 @@
 const {JSDOM,VirtualConsole}=require('jsdom');
 const fs=require('fs'),path=require('path'),{spawn}=require('child_process'),readline=require('readline'),assert=require('assert');
 const [python,packageDir]=process.argv.slice(2);
-const proc=spawn(python,[path.join(__dirname,'console_rpc_fixture.py'),packageDir],{stdio:['pipe','pipe','inherit']});
+const proc=spawn(python,[path.join(__dirname,'console_rpc_fixture.py'),packageDir],{stdio:['pipe','pipe','inherit'],env:{...process.env,PYTHONUTF8:'1',PYTHONIOENCODING:'utf-8'}});
 const pending=new Map();let serial=0,readyResolve;const ready=new Promise(r=>readyResolve=r);
 readline.createInterface({input:proc.stdout}).on('line',line=>{const r=JSON.parse(line);if(!r.id)return readyResolve(r);const p=pending.get(r.id);pending.delete(r.id);if(r.error||r.data?.error)p.reject(new Error(r.error||r.data.error));else p.resolve(r.data);});
 function rpc(endpoint,body,query){return new Promise((resolve,reject)=>{const id=++serial;pending.set(id,{resolve,reject});proc.stdin.write(JSON.stringify({id,endpoint,body,query})+'\n');});}

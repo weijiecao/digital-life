@@ -35,17 +35,23 @@ python verification/run_core_package.py --package <解压后的插件目录>
 
 ## UI / DOM 验证
 
-DOM 套件需要 Node 与 jsdom。依赖写在本目录的 `plugin/package.json`：
+DOM 套件需要 Node 与 jsdom，依赖固定在 `plugin/package.json` 与
+`plugin/package-lock.json`：
 
 ```powershell
 cd verification/plugin
-npm install          # 首次安装后提交 package-lock.json
+npm ci
 node console_dom_check.cjs <python> <解压后的插件目录>
 ```
 
-**当前状态：未运行。** 本轮环境没有 Node，`package-lock.json` 也尚未生成；在锁文件提交
-并实际跑通之前，不得把 DOM 或浏览器验收记为通过。`console_browser_check.py` 还需要
-aiohttp、Playwright 与 Chromium，属于可选的实浏览器入口，环境要求单独记录。
+**当前状态（2026-11-16）：DOM 接线通过，浏览器未运行。** 环境为 Node v20.18.1、
+npm 10.8.2、jsdom 26.1.0；对象是 0.8.0-dev.1 候选包，7 条管理路径
+（迁移创建/批次/放行、备份、校验、恢复、撤回）全部通过，`visual_browser_validation: false`。
+结果见 `dev/reports/DOM_WIRING_2026-11-16.md`。
+
+DOM 通过只说明页面事件到真实 `ConsoleApi`/`ApplicationService` 的接线与状态反馈正确，
+**不等于**浏览器验收：`console_browser_check.py` 还需要 aiohttp、Playwright 与 Chromium，
+本轮未安装、未运行，单独记录。
 
 ## 与当前回归的关系
 
