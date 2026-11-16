@@ -169,6 +169,7 @@ jobs:
           name: candidate-${{ github.sha }}
           path: downloaded
       - name: Run the package suites on the verified candidate
+        shell: bash
         run: |
           mkdir -p dist
           cp -r downloaded/dist/. dist/
