@@ -127,10 +127,16 @@ jobs:
         run: >
           python tools/run_regression.py
           --json-out dist/regression.json --log-out dist/regression.log
+      - name: Create the source zip from the tested commit
+        run: |
+          git -c core.autocrlf=false -c core.eol=lf archive --format=zip \
+            -o "dist/source-$(cat VERSION).zip" HEAD
       - name: Record the acceptance result
         run: python tools/record_acceptance.py
       - name: Build the complete release set (after the evidence)
-        run: python tools/build_engineering_bundle.py --dist dist --out-dir dist/release
+        run: >
+          python tools/build_engineering_bundle.py --dist dist --out-dir dist/release
+          --source-zip "dist/source-$(cat VERSION).zip"
       - name: Check the release set, including a rebuild from the source zip
         run: >
           python tools/check_release_set.py --release-dir dist/release
