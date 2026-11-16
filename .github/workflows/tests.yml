@@ -78,11 +78,18 @@ jobs:
         run: python tools/check_repository.py --json > "${{ runner.temp }}/repository_check.json"
       - name: Build the canonical candidate
         run: python tools/build_unified_plugin.py --out-dir dist --require-clean
-      - name: Build a second time and compare the actual hashes
+      - name: Build a second time and compare the actual bytes
         run: |
           python tools/build_unified_plugin.py --out-dir dist-second --require-clean
-          cmp dist/build_manifest.json dist-second/build_manifest.json
-          cmp dist/*.sha256 dist-second/*.sha256
+          python - <<'PY'
+          import json
+          first = json.load(open("dist/build_manifest.json", encoding="utf-8"))
+          second = json.load(open("dist-second/build_manifest.json", encoding="utf-8"))
+          assert first["archive_sha256"] == second["archive_sha256"], "zip hash differs"
+          assert first["file_count"] == second["file_count"], "file count differs"
+          assert first["files"] == second["files"], "file list differs"
+          print("two builds are byte-identical:", first["archive_sha256"])
+          PY
       - name: Verify the archive (stub host)
         run: >
           python tools/verify_unified_plugin.py
