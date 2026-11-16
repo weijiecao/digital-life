@@ -1,8 +1,8 @@
 {
   "schema": "digital-life-acceptance/1",
-  "tested_commit": null,
-  "dirty": null,
-  "source_note": "no .git directory in the working tree",
+  "tested_commit": "5b35787da11fb78a2e61d5e4633409ed57207c44",
+  "dirty": false,
+  "source_note": "",
   "plugin_version": "0.7.0-dev.2",
   "artifact_sha256": "08c90bbd1de6147080e9b062e7b5e692075556ba4b048e63c8e932dea032e29a",
   "command": "python tools/run_regression.py",
@@ -10,8 +10,8 @@
     "os": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10",
     "platform": "win32",
-    "astrbot": "not installed",
-    "git": "not available in PATH for this run"
+    "astrbot": "source checkout: testbed/AstrBot-4.29.3 (imported, not a live instance)",
+    "git": "available"
   },
   "total": 367,
   "passed": 367,
