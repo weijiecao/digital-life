@@ -91,6 +91,10 @@ python tools/record_acceptance.py --check-evidence dev/reports/acceptance/<commi
 | 分发仓库同步 | 79/79 托管文件一致，122 项非托管保留 |
 | Release | <https://github.com/weijiecao/astrbot_plugin_digital_life/releases/tag/v0.8.0-dev.2>，附件下载后 4/4 哈希复核通过 |
 
+## 后续更正
+
+0.8.0-dev.2 首次发布的工程 ZIP 误收录了旧 `release_set.json`；已修正证据收录规则并替换工程 ZIP/发布 JSON/校验值，见 [`ERRATUM_2026-11-16_DEV2.md`](ERRATUM_2026-11-16_DEV2.md)。
+
 ## 仍未验收
 
 真实 AstrBot/NapCat 实例、Windows 实机安装、真实浏览器页面（Chromium/Playwright 未安装）、

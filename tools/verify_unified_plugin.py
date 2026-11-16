@@ -432,8 +432,13 @@ def self_test(bundle: Path, manifest: Path) -> dict:
                             "failed_checks": [c["id"] for c in report["checks"]
                                               if c["status"] == "fail"]})
     passed = results[0]["ok"] and all(item["rejected"] for item in results[1:])
+    value = json.loads(manifest.read_text(encoding="utf-8"))
     return {"schema": "digital-life-plugin-verification-selftest/1",
-            "ok": passed, "cases": results}
+            "ok": passed, "cases": results,
+            "plugin_version": value.get("plugin_version"),
+            "source_commit": value.get("source_commit"),
+            "dirty": value.get("dirty"),
+            "artifact_sha256": value.get("archive_sha256")}
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -79,6 +79,10 @@ def _inspect(cls, bundle: Path, manifest: dict, spec: dict, root: Path) -> dict:
         "schema": SCHEMA,
         "ok": all(item["ok"] for item in checks),
         "bundle": bundle.name,
+        "plugin_version": manifest.get("plugin_version"),
+        "source_commit": manifest.get("source_commit"),
+        "dirty": manifest.get("dirty"),
+        "artifact_sha256": manifest.get("archive_sha256"),
         "astrbot_root": str(root),
         "inspector": "_PluginUpdater.inspect_plugin_archive",
         "metadata_entry": entry,
@@ -113,6 +117,10 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     except Exception as exc:  # AstrBot raises its own error types
         result = {"schema": SCHEMA, "ok": False, "bundle": bundle.name,
+              "plugin_version": manifest.get("plugin_version"),
+              "source_commit": manifest.get("source_commit"),
+              "dirty": manifest.get("dirty"),
+              "artifact_sha256": manifest.get("archive_sha256"),
                   "astrbot_root": str(Path(args.astrbot_root).resolve()),
                   "error": type(exc).__name__ + ": " + str(exc), "checks": []}
     if args.report:

@@ -13,10 +13,10 @@
       "sha256": "ca9f3ff23013e0af04d89ebb30c34e6694486356638fda0b7e1ee08409f7ad04"
     },
     {
-      "bytes": 5819728,
+      "bytes": 5820327,
       "kind": "engineering",
       "name": "digital-life-engineering-0.8.0-dev.2.zip",
-      "sha256": "b55a172eadabada13d3a176cb1ce2a2c932f36e4cc6f2eef3009952cc298b64e"
+      "sha256": "7a76c88db01e00d197d71db21755ac374185227d52a74d0039222240c4e1fec0"
     }
   ],
   "build_rules_version": "1",

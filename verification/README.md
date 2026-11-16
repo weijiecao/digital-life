@@ -55,7 +55,7 @@ DOM 通过只说明页面事件到真实 `ConsoleApi`/`ApplicationService` 的�
 
 ## 与当前回归的关系
 
-- `dev/tests/`：401 项（源码回归，`python tools/run_regression.py`）。
+- `dev/tests/`：407 项（源码回归，`python tools/run_regression.py`）。
 - 本目录：47 + 137 + 20 = 204 项**包级**用例，针对同一个候选 ZIP。
 - 数字不重复计为独立覆盖：131 个核心文件与 `dev/tests/` 同源，47/20 项沿用历史工程包。
 - 旧的 20/47 项已适配到当前布局与构建接口，不再调用旧构建器；历史原始文件保留在

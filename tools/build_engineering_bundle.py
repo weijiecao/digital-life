@@ -96,6 +96,64 @@ def _acceptance_summary(dist: Path) -> str:
     return "\n".join(lines) or "no acceptance summary available"
 
 
+EVIDENCE_SCHEMA = "digital-life-engineering-evidence/1"
+BOUND_REPORTS = {
+    "regression.json": "tested_commit",
+    "package_regression.json": "tested_commit",
+    "package_verification.json": "source_commit",
+    "selftest.json": "source_commit",
+    "astrbot_install_check.json": "source_commit",
+    "ui_dom.json": "source_commit",
+}
+ARTIFACT_FIELDS = ("artifact_sha256", "archive_sha256")
+
+
+def _bind_evidence(dist: Path, build: dict) -> dict[str, Path]:
+    """Return the reports that provably describe this build.
+
+    Every included report must carry the same commit, be non-dirty and, when it
+    records an artifact hash, the same artifact. ``release_set.json`` is never
+    included: the release check runs after this bundle, so any copy in ``dist``
+    belongs to an earlier set and is exactly the stale evidence this guard
+    exists to stop.
+    """
+    commit = build.get("source_commit")
+    artifact = build.get("archive_sha256")
+    version = build.get("plugin_version")
+    if not commit:
+        raise PackagingError("cannot bind evidence without a source commit")
+    included: dict[str, Path] = {}
+    problems: list[str] = []
+    for name, field in BOUND_REPORTS.items():
+        path = dist / name
+        if not path.is_file():
+            continue
+        try:
+            value = json.loads(path.read_text(encoding="utf-8"))
+        except ValueError:
+            problems.append("%s: not valid JSON" % name)
+            continue
+        if value.get(field) != commit:
+            problems.append("%s: %s=%r, expected %s"
+                            % (name, field, value.get(field), commit[:8]))
+        if value.get("dirty") is not False:
+            problems.append("%s: dirty=%r" % (name, value.get("dirty")))
+        if value.get("plugin_version") not in (None, version):
+            problems.append("%s: version=%r" % (name, value.get("plugin_version")))
+        for field_name in ARTIFACT_FIELDS:
+            recorded = value.get(field_name)
+            if recorded is not None and recorded != artifact:
+                problems.append("%s: %s=%r" % (name, field_name, recorded[:12]))
+        nested = value.get("archive")
+        if isinstance(nested, dict) and nested.get("sha256") not in (None, artifact):
+            problems.append("%s: archive.sha256=%r" % (name, nested["sha256"][:12]))
+        included[name] = path
+    if problems:
+        raise PackagingError("refusing to package stale evidence: %s"
+                             % "; ".join(problems))
+    return included
+
+
 def build(root: Path = REPO_ROOT, dist: str = "dist", out_dir: str = "dist/release",
           source_zip: str | None = None, notes: str | None = None,
           build_rules: str | None = None) -> dict:
@@ -150,22 +208,34 @@ def build(root: Path = REPO_ROOT, dist: str = "dist", out_dir: str = "dist/relea
                                                  "see the repository changelog\n",
                                                  encoding="utf-8", newline="\n")
         (staging / "ACCEPTANCE.md").write_text(
-            "# Acceptance summary\n\nversion: %s\nsource_commit: %s\ndirty: %s\n\n%s\n"
+            "# Acceptance summary\n\nversion: %s\nsource_commit: %s\ndirty: %s\n\n%s\n\n"
+            "release-set check: produced after this bundle (see dist/release_set.json "
+            "and the release job log); only reports bound to this commit and "
+            "artifact are included in EVIDENCE/.\n"
             % (version, build.get("source_commit"), build.get("dirty"), summary),
             encoding="utf-8", newline="\n")
-        # The reports are part of the deliverable, not just of dist/.
+        # The reports are part of the deliverable, but only the ones that
+        # provably describe *this* build. A stale report is an error, not
+        # something to package quietly.
         evidence = staging / "EVIDENCE"
         evidence.mkdir()
-        for name in ("regression.json", "package_regression.json",
-                     "package_verification.json", "selftest.json",
-                     "astrbot_install_check.json", "ui_dom.json",
-                     "release_set.json"):
-            source = dist_path / name
-            if source.is_file():
-                shutil.copy2(source, evidence / name)
+        bound = _bind_evidence(dist_path, build)
+        for name, source in bound.items():
+            shutil.copy2(source, evidence / name)
         export_manifest = dist_path / "plugin_export" / "SOURCE_MANIFEST.json"
         if export_manifest.is_file():
             shutil.copy2(export_manifest, evidence / "export_SOURCE_MANIFEST.json")
+        (evidence / "INDEX.json").write_text(
+            json.dumps({"schema": EVIDENCE_SCHEMA,
+                        "version": version,
+                        "source_commit": build.get("source_commit"),
+                        "artifact_sha256": build.get("archive_sha256"),
+                        "reports": [{"name": name,
+                                     "bytes": (evidence / name).stat().st_size,
+                                     "sha256": sha256(evidence / name)}
+                                    for name in sorted(bound)]},
+                       ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8", newline="\n")
         inner = [(path.relative_to(staging).as_posix(), path.read_bytes())
                  for path in sorted(staging.rglob("*")) if path.is_file()]
         checksums = "\n".join("%s  %s" % (hashlib.sha256(data).hexdigest(), name)

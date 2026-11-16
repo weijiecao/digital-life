@@ -15,6 +15,7 @@
 | `REPOSITORY_ORGANIZATION_2026-11-15.md` | 本轮仓库整理记录：改动、证据、偏差与计划 §8 清单状态 |
 | `DISTRIBUTION_SYNC_2026-11-16.md` | 分发同步与 Release 记录：S→D2、逐文件差异、附件哈希复核 |
 | `DOM_WIRING_2026-11-16.md` | DOM 接线验证结果（7 条路径）、环境与“非浏览器”边界 |
+| `ERRATUM_2026-11-16_DEV2.md` | dev.2 发布更正：工程 ZIP 误收录旧失败报告、证据绑定规则与替换后的哈希 |
 | `AUDIT_CLOSURE_2026-11-16.md` | 0.8.0-dev.1 验收问题 A01–A04 与同批问题的关闭记录、0.8.0-dev.2 复核值 |
 
 活动日志由命令生成在 `dist/`（Git 忽略）：`dist/regression.json`、`dist/regression.log`、

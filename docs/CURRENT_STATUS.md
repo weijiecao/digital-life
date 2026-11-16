@@ -22,8 +22,9 @@
 | 维度 | 状态 | 说明 |
 | --- | --- | --- |
 | 实现 | 已实现 | 迁移、实时追加、恢复切换、撤回、运行权、输出 v2、统一管理页的代码都在 `dev/` |
-| 离线验证 | 通过 | 401 项源码回归 + 204 项包级用例（47＋137＋20）全部通过，0 跳过（Windows 11 / Python 3.12.10） |
-| 最新正式验收 | 0.8.0-dev.2（被测提交 `c42ceff`）：401 源码 + 47/137/20 包级 + 7 条 DOM；`formal=true`，证据在 `dev/reports/acceptance/c42ceff…/` |
+| 离线验证 | 通过 | 407 项源码回归 + 204 项包级用例（47＋137＋20）全部通过，0 跳过（Windows 11 / Python 3.12.10） |
+| 最新正式验收 | 0.8.0-dev.2（被测提交 `c42ceff`）：407 源码 + 47/137/20 包级 + 7 条 DOM；`formal=true`，证据在 `dev/reports/acceptance/c42ceff…/` |
+| 发布更正 | dev.2 工程 ZIP 曾误收录旧失败报告；已改为“收录前绑定 + 发布侧索引检查”并替换附件，见 [`ERRATUM_2026-11-16_DEV2.md`](../dev/reports/ERRATUM_2026-11-16_DEV2.md) |
 | 工程验收问题 | A01–A04 已关闭并复核，记录见 [`dev/reports/AUDIT_CLOSURE_2026-11-16.md`](../dev/reports/AUDIT_CLOSURE_2026-11-16.md) |
 | DOM 接线 | 通过（非浏览器） | 7 条管理路径（迁移创建/批次/放行、备份、校验、恢复、撤回）在解压包上通过；jsdom 26.1.0 / Node 20.18.1；**真实浏览器未运行** |
 | 包级验证 | 通过（真实 AstrBot 源码） | 79 文件候选包 16 项结构检查通过；插件模块用 AstrBot 4.29.3 源码导入（`host: astrbot-source`），并通过 AstrBot 自带 `inspect_plugin_archive` 校验 |
@@ -34,7 +35,7 @@
 
 | 证据 | 位置 | 内容 |
 | --- | --- | --- |
-| 源码回归 | `dist/regression.json`、`dist/regression.log` | 401 ran / 401 passed / 0 failed / 0 errors / 0 skipped |
+| 源码回归 | `dist/regression.json`、`dist/regression.log` | 407 ran / 407 passed / 0 failed / 0 errors / 0 skipped |
 | 包级用例 | `dist/package_regression.json` | completion 47/47、core 137/137、legacy 20/20，全部对同一候选 ZIP |
 | 构建清单 | `dist/build_manifest.json` | 文件数、字节数、SHA-256、逐文件哈希与构建环境；当前值以验收记录为准 |
 | 包验证 | `dist/package_verification.json` | 16 项检查全部通过，`host: astrbot-source`（`testbed/AstrBot-4.29.3`） |

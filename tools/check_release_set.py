@@ -176,8 +176,47 @@ def _check_engineering_inner(engineering: Path, plugin: Path, source: Path,
             if "INNER_SHA256SUMS.txt" not in names:
                 problems.append({"file": engineering.name,
                                  "problem": "missing INNER_SHA256SUMS.txt"})
+            _check_evidence_index(archive, names, engineering.name,
+                                  sha256(plugin), version, problems)
     except zipfile.BadZipFile:
         problems.append({"file": engineering.name, "problem": "not a valid zip"})
+
+
+def _check_evidence_index(archive: zipfile.ZipFile, names: set[str],
+                          engineering: str, plugin_hash: str, version: str,
+                          problems: list[dict]) -> None:
+    """The embedded evidence must be indexed and bound to this artifact."""
+    if "EVIDENCE/release_set.json" in names:
+        problems.append({"file": engineering,
+                         "problem": "EVIDENCE/release_set.json must not be packaged "
+                                    "(the release check runs after the bundle)"})
+    if "EVIDENCE/INDEX.json" not in names:
+        problems.append({"file": engineering,
+                         "problem": "missing EVIDENCE/INDEX.json"})
+        return
+    try:
+        index = json.loads(archive.read("EVIDENCE/INDEX.json").decode("utf-8"))
+    except ValueError:
+        problems.append({"file": engineering,
+                         "problem": "EVIDENCE/INDEX.json is not valid JSON"})
+        return
+    if index.get("artifact_sha256") != plugin_hash:
+        problems.append({"file": engineering,
+                         "problem": "evidence index is bound to %r"
+                                    % (index.get("artifact_sha256") or "")[:12]})
+    if index.get("version") != version:
+        problems.append({"file": engineering,
+                         "problem": "evidence index version %r"
+                                    % (index.get("version"),)})
+    for record in index.get("reports", []):
+        name = "EVIDENCE/" + str(record.get("name"))
+        if name not in names:
+            problems.append({"file": engineering,
+                             "problem": "evidence report missing: %s" % name})
+            continue
+        if hashlib.sha256(archive.read(name)).hexdigest() != record.get("sha256"):
+            problems.append({"file": engineering,
+                             "problem": "%s does not match its index hash" % name})
 
 
 def _check_source_rebuild(source: Path, plugin: Path, version: str,

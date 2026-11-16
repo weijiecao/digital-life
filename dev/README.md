@@ -2,7 +2,7 @@
 
 - 状态：`0.8.0-dev.2` 开发基线，R0/R1 NO-GO；能力与证据见
   [`../docs/CURRENT_STATUS.md`](../docs/CURRENT_STATUS.md)。
-- 源码回归：在仓库根目录执行 `python tools/run_regression.py`（401 项，结果写入 `dist/regression.json`）。
+- 源码回归：在仓库根目录执行 `python tools/run_regression.py`（407 项，结果写入 `dist/regression.json`）。
 - 包级用例：`python tools/run_package_regression.py --dist dist --suites completion,core,legacy`
   （47＋137＋20，针对同一个候选 ZIP；见 `verification/README.md`）。
 - 当前验收记录：[`reports/current_acceptance.json`](reports/current_acceptance.json)。

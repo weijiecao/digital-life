@@ -20,7 +20,7 @@
 python -m pip install -r dev/requirements-release.txt
 # 版本只有一个来源：仓库根 VERSION；metadata 由工具同步
 python tools/sync_version.py --check
-python tools/run_regression.py                          # 401 项源码回归
+python tools/run_regression.py                          # 407 项源码回归
 python tools/check_repository.py                        # 入口/链接/归档隔离检查
 python tools/build_unified_plugin.py --out-dir dist     # 构建插件包
 python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
@@ -88,7 +88,7 @@ env/                            环境模板与锁文件
 
 ```powershell
 python tools/sync_version.py --check
-python tools/run_regression.py                 # 401 项源码回归
+python tools/run_regression.py                 # 407 项源码回归
 python tools/build_unified_plugin.py --out-dir dist --require-clean
 python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
 python tools/run_package_regression.py --dist dist --suites completion,core,legacy
