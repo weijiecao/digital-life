@@ -266,7 +266,7 @@ def check_archive_releases(checks: list[dict]) -> None:
         except ValueError:
             problems.append("%s: invalid JSON" % manifest_path.name)
             continue
-        artifact = manifest.get("artifact")
+        artifact = manifest.get("artifact") or manifest.get("archive")
         if not artifact:
             continue
         bundle = release_dir / artifact
@@ -274,9 +274,11 @@ def check_archive_releases(checks: list[dict]) -> None:
             problems.append("%s: missing %s" % (manifest_path.name, artifact))
             continue
         digest = hashlib.sha256(bundle.read_bytes()).hexdigest()
-        if manifest.get("sha256") and digest != manifest["sha256"]:
+        expected_digest = manifest.get("sha256") or manifest.get("archive_sha256")
+        if expected_digest and digest != expected_digest:
             problems.append("%s: sha256 mismatch" % artifact)
-        if manifest.get("bytes") and bundle.stat().st_size != manifest["bytes"]:
+        expected_bytes = manifest.get("bytes") or manifest.get("archive_bytes")
+        if expected_bytes and bundle.stat().st_size != expected_bytes:
             problems.append("%s: size mismatch" % artifact)
         expected = manifest.get("file_sha256") or {}
         if expected:

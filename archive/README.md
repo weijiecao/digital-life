@@ -21,7 +21,7 @@ archive/
 | --- | --- | --- |
 | `plugins/astrbot_plugin_digital_memory_store/` | 数字记忆基座旧插件（v1.0.19 线） | 已停止维护；被 `dev/astrbot_plugin_digital_life/` 取代 |
 | `plugins/astrbot_plugin_memory_shadow/` | 旧 shadow 插件 | 已停止维护；不得与统一插件同时启用 |
-| `releases/` | `astrbot_plugin_digital_memory_store-1.0.19`、`memory-engine-rc3-queryguard`、`memory-engine-r0-rc3` 及其清单 | 保留原字节，用于历史追溯，不再是当前交付物 |
+| `releases/` | `astrbot_plugin_digital_life-0.7.0-dev.2`、`astrbot_plugin_digital_memory_store-1.0.19`、`memory-engine-rc3-queryguard`、`memory-engine-r0-rc3` 及其清单 | 保留原字节，用于历史追溯，不再是当前交付物 |
 | `tests/` | 旧插件、shadow、旧运行包相关测试 | 保留原样；不保证在当前树上可运行 |
 | `scripts/` | `build_astrbot_plugin.py`、`build_package.py`、`build_r0_bundle.py`、`install.py`、`rollback.py`、`sync_console_view.py`、`verify_install.py`、`verify_r0_bundle.py`、`package_lifecycle.py`、`upgrade.py` | 只针对归档插件或 RC3 运行包；**活动工具不得用路径绕回这些脚本** |
 | `docs/` | 1.0.19 安装与本地安装测试、`METRICS`/`MEMORY_VERIFICATION_PLAN` 计划、RC 说明 | 与当前 0.7.0-dev.2 无关 |

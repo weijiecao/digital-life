@@ -1,10 +1,10 @@
 {
   "schema": "digital-life-acceptance/1",
-  "tested_commit": "5b35787da11fb78a2e61d5e4633409ed57207c44",
+  "tested_commit": "c1ae7f88b7e00da6b6da162191f35fa64614fa41",
   "dirty": false,
   "source_note": "",
-  "plugin_version": "0.7.0-dev.2",
-  "artifact_sha256": "08c90bbd1de6147080e9b062e7b5e692075556ba4b048e63c8e932dea032e29a",
+  "plugin_version": "0.7.0-dev.3",
+  "artifact_sha256": "631e114a9040b6c2c36e11bda3cc3351d2fb0e925048ce7b57c7b409f6f2e5a6",
   "command": "python tools/run_regression.py",
   "environment": {
     "os": "Windows-11-10.0.26200-SP0",
@@ -19,9 +19,9 @@
   "errors": 0,
   "skipped": 0,
   "skip_reasons": [],
-  "started_at": "2026-11-16T11:36:13+08:00",
-  "finished_at": "2026-11-16T11:36:37+08:00",
-  "duration_seconds": 23.963,
+  "started_at": "2026-11-16T12:09:24+08:00",
+  "finished_at": "2026-11-16T12:09:50+08:00",
+  "duration_seconds": 25.595,
   "log_reference": "dist/regression.log",
   "evidence": {
     "regression": "dist/regression.json",
@@ -32,8 +32,8 @@
     "astrbot_install_check": "dist/astrbot_install_check.json"
   },
   "package": {
-    "archive": "astrbot_plugin_digital_life-0.7.0-dev.2.zip",
-    "bytes": 222925,
+    "archive": "astrbot_plugin_digital_life-0.7.0-dev.3.zip",
+    "bytes": 223274,
     "file_count": 79,
     "build_rules_version": "1",
     "verification_ok": true,
@@ -76,7 +76,7 @@
   "export": {
     "layout": "archive",
     "file_count": 79,
-    "bundle_sha256": "08c90bbd1de6147080e9b062e7b5e692075556ba4b048e63c8e932dea032e29a"
+    "bundle_sha256": "631e114a9040b6c2c36e11bda3cc3351d2fb0e925048ce7b57c7b409f6f2e5a6"
   },
   "baseline_before_change": {
     "tests": 333,
@@ -102,7 +102,9 @@
     "removed_files": [],
     "changed_files": [
       "astrbot_plugin_digital_life/README.md",
+      "astrbot_plugin_digital_life/application/service.py",
       "astrbot_plugin_digital_life/astrbot_memory_input/README.md",
+      "astrbot_plugin_digital_life/config.py",
       "astrbot_plugin_digital_life/dlm_console/README.md",
       "astrbot_plugin_digital_life/main.py",
       "astrbot_plugin_digital_life/memory_output/README.md",

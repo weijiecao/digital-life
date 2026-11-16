@@ -32,7 +32,7 @@
 | 证据 | 位置 | 内容 |
 | --- | --- | --- |
 | 回归结果 | `dist/regression.json`、`dist/regression.log` | 367 ran / 367 passed / 0 failed / 0 errors / 0 skipped |
-| 构建清单 | `dist/build_manifest.json` | 79 文件、222,925 bytes、SHA-256 `08c90bbd…`、逐文件哈希、构建环境 |
+| 构建清单 | `dist/build_manifest.json` | 79 文件、223,274 bytes、SHA-256 `631e114a…`、逐文件哈希、构建环境 |
 | 包验证 | `dist/package_verification.json` | 16 项检查全部通过，`host: astrbot-source`（`testbed/AstrBot-4.29.3`） |
 | AstrBot 归档校验 | `dist/astrbot_install_check.json` | `_PluginUpdater.inspect_plugin_archive` 通过，metadata 入口为 `astrbot_plugin_digital_life/metadata.yaml` |
 | 包级负例 | `python tools/verify_unified_plugin.py --self-test` | 缺文件 / 篡改 / 路径穿越 / 重复成员均被拒绝 |
@@ -42,12 +42,14 @@
 
 ## 与已交付包的关系
 
-- 已交付：`releases/astrbot_plugin_digital_life-0.7.0-dev.3.zip`，78 文件 / 222,031 bytes / `06756a5f…`
-- 当前源码构建：79 文件 / 222,925 bytes / `08c90bbd…`
-- 差异：新增 `memory_engine/README.md`；4 个 README 内容更新（插件与 3 个模块）；`main.py`、
-  `metadata.yaml`、`requirements.txt` 与插件 `README.md` 的换行由 CRLF 规范化为 LF
+- 已交付：`releases/astrbot_plugin_digital_life-0.7.0-dev.3.zip`，79 文件 / 223,274 bytes / `631e114a…`
+  （`source_commit=c1ae7f8`，干净树构建；发布清单见 `releases/astrbot_plugin_digital_life-0.7.0-dev.3.json`）
+- 上一版：`archive/releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip`，78 文件 / 222,031 bytes / `06756a5f…`
+- 差异：版本号 `0.7.0-dev.2 → 0.7.0-dev.3`；版本改为只从 `metadata.yaml` 读取（不再有两处硬编码）；
+  新增 `memory_engine/README.md`；4 个 README 更新；文本换行按 `.gitattributes` 规范化。
+  **没有运行行为改动。**
 
-旧包保留原字节，不用来证明"可从源码重建"；新字节不覆盖旧交付物。详见
+旧包保留原字节，用于追溯；新版本不覆盖旧交付物。详见
 [`releases/README.md`](../releases/README.md)。
 
 ## 未完成的验收

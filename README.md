@@ -71,8 +71,8 @@ env/                            环境模板与锁文件
 
 | 文件 | 说明 |
 | --- | --- |
-| `releases/astrbot_plugin_digital_life-0.7.0-dev.3.zip` | 已交付开发版（78 文件，222,031 bytes，SHA-256 `06756a5f…`） |
-| `dist/astrbot_plugin_digital_life-0.7.0-dev.3.zip` | 由当前源码重建的候选（79 文件，222,925 bytes，SHA-256 `08c90bbd…`；新增 `memory_engine/README.md`、模块 README 更新、文本换行规范化） |
+| `releases/astrbot_plugin_digital_life-0.7.0-dev.3.zip` | 当前交付开发版（79 文件，223,274 bytes，SHA-256 `631e114a…`） |
+| `archive/releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip` | 上一版（78 文件，222,031 bytes，`06756a5f…`，仅追溯） |
 | `dev/reports/current_acceptance.json` | 当前验收记录（唯一可引用的数字） |
 | `dev/reports/SPECIALIZED_COVERAGE.md` | 能力 → 测试 → 环境的映射与缺口 |
 | `docs/ARCHITECTURE.md` | 模块职责与数据流 |
