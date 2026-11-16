@@ -1,0 +1,39 @@
+{
+  "artifact_sha256": "05ba15e9d98792220c7ddf1615bad8448c178175626a6ebbc529c57a9ec90cff",
+  "files": {
+    "astrbot_install_check.json": {
+      "bytes": 1387,
+      "sha256": "90e85a61da46b5a1160a05d6e7029fa803145b770b6ea3d0a2aaf4a01794c84a"
+    },
+    "build_manifest.json": {
+      "bytes": 15728,
+      "sha256": "fc2b18a45c1fb3d3495c2d3b1059b02a8c365010213d09fa22b088912cf784c6"
+    },
+    "export_SOURCE_MANIFEST.json": {
+      "bytes": 14180,
+      "sha256": "5c11a1c2d64f9e4daa50acc55ad19661818e31b931ff5bfe910f2144f0dcc4e7"
+    },
+    "package_regression.json": {
+      "bytes": 2902,
+      "sha256": "44d5f35919b32d8c916eb564f602dfd19737c330bf2fda0ab835f9356a9bdc9c"
+    },
+    "package_verification.json": {
+      "bytes": 2741,
+      "sha256": "5c00250ad0e2a1b9393c1c0b6dde353ae54315979c099a714b905f23e6586978"
+    },
+    "regression.json": {
+      "bytes": 591,
+      "sha256": "52a5bb380eb590f57344a5e869817b66ac8e0959763e7b49a65c052029f03007"
+    },
+    "selftest.json": {
+      "bytes": 1028,
+      "sha256": "b51e16930227aa0e99a3150bdab19745a4888ff95ddf053e63f4b5157625b772"
+    },
+    "summary.json": {
+      "bytes": 2628,
+      "sha256": "750fcb712b95b7f3b0ef86d100d58f7af4a171e7e73dd25316fca144929797f2"
+    }
+  },
+  "schema": "digital-life-acceptance-evidence/1",
+  "tested_commit": "b245057501ac5081316eb6e4e69155ec7d37b326"
+}

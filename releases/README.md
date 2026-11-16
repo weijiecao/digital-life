@@ -15,7 +15,7 @@
 | --- | --- |
 | `astrbot_plugin_digital_life-0.8.0-dev.1.zip` | 安装包（AstrBot WebUI 上传这个文件） |
 | `astrbot_plugin_digital_life-0.8.0-dev.1.sha256` | 上述包的 SHA-256 |
-| `astrbot_plugin_digital_life-0.8.0-dev.1.json` | 发布清单：版本、来源提交、哈希、字节数、文件数、附件与验证边界 |
+| `digital-life-release-0.8.0-dev.1.json` | 发布清单：版本、来源提交、附件哈希与大小、验证边界 |
 | `README.md` | 本文件 |
 
 这是整体开发基线，不是 RC。安装或升级后应完整重启 AstrBot，热重载不能清除既有顶层模块。

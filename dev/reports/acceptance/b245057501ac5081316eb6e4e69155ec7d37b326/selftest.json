@@ -1,0 +1,55 @@
+{
+  "cases": [
+    {
+      "case": "baseline",
+      "failed_checks": [],
+      "ok": true,
+      "rejected": false
+    },
+    {
+      "case": "missing",
+      "failed_checks": [
+        "bundle-sha256",
+        "bundle-bytes",
+        "file-count",
+        "member-set",
+        "file-hashes",
+        "required-files",
+        "metadata"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "tampered",
+      "failed_checks": [
+        "bundle-sha256",
+        "bundle-bytes",
+        "file-hashes"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "traversal",
+      "failed_checks": [
+        "bundle-sha256",
+        "bundle-bytes",
+        "member-names",
+        "file-count",
+        "member-set"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "duplicate",
+      "failed_checks": [
+        "bundle-sha256",
+        "bundle-bytes",
+        "member-names",
+        "file-count"
+      ],
+      "rejected": true
+    }
+  ],
+  "ok": true,
+  "schema": "digital-life-plugin-verification-selftest/1"
+}

@@ -1,0 +1,38 @@
+{
+  "attachments": [
+    {
+      "bytes": 223273,
+      "kind": "plugin",
+      "name": "astrbot_plugin_digital_life-0.8.0-dev.1.zip",
+      "sha256": "05ba15e9d98792220c7ddf1615bad8448c178175626a6ebbc529c57a9ec90cff"
+    },
+    {
+      "bytes": 5435996,
+      "kind": "source",
+      "name": "digital-life-source-0.8.0-dev.1.zip",
+      "sha256": "b3e40ea3476b7f65e362c1c0d01d66e5e62eb812b73019e121f69d10c4c31dd5"
+    },
+    {
+      "bytes": 5566182,
+      "kind": "engineering",
+      "name": "digital-life-engineering-0.8.0-dev.1.zip",
+      "sha256": "40dd725a49f6d7150c96f620e4e787ccd42bcf5debbf5120371ff580cde90011"
+    }
+  ],
+  "build_rules_version": "1",
+  "dirty": false,
+  "level": "dev",
+  "limits": [
+    "development build, not an RC; do not connect to V1 production",
+    "real AstrBot/NapCat instance, Windows install, browser UI and 72h soak are not verified"
+  ],
+  "links": {
+    "downloads": "https://github.com/weijiecao/astrbot_plugin_digital_life/releases",
+    "source": "https://github.com/weijiecao/digital-life"
+  },
+  "name": "astrbot_plugin_digital_life",
+  "plugin_version_from": "VERSION",
+  "schema": "digital-life-release/2",
+  "source_commit": "b245057501ac5081316eb6e4e69155ec7d37b326",
+  "version": "0.8.0-dev.1"
+}

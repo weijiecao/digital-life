@@ -1,0 +1,85 @@
+{
+  "artifact_sha256": "05ba15e9d98792220c7ddf1615bad8448c178175626a6ebbc529c57a9ec90cff",
+  "candidate": "astrbot_plugin_digital_life-0.8.0-dev.1.zip",
+  "checks": [
+    {
+      "detail": "all package modules load from the extracted zip",
+      "id": "package-imports",
+      "ok": true,
+      "origins": {
+        "astrbot_memory_input": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-package-mf17x3at\\astrbot_plugin_digital_life\\astrbot_memory_input\\__init__.py",
+        "dlm_console": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-package-mf17x3at\\astrbot_plugin_digital_life\\dlm_console\\__init__.py",
+        "memory_engine": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-package-mf17x3at\\astrbot_plugin_digital_life\\memory_engine\\__init__.py",
+        "memory_output": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-package-mf17x3at\\astrbot_plugin_digital_life\\memory_output\\__init__.py",
+        "v1_5_consolidator": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-package-mf17x3at\\astrbot_plugin_digital_life\\v1_5_consolidator\\__init__.py"
+      }
+    }
+  ],
+  "dirty": false,
+  "ok": true,
+  "plugin_version": "0.8.0-dev.1",
+  "schema": "digital-life-package-regression/1",
+  "suites": [
+    {
+      "command": [
+        "C:\\Users\\205\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "unittest",
+        "-q",
+        "completion_suite"
+      ],
+      "duration_seconds": 5.317,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "id": "completion",
+      "ok": true,
+      "passed": 47,
+      "skipped": 0,
+      "status": "passed",
+      "target": "package",
+      "total": 47,
+      "working_directory": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-publish\\verification\\plugin"
+    },
+    {
+      "command": [
+        "C:\\Users\\205\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\Users\\205\\AppData\\Local\\Temp\\dl-publish\\verification\\run_core_package.py"
+      ],
+      "duration_seconds": 5.072,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "id": "core",
+      "ok": true,
+      "passed": 137,
+      "skipped": 0,
+      "status": "passed",
+      "target": "package",
+      "total": 137,
+      "working_directory": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-publish"
+    },
+    {
+      "command": [
+        "C:\\Users\\205\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "unittest",
+        "-q",
+        "test_legacy_plugin_contracts"
+      ],
+      "duration_seconds": 3.745,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "id": "legacy",
+      "ok": true,
+      "passed": 20,
+      "skipped": 0,
+      "status": "passed",
+      "target": "package",
+      "total": 20,
+      "working_directory": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-publish\\verification\\plugin"
+    }
+  ],
+  "tested_commit": "b245057501ac5081316eb6e4e69155ec7d37b326"
+}
