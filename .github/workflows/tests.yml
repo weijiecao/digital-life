@@ -6,10 +6,12 @@ on:
     paths:
       - 'dev/**'
       - 'tools/**'
+      - 'verification/**'
       - 'docs/**'
       - 'releases/**'
       - 'archive/**'
       - '.github/workflows/tests.yml'
+      - 'VERSION'
       - 'README.md'
       - 'CONTRIBUTING.md'
       - '.gitattributes'
@@ -21,10 +23,14 @@ concurrency:
   group: tests-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PYTHONIOENCODING: utf-8
+
 jobs:
   regression:
     name: Regression ${{ matrix.os }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -37,9 +43,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install exact tokenizer
         run: python -m pip install -r dev/requirements-release.txt
+      - name: Version source is consistent
+        run: python tools/sync_version.py --check
       - name: Repository entrypoints and links
         run: python tools/check_repository.py
-      - name: Full discovered regression
+      - name: Full source regression
         run: >
           python tools/run_regression.py
           --json-out "${{ runner.temp }}/regression.json"
@@ -53,33 +61,107 @@ jobs:
             ${{ runner.temp }}/regression.log
           if-no-files-found: warn
 
-  package:
-    name: Canonical package and export (ubuntu-latest / 3.12)
+  candidate:
+    name: Candidate build and offline verification (ubuntu-latest / 3.12)
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build the candidate from the canonical environment
+      - name: Install exact tokenizer
+        run: python -m pip install -r dev/requirements-release.txt
+      - name: Version source is consistent
+        run: python tools/sync_version.py --check
+      - name: Repository checks
+        run: python tools/check_repository.py --json > "${{ runner.temp }}/repository_check.json"
+      - name: Build the canonical candidate
         run: python tools/build_unified_plugin.py --out-dir dist --require-clean
-      - name: Verify the archive and write the report
+      - name: Build a second time and compare the actual hashes
+        run: |
+          python tools/build_unified_plugin.py --out-dir dist-second --require-clean
+          cmp dist/build_manifest.json dist-second/build_manifest.json
+          cmp dist/*.sha256 dist-second/*.sha256
+      - name: Verify the archive (stub host)
         run: >
           python tools/verify_unified_plugin.py
-          --dist dist --report dist/package_verification.json
+          --dist dist --host stub --report dist/package_verification.json
       - name: Prove invalid archives are rejected
-        run: python tools/verify_unified_plugin.py --dist dist --self-test --host skip
-      - name: Export the distribution tree twice and compare
+        run: >
+          python tools/verify_unified_plugin.py
+          --dist dist --self-test --self-test-report dist/selftest.json
+      - name: Export twice and compare A/B, then the engineering layout
         run: |
-          python tools/export_astrbot_plugin.py --output "${{ runner.temp }}/export-a"
-          python tools/export_astrbot_plugin.py --output "${{ runner.temp }}/export-b"
-          python tools/export_astrbot_plugin.py --check "${{ runner.temp }}/export-a"
+          python tools/export_astrbot_plugin.py --layout archive --output dist/export-a
+          python tools/export_astrbot_plugin.py --layout archive --output dist/export-b
+          diff -r dist/export-a dist/export-b
+          python tools/export_astrbot_plugin.py --layout engineering --output dist/plugin_export
+          python tools/export_astrbot_plugin.py --layout engineering --check dist/plugin_export
+      - name: Build the complete release set
+        run: python tools/build_engineering_bundle.py --dist dist --out-dir dist/release
+      - name: Check the release set
+        run: >
+          python tools/check_release_set.py --release-dir dist/release
+          --report dist/release_set.json
+      - name: Package suites on the same candidate
+        run: >
+          python tools/run_package_regression.py --dist dist
+          --suites completion,core,legacy
+          --report dist/package_regression.json
+          --log dist/package_regression.log
+      - name: Record the acceptance result
+        run: python tools/record_acceptance.py
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: package-${{ github.sha }}
+          name: candidate-${{ github.sha }}
           path: |
             dist/*.zip
             dist/*.sha256
             dist/build_manifest.json
             dist/package_verification.json
-          if-no-files-found: error
+            dist/selftest.json
+            dist/package_regression.json
+            dist/package_regression.log
+            dist/release_set.json
+            dist/release/*
+            dist/export-engineering/SOURCE_MANIFEST.json
+            dev/reports/current_acceptance.json
+            ${{ runner.temp }}/repository_check.json
+          if-no-files-found: warn
+
+  package-suites:
+    name: Package suites ${{ matrix.os }} / ${{ matrix.python-version }}
+    needs: candidate
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        python-version: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install exact tokenizer
+        run: python -m pip install -r dev/requirements-release.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: candidate-${{ github.sha }}
+          path: downloaded
+      - name: Run the package suites on the verified candidate
+        run: |
+          mkdir -p dist
+          cp downloaded/*.zip downloaded/*.sha256 downloaded/build_manifest.json dist/
+          python tools/run_package_regression.py --dist dist --suites completion,core,legacy --report "${{ runner.temp }}/package_regression.json" --log "${{ runner.temp }}/package_regression.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: package-suites-${{ matrix.os }}-${{ matrix.python-version }}
+          path: |
+            ${{ runner.temp }}/package_regression.json
+            ${{ runner.temp }}/package_regression.log
+          if-no-files-found: warn

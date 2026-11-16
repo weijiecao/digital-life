@@ -29,6 +29,9 @@ backups/
 
 # 打包产物
 dist/
+
+# Node 验收入口的本地依赖（锁文件要提交）
+node_modules/
 *.zip
 # 交付包与历史包是有意入库的，按目录单独放行
 !releases/*.zip

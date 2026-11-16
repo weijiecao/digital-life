@@ -8,7 +8,8 @@
 
 | 文件 | 内容 |
 | --- | --- |
-| `current_acceptance.json` | 本轮验收的唯一机器可读记录：被测提交、插件版本、包哈希、命令、环境、用例数、时间、日志引用 |
+| `current_acceptance.json` | 当前验收记录（schema 2）：被测提交、整体版本、包哈希、各套件（源码/包级）、host 层级、一致性问题 |
+| `acceptance/<提交>/` | 持久证据：`summary.json`、`index.json` 与小型报告副本（回归、包级用例、构建清单、验包、负例、导出清单） |
 | `SPECIALIZED_COVERAGE.md` | 能力 → 测试文件 → 用例 → 运行环境的映射，以及明确的缺口 |
 | `M0_BASELINE_MANIFEST.json` | 2026-11-11 的 M0 基线（旧版本、旧哈希），只作历史对照 |
 | `REPOSITORY_ORGANIZATION_2026-11-15.md` | 本轮仓库整理记录：改动、证据、偏差与计划 §8 清单状态 |
@@ -16,8 +17,10 @@
 
 活动日志由命令生成在 `dist/`（Git 忽略）：`dist/regression.json`、`dist/regression.log`、
 `dist/build_manifest.json`、`dist/package_verification.json`、`dist/selftest.json`、
-`dist/astrbot_install_check.json`、`dist/plugin_export/`。`current_acceptance.json` 由 `python tools/record_acceptance.py`
-从这些文件生成，不要手改。
+`dist/astrbot_install_check.json`、`dist/package_regression.json`、`dist/release_set.json`、
+`dist/plugin_export/`、`dist/release/`。`current_acceptance.json` 由 `python tools/record_acceptance.py` 从这些文件生成，
+并交叉核对“同一提交、同一包哈希、每个套件都有结果”。缺失报告或哈希不一致会
+写入 `problems` 且 `ok=false`，不要手改这个文件。
 
 ## 当前工程报告
 

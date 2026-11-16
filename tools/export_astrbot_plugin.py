@@ -116,8 +116,45 @@ def _existing_files(target: Path) -> set[str]:
             for path in target.rglob("*") if path.is_file()}
 
 
-def export(output: Path, layout: str, force: bool = False) -> dict:
+def _managed_path(output: Path, relative: str) -> Path:
+    """Resolve a manifest path inside the export; reject escapes and links."""
+    if not isinstance(relative, str) or not relative.strip():
+        raise PackagingError("invalid managed path: %r" % relative)
+    candidate = Path(relative)
+    if candidate.is_absolute() or ".." in candidate.parts:
+        raise PackagingError("managed path escapes the export: %r" % relative)
+    target = (output / candidate).resolve()
+    root = output.resolve()
+    if target != root and root not in target.parents:
+        raise PackagingError("managed path escapes the export: %r" % relative)
+    if target.is_symlink():
+        raise PackagingError("managed path is a symbolic link: %r" % relative)
+    return target
+
+
+def _tampered_fields(recorded: dict, expected: dict) -> list[dict]:
+    """Fields that must match exactly for an export to describe this source."""
+    fields = ("schema", "source_repository", "source_commit", "dirty",
+              "plugin_version", "build_rules_version", "layout", "file_count",
+              "archive", "generated_by")
+    problems = []
+    for field in fields:
+        if recorded.get(field) != expected.get(field):
+            problems.append({"field": field, "recorded": recorded.get(field),
+                             "expected": expected.get(field)})
+    return problems
+
+
+def export(output: Path, layout: str, force: bool = False,
+           require_clean: bool = False) -> dict:
     spec = load_spec()
+    if require_clean:
+        state = git_state(REPO_ROOT)
+        if state["commit"] is None:
+            raise PackagingError("cannot prove a clean source: %s"
+                                 % (state["reason"] or "unknown"))
+        if state["dirty"]:
+            raise PackagingError("refusing a formal export from a dirty tree")
     manifest, files = build_manifest(spec, layout)
     manifest_bytes = (json.dumps(manifest, ensure_ascii=False, indent=2,
                                  sort_keys=True) + "\n").encode("utf-8")
@@ -130,7 +167,17 @@ def export(output: Path, layout: str, force: bool = False) -> dict:
                 "%s is not empty and has no %s; refusing to overwrite unknown "
                 "content (use a fresh directory to review the diff)"
                 % (output, MANIFEST_NAME))
-        known = {item["path"] for item in previous.get("files", [])}
+        managed = []
+        for item in previous.get("files", []):
+            target = _managed_path(output, item.get("path"))
+            managed.append((item, target))
+        known = {item["path"] for item, _ in managed}
+        drift = [item["path"] for item, target in managed
+                 if target.is_file() and sha256_file(target) != item.get("sha256")]
+        if drift and not force:
+            raise PackagingError(
+                "managed files changed since the last export: %s "
+                "(review the diff, then use --force)" % drift[:8])
         unknown = sorted(existing - known - {MANIFEST_NAME})
         if unknown and not force:
             raise PackagingError(
@@ -138,7 +185,7 @@ def export(output: Path, layout: str, force: bool = False) -> dict:
                 "(use --force after reviewing them)" % unknown[:8])
         stale = sorted(known - set(files) - {MANIFEST_NAME})
         for path in stale:
-            (output / path).unlink()
+            _managed_path(output, path).unlink()
     output.mkdir(parents=True, exist_ok=True)
 
     for path, data in sorted(files.items()):
@@ -155,11 +202,10 @@ def export(output: Path, layout: str, force: bool = False) -> dict:
 def check(output: Path, layout: str) -> dict:
     spec = load_spec()
     manifest, files = build_manifest(spec, layout)
-    problems = {"missing": [], "modified": [], "unexpected": []}
+    problems = {"fields": [], "missing": [], "modified": [], "unexpected": []}
     if not output.is_dir():
-        return {"ok": False, "output": str(output),
-                "problems": {"missing": ["<directory>"], "modified": [],
-                             "unexpected": []}}
+        problems["missing"].append("<directory>")
+        return {"ok": False, "output": str(output), "problems": problems}
     for path, data in sorted(files.items()):
         target = output / path
         if not target.is_file():
@@ -177,10 +223,11 @@ def check(output: Path, layout: str) -> dict:
         except ValueError:
             problems["modified"].append(MANIFEST_NAME)
         else:
+            problems["fields"] = _tampered_fields(recorded, manifest)
             if recorded.get("files") != manifest["files"]:
-                problems["modified"].append(MANIFEST_NAME)
-            if recorded.get("source_commit") != manifest["source_commit"]:
-                problems["modified"].append(MANIFEST_NAME)
+                problems["fields"].append({"field": "files",
+                                           "recorded": "differs",
+                                           "expected": "matches the source"})
     ok = not any(problems.values())
     return {"ok": ok, "output": str(output),
             "plugin_version": manifest["plugin_version"],
@@ -200,14 +247,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--check", default=None,
                         help="compare an existing export and report drift")
     parser.add_argument("--force", action="store_true",
-                        help="overwrite files this tool did not create")
+                        help="overwrite managed files that changed or unknown files")
+    parser.add_argument("--require-clean", action="store_true",
+                        help="refuse a formal export unless git proves a clean commit")
     args = parser.parse_args(argv)
     try:
         if args.check:
             result = check(Path(args.check), args.layout)
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return 0 if result["ok"] else 1
-        result = export(Path(args.output), args.layout, args.force)
+        result = export(Path(args.output), args.layout, args.force,
+                        args.require_clean)
     except PackagingError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False))
         return 2

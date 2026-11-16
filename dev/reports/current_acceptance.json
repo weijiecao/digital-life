@@ -1,116 +1,102 @@
 {
-  "schema": "digital-life-acceptance/1",
-  "tested_commit": "c1ae7f88b7e00da6b6da162191f35fa64614fa41",
-  "dirty": false,
-  "source_note": "",
-  "plugin_version": "0.7.0-dev.3",
-  "artifact_sha256": "631e114a9040b6c2c36e11bda3cc3351d2fb0e925048ce7b57c7b409f6f2e5a6",
+  "artifact_bytes": 223273,
+  "artifact_files": 79,
+  "artifact_sha256": "05ba15e9d98792220c7ddf1615bad8448c178175626a6ebbc529c57a9ec90cff",
   "command": "python tools/run_regression.py",
+  "dirty": null,
+  "duration_seconds": 31.946,
   "environment": {
+    "astrbot": "not installed",
+    "git": "not available",
     "os": "Windows-11-10.0.26200-SP0",
-    "python": "3.12.10",
     "platform": "win32",
-    "astrbot": "source checkout: testbed/AstrBot-4.29.3 (imported, not a live instance)",
-    "git": "available"
+    "python": "3.12.10"
   },
-  "total": 367,
-  "passed": 367,
-  "failed": 0,
   "errors": 0,
-  "skipped": 0,
-  "skip_reasons": [],
-  "started_at": "2026-11-16T12:09:24+08:00",
-  "finished_at": "2026-11-16T12:09:50+08:00",
-  "duration_seconds": 25.595,
-  "log_reference": "dist/regression.log",
   "evidence": {
-    "regression": "dist/regression.json",
+    "astrbot_install_check": "dist/astrbot_install_check.json",
     "build_manifest": "dist/build_manifest.json",
-    "package_verification": "dist/package_verification.json",
     "export_manifest": "dist/plugin_export/SOURCE_MANIFEST.json",
     "negative_self_test": "dist/selftest.json",
-    "astrbot_install_check": "dist/astrbot_install_check.json"
+    "package_regression": "dist/package_regression.json",
+    "package_verification": "dist/package_verification.json",
+    "regression": "dist/regression.json"
   },
+  "evidence_index": "dev/reports/acceptance/uncommitted",
+  "failed": 0,
+  "finished_at": "2026-11-16T12:41:40+08:00",
+  "formal": false,
+  "host_level": "stub",
+  "level": "dev",
+  "ok": true,
   "package": {
-    "archive": "astrbot_plugin_digital_life-0.7.0-dev.3.zip",
-    "bytes": 223274,
-    "file_count": 79,
-    "build_rules_version": "1",
-    "verification_ok": true,
-    "verified_checks": 16,
-    "failed_checks": [],
-    "host": "astrbot-source",
-    "host_path": "testbed/AstrBot-4.29.3",
-    "host_note": "imported against an AstrBot source checkout (testbed/AstrBot-4.29.3); still not a live instance",
-    "astrbot_install_check": {
+    "astrbot_install_check": null,
+    "export_files": 79,
+    "export_layout": "engineering",
+    "host": "stub",
+    "host_path": null,
+    "negative_self_test": true,
+    "verification_checks": 16,
+    "verification_ok": true
+  },
+  "passed": 386,
+  "plugin_version": "0.8.0-dev.1",
+  "problems": [],
+  "schema": "digital-life-acceptance/2",
+  "skip_reasons": [],
+  "skipped": 0,
+  "started_at": "2026-11-16T12:41:08+08:00",
+  "suites": [
+    {
+      "errors": 0,
+      "failed": 0,
+      "id": "source-regression",
       "ok": true,
-      "metadata_entry": "astrbot_plugin_digital_life/metadata.yaml",
-      "inspector": "_PluginUpdater.inspect_plugin_archive"
+      "passed": 386,
+      "report": "dist/regression.json",
+      "skipped": 0,
+      "status": "passed",
+      "target": "source",
+      "total": 386
     },
-    "negative_self_test": {
+    {
+      "errors": 0,
+      "failed": 0,
+      "id": "completion",
       "ok": true,
-      "cases": [
-        {
-          "case": "baseline",
-          "rejected": false
-        },
-        {
-          "case": "missing",
-          "rejected": true
-        },
-        {
-          "case": "tampered",
-          "rejected": true
-        },
-        {
-          "case": "traversal",
-          "rejected": true
-        },
-        {
-          "case": "duplicate",
-          "rejected": true
-        }
-      ]
+      "passed": 47,
+      "report": "dist/package_regression.json",
+      "skipped": 0,
+      "status": "passed",
+      "target": "package",
+      "total": 47
+    },
+    {
+      "errors": 0,
+      "failed": 0,
+      "id": "core-package",
+      "ok": true,
+      "passed": 137,
+      "report": "dist/package_regression.json",
+      "skipped": 0,
+      "status": "passed",
+      "target": "package",
+      "total": 137
+    },
+    {
+      "errors": 0,
+      "failed": 0,
+      "id": "legacy-plugin-contracts",
+      "ok": true,
+      "passed": 20,
+      "report": "dist/package_regression.json",
+      "skipped": 0,
+      "status": "passed",
+      "target": "package",
+      "total": 20
     }
-  },
-  "export": {
-    "layout": "archive",
-    "file_count": 79,
-    "bundle_sha256": "631e114a9040b6c2c36e11bda3cc3351d2fb0e925048ce7b57c7b409f6f2e5a6"
-  },
-  "baseline_before_change": {
-    "tests": 333,
-    "skipped": 1,
-    "skip_reason": "test_r0_bundle could not find the archived R0 bundle",
-    "after": "the test moved to the historical test set and the active suite was extended"
-  },
-  "not_verified": [
-    "live AstrBot/NapCat instance (source import and archive inspection passed)",
-    "Windows machine install",
-    "browser UI operations",
-    "migration on a real legacy database (a synthetic fixture covers the write path)",
-    "72h soak",
-    "power loss / fsync"
   ],
-  "previous_delivery": {
-    "archive": "astrbot_plugin_digital_life-0.7.0-dev.2.zip",
-    "bytes": 222031,
-    "file_count": 78,
-    "new_files": [
-      "astrbot_plugin_digital_life/memory_engine/README.md"
-    ],
-    "removed_files": [],
-    "changed_files": [
-      "astrbot_plugin_digital_life/README.md",
-      "astrbot_plugin_digital_life/application/service.py",
-      "astrbot_plugin_digital_life/astrbot_memory_input/README.md",
-      "astrbot_plugin_digital_life/config.py",
-      "astrbot_plugin_digital_life/dlm_console/README.md",
-      "astrbot_plugin_digital_life/main.py",
-      "astrbot_plugin_digital_life/memory_output/README.md",
-      "astrbot_plugin_digital_life/metadata.yaml",
-      "astrbot_plugin_digital_life/requirements.txt"
-    ],
-    "sha256": "06756a5f79f172e70e6be596b45047b64047a12d72f53d6d25b1ac9e0f02a929"
-  }
+  "tested_commit": null,
+  "total": 386,
+  "ui_dom": "not-run"
 }

@@ -1,0 +1,35 @@
+{
+  "artifact_sha256": "05ba15e9d98792220c7ddf1615bad8448c178175626a6ebbc529c57a9ec90cff",
+  "files": {
+    "build_manifest.json": {
+      "bytes": 15726,
+      "sha256": "e37e7f5e50386cc65b61dafad6ea1e4be0a0f90e64f3551ba668e09f11dffc57"
+    },
+    "export_SOURCE_MANIFEST.json": {
+      "bytes": 14178,
+      "sha256": "9f84610d33eb8d6ae39433bdf7c26c8547730de74485c78becee45b79a6dbb15"
+    },
+    "package_regression.json": {
+      "bytes": 2819,
+      "sha256": "e31412a5a29cc5ee45ba391810bd621ac9d352ca0e284e00729a39f6111b4f31"
+    },
+    "package_verification.json": {
+      "bytes": 2659,
+      "sha256": "47e234bc7d072e661b5c8128b441aa73abe14c1a30ea41ab93b8010740d4ee78"
+    },
+    "regression.json": {
+      "bytes": 553,
+      "sha256": "3d2935ba559b62f9f9e6d8959250cb006a46c2aff9ace477155276afbe868cda"
+    },
+    "selftest.json": {
+      "bytes": 1028,
+      "sha256": "b51e16930227aa0e99a3150bdab19745a4888ff95ddf053e63f4b5157625b772"
+    },
+    "summary.json": {
+      "bytes": 2529,
+      "sha256": "f472d3e858b3374e2bc6cf8687bb1c96e0ca83c625419c0230579c7260278971"
+    }
+  },
+  "schema": "digital-life-acceptance-evidence/1",
+  "tested_commit": null
+}

@@ -21,6 +21,10 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEV = REPO_ROOT / "dev"
 
+sys.path.insert(0, str(REPO_ROOT))
+
+from tools.repo_packaging import git_state  # noqa: E402
+
 
 class _Tee(io.TextIOBase):
     def __init__(self, *streams):
@@ -62,6 +66,7 @@ def main(argv: list[str] | None = None) -> int:
                                            top_level_dir=str(DEV))
     started = _now()
     clock = time.perf_counter()
+    state = git_state(REPO_ROOT)
     with log_out.open("w", encoding="utf-8", newline="\n") as handle:
         stream = handle if args.quiet else _Tee(sys.stdout, handle)
         runner = unittest.TextTestRunner(
@@ -85,7 +90,11 @@ def main(argv: list[str] | None = None) -> int:
     }
     record = {
         "schema": "digital-life-regression/1",
+        "suite": "source-regression",
+        "target": "source",
         "ok": result.wasSuccessful(),
+        "tested_commit": state["commit"],
+        "dirty": state["dirty"],
         "command": "python tools/run_regression.py",
         "working_directory": "dev (top-level)",
         "started_at": started,

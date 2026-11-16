@@ -1,59 +1,76 @@
 # Releases
 
-本目录只保存**当前交付**的插件包及其清单。所有命令都在仓库根目录执行。
+本目录保存**当前整体版本**的安装包、发布清单与校验值。完整交付集合（源码 ZIP、工程 ZIP）
+在 `dist/release/` 生成后作为 Release 附件分发；旧版本一律移到 `archive/releases/`。
 
-## 当前交付：0.7.0-dev.3
+## 当前版本：0.8.0-dev.1
 
-`astrbot_plugin_digital_life-0.7.0-dev.3.zip` —— 统一插件开发版，**79 个文件，
-223,274 bytes，SHA-256 `631e114a9040b6c2c36e11bda3cc3351d2fb0e925048ce7b57c7b409f6f2e5a6`**。
+版本号来自仓库根 `VERSION`；`dev/astrbot_plugin_digital_life/metadata.yaml` 由
+`python tools/sync_version.py` 派生，CI 校验两者一致。
+
+`astrbot_plugin_digital_life-0.8.0-dev.1.zip` —— 统一插件开发版，**79 个文件，
+223,273 bytes，SHA-256 `05ba15e9d98792220c7ddf1615bad8448c178175626a6ebbc529c57a9ec90cff`**。
 
 | 文件 | 说明 |
 | --- | --- |
-| `astrbot_plugin_digital_life-0.7.0-dev.3.zip` | 安装包（AstrBot WebUI 上传这个文件） |
-| `astrbot_plugin_digital_life-0.7.0-dev.3.sha256` | 上述包的 SHA-256 |
-| `astrbot_plugin_digital_life-0.7.0-dev.3.json` | 发布清单：版本、哈希、字节数、文件数、来源提交 |
+| `astrbot_plugin_digital_life-0.8.0-dev.1.zip` | 安装包（AstrBot WebUI 上传这个文件） |
+| `astrbot_plugin_digital_life-0.8.0-dev.1.sha256` | 上述包的 SHA-256 |
+| `astrbot_plugin_digital_life-0.8.0-dev.1.json` | 发布清单：版本、来源提交、哈希、字节数、文件数、附件与验证边界 |
 | `README.md` | 本文件 |
 
-这是开发版，不是 RC。安装或升级后应完整重启 AstrBot，热重载不能清除既有顶层模块。
+这是整体开发基线，不是 RC。安装或升级后应完整重启 AstrBot，热重载不能清除既有顶层模块。
 
-功能与 `0.7.0-dev.2` **相同**（迁移、实时追加与历史对账、恢复切换、撤回、运行权、
-输出 v2、统一管理页）。dev.3 是仓库整理后的重新发布，变化只在交付形态：
-版本号改为只从 `metadata.yaml` 读取、补齐构建/验包/导出入口、模块文档与回归同步、
-文本换行按 `.gitattributes` 规范化。**没有运行行为改动。**
+### 与上一版的关系
 
-## 从当前源码重建
+功能与 `0.7.0-dev.3` / `0.7.0-dev.2` 相同；本版的变化是工程契约：
+
+- 整体版本从 `0.7.0-dev.3` 升到 `0.8.0-dev.1`，唯一版本源改为仓库根 `VERSION`；
+- 插件、基座、引擎、输入、输出、应用服务与 UI 共用一个对外版本号；
+- 新增包级验收入口（47＋137＋20）与完整交付集合（源码 ZIP、工程 ZIP、发布 JSON、校验值）；
+- 导出工具补齐清单校验与覆盖保护，验收记录绑定同一提交与同一包哈希。
+
+**没有数据库 schema、记忆组织、模型策略或输出 v2 语义的改动。**
+
+## 从源码重建
 
 ```powershell
+python tools/sync_version.py --check
 python tools/build_unified_plugin.py --out-dir dist --require-clean
 python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
+python tools/run_package_regression.py --dist dist --suites completion,core,legacy
+python tools/build_engineering_bundle.py --dist dist --out-dir dist/release
+python tools/check_release_set.py --release-dir dist/release
 ```
 
-产物写在 `dist/`（Git 忽略）：
+同一份源码连续构建两次、以及在干净副本中构建，插件包哈希一致。
 
-| 产物 | 内容 |
+## 完整交付集合
+
+`dist/release/` 中的文件（由 `tools/check_release_set.py` 校验，全部同名同版本）：
+
+| 文件 | 内容 |
 | --- | --- |
-| `dist/astrbot_plugin_digital_life-<version>.zip` | 由 `tools/plugin_package.json` 白名单决定内容 |
-| `dist/astrbot_plugin_digital_life-<version>.sha256` | 包校验和 |
-| `dist/build_manifest.json` | 来源提交、版本、逐文件哈希、包哈希、构建规则版本、构建环境 |
-| `dist/package_verification.json` | 解压后逐项检查结果（含是否使用宿主 stub / 真实源码） |
+| `astrbot_plugin_digital_life-<版本>.zip` | 可安装插件与全部运行依赖 |
+| `digital-life-source-<版本>.zip` | 该提交的完整可构建源码 |
+| `digital-life-engineering-<版本>.zip` | 源码 ZIP + 插件 ZIP + 说明 + 验收摘要 |
+| `digital-life-release-<版本>.json` | 版本、来源提交、各附件大小与 SHA-256、验证边界 |
+| `SHA256SUMS-<版本>.txt` | 上述附件的校验值 |
 
-同一份源码连续构建两次、以及在干净副本中构建，得到的包哈希一致。
+集合里任一件混入其他版本、缺件或哈希不符，检查都会失败。
 
-## 上一版与历史交付
+## 历史交付
 
-`v0.7.0-dev.2`（78 文件 / 222,031 bytes / `06756a5f…`）已移到 `archive/releases/`，
-保留原字节用于追溯，不再是当前交付。它与 dev.3 的差异就是 0.7.0-dev.3 的发布说明里列出的
-版本号、版本单点读取、模块 README 与换行规范化。
+`archive/releases/` 保留原字节，仅作追溯：
 
-更早的旧插件与旧引擎包同样在 `archive/releases/`：
-
+- `astrbot_plugin_digital_life-0.7.0-dev.3.*`
+- `astrbot_plugin_digital_life-0.7.0-dev.2.*`
 - `astrbot_plugin_digital_memory_store-1.0.19.*`
-- `memory-engine-rc3-queryguard.*`
-- `memory-engine-r0-rc3.*`
+- `memory-engine-rc3-queryguard.*`、`memory-engine-r0-rc3.*`
 
 `python tools/check_repository.py` 会核对归档清单里的 SHA-256 是否仍与 ZIP 一致。
 
 ## 边界
 
 这些包只用于隔离验收，不得接入 V1 生产或生产 Shadow。真实 AstrBot/NapCat 实例、
-Windows 实机安装、浏览器页面与 72 小时长跑仍未验收；详见 `docs/CURRENT_STATUS.md`。
+Windows 实机安装、浏览器页面与 72 小时长跑仍未验收；下载入口与验收级别见
+`docs/CURRENT_STATUS.md`。
