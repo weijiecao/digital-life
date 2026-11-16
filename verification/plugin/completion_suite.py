@@ -640,7 +640,8 @@ os._exit(19)
             )
             self.assertEqual(result.returncode, 19)
             recovered = GenerationStore(self.root)
-            self.assertEqual(recovered.active, self.root)
+            # Path.resolve() expands Windows 8.3 short names; compare the same form.
+            self.assertEqual(recovered.active.resolve(), self.root.resolve())
             self.assertEqual(read_json(recovered.operation)["phase"], "ROLLED_BACK")
 
     def test_future_database_schema_is_rejected_before_switch(self):
