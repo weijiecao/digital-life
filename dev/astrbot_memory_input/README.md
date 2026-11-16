@@ -2,7 +2,7 @@
 
 本模块给数字生命记忆引擎提供一个独立的原生历史入口。输入兼容 AstrBot 对话 history 的 role/content 消息列表；进入引擎后，事件、证据、归属和检索仍由数字生命记忆基座组织。
 
-v0.2 在 v0.1 的输入契约不变的前提下，补上了两处此前缺失的接线：**AstrBot 运行时自动读取会话历史**（`memory_engine/native_host.py`、`host_shadow/`）与**真实判别器**（`memory_engine/native_judge.py` 接引擎既有 `RelationJudge` 与宿主 provider）。包内的去重、前缀校验、冲突拒绝语义未放宽。
+v0.2 在 v0.1 的输入契约不变的前提下，补上了两处此前缺失的接线：**AstrBot 运行时自动读取会话历史**（`memory_engine/native_host.py` 与统一插件 `dev/astrbot_plugin_digital_life/main.py`）与**真实判别器**（`memory_engine/native_judge.py` 接引擎既有 `RelationJudge` 与宿主 provider）。包内的去重、前缀校验、冲突拒绝语义未放宽。
 
 ## 模块边界
 
@@ -24,7 +24,7 @@ Python 声明支持 >=3.10；本次实测为 Windows 11 + Python 3.12.10，v0.1 
 安装交付包内的 wheel：
 
 ```sh
-python -m pip install --no-index --no-deps digital_life_astrbot_input-0.2.0-py3-none-any.whl
+python -m pip install --no-index --no-deps archive/releases/dev/digital_life_astrbot_input-0.2.0-py3-none-any.whl
 python -m astrbot_memory_input --input history.json --journal native-input.db --platform qq --bot demo-bot --user demo-user --persona demo-persona --conversation demo-conversation
 ```
 
@@ -102,7 +102,7 @@ worker = NativeInputWorker(inbox, judge, judge_revision=judge.revision)
 - `NativeInputPump`：周期性在宿主线程池里跑一轮判别，定期整批重试暂缓项；单轮异常不终止循环。
 - `AstrBotProvider`：把宿主 `context.llm_generate` 接成 provider 端口（`run_coroutine_threadsafe` 回到宿主事件循环，不阻塞消息处理）。
 
-`host_shadow/main.py` 是这一层的 AstrBot 装配：私聊消息到达时读取当前对话历史并提交，`initialize` 启动周期泵，`terminate` 停止泵并关闭输入与引擎。没有 provider 配置时插件只入队、不建档。
+`dev/astrbot_plugin_digital_life/main.py` 是这一层的 AstrBot 装配：私聊消息到达时读取当前对话历史并提交，`initialize` 启动周期泵，`terminate` 停止泵并关闭输入与引擎。没有 provider 配置时插件只入队、不建档。旧的 `host_shadow` 装配插件已归档（`archive/plugins/astrbot_plugin_memory_shadow/`）。
 
 AstrBot 的会话历史是窗口（可能被会话切换、人工删除改写）。当前策略是：非前缀快照整批拒绝并记录冲突，不部分写入；改写后的历史需要新会话或后续版本的修订协议。
 

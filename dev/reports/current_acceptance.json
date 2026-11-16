@@ -1,0 +1,114 @@
+{
+  "schema": "digital-life-acceptance/1",
+  "tested_commit": null,
+  "dirty": null,
+  "source_note": "no .git directory in the working tree",
+  "plugin_version": "0.7.0-dev.2",
+  "artifact_sha256": "08c90bbd1de6147080e9b062e7b5e692075556ba4b048e63c8e932dea032e29a",
+  "command": "python tools/run_regression.py",
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "platform": "win32",
+    "astrbot": "not installed",
+    "git": "not available in PATH for this run"
+  },
+  "total": 367,
+  "passed": 367,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "skip_reasons": [],
+  "started_at": "2026-11-16T11:36:13+08:00",
+  "finished_at": "2026-11-16T11:36:37+08:00",
+  "duration_seconds": 23.963,
+  "log_reference": "dist/regression.log",
+  "evidence": {
+    "regression": "dist/regression.json",
+    "build_manifest": "dist/build_manifest.json",
+    "package_verification": "dist/package_verification.json",
+    "export_manifest": "dist/plugin_export/SOURCE_MANIFEST.json",
+    "negative_self_test": "dist/selftest.json",
+    "astrbot_install_check": "dist/astrbot_install_check.json"
+  },
+  "package": {
+    "archive": "astrbot_plugin_digital_life-0.7.0-dev.2.zip",
+    "bytes": 222925,
+    "file_count": 79,
+    "build_rules_version": "1",
+    "verification_ok": true,
+    "verified_checks": 16,
+    "failed_checks": [],
+    "host": "astrbot-source",
+    "host_path": "testbed/AstrBot-4.29.3",
+    "host_note": "imported against an AstrBot source checkout (testbed/AstrBot-4.29.3); still not a live instance",
+    "astrbot_install_check": {
+      "ok": true,
+      "metadata_entry": "astrbot_plugin_digital_life/metadata.yaml",
+      "inspector": "_PluginUpdater.inspect_plugin_archive"
+    },
+    "negative_self_test": {
+      "ok": true,
+      "cases": [
+        {
+          "case": "baseline",
+          "rejected": false
+        },
+        {
+          "case": "missing",
+          "rejected": true
+        },
+        {
+          "case": "tampered",
+          "rejected": true
+        },
+        {
+          "case": "traversal",
+          "rejected": true
+        },
+        {
+          "case": "duplicate",
+          "rejected": true
+        }
+      ]
+    }
+  },
+  "export": {
+    "layout": "archive",
+    "file_count": 79,
+    "bundle_sha256": "08c90bbd1de6147080e9b062e7b5e692075556ba4b048e63c8e932dea032e29a"
+  },
+  "baseline_before_change": {
+    "tests": 333,
+    "skipped": 1,
+    "skip_reason": "test_r0_bundle could not find the archived R0 bundle",
+    "after": "the test moved to the historical test set and the active suite was extended"
+  },
+  "not_verified": [
+    "live AstrBot/NapCat instance (source import and archive inspection passed)",
+    "Windows machine install",
+    "browser UI operations",
+    "migration on a real legacy database (a synthetic fixture covers the write path)",
+    "72h soak",
+    "power loss / fsync"
+  ],
+  "previous_delivery": {
+    "archive": "astrbot_plugin_digital_life-0.7.0-dev.2.zip",
+    "bytes": 222031,
+    "file_count": 78,
+    "new_files": [
+      "astrbot_plugin_digital_life/memory_engine/README.md"
+    ],
+    "removed_files": [],
+    "changed_files": [
+      "astrbot_plugin_digital_life/README.md",
+      "astrbot_plugin_digital_life/astrbot_memory_input/README.md",
+      "astrbot_plugin_digital_life/dlm_console/README.md",
+      "astrbot_plugin_digital_life/main.py",
+      "astrbot_plugin_digital_life/memory_output/README.md",
+      "astrbot_plugin_digital_life/metadata.yaml",
+      "astrbot_plugin_digital_life/requirements.txt"
+    ],
+    "sha256": "06756a5f79f172e70e6be596b45047b64047a12d72f53d6d25b1ac9e0f02a929"
+  }
+}

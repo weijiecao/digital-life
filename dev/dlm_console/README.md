@@ -8,24 +8,19 @@
 - 只读取已有数据库，不创建、不迁移、不改引擎数据；
 - 事件与证据只读；只有基座原话支持删除（等价于插件 WebUI panel 的管理员删除）。
 
-## 嵌入 AstrBot 插件页
+## 与插件内管理页的关系
 
-`host_shadow` 已把同一套控制台注册为 AstrBot 插件页：
+两份界面职责不同，不要当成同一份：
 
-- WebUI → 插件 → **Memory Engine Shadow** → 视图 **数字记忆控制台**；
-- 页面由 AstrBot 提供，不需要额外端口、令牌或浏览器地址；
-- API 路径为 `/astrbot_plugin_memory_shadow/console/*`，由 `host_shadow/console_api.py` 复用本目录的 `Console`；
-- `SHADOW_CONSOLE_READONLY=1` 可禁用备份/恢复/删除/VACUUM；
-- 独立启动 `python -m dlm_console` 仍然保留，适合离线查看或 AstrBot 未运行时使用。
+- 统一插件页：WebUI → 插件 → **数字生命** → 视图 **数字生命控制台** → **统一管理**。
+  路由由 `dev/astrbot_plugin_digital_life/console_api.py` 注册，前缀
+  `/astrbot_plugin_digital_life/console/`；迁移、备份、恢复、撤回都走统一应用服务。
+  页面资源在 `dev/astrbot_plugin_digital_life/views/console/`。
+- 本目录的独立控制台：离线查看与维护，不带应用服务，写操作限于它自己的维护页。
 
-前端只有一份源：`dev/dlm_console/web/`。修改后同步到插件视图：
-
-```powershell
-cd dev
-python scripts\sync_console_view.py
-```
-
-测试 `tests/test_host_shadow_console.py` 会校验两边资源完全一致。
+两份静态资源**当前并不字节一致**（插件页是统一管理页，独立控制台是诊断台）。
+修改其中一份不会自动同步另一份；旧的同步脚本已归档（`archive/scripts/sync_console_view.py`），
+不再使用。独立启动 `python -m dlm_console` 保留给离线场景。
 
 ## 启动
 
@@ -44,13 +39,17 @@ python -m dlm_console
 python -m dlm_console --instance "C:\path\to\AstrBot"
 ```
 
-只关心某一侧数据时，直接指向插件目录：
+只关心某一侧数据时，直接指向数据目录：
 
 ```powershell
 python -m dlm_console `
-  --store-dir  "C:\...\plugin_data\astrbot_plugin_digital_memory_store" `
-  --shadow-dir "C:\...\plugin_data\astrbot_plugin_memory_shadow"
+  --store-dir  "C:\...\plugin_data\astrbot_plugin_digital_life" `
+  --shadow-dir "C:\...\plugin_data\astrbot_plugin_digital_life"
 ```
+
+统一插件的业务库与输入账本在同一个数据目录下；旧的
+`astrbot_plugin_digital_memory_store` / `astrbot_plugin_memory_shadow` 目录只在
+未迁移的实例上出现，本控制台仍会只读展示。
 
 常用选项：
 
@@ -96,8 +95,10 @@ python -m dlm_console `
 
 实例下读取 `data/plugin_data/` 中的：
 
-- `astrbot_plugin_digital_memory_store/manual_test_memory.sqlite3`、`latency.jsonl`、`backups/`；
-- `astrbot_plugin_memory_shadow/shadow.sqlite3`、`native_input_journal.sqlite3`、`shadow_events.jsonl`。
+- `astrbot_plugin_digital_life/shadow.sqlite3`、`native_input_journal.sqlite3`、
+  `shadow_events.jsonl`、`backups/`（统一插件）；
+- 旧的 `astrbot_plugin_digital_memory_store/`、`astrbot_plugin_memory_shadow/` 目录
+  在未迁移实例上仍会被只读展示。
 
 缺失的组件在页面上标记为“未发现”，不会中断控制台。
 
@@ -110,8 +111,8 @@ python -m dlm_console `
 - 备份可单独校验（完整性、必需表、外键、原话哈希、证据归属）；
 - “恢复”只把备份复制到插件目录的 `restores/` 并再次校验，**不替换正在运行的数据库**；
 - 影子引擎事件、证据、回执、队列 **不提供写操作**，保持引擎写入唯一来源；
-- 控制台不负责开启/关闭模型注入；注入由 `host_shadow` 的 `SHADOW_OUTPUT_MODE` 控制，
-  控制台只展示 `shadow_events.jsonl` 里的注入结果；
+- 控制台不负责开启/关闭模型注入；注入由统一插件的模式控制（默认 `COLLECT` 不注入，
+  只有 `ASSIST` 才注入），控制台只展示 `shadow_events.jsonl` 里的注入结果；
 - 归档只导出到插件数据目录的 `archives/`，不删除主库数据。
 
 ## 已知边界

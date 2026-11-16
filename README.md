@@ -3,114 +3,91 @@
 **愿在时间的长河中，我们可以再次相遇。  
 而记忆，是我们留给未来的坐标。**
 
-数字记忆工程由两个部分组成：
+数字记忆工程由两部分组成：
 
-- **数字记忆基座**：事件、证据、来源、Resolver、租约/回执/连续水位，以及 AstrBot 接入插件；
-- **数字记忆引擎**：候选召回、证据准入、重评、上下文与渲染，以及可选的证据输出和 AstrBot 临时注入。
+- **数字记忆基座**：事件、证据、来源、Resolver、租约/回执/连续水位；
+- **数字记忆引擎**：候选召回、证据准入、重评、上下文与渲染；
+- 外面套一层 **统一 AstrBot 插件**：原生输入、实时追加、旧数据迁移、备份/恢复、管理页。
 
 两者都独立于 V1 生产插件；当前只用于隔离验收。
 
-**当前状态：R0 / R1 NO-GO。** 运行包与插件包只用于隔离验收；不要接入 V1
-生产或生产 Shadow。
+**当前状态：`0.7.0-dev.2` 开发候选，R0 / R1 NO-GO。** 安装包只用于隔离验收，
+不要接入 V1 生产或生产 Shadow。能力与验证状态见 [`docs/CURRENT_STATUS.md`](docs/CURRENT_STATUS.md)。
 
-## 统一插件开发版 0.7.0-dev.2
+## 最短路径
 
-完整单插件源码位于 `dev/astrbot_plugin_digital_life/`，安装包位于
-`releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip`。
+```powershell
+python -m pip install -r dev/requirements-release.txt
+python tools/run_regression.py                          # 367 项活动回归
+python tools/check_repository.py                        # 入口/链接/归档隔离检查
+python tools/build_unified_plugin.py --out-dir dist     # 构建插件包
+python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
+```
 
-- 版本：`0.7.0-dev.2`
-- SHA-256：`06756a5f79f172e70e6be596b45047b64047a12d72f53d6d25b1ac9e0f02a929`
-- 已包含：旧基座迁移、实时追加、恢复切换、偏好排序/短指代/主动请求记忆入口、统一管理页
-- 仍是开发版：真实 AstrBot/NapCat、Windows 和长跑验收未完成
+产物在 `dist/`（Git 忽略）；完整流程、发布与回退见 [`docs/MAINTAINER_FLOW.md`](docs/MAINTAINER_FLOW.md)。
 
 ## 组件与目录
 
 ```text
 dev/
-  memory_engine/         数字记忆引擎：召回/准入/重评/上下文/输出
-  memory_output/         记忆输出协议与 AstrBot 临时注入适配（独立包）
-  v1_5_consolidator/     数字记忆基座：事件/证据/Resolver/租约/回执/水位
-  astrbot_plugin_digital_life/  最新单插件（0.7.0-dev.2）
-  dlm_console/           独立本地 Web 控制台（基座/引擎/输入/观察/维护）
-  tests/                 当前活动回归
-  evaluation/            当前质量/恢复验收脚本与冻结数据
-  reports/               当前交付报告与证据
-  scripts/               当前构建、校验、安装生命周期
-archive/                 旧插件源码、旧发布包、旧测试与旧脚本
-releases/                最新插件包（旧包已移入 archive/releases）
-testbed/                 AstrBot/NapCat 测试床说明与 harness
-env/                     环境模板与锁文件
+  astrbot_plugin_digital_life/  统一插件：入口、应用服务、迁移/恢复、管理 UI
+  astrbot_memory_input/         原生输入契约、实时追加、历史对账
+  memory_engine/                引擎：召回/准入/重评/上下文/预算/渲染
+  memory_output/                输出协议 v2 与临时注入适配
+  v1_5_consolidator/            基座：事件/证据/Resolver/租约/回执/水位
+  dlm_console/                  独立本地 Web 控制台（也可作为插件页）
+  tests/                        活动回归
+  evaluation/                   质量与恢复验收脚本、冻结数据
+  reports/                      当前验收证据、历史快照与专项覆盖映射
+  docs/                         模块级文档
+  scripts/                      仍受支持的开发辅助脚本
+tools/                          构建、验包、仓库检查、分发导出
+docs/                           架构、维护流程、当前状态、迁移恢复
+releases/                       当前交付包（历史包在 archive/releases）
+archive/                        停止维护的实现、工具与历史材料（不被活动代码导入）
+testbed/                        AstrBot/NapCat 测试床说明与 harness
+env/                            环境模板与锁文件
 ```
 
-最新插件源码在本仓库 `dev/astrbot_plugin_digital_life/`；对应的独立发布仓库为
-[`weijiecao/astrbot_plugin_digital_life`](https://github.com/weijiecao/astrbot_plugin_digital_life)。
+插件源码的唯一来源是本仓库 `dev/astrbot_plugin_digital_life/`；分发仓库
+[`weijiecao/astrbot_plugin_digital_life`](https://github.com/weijiecao/astrbot_plugin_digital_life)
+由 `python tools/export_astrbot_plugin.py` 单向导出，不做反向同步。
 
-## 快速验证
+## 统一插件
 
-```powershell
-cd dev
-python -m pip install -r requirements-release.txt
-python -m unittest discover -q -s tests -t .
-```
+开发版 `0.7.0-dev.2`，包含旧基座迁移、实时追加与历史对账、恢复切换、撤回、
+偏好排序/短指代/主动请求记忆入口与统一管理页。
 
-当前活动 `dev/tests` 结果：**333 项 OK（1 项跳过）**（Windows 本地）。旧插件相关
-测试已随源码移入 `archive/tests/`，不计入活动回归。
+| 模式 | 行为 |
+| --- | --- |
+| OFF | 不采集、不注入；管理员仍可管理已有数据 |
+| COLLECT（默认） | 实时采集、同步历史、后台整理，不注入 |
+| ASSIST | 在 COLLECT 基础上，按证据与 Token 预算注入临时记忆块 |
 
-质量验收需要本机 BGE 目录：
-
-```powershell
-python evaluation/query_admission_challenge.py --model-dir <BGE目录> --out challenge.json
-python -m evaluation.quality_v3_accept --model-dir <BGE目录> --out quality-v3.json
-```
-
-## 本机控制台
-
-双击根目录的 `启动数字记忆控制台.cmd`，或在 `dev` 目录运行：
-
-```powershell
-python -m dlm_console
-```
-
-控制台默认只绑定 `127.0.0.1`、每次启动生成令牌，统一查看数字记忆基座、影子引擎、
-原生输入队列与观察日志，并提供备份/轮转/checkpoint/完整性/VACUUM/归档。
-观察日志显示每次请求的输出/注入状态，环境页显示输出模块是否可用。
-
-它也可以直接作为 AstrBot 插件页运行：WebUI → 插件 → **Memory Engine Shadow** →
-**数字记忆控制台**，无需额外端口或令牌。独立启动方式保留给离线场景。
-详见 `dev/dlm_console/README.md` 与 `dev/astrbot_plugin_digital_life/README.md`。
-
-## 输出与注入
-
-`memory_output` 把引擎已准入的证据组装成预算内、可复验的临时上下文块。
-宿主注入由 `dev/astrbot_plugin_digital_life` 统一接线，默认 `COLLECT` 不注入；
-只有显式切换 `ASSIST` 才注入。
-
-开启后只修改 `ProviderRequest.extra_user_content_parts`：记忆块标记为临时、
-不写入持久化历史，`prompt` / `system_prompt` / `contexts` 与回复保持不变。
-证据删除、撤回、修订、scope 变化或预算缩水时，旧块会被拒绝并移除。
-详见 `dev/memory_output/README.md` 与 `dev/astrbot_plugin_digital_life/README.md`。
+停用旧 `astrbot_plugin_memory_shadow` 后再启用统一插件；同一数据目录只允许一个写者。
+安装、配置与管理页操作见 [`dev/astrbot_plugin_digital_life/README.md`](dev/astrbot_plugin_digital_life/README.md)。
 
 ## 交付物
 
 | 文件 | 说明 |
-|---|---|
-| `releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip` | 最新单插件开发版（78 文件，222,031 bytes，SHA-256 `06756a5f…`） |
-| `archive/releases/` | 旧插件与旧引擎发布包（仅历史查阅） |
-| `dev/reports/Q1_INTEGRATION_2026-11-12.md` | Q1 集成、质量、包和 GO/NO-GO |
-| `dev/reports/MEMORY_BASE_OUTPUT_0_1_2026-11-12.md` | 输出模块协议、证据复验与注入验证 |
-| `dev/reports/MEMORY_BASE_OUTPUT_0_1_INTEGRATION_2026-11-12.md` | 输出模块并入当前 dev、宿主接线与 758 项回归 |
-| `dev/reports/ENGINEERING_REPORT_2026-11-11.pdf` | 当前工程报告 |
+| --- | --- |
+| `releases/astrbot_plugin_digital_life-0.7.0-dev.2.zip` | 已交付开发版（78 文件，222,031 bytes，SHA-256 `06756a5f…`） |
+| `dist/astrbot_plugin_digital_life-0.7.0-dev.2.zip` | 由当前源码重建的候选（79 文件，222,925 bytes，SHA-256 `08c90bbd…`；新增 `memory_engine/README.md`、模块 README 更新、文本换行规范化） |
+| `dev/reports/current_acceptance.json` | 当前验收记录（唯一可引用的数字） |
+| `dev/reports/SPECIALIZED_COVERAGE.md` | 能力 → 测试 → 环境的映射与缺口 |
+| `docs/ARCHITECTURE.md` | 模块职责与数据流 |
+| `docs/MIGRATION_RECOVERY.md` | 迁移、备份、恢复切换、撤回的操作前提与失败处理 |
 
 ## 已知边界
 
 - 质量集是合成/开发反例，不是独立真实聊天或人工盲评；
-- quality-v2 的 1 条矛盾标签保留为 FAIL，quality-v3 修正后单独冻结；
-- 无真实 AstrBot/NapCat 72h、用户效果、生产错误/回退记录；
-- 输出注入默认关闭，尚未在真实 AstrBot/QQ 长跑，也未评估真实模型收益或提示注入免疫；
-- 输出预算依赖调用方 tokenizer，不等于供应商实际计费；
-- 断电/fsync 未纳入；
+- 无真实 AstrBot/NapCat 安装、加载、采集、注入与 72h 长跑结果；
+- 无 Windows 实机安装与断电/fsync 耐久性结果；
+- 浏览器页面操作未验收，只验证了管理 API 的路由与状态返回；
+- 迁移已用合成旧库夹具覆盖 `create → batch → 续跑 → release`；真实旧库仍需一次人工演练；
+- 输出注入默认关闭，尚未评估真实模型收益或提示注入免疫；预算依赖调用方 tokenizer；
 - 本轮不修改 V1 生产插件、不部署、不接入生产 Shadow。
 
 ## License
 
-MIT，见 `LICENSE`。插件详细安装/配置见插件目录的 `README.md` 与 `INSTALL.md`。
+MIT，见 [`LICENSE`](LICENSE)。插件安装、配置与故障排查见插件目录的 `README.md`。

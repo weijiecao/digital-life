@@ -60,12 +60,14 @@ receipt = service.inject(req, output, request)
 历史 v0.1 独立安装包（不用于本次 v0.2 接线）：
 
 ```sh
-python -m pip install --no-index --no-deps digital_life_memory_output-0.1.0-py3-none-any.whl
+python -m pip install --no-index --no-deps archive/releases/dev/digital_life_memory_output-0.1.0-py3-none-any.whl
 ```
 
-## 在 host_shadow 中接线
+## 在统一插件中接线
 
-`dev/host_shadow/main.py` 已提供可选的 AstrBot 注入路径，默认关闭：
+`dev/astrbot_plugin_digital_life/main.py` 负责接线：默认 `COLLECT` 只观察，只有显式切到
+`ASSIST` 才把记忆块附加到 `ProviderRequest.extra_user_content_parts`。为兼容旧配置，
+下面的环境变量仍会被读取，但优先级低于插件配置：
 
 ```powershell
 $env:SHADOW_OUTPUT_MODE = 'inject'

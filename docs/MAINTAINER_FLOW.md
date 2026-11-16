@@ -1,170 +1,198 @@
 # 维护者流程：从改一行代码到发布
 
-> 面向维护这个仓库的人（含未来的你）。全部命令都在本机实测过，Windows + PowerShell 5.1。
-> 用户侧流程见插件仓库的 [`docs/QUICKSTART.md`](https://github.com/weijiecao/astrbot_plugin_digital_memory_store/blob/main/docs/QUICKSTART.md)。
+> 面向维护本仓库的人。除标明"需要真实环境"的步骤外，命令都在仓库根目录执行。
+> 用户侧安装说明见 `dev/astrbot_plugin_digital_life/README.md`。
 
 ## 总览
 
-```
-搭环境 → 改代码 → 本地回归 → 打包 → 用 AstrBot 校验 zip → 双仓同步 → 发版 → 发布后校验
+```text
+改代码 → 本地回归 → 仓库检查 → 构建 → 验包 → 记录证据 → 提交/评审 → 发布 → 单向导出
    ↑                                                                              │
-   └────────────────────────── 回滚（删 release / 移 tag）←────────────────────────┘
+   └──────────────────────────── 回退（revert / 新候选标识）───────────────────────┘
 ```
 
-两个仓库，**同一个版本号**：
+单一源码来源：**本仓库**。
+`weijiecao/astrbot_plugin_digital_life` 是分发仓库，只能由本仓库单向导出，不反向同步。
 
-| 仓库 | 内容 | 谁用 |
-|---|---|---|
-| `astrbot_plugin_digital_memory_store` | 仓库根 = 插件根（AstrBot 要求） | AstrBot 用户 |
-| `digital-life`（本仓库） | `dev/` 开发区 + `env/` 环境 + `testbed/` 实机 | 开发者 / 复现环境 |
-
-## 1. 准备环境（一次性）
+## 0. 环境
 
 ```powershell
 git clone https://github.com/weijiecao/digital-life.git
 cd digital-life
-powershell -NoProfile -ExecutionPolicy Bypass -File .\env\setup.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\env\verify_env.ps1   # 应全绿
+python -m pip install -r dev/requirements-release.txt
 ```
 
-产物：`testbed\.venv`、`testbed\AstrBot-4.29.3`、`testbed\models\bge-small-zh-v1.5`、
-`testbed\instance`。这些都**不入库**，靠脚本重建。
+需要 Python 3.10+；`requirements-release.txt` 只固定 `tiktoken`（精确预算校验用）。
+真实 AstrBot/NapCat 环境用 `env/setup.ps1` 重建到 `testbed/`，不要提交进去。
 
-## 2. 改代码
+## 1. 改代码
 
-- 插件源码：`dev/astrbot_plugin_digital_memory_store/`
-- 测试：`dev/test_*.py`
-- 文档：插件内 `README.md` / `INSTALL.md` / `docs/`；工程级 `env/README.md`、`docs/`、根 `README.md`
-- **不要改**只读基线（`E5.0-F_0.15.116_工程包/`、`_e50f_standalone/`），它们是历史对照
+| 改动 | 位置 |
+| --- | --- |
+| 插件入口、应用服务、管理 UI | `dev/astrbot_plugin_digital_life/` |
+| 输入、实时追加、历史对账 | `dev/astrbot_memory_input/` |
+| 召回、准入、上下文、预算 | `dev/memory_engine/` |
+| 输出协议与注入 | `dev/memory_output/` |
+| 基座、Resolver、租约 | `dev/v1_5_consolidator/` |
+| 控制台 | `dev/dlm_console/` |
+| 构建/验包/导出 | `tools/` |
+| 文档 | `README.md`、`docs/`、`dev/README.md`、各模块 README |
 
-## 3. 本地回归
+不要修改 `archive/` 里的实现来"修好"活动代码；活动代码也不得 `import archive`。
+
+## 2. 本地回归
+
+```powershell
+python tools/run_regression.py
+```
+
+输出：屏幕摘要 + `dist/regression.json`（用例数、跳过原因、耗时、环境）+ `dist/regression.log`。
+这就是文档里数字的唯一来源；不要手抄到别处。
+
+只跑某个文件：
 
 ```powershell
 cd dev
-# 快跑（12 个用例，约 1 秒）；测试在 dev/tests/ 下，用包名调用
-..\testbed\.venv\Scripts\python.exe -m unittest -q tests.test_metrics tests.test_threshold tests.test_preflight
-
-# 全量（19 个 suite / 339 项，约 30 秒），并刷新 STATUS.md 与 reports/status.json
-..\testbed\.venv\Scripts\python.exe scripts\report.py
-
-# 手动等价写法（不想用 report.py 时）
-..\testbed\.venv\Scripts\python.exe -m unittest -q tests.test_store tests.test_plugin tests.test_baseline_alignment `
-  tests.test_preflight tests.test_auto_jobs tests.test_backup_regression tests.test_prewarm tests.test_model_judge tests.test_delivery `
-  tests.test_soak tests.test_threshold tests.test_correction tests.test_metrics tests.test_real_corpus tests.test_background `
-  tests.test_package tests.test_attribution tests.test_panel tests.test_integration_chain
+python -m unittest -q tests.test_unified_plugin
 ```
 
-> 用 `unittest`，不是 `pytest`（仓库测试是 unittest 风格，环境里也没装 pytest）。
-> `STATUS.md` 是脚本生成物，**不要手改**；它是唯一数字来源。
-
-### CI（GitHub Actions）
-
-`.github/workflows/tests.yml` 在 `windows-latest` + Python 3.12 上跑同一套 339 项，push 到 `main`
-或开 PR 即触发。它**不需要 torch/模型、不联网**：测试全部用替身（stub 的 AstrBot、假编码器）。
-
-注意边界：CI 证明的是“逻辑没坏”，不能替代 `testbed/` 的真实链路验证（真实 AstrBot + BGE 必须本机跑）。
-
-## 4. 打包
+## 3. 仓库检查
 
 ```powershell
-cd ..            # 回到 数字生命\ 或 digital-life\ 的上一级工作区
-python dev\scripts\build_package.py
+python tools/check_repository.py
 ```
 
-产物：`dist\astrbot_plugin_digital_memory_store-<version>.zip` 与同名 `.sha256`。
-脚本自动排除 `__pycache__`、`.git`、`.venv`、内部文档（`测试前功能清单.md`、`项目节点进度.md`）。
+检查项：声明的入口是否存在、活动代码是否引用归档、活动/归档测试是否重复、
+版本是否只有一个来源、文档链接与命令是否有效、CI 是否只调用存在的入口、
+打包清单的源目录是否齐全、`dist/` 与 `.local/` 是否被忽略。
+`--json` 输出同样内容，便于 CI 存档。
 
-**发版前必须改版本号**：`dev/astrbot_plugin_digital_memory_store/metadata.yaml` 的 `version`。
-zip 文件名、`dist` 校验和都从它来。
-
-## 5. 用 AstrBot 自己的校验器验证 zip
-
-别只看“能不能解压”，要让 AstrBot 的真实代码认这个包：
+## 4. 构建
 
 ```powershell
-cd testbed\AstrBot-4.29.3
-..\.venv\Scripts\python.exe -c "from astrbot.core.star.updater import _PluginUpdater as U; print(U.inspect_plugin_archive(r'<zip 绝对路径>')['metadata_entry'])"
+python tools/build_unified_plugin.py --out-dir dist
 ```
 
-期望输出：`astrbot_plugin_digital_memory_store/metadata.yaml`。这一步能提前发现
-`metadata.yaml` 缺字段、编码不对、目录层数不对——WebUI 上传和“从仓库安装”都走这条校验。
+- 文件清单来自 `tools/plugin_package.json`：插件宿主目录 + 5 个共享包，映射进
+  `astrbot_plugin_digital_life/` 既有布局；
+- 换行按仓库 `.gitattributes` 规范化（文本 LF，`*.ps1/*.cmd` CRLF，二进制不动）；
+- ZIP 时间戳、权限、压缩参数、成员顺序固定，同一源码连续构建两次哈希一致；
+- 输出 `dist/astrbot_plugin_digital_life-<version>.zip`、`.sha256`、`build_manifest.json`。
 
-## 6. 双仓同步
-
-插件仓库发版后，把插件副本同步到本仓库，保证 `dev/` 不落后：
+正式交付构建必须从干净提交开始，并加 `--require-clean`：
 
 ```powershell
-$src = 'C:\Users\<you>\Desktop\数字生命\dev\astrbot_plugin_digital_memory_store'
-$dst = 'C:\path\to\digital-life\dev\astrbot_plugin_digital_memory_store'
-robocopy $src $dst /E /XD __pycache__ .git .github /XF *.pyc 测试前功能清单.md 项目节点进度.md PUBLISH_GITHUB.md
+python tools/build_unified_plugin.py --out-dir dist --require-clean
 ```
 
-`.github/`（issue 模板）只属于插件仓库，不同步；`测试前功能清单.md`、`项目节点进度.md` 是内部文档，
-`dev/docs/PUBLISH_GITHUB.md` 是本机运维笔记（含代理与本地路径），三者都不入库也不入包。
+没有 `.git` 时 `source_commit` 为 `null`、`dirty` 为 `null`，`--require-clean` 会拒绝。
 
-`robocopy` 退出码 `0–7` 都是成功（`1` = 有文件被复制），`8+` 才是失败。
-
-同步后检查根 `README.md` 里的版本号引用，别留下旧版本。
-
-## 7. 发版
-
-### 7.1 插件仓库（用户装的那个）
+## 5. 验包
 
 ```powershell
-cd dev\astrbot_plugin_digital_memory_store
-git add -A
-git commit -m "release: v1.0.x 一句话说明"
-git push origin main
-git tag v1.0.x
-git push origin v1.0.x
-gh release create v1.0.x "<dist>\astrbot_plugin_digital_memory_store-1.0.x.zip" `
-  "<dist>\astrbot_plugin_digital_memory_store-1.0.x.zip.sha256" `
-  --repo weijiecao/astrbot_plugin_digital_memory_store `
-  --title "v1.0.x — 一句话" --notes-file RELEASE_NOTES.md --latest
+python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
+python tools/verify_unified_plugin.py --dist dist --self-test
 ```
 
-### 7.2 完整工程仓库（本仓库）
+第一行做 16 项检查（成员安全、逐文件哈希、必需文件、metadata、配置 schema、UI 资源、
+编译、共享包导入、插件导入）；第二行证明缺文件、篡改、路径穿越、重复成员会被拒绝。
+
+插件模块的导入在无 AstrBot 时使用**标注的宿主 stub**（`host: stub`，只算离线通过）。
+有 AstrBot 源码时，用同一个解释器环境把真实源码接进来，报告会写 `host: astrbot-source`：
 
 ```powershell
-git add -A
-git commit -m "sync: 插件同步到 v1.0.x"
-git push origin main
-git tag v1.0.x
-git push origin v1.0.x
-git archive --format=zip --prefix=digital-life-1.0.x/ -o dist\digital-life-v1.0.x.zip HEAD
+testbed\.venv\Scripts\python.exe tools\verify_unified_plugin.py --dist dist `
+  --host-path testbed/AstrBot-4.29.3 --report dist/package_verification.json
+testbed\.venv\Scripts\python.exe tools\check_astrbot_install.py --dist dist `
+  --astrbot-root testbed/AstrBot-4.29.3 --report dist/astrbot_install_check.json
 ```
 
-再对归档算校验和、建 release（附件是 `digital-life-v1.0.x.zip` + `.sha256`）。
+第一条用真实 AstrBot 4.29.3 源码导入插件模块；第二条用 AstrBot 自带的
+`_PluginUpdater.inspect_plugin_archive` 校验归档，期望 metadata 入口以
+`astrbot_plugin_digital_life/metadata.yaml` 结尾。两者都不启动实例，仍不等于真实宿主验收。
 
-## 8. 发布后校验
+注意：`--host-path` 需要能导入 AstrBot 依赖的解释器（用 `testbed\.venv` 那个），
+系统 Python 缺少 AstrBot 依赖时会明确报 `host path does not contain an importable astrbot package`。
+
+## 6. 记录证据
 
 ```powershell
-# 附件摘要必须与本地一致
-gh release view v1.0.x --repo weijiecao/digital-life --json assets --jq '.assets[] | {name, digest}'
-Get-FileHash dist\digital-life-v1.0.x.zip -Algorithm SHA256
-
-# 抽查 GitHub 上的原文（防止只提交了本地）
-(Invoke-WebRequest https://raw.githubusercontent.com/weijiecao/digital-life/main/README.md -UseBasicParsing).StatusCode
+python tools/verify_unified_plugin.py --dist dist --self-test --self-test-report dist/selftest.json
+python tools/record_acceptance.py
 ```
 
-## 9. 回滚
+`record_acceptance.py` 从 `dist/regression.json`、`dist/build_manifest.json`、
+`dist/package_verification.json`、`dist/selftest.json` 与 `dist/plugin_export/` 读出数字，
+写出 `dev/reports/current_acceptance.json`，并自动与 `releases/` 里的上一份交付比对
+（新增/删除/变化的文件）。**不要手写这个文件**。
+
+写完后确认：
+
+- `tested_commit` / `dirty` / `plugin_version` / `artifact_sha256` 与实际产物一致；
+- 用例数来自 `dist/regression.json`，不是手抄；
+- 失败或跳过写明原因，不能把跳过写成通过。
+
+## 7. 提交与 CI
+
+- 提交信息用 `feat:` / `fix:` / `docs:` / `test:` / `chore:`；
+- 一个 PR 做一件事；改行为必须带测试；
+- CI（`.github/workflows/tests.yml`）：
+  - `regression`：Windows/Ubuntu × Python 3.10/3.11/3.12，跑仓库检查与全量回归，
+    上传 `regression.json`/`.log`；
+  - `package`：只在 Ubuntu/Python 3.12 这一规范环境构建、验包、负例与双次导出比对，
+    上传 ZIP、清单与验包 JSON。
+
+CI 证明"离线逻辑没坏"，不能代替 `testbed/` 的真实宿主验证。
+
+## 8. 发布
+
+1. 改版本：只改 `dev/astrbot_plugin_digital_life/metadata.yaml` 的 `version`
+   （文件名、清单、校验和都从它派生）。
+2. 从干净提交构建并验包（见上）。
+3. 把新包放进 `releases/` 并更新 `releases/README.md`；**不要**覆盖已有同名交付物。
+   字节变化时必须用新的候选标识（例如 `0.7.0-dev.3`）。
+4. 更新 `docs/CURRENT_STATUS.md` 与 `dev/reports/current_acceptance.json`。
+5. 打 tag、建 Release（附件：ZIP + `.sha256` + `build_manifest.json`）。
+
+## 9. 单向导出到分发仓库
+
+```powershell
+python tools/export_astrbot_plugin.py --output dist/plugin_export
+python tools/export_astrbot_plugin.py --check dist/plugin_export
+```
+
+- 导出目录记录 `SOURCE_MANIFEST.json`：来源仓库、来源提交、导出工具版本、插件版本、
+  逐文件哈希、关联包哈希、布局；
+- 工具不推送、不建 Release，也不清空目标目录；
+- 目标目录有本工具没创建的文件时默认拒绝；`--force` 前先人工看差异；
+- `--check` 只读：报告缺失、被改、多余文件，发现漂移即退出非零；
+- 分发仓库里的修复必须回到本仓库完成，再重新导出，不做双向同步。
+
+布局用 `--layout` 选择（同一份打包清单）：
+
+| 布局 | 路径结构 | 用途 |
+| --- | --- | --- |
+| `archive`（默认） | `astrbot_plugin_digital_life/<pkg>/…` | 与 ZIP 完全一致，可追溯到已验包 |
+| `engineering` | 根 `astrbot_plugin_digital_life/` + `shared/<pkg>/` | 对齐现有分发仓库，差异最小 |
+| `flat` | 插件文件在仓库根 | 仓库安装用；**尚未验证**，不声明可用 |
+
+当前分发仓库仍是旧工程包布局；逐文件比较结果（74 一致 / 4 文档落后 / 2 新增 / 121 旧脚手架）
+与首次导出步骤见 [`dev/reports/DISTRIBUTION_SYNC_2026-11-16.md`](../dev/reports/DISTRIBUTION_SYNC_2026-11-16.md)。
+
+## 10. 回退
 
 | 场景 | 做法 |
-|---|---|
-| Release 附件传错 | `gh release upload v1.0.x <新文件> --clobber`，再核对 digest |
-| 版本内容不对 | `gh release delete v1.0.x --yes`；本地 `git tag -d`、`git push origin :v1.0.x`，修好后重发 |
-| 想回到上一版给用户 | 把上一版 Release 设为 latest：`gh release edit v1.0.y --latest` |
-| 代码回退 | `git revert <commit>`（不要 `reset --hard` 强推，会破坏别人 clone） |
+| --- | --- |
+| 代码有问题 | `git revert <commit>`，不要 `reset --hard` 强推 |
+| 包内容有问题 | 撤回候选，修好后用新候选标识重新构建；保留旧物与失败证据 |
+| 发布说明写错 | 用新的版本说明更正，不删除历史 |
+| 恢复数据 | 用管理页的备份列表恢复；不要手改 `CURRENT.json` |
 
-## 10. 已知坑
+## 11. 已知坑
 
-1. **PowerShell 5.1 读 UTF-8 无 BOM 会乱码**，进而语法报错。仓库里的 `.ps1` 统一带 BOM，
-   **用编辑器改完别保存成“UTF-8 无 BOM”**。新增脚本后跑一次：
-   `[System.Management.Automation.Language.Parser]::ParseFile($f,[ref]$null,[ref]$errs)`。
-2. **执行策略**：默认禁止跑脚本，统一用 `powershell -NoProfile -ExecutionPolicy Bypass -File ...`。
-3. **代理**：本机直连 GitHub 会 `Connection was reset`，两个仓库的 `.git/config` 里写了
-   `http.proxy=127.0.0.1:7897`；换端口/关代理后 push 会失败。
-4. **版本号一致**：`metadata.yaml` 的 `version`、zip 文件名、tag、Release 标题四处必须对齐。
-5. **zip 别夹带 `.git`**：`build_package.py` 已排除；手工打包时注意。
-6. **测试通过 ≠ 真实可用**：真实链路的证据在 `dev/reports/real_env.json`、`dev/docs/REAL_ENV_REPORT.md`，
-   别拿合成数据的数字对外承诺。
+1. **换行**：`.gitattributes` 决定入库与打包的换行。直接对任意字节做替换会破坏二进制。
+2. **版本号**：`metadata.yaml` 是唯一来源；不要在脚本或文档里再写一份版本常量。
+3. **`dist/` 与 `*.zip` 被忽略**：构建产物不进源码提交，交付包放在 `releases/`。
+4. **归档不是后备路径**：需要旧实现时迁回 `dev/` 并补测试，不要在活动脚本里加路径绕回。
+5. **PowerShell 编码**：含中文的 `.ps1` 保存为 UTF-8 带 BOM，否则 Windows PowerShell 5.1 会乱码。
+6. **测试通过 ≠ 真实可用**：真实 AstrBot/NapCat、Windows 实机、浏览器页面与 72h 长跑仍未验收。

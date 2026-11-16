@@ -439,9 +439,11 @@ def build() -> None:
         ["FINAL_HANDOFF_2026-11-11.md", "移交说明"],
     ], widths=[7.4, 8.4], font_size=8.5)
     heading(document, "14.3 复现命令", 2)
-    para(document, "python -m unittest discover -q -s tests -t .", grey=True)
-    para(document, "python scripts/report.py", grey=True)
-    para(document, "python scripts/verify_r0_bundle.py", grey=True)
+    para(document, "python tools/run_regression.py", grey=True)
+    para(document, "python tools/build_unified_plugin.py --out-dir dist", grey=True)
+    para(document, "python tools/verify_unified_plugin.py --dist dist", grey=True)
+    para(document, "本报告是 2026-11-11 的历史快照；当前入口以仓库根 README 与 docs/MAINTAINER_FLOW.md 为准。",
+         grey=True)
     para(document, "本报告由工作区报告、测试输出与运行记录汇总；未使用工作区外的真实用户数据。", grey=True)
 
     document.save(OUT_DOCX)

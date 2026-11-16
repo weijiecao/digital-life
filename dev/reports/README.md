@@ -1,33 +1,57 @@
 # Reports index
 
-This directory keeps only current delivery evidence and the frozen B4 trace
-required by tests.
+本目录保存**当前验收证据**、**历史报告快照**，以及仍被测试使用的冻结数据。
+数字只以 `current_acceptance.json` 及其引用日志为准；历史报告里的数字是当时快照，
+不代表当前状态。
 
-- `Q1_INTEGRATION_2026-11-12.md` — Q1 patch, 590 tests, quality-v3, packages.
-- `NATIVE_INPUT_0_2_2026-11-12.md` — native input v0.2, host runtime hookup, 642 tests.
-- `MEMORY_BASE_OUTPUT_0_1_2026-11-12.md` — output module handoff: protocol, evidence checks,
-  temporary AstrBot injection, 37 targeted tests.
-- `MEMORY_BASE_OUTPUT_0_1_INTEGRATION_2026-11-12.md` — current dev integration: host wiring,
-  715-test regression, AstrBot source contract PASS.
-- `REVIEW_FIXES_63e61de_2026-11-13.md` — review snapshot `63e61de` fixes F01–F10,
-  behavior changes and the 742-test regression.
-- `REREVIEW_29A1FE6_FIX_2026-11-13.md` — second-review R01–R03 fixes: active
-  provider budget, engine source-chain backup validation, non-blocking shutdown;
-  11 new regressions, 753-test full regression.
-- `REREVIEW_CB3921E_FIX_2026-11-13.md` — third-review R04 fix: lifecycle
-  CLOSING/CLOSED blocks capture/observe/pump restart during terminate;
-  3 new regressions, 756-test full regression.
-- `REREVIEW_CB3921E_FIX_R05_2026-11-13.md` — fourth-review R05 fix: shielded
-  shared cleanup, retryable stages, no premature CLOSED; 2 new regressions,
-  758-test full regression; reproducible 71-file bundle.
-- `native_input_0_2_{targeted,full,demo}.log` — evidence for the above.
-- `ENGINEERING_REPORT_2026-11-11.{md,docx,pdf}` — current engineering report.
-- `MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md` — acceptance matrix.
-- `M0_BASELINE_MANIFEST.json` — source/test baseline.
-- `FINAL_HANDOFF_2026-11-11.md` — delivery handoff.
-- `q1_results/` — challenge, quality-v2 known fail, quality-v3, lifecycle.
-- `rc3_results/` — RC3 quality/closed-loop evidence.
-- `v1_5b_b4_cluster_prov_trace.json` — frozen trace used by R0-D tests.
+## 当前验收
 
-Historical experiment logs and traces were removed to keep the repository
-source-first. Releases live in `releases/`.
+| 文件 | 内容 |
+| --- | --- |
+| `current_acceptance.json` | 本轮验收的唯一机器可读记录：被测提交、插件版本、包哈希、命令、环境、用例数、时间、日志引用 |
+| `SPECIALIZED_COVERAGE.md` | 能力 → 测试文件 → 用例 → 运行环境的映射，以及明确的缺口 |
+| `M0_BASELINE_MANIFEST.json` | 2026-11-11 的 M0 基线（旧版本、旧哈希），只作历史对照 |
+| `REPOSITORY_ORGANIZATION_2026-11-15.md` | 本轮仓库整理记录：改动、证据、偏差与计划 §8 清单状态 |
+| `DISTRIBUTION_SYNC_2026-11-16.md` | 分发仓库逐文件比较结果、三种导出布局与首次导出方案 |
+
+活动日志由命令生成在 `dist/`（Git 忽略）：`dist/regression.json`、`dist/regression.log`、
+`dist/build_manifest.json`、`dist/package_verification.json`、`dist/selftest.json`、
+`dist/astrbot_install_check.json`、`dist/plugin_export/`。`current_acceptance.json` 由 `python tools/record_acceptance.py`
+从这些文件生成，不要手改。
+
+## 当前工程报告
+
+| 文件 | 内容 |
+| --- | --- |
+| `ENGINEERING_REPORT_2026-11-11.{md,docx,pdf}` | 2026-11-11 的工程报告（含当时 590 项回归与旧插件结论） |
+| `FINAL_HANDOFF_2026-11-11.md` | 当时的交付交接 |
+| `Q1_INTEGRATION_2026-11-12.md` | Q1 集成、质量、包与 GO/NO-GO |
+| `MEMORY_ENGINE_ACCEPTANCE_2026-11-10.md` | 当时的验收矩阵 |
+| `MEMORY_BASE_OUTPUT_0_1_2026-11-12.md` | 输出模块协议、证据复验与注入验证 |
+| `MEMORY_BASE_OUTPUT_0_1_INTEGRATION_2026-11-12.md` | 输出模块并入 dev 与宿主接线 |
+| `NATIVE_INPUT_0_2_2026-11-12.md` | 原生输入 v0.2 与宿主接线 |
+| `REVIEW_FIXES_63e61de_2026-11-13.md`、`REREVIEW_29A1FE6_FIX_2026-11-13.md`、`REREVIEW_CB3921E_FIX_2026-11-13.md`、`REREVIEW_CB3921E_FIX_R05_2026-11-13.md` | 各轮复审修复记录（含当时的用例数） |
+| `0.7.0-dev.2/SQLITE_FIX.md` | dev.2 的 SQLite 连接释放修复说明 |
+
+上述报告描述的是当时提交下的行为；其中引用的 `dev/scripts/build_r0_bundle.py`、
+`verify_r0_bundle.py`、`tests/…` 等路径现在位于 `archive/` 或已被替代。**报告正文不改写**，
+因为它记录的是当时的证据；当前命令以仓库根 `README.md` 与 `docs/MAINTAINER_FLOW.md` 为准。
+
+## 历史快照
+
+| 文件 | 说明 |
+| --- | --- |
+| `history/STATUS_2026-11-11.md` | 旧的自动生成状态文件（590 项、旧插件 1.0.19）。原 `dev/STATUS.md` 位置改为指向本文件与当前状态 |
+| `q1_results/` | Q1 的 challenge、quality-v2 known fail、quality-v3、lifecycle 结果 |
+| `rc3_results/` | RC3 的质量与闭环证据 |
+| `v1_5b_b4_cluster_prov_trace.json` | 仍被 R0-D 测试使用的冻结 trace（**运行依赖，勿删除**） |
+
+## 仍被测试使用的数据
+
+| 路径 | 使用方 |
+| --- | --- |
+| `dev/reports/v1_5b_b4_cluster_prov_trace.json` | `dev/tests/test_r0d_replay.py`、`test_r0d_crash.py` |
+| `dev/fixtures/*.json` | `dev/tests/test_b4_*`、`test_evidence_admission.py` |
+| `dev/evaluation/quality_v2`、`quality_v3`、`b4_testdata` | 质量与恢复验收脚本（需 BGE 目录，不进入离线回归） |
+
+移动这些文件必须先登记路径与内容哈希，并同步修改引用；不能只移动文件。

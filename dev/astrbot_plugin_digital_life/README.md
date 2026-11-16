@@ -8,7 +8,15 @@
 
 ## 安装和模式
 
-构建：在仓库根目录执行 `python tools/build_unified_plugin.py`。安装：AstrBot WebUI → 插件 → 上传 `dist/astrbot_plugin_digital_life-0.7.0-dev.2.zip`。安装包包含全部共享模块，不需要设置 `DIGITAL_LIFE_DEV`。
+构建与验包（在仓库根目录执行）：
+
+```powershell
+python tools/build_unified_plugin.py --out-dir dist
+python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json
+```
+
+安装：AstrBot WebUI → 插件 → 上传 `dist/astrbot_plugin_digital_life-0.7.0-dev.2.zip`。
+安装包包含全部共享模块，不需要设置 `DIGITAL_LIFE_DEV`。
 
 从 alpha.6 升级后请完整重启 AstrBot 服务；仅热重载不能可靠清除既有顶层共享模块的 Python 导入缓存。
 
@@ -92,14 +100,25 @@ result = await plugin.inject_proactive(
 
 默认根目录为 `<AstrBot>/data/plugin_data/astrbot_plugin_digital_life/`。若新目录不存在且旧 shadow 目录存在，沿用旧目录；这是整组接续。首次恢复前活动库位于根目录，之后位于 `generations/<id>/`。不得绕过 `CURRENT.json` 直接把根目录旧文件当作当前数据。
 
-管理 API 均在宿主鉴权保护下：`/astrbot_plugin_digital_life/console/runtime/`。`GET status`；POST `migration_create`、`migration_mapping`、`migration_batch`、`migration_release`、`shadow_import`、`backup`、`verify_backup`、`restore`、`withdraw`。接口正文示例和回归脚本见工程包中的 `tests/completion_suite.py`、`tests/console_dom_check.cjs`。
+管理 API 均在宿主鉴权保护下：`/astrbot_plugin_digital_life/console/runtime/`。`GET status`；POST `migration_create`、`migration_mapping`、`migration_batch`、`migration_release`、`shadow_import`、`backup`、`verify_backup`、`restore`、`withdraw`。
+接口行为、前提与失败处理见 [`docs/MIGRATION_RECOVERY.md`](../../docs/MIGRATION_RECOVERY.md)，
+路由与状态返回由 `dev/tests/test_unified_plugin.py::ConsoleApiTests` 覆盖。
 
 本版没有做全套旧命令兼容，也没有把旧插件另一个独立注入器搬进来。共享模块沿用仓库既有的顶层导入布局；不宣称已完成所有私有命名空间隔离改造。
 
 ## 验证
 
-仓库回归：`python -m unittest discover -s tests -t . -v`。新增功能回归自动构建并解压安装包，在独立进程中执行真实应用代码，以离线 AstrBot/模型替身覆盖数据闭环。
+仓库回归（在仓库根目录执行）：`python tools/run_regression.py`。当前活动套件包含本插件的
+专项用例 `dev/tests/test_unified_plugin.py`：迁移预览、备份一致性、恢复切换与崩溃回退、
+实时追加与撤回、运行权、输出 v2、管理 API 路由与 SQLite 句柄释放。
 
-前端 DOM 接线验证：安装 jsdom 后执行 `node tests/console_dom_check.cjs <python路径> <解压后的插件目录>`；实际页面事件委托调用真实 ConsoleApi 与应用服务。可选真实浏览器脚本 `tests/console_browser_check.py` 需要 aiohttp、Playwright、Chromium，使用 `DIGITAL_LIFE_TEST_CHROMIUM` 指定浏览器路径。
+包级检查：`python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json`，
+外加 `--self-test` 证明缺文件、篡改、路径穿越和重复成员会被拒绝。无 AstrBot 时插件模块
+用标注的宿主 stub 导入，报告写 `host: stub`，只算离线通过。
 
-真实宿主、真实模型语义质量、Windows 文件句柄行为、第三方主动聊天连接器和 72 小时长跑仍待验收。进程退出回退测试不能替代断电耐久性验证。
+前端 DOM 与浏览器脚本（`completion_suite.py`、`console_dom_check.cjs`、
+`console_browser_check.py`）属于上一版工程包，现保存在
+`archive/history/unified_plugin_package/`，不在本仓库运行。
+
+真实宿主、真实模型语义质量、Windows 文件句柄行为、第三方主动聊天连接器和 72 小时长跑仍待验收。进程退出回退测试不能替代断电耐久性验证。能力映射见
+`dev/reports/SPECIALIZED_COVERAGE.md`。
