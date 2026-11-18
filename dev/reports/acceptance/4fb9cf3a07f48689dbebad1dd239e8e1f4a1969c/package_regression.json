@@ -1,0 +1,85 @@
+{
+  "artifact_sha256": "26fec9e92f7e76877eb2516e47c0e70a3bbb5429cc09d77183225f9b6a36b344",
+  "candidate": "astrbot_plugin_digital_life-0.8.0-dev.3.zip",
+  "checks": [
+    {
+      "detail": "all package modules load from the extracted zip",
+      "id": "package-imports",
+      "ok": true,
+      "origins": {
+        "astrbot_memory_input": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-package-qja_b6ck\\astrbot_plugin_digital_life\\astrbot_memory_input\\__init__.py",
+        "dlm_console": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-package-qja_b6ck\\astrbot_plugin_digital_life\\dlm_console\\__init__.py",
+        "memory_engine": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-package-qja_b6ck\\astrbot_plugin_digital_life\\memory_engine\\__init__.py",
+        "memory_output": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-package-qja_b6ck\\astrbot_plugin_digital_life\\memory_output\\__init__.py",
+        "v1_5_consolidator": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-package-qja_b6ck\\astrbot_plugin_digital_life\\v1_5_consolidator\\__init__.py"
+      }
+    }
+  ],
+  "dirty": false,
+  "ok": true,
+  "plugin_version": "0.8.0-dev.3",
+  "schema": "digital-life-package-regression/1",
+  "suites": [
+    {
+      "command": [
+        "C:\\Users\\205\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "unittest",
+        "-q",
+        "completion_suite"
+      ],
+      "duration_seconds": 7.569,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "id": "completion",
+      "ok": true,
+      "passed": 56,
+      "skipped": 0,
+      "status": "passed",
+      "target": "package",
+      "total": 56,
+      "working_directory": "C:\\Users\\205\\Desktop\\数字生命\\.local\\review-tree\\verification\\plugin"
+    },
+    {
+      "command": [
+        "C:\\Users\\205\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\Users\\205\\Desktop\\数字生命\\.local\\review-tree\\verification\\run_core_package.py"
+      ],
+      "duration_seconds": 5.097,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "id": "core",
+      "ok": true,
+      "passed": 137,
+      "skipped": 0,
+      "status": "passed",
+      "target": "package",
+      "total": 137,
+      "working_directory": "C:\\Users\\205\\Desktop\\数字生命\\.local\\review-tree"
+    },
+    {
+      "command": [
+        "C:\\Users\\205\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "unittest",
+        "-q",
+        "test_legacy_plugin_contracts"
+      ],
+      "duration_seconds": 3.646,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "id": "legacy",
+      "ok": true,
+      "passed": 20,
+      "skipped": 0,
+      "status": "passed",
+      "target": "package",
+      "total": 20,
+      "working_directory": "C:\\Users\\205\\Desktop\\数字生命\\.local\\review-tree\\verification\\plugin"
+    }
+  ],
+  "tested_commit": "4fb9cf3a07f48689dbebad1dd239e8e1f4a1969c"
+}

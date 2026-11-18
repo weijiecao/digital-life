@@ -1,12 +1,12 @@
 {
-  "artifact_bytes": 223273,
+  "artifact_bytes": 226832,
   "artifact_files": 79,
-  "artifact_sha256": "6706578c2e1c46ed00e856ef7d1b9bb1de1b723b1149bf44ae8b1eedd84981b3",
+  "artifact_sha256": "26fec9e92f7e76877eb2516e47c0e70a3bbb5429cc09d77183225f9b6a36b344",
   "command": "python tools/run_regression.py",
   "dirty": false,
-  "duration_seconds": 37.766,
+  "duration_seconds": 34.515,
   "environment": {
-    "astrbot": "source checkout: testbed/AstrBot-4.29.3",
+    "astrbot": "source checkout: C:\\Users\\205\\AppData\\Local\\Temp\\dl-astrbot-src",
     "git": "available",
     "os": "Windows-11-10.0.26200-SP0",
     "platform": "win32",
@@ -23,9 +23,9 @@
     "regression": "dist/regression.json",
     "ui_dom": "dist/ui_dom.json"
   },
-  "evidence_index": "dev/reports/acceptance/c42ceff338ce2857db2314a696a64d25cc970700",
+  "evidence_index": "dev/reports/acceptance/4fb9cf3a07f48689dbebad1dd239e8e1f4a1969c",
   "failed": 0,
-  "finished_at": "2026-11-16T17:30:08+08:00",
+  "finished_at": "2026-11-18T21:43:06+08:00",
   "formal": true,
   "host_level": "astrbot-source",
   "level": "dev",
@@ -35,42 +35,47 @@
     "export_files": 79,
     "export_layout": "engineering",
     "host": "astrbot-source",
-    "host_path": "testbed/AstrBot-4.29.3",
+    "host_path": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-astrbot-src",
     "negative_self_test": true,
     "verification_checks": 16,
     "verification_ok": true
   },
-  "passed": 401,
-  "plugin_version": "0.8.0-dev.2",
+  "passed": 407,
+  "plugin_version": "0.8.0-dev.3",
+  "previous_delivery": {
+    "archive": "astrbot_plugin_digital_life-0.8.0-dev.2.zip",
+    "bytes": 223273,
+    "sha256": "6706578c2e1c46ed00e856ef7d1b9bb1de1b723b1149bf44ae8b1eedd84981b3"
+  },
   "problems": [],
   "schema": "digital-life-acceptance/3",
   "skip_reasons": [],
   "skipped": 0,
-  "started_at": "2026-11-16T17:29:30+08:00",
+  "started_at": "2026-11-18T21:42:32+08:00",
   "suites": [
     {
       "errors": 0,
       "failed": 0,
       "id": "source-regression",
       "ok": true,
-      "passed": 401,
+      "passed": 407,
       "report": "dist/regression.json",
       "skipped": 0,
       "status": "passed",
       "target": "source",
-      "total": 401
+      "total": 407
     },
     {
       "errors": 0,
       "failed": 0,
       "id": "completion",
       "ok": true,
-      "passed": 47,
+      "passed": 56,
       "report": "dist/package_regression.json",
       "skipped": 0,
       "status": "passed",
       "target": "package",
-      "total": 47
+      "total": 56
     },
     {
       "errors": 0,
@@ -101,16 +106,16 @@
       "failed": 0,
       "id": "dom-wiring",
       "ok": true,
-      "passed": 7,
+      "passed": 8,
       "report": "dist/ui_dom.json",
       "skipped": 0,
       "status": "passed",
       "target": "package",
-      "total": 7
+      "total": 8
     }
   ],
-  "tested_commit": "c42ceff338ce2857db2314a696a64d25cc970700",
-  "total": 401,
+  "tested_commit": "4fb9cf3a07f48689dbebad1dd239e8e1f4a1969c",
+  "total": 407,
   "ui_dom": "passed",
   "visual_browser": "not-run"
 }

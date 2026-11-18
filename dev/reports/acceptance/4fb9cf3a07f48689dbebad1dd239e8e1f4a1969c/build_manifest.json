@@ -1,0 +1,421 @@
+{
+  "archive": "astrbot_plugin_digital_life-0.8.0-dev.3.zip",
+  "archive_bytes": 226832,
+  "archive_sha256": "26fec9e92f7e76877eb2516e47c0e70a3bbb5429cc09d77183225f9b6a36b344",
+  "build_rules_version": "1",
+  "command": "python tools/build_unified_plugin.py --out-dir dist",
+  "dirty": false,
+  "entrypoints": {
+    "self_test": "python tools/verify_unified_plugin.py --dist dist --self-test --self-test-report dist/selftest.json",
+    "verify": "python tools/verify_unified_plugin.py --dist dist --report dist/package_verification.json"
+  },
+  "environment": {
+    "implementation": "cpython",
+    "platform": "nt",
+    "python": "3.12.10",
+    "zlib": "1.3.1"
+  },
+  "file_count": 79,
+  "files": [
+    {
+      "bytes": 10999,
+      "path": "astrbot_plugin_digital_life/README.md",
+      "sha256": "d513d8cf1edffb57d028feec08b30c1cbc700ea976e764a43a694a920b33bdc3"
+    },
+    {
+      "bytes": 0,
+      "path": "astrbot_plugin_digital_life/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2311,
+      "path": "astrbot_plugin_digital_life/_conf_schema.json",
+      "sha256": "b36c37e79e314258f9bb51faf0927b9008c008b14efeabf3bf808402def25285"
+    },
+    {
+      "bytes": 88,
+      "path": "astrbot_plugin_digital_life/application/__init__.py",
+      "sha256": "7f62ae1d80e32b14b0c881c89bd6424cd1bd1fe605b55b13bc2f43a1a5806597"
+    },
+    {
+      "bytes": 1789,
+      "path": "astrbot_plugin_digital_life/application/compatibility.py",
+      "sha256": "3044ae73326a431c20f69423a01539551166d2de7229c27e50fdba90f2c4b57c"
+    },
+    {
+      "bytes": 13757,
+      "path": "astrbot_plugin_digital_life/application/migration.py",
+      "sha256": "3166b958a03794ba0dfaea09164ff9e4e53b4bdab24d6b48ce9582f672d17d0e"
+    },
+    {
+      "bytes": 10935,
+      "path": "astrbot_plugin_digital_life/application/service.py",
+      "sha256": "f4a4145dd90ffbef822eda53f8b70b478748bf9eff57dca1409140e7f395262b"
+    },
+    {
+      "bytes": 17254,
+      "path": "astrbot_plugin_digital_life/application/storage.py",
+      "sha256": "e0fe9567167129b0abde09c847bfe91e55058fae9c2d1d21ae4ea9c3f556851b"
+    },
+    {
+      "bytes": 8,
+      "path": "astrbot_plugin_digital_life/astrbot_memory_input/.gitignore",
+      "sha256": "020c2606e8ed484089c2083e0be438b9d0736bee1558a6b76af0d58bd23f69cf"
+    },
+    {
+      "bytes": 10772,
+      "path": "astrbot_plugin_digital_life/astrbot_memory_input/README.md",
+      "sha256": "aff404f543249f6bbfb4d6291249aef5153654a1d8b5ae756f71ca5ff4210653"
+    },
+    {
+      "bytes": 292,
+      "path": "astrbot_plugin_digital_life/astrbot_memory_input/__init__.py",
+      "sha256": "ac26967ed30d206db9855846018de315768a0e2af3cdef8842679ab55f9a9969"
+    },
+    {
+      "bytes": 743,
+      "path": "astrbot_plugin_digital_life/astrbot_memory_input/__main__.py",
+      "sha256": "a9738719d8fc7be9c5d22d89ca197bbc821c2b4507757a0566e6041febfc7a7a"
+    },
+    {
+      "bytes": 5389,
+      "path": "astrbot_plugin_digital_life/astrbot_memory_input/journal.py",
+      "sha256": "2bea249c8e0ef4793eb9934e37056b0db5d675c9716fa0dcbd0583be62e5087c"
+    },
+    {
+      "bytes": 6954,
+      "path": "astrbot_plugin_digital_life/astrbot_memory_input/native.py",
+      "sha256": "e8ed34b126664745a9d9ade51a886696994b4e846d173770d145a13fbfa563f6"
+    },
+    {
+      "bytes": 388,
+      "path": "astrbot_plugin_digital_life/astrbot_memory_input/pyproject.toml",
+      "sha256": "50bd2cf132a31b6bf6325d49a25e1598ea4f2883e28259fecc4fe53075588a20"
+    },
+    {
+      "bytes": 13293,
+      "path": "astrbot_plugin_digital_life/astrbot_memory_input/unified.py",
+      "sha256": "b9569416c46e0f17d3e7683b3867b96deb4179de9d864504c003c25189537fc4"
+    },
+    {
+      "bytes": 7274,
+      "path": "astrbot_plugin_digital_life/config.py",
+      "sha256": "fb8a2c6a8afbf30e127075cb28f3a72dc8fd5b7f1c49911074ae13b6bbef4cbf"
+    },
+    {
+      "bytes": 12980,
+      "path": "astrbot_plugin_digital_life/console_api.py",
+      "sha256": "729c752fa42e5b131e30eeb5f990f82d01e15155ac2a3b7e3c84d6a515291f07"
+    },
+    {
+      "bytes": 6035,
+      "path": "astrbot_plugin_digital_life/dlm_console/README.md",
+      "sha256": "a27489b8cc98f8551af6e26598f9670463d5e913069c0f191f22d03a86e33f3e"
+    },
+    {
+      "bytes": 217,
+      "path": "astrbot_plugin_digital_life/dlm_console/__init__.py",
+      "sha256": "5f9fb130a50fe41cad556b0f1dbe1392f39bb698a57a28cea733aa8528140e67"
+    },
+    {
+      "bytes": 5013,
+      "path": "astrbot_plugin_digital_life/dlm_console/__main__.py",
+      "sha256": "010c305ffbbee0fe953fdb5b5eff4ba6880599129872db39de41d98cc73bdbe0"
+    },
+    {
+      "bytes": 5770,
+      "path": "astrbot_plugin_digital_life/dlm_console/config.py",
+      "sha256": "e234e60af8d5e51a6e0f569d73e3f9957c66402247e5390c0b0d7c02dd4bb11d"
+    },
+    {
+      "bytes": 74199,
+      "path": "astrbot_plugin_digital_life/dlm_console/core.py",
+      "sha256": "979ce5a3028507f9fa261c496c17e388ca0a542ec8d6a8079593333ca245f048"
+    },
+    {
+      "bytes": 10551,
+      "path": "astrbot_plugin_digital_life/dlm_console/server.py",
+      "sha256": "db3ccc9b508ef96f5cda4b6958872fb0c86da71d8f175bc21f3e98246ad8c73b"
+    },
+    {
+      "bytes": 60384,
+      "path": "astrbot_plugin_digital_life/dlm_console/web/app.js",
+      "sha256": "ce4fa5ede034133c0aff264c847183b835b3d48fa6c44cdb651bb596a9f080ec"
+    },
+    {
+      "bytes": 369,
+      "path": "astrbot_plugin_digital_life/dlm_console/web/favicon.svg",
+      "sha256": "29c78db413080b4b7b97d0b404534e5938c8b224c4747516ba6c3cba27cbe318"
+    },
+    {
+      "bytes": 4251,
+      "path": "astrbot_plugin_digital_life/dlm_console/web/index.html",
+      "sha256": "bf0645aec0c4fd5b5a608a07ad97f88f520c3033739977dc038f2bedac29822f"
+    },
+    {
+      "bytes": 17892,
+      "path": "astrbot_plugin_digital_life/dlm_console/web/style.css",
+      "sha256": "f6ba91ae01218b92459aa2218fa53ab3e49e65dc19a972b4bb75ef2a7c6910e2"
+    },
+    {
+      "bytes": 51764,
+      "path": "astrbot_plugin_digital_life/main.py",
+      "sha256": "5130c534eed50aebc5b9b12875e01323703ff7b8e09319fa466a9a0e7ac2e04a"
+    },
+    {
+      "bytes": 1832,
+      "path": "astrbot_plugin_digital_life/memory_engine/README.md",
+      "sha256": "e03964f90cd90150ac2567824f704a82cdc8af5a36c887ef70dbc771885aee22"
+    },
+    {
+      "bytes": 77,
+      "path": "astrbot_plugin_digital_life/memory_engine/__init__.py",
+      "sha256": "c6ec1909f404468641c5535688c3473699075bfccbb8e0c32858de3fe99a9ac3"
+    },
+    {
+      "bytes": 8778,
+      "path": "astrbot_plugin_digital_life/memory_engine/admission.py",
+      "sha256": "d79ac13467ef830c1a68e81f956a495a557c56608fa9ab08229d2e491bbc6746"
+    },
+    {
+      "bytes": 2544,
+      "path": "astrbot_plugin_digital_life/memory_engine/backup.py",
+      "sha256": "d424aeb5db529a8a3dc51f1a28409ddd40acb33f511ff85f7a94c4f7fead6506"
+    },
+    {
+      "bytes": 5748,
+      "path": "astrbot_plugin_digital_life/memory_engine/cache.py",
+      "sha256": "63594964be4f6d4a8cffefb86e9180cfbb2623b2e1e905aba26bc2f4d3249320"
+    },
+    {
+      "bytes": 5335,
+      "path": "astrbot_plugin_digital_life/memory_engine/cli.py",
+      "sha256": "1abcf30f1b318720d72669cbe55f36719dc2b32dd4539689f78eeaeadd107d3f"
+    },
+    {
+      "bytes": 29082,
+      "path": "astrbot_plugin_digital_life/memory_engine/engine.py",
+      "sha256": "a6083c47132ae8013f6ac5392829fe878c3a36445608911a06352504b23c79d5"
+    },
+    {
+      "bytes": 1429,
+      "path": "astrbot_plugin_digital_life/memory_engine/host_adapter.py",
+      "sha256": "bbd70f5f325e928241774927506cc8497cce2b0863453eed38e718c7f3a2bfb1"
+    },
+    {
+      "bytes": 1194,
+      "path": "astrbot_plugin_digital_life/memory_engine/host_budget.py",
+      "sha256": "725375c71a3f121e5399d60644b4853f460f40210aca33dbc94bc6a242bb6e4d"
+    },
+    {
+      "bytes": 22977,
+      "path": "astrbot_plugin_digital_life/memory_engine/native_host.py",
+      "sha256": "0b9198803f928815daf1a0fa3733b126eba1135aec9fc162bf7f21af905e46aa"
+    },
+    {
+      "bytes": 24412,
+      "path": "astrbot_plugin_digital_life/memory_engine/native_input.py",
+      "sha256": "64fc0701859ee273082c36624cc8fc73f453b55c0ff071e555ef2108b279762d"
+    },
+    {
+      "bytes": 8836,
+      "path": "astrbot_plugin_digital_life/memory_engine/native_judge.py",
+      "sha256": "a7655f33fd9463e0456807c8ce09fb0120797b0011cbd1913212e948bd8f6c39"
+    },
+    {
+      "bytes": 5888,
+      "path": "astrbot_plugin_digital_life/memory_engine/output.py",
+      "sha256": "ad8c1917fab74814386954edbb9563e36c166f71218f5bc13236a2393f11a5ba"
+    },
+    {
+      "bytes": 945,
+      "path": "astrbot_plugin_digital_life/memory_engine/projection.py",
+      "sha256": "549dd7a78b2beae5581f20d6163e8b8fa4c6a89bae866fd100049ad0249209c0"
+    },
+    {
+      "bytes": 2847,
+      "path": "astrbot_plugin_digital_life/memory_engine/rejudge.py",
+      "sha256": "296cee022e25bae80c2e6d1932e09d0daa50a227d3382cf6671fcf673ec6cf94"
+    },
+    {
+      "bytes": 3902,
+      "path": "astrbot_plugin_digital_life/memory_engine/render.py",
+      "sha256": "a1e2f2f14b40b8eb0f181a837fb2093eda0f6108b5f646036b536c553b8b3971"
+    },
+    {
+      "bytes": 1245,
+      "path": "astrbot_plugin_digital_life/memory_engine/shadow.py",
+      "sha256": "d4b1cfbe77ebb2a13dfa4044918272445f512ad8ee46555b4d58d1bf8a19457c"
+    },
+    {
+      "bytes": 1388,
+      "path": "astrbot_plugin_digital_life/memory_engine/summary.py",
+      "sha256": "7582536d64b40902b41fa846e4cd131c334647628c8392f37c656a690e62d51e"
+    },
+    {
+      "bytes": 560,
+      "path": "astrbot_plugin_digital_life/memory_engine/summary_cache.py",
+      "sha256": "161930edbea00077fec654de560ff70b8c6cc573188313c5c8d94adbae8374d7"
+    },
+    {
+      "bytes": 408,
+      "path": "astrbot_plugin_digital_life/memory_engine/token_budget.py",
+      "sha256": "c33c8f487643cb160d5ae6e0ead50c1c8a706db710cf6fd014bf1ba3712ac3f7"
+    },
+    {
+      "bytes": 1226,
+      "path": "astrbot_plugin_digital_life/memory_engine/worker.py",
+      "sha256": "fa11ff7caaa97190a9e2c916abb7339dc36543c3eff393544f250efb3d875667"
+    },
+    {
+      "bytes": 8,
+      "path": "astrbot_plugin_digital_life/memory_output/.gitignore",
+      "sha256": "020c2606e8ed484089c2083e0be438b9d0736bee1558a6b76af0d58bd23f69cf"
+    },
+    {
+      "bytes": 9227,
+      "path": "astrbot_plugin_digital_life/memory_output/README.md",
+      "sha256": "fb9aab04b6e21e61e2d3ff8ee2afe60b1b13221e2250ca7405ebf689d2048635"
+    },
+    {
+      "bytes": 516,
+      "path": "astrbot_plugin_digital_life/memory_output/__init__.py",
+      "sha256": "1e39eff2c834865c03292b74a758c66b19db5ef03891237fd279c4b5b9192fa6"
+    },
+    {
+      "bytes": 4357,
+      "path": "astrbot_plugin_digital_life/memory_output/astrbot.py",
+      "sha256": "1d68c111729195804a5ae3eb48dafd6c973343b0cb2c7d62755a9474d788dd67"
+    },
+    {
+      "bytes": 3223,
+      "path": "astrbot_plugin_digital_life/memory_output/compose.py",
+      "sha256": "2c4548b18072a1d55459e73f5ccc486d803208ff1dfe322ef45cc2414b583936"
+    },
+    {
+      "bytes": 2354,
+      "path": "astrbot_plugin_digital_life/memory_output/contracts.py",
+      "sha256": "c7594421e39f63ee75df3b0a201a511633f461b811569dc9e25001318319297f"
+    },
+    {
+      "bytes": 382,
+      "path": "astrbot_plugin_digital_life/memory_output/pyproject.toml",
+      "sha256": "c8024fb5f565d3a735a3397b88b9e281d17446db3bf215c6a8345f7d8973f9b9"
+    },
+    {
+      "bytes": 368,
+      "path": "astrbot_plugin_digital_life/metadata.yaml",
+      "sha256": "f2ba3ca1fc919f15ae886de6ce5efea0079adda59e5e88b3d382ccb9594a0af9"
+    },
+    {
+      "bytes": 17,
+      "path": "astrbot_plugin_digital_life/requirements.txt",
+      "sha256": "284fea867700e02a5000251cf256f1dca9f4e4069196092ccf13f97af2bd4a30"
+    },
+    {
+      "bytes": 70,
+      "path": "astrbot_plugin_digital_life/runtime/__init__.py",
+      "sha256": "ffde7f64ad661f3808b828cb016b4a3cede24985f8336e8ebb068605f2e2b83f"
+    },
+    {
+      "bytes": 7261,
+      "path": "astrbot_plugin_digital_life/runtime/ownership.py",
+      "sha256": "993122232732d93b32ef7e562cad29f513822954e8e8d1e84cb7db4f9c1cb9fc"
+    },
+    {
+      "bytes": 2876,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/README.md",
+      "sha256": "a8ad8eb6edc1969df15659e6802cc7c782af2bab5e1ff4d1b6404e5c8d82e256"
+    },
+    {
+      "bytes": 86,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/__init__.py",
+      "sha256": "75fdd2c8b49bc32c1a1fa435309e9ce7f4afce7cd608c0b4e8b594cf8d024745"
+    },
+    {
+      "bytes": 2099,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/adapter.py",
+      "sha256": "37e987a75fea30a5ee1c79dc80d57d40f4c94c6fed0265d5d3eb284288169f0e"
+    },
+    {
+      "bytes": 9160,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/candidate_retriever.py",
+      "sha256": "1bc66885c2135b975b25cbc0e60c1ccbfbc3049792969f24492e1ef60e20f4d6"
+    },
+    {
+      "bytes": 4417,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/cli.py",
+      "sha256": "f18fd06f7da0be4a20b910410d48f0e0596a5fc2c78272ba7d6b844fb14a5c0c"
+    },
+    {
+      "bytes": 2036,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/contracts.py",
+      "sha256": "88d11316df1251d82a04fd39ca99826c83f5bdfa64eb2e8c86a5abd3fca3d5d0"
+    },
+    {
+      "bytes": 10167,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/engine.py",
+      "sha256": "3ef2d894574e192abfbda6b206295bfa22a66b18d971f8661d3bef94fb88eb88"
+    },
+    {
+      "bytes": 2736,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/evidence_gate.py",
+      "sha256": "db17bb344061206d7f032886cc9ae1bd33c496464bab5166404bbea10c708057"
+    },
+    {
+      "bytes": 11822,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/gateway.py",
+      "sha256": "138ed897523fc24f497e8d854097ae9007ffc0e17cfa0222f10331d18afe4d6d"
+    },
+    {
+      "bytes": 2388,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/provenance_guard.py",
+      "sha256": "518034acd908fe6fd3b817c52dae0bed1256351cbb075da5243e6465f215d62b"
+    },
+    {
+      "bytes": 6373,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/relation_judge.py",
+      "sha256": "bee7d8bf00f2bff66b28b3ab57af38a8afc5120e631cb618271df1aa3abe3b90"
+    },
+    {
+      "bytes": 13226,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/resolver.py",
+      "sha256": "4de1423421b75d5eacdb645123f1afa8e3f8963a2b0d5bb1a53a4106635defaa"
+    },
+    {
+      "bytes": 64281,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/store.py",
+      "sha256": "a0f945d8c43dfaac9a567cb0aea011b40aade2fc7f029b200f585c7774c713b4"
+    },
+    {
+      "bytes": 906,
+      "path": "astrbot_plugin_digital_life/v1_5_consolidator/v1_5_run.ps1",
+      "sha256": "0c45181cc82e1041efada9c42b0a38ffe26d92561fe6c2e95e76ec0e833ee375"
+    },
+    {
+      "bytes": 67919,
+      "path": "astrbot_plugin_digital_life/views/console/app.js",
+      "sha256": "c6584db90a0ffcffeee0b24eee4d5e47d8a5b9f92fa0c423032cfd37ccc87afe"
+    },
+    {
+      "bytes": 369,
+      "path": "astrbot_plugin_digital_life/views/console/favicon.svg",
+      "sha256": "29c78db413080b4b7b97d0b404534e5938c8b224c4747516ba6c3cba27cbe318"
+    },
+    {
+      "bytes": 4329,
+      "path": "astrbot_plugin_digital_life/views/console/index.html",
+      "sha256": "471ea78567170a4a1e771346450f6734a17832291978c610eff7bc7d239327ba"
+    },
+    {
+      "bytes": 18321,
+      "path": "astrbot_plugin_digital_life/views/console/style.css",
+      "sha256": "dd7777025b699cbaf8812785182602f9eb267374660e407d8e7ee61fbb23366d"
+    }
+  ],
+  "name": "astrbot_plugin_digital_life",
+  "plugin_version": "0.8.0-dev.3",
+  "schema": "digital-life-plugin-build/1",
+  "source_commit": "4fb9cf3a07f48689dbebad1dd239e8e1f4a1969c",
+  "source_note": ""
+}

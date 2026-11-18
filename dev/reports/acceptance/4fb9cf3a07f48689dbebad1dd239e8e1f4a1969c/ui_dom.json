@@ -1,0 +1,29 @@
+{
+  "artifact_sha256": "26fec9e92f7e76877eb2516e47c0e70a3bbb5429cc09d77183225f9b6a36b344",
+  "dirty": false,
+  "dom_errors": [],
+  "environment": "jsdom + packaged ConsoleApi/ApplicationService; AstrBot stub",
+  "exit_code": 0,
+  "generation": 3,
+  "inbox": {
+    "ARCHIVED": 2,
+    "WITHDRAWN": 1
+  },
+  "node": "C:\\Users\\205\\Desktop\\数字生命\\.tools\\node\\node.exe",
+  "ok": true,
+  "operations": [
+    "migration_create",
+    "migration_batch",
+    "migration_release",
+    "backup",
+    "verify_backup",
+    "restore",
+    "stale_withdraw_rejected",
+    "withdraw"
+  ],
+  "plugin_version": "0.8.0-dev.3",
+  "schema": "digital-life-ui-dom/1",
+  "source_commit": "4fb9cf3a07f48689dbebad1dd239e8e1f4a1969c",
+  "stderr": "",
+  "visual_browser_validation": false
+}

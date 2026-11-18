@@ -1,0 +1,59 @@
+{
+  "artifact_sha256": "26fec9e92f7e76877eb2516e47c0e70a3bbb5429cc09d77183225f9b6a36b344",
+  "cases": [
+    {
+      "case": "baseline",
+      "failed_checks": [],
+      "ok": true,
+      "rejected": false
+    },
+    {
+      "case": "missing",
+      "failed_checks": [
+        "bundle-sha256",
+        "bundle-bytes",
+        "file-count",
+        "member-set",
+        "file-hashes",
+        "required-files",
+        "metadata"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "tampered",
+      "failed_checks": [
+        "bundle-sha256",
+        "bundle-bytes",
+        "file-hashes"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "traversal",
+      "failed_checks": [
+        "bundle-sha256",
+        "bundle-bytes",
+        "member-names",
+        "file-count",
+        "member-set"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "duplicate",
+      "failed_checks": [
+        "bundle-sha256",
+        "bundle-bytes",
+        "member-names",
+        "file-count"
+      ],
+      "rejected": true
+    }
+  ],
+  "dirty": false,
+  "ok": true,
+  "plugin_version": "0.8.0-dev.3",
+  "schema": "digital-life-plugin-verification-selftest/1",
+  "source_commit": "4fb9cf3a07f48689dbebad1dd239e8e1f4a1969c"
+}

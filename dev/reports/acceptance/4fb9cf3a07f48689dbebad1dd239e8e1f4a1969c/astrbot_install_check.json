@@ -1,0 +1,46 @@
+{
+  "artifact_sha256": "26fec9e92f7e76877eb2516e47c0e70a3bbb5429cc09d77183225f9b6a36b344",
+  "astrbot_root": "C:\\Users\\205\\Desktop\\数字生命\\testbed\\AstrBot-4.29.3",
+  "bundle": "astrbot_plugin_digital_life-0.8.0-dev.3.zip",
+  "checks": [
+    {
+      "detail": "bundle hash matches the build manifest",
+      "id": "bundle-sha256",
+      "ok": true
+    },
+    {
+      "detail": "metadata entry 'astrbot_plugin_digital_life/metadata.yaml' (expected 'astrbot_plugin_digital_life/metadata.yaml')",
+      "id": "metadata-entry",
+      "ok": true
+    },
+    {
+      "detail": "name 'astrbot_plugin_digital_life' (expected 'astrbot_plugin_digital_life')",
+      "id": "metadata-name",
+      "ok": true
+    },
+    {
+      "detail": "version '0.8.0-dev.3' (expected '0.8.0-dev.3')",
+      "id": "metadata-version",
+      "ok": true
+    },
+    {
+      "detail": "display_name '数字生命（统一插件）'",
+      "id": "metadata-display-name",
+      "ok": true
+    }
+  ],
+  "dirty": false,
+  "inspector": "_PluginUpdater.inspect_plugin_archive",
+  "metadata": {
+    "author": "DigitalLife_Local_Test",
+    "desc": "Native history input, memory-engine organization, optional temporary memory injection, and a unified console.",
+    "display_name": "数字生命（统一插件）",
+    "name": "astrbot_plugin_digital_life",
+    "version": "0.8.0-dev.3"
+  },
+  "metadata_entry": "astrbot_plugin_digital_life/metadata.yaml",
+  "ok": true,
+  "plugin_version": "0.8.0-dev.3",
+  "schema": "digital-life-astrbot-install-check/1",
+  "source_commit": "4fb9cf3a07f48689dbebad1dd239e8e1f4a1969c"
+}

@@ -1,0 +1,102 @@
+{
+  "bundle": "astrbot_plugin_digital_life-0.8.0-dev.3.zip",
+  "checks": [
+    {
+      "detail": "manifest fields present",
+      "id": "manifest-schema",
+      "status": "pass"
+    },
+    {
+      "detail": "expected 26fec9e92f7e76877eb2516e47c0e70a3bbb5429cc09d77183225f9b6a36b344, found 26fec9e92f7e76877eb2516e47c0e70a3bbb5429cc09d77183225f9b6a36b344",
+      "id": "bundle-sha256",
+      "status": "pass"
+    },
+    {
+      "detail": "expected 226832 bytes, found 226832",
+      "id": "bundle-bytes",
+      "status": "pass"
+    },
+    {
+      "detail": "79 members, no traversal",
+      "id": "member-names",
+      "status": "pass"
+    },
+    {
+      "detail": "regular files only",
+      "id": "member-types",
+      "status": "pass"
+    },
+    {
+      "detail": "manifest 79, archive 79",
+      "id": "file-count",
+      "status": "pass"
+    },
+    {
+      "detail": "unexpected=[] missing=[]",
+      "id": "member-set",
+      "status": "pass"
+    },
+    {
+      "detail": "no databases, keys or local config",
+      "id": "no-private-data",
+      "status": "pass"
+    },
+    {
+      "detail": "79 files match the manifest",
+      "id": "file-hashes",
+      "status": "pass"
+    },
+    {
+      "detail": "27 required files present",
+      "id": "required-files",
+      "status": "pass"
+    },
+    {
+      "detail": "name=astrbot_plugin_digital_life version=0.8.0-dev.3",
+      "id": "metadata",
+      "status": "pass"
+    },
+    {
+      "detail": "14 config entries",
+      "id": "conf-schema",
+      "status": "pass"
+    },
+    {
+      "detail": "console assets present and linked",
+      "id": "ui-assets",
+      "status": "pass"
+    },
+    {
+      "detail": "all modules compile",
+      "id": "py-compile",
+      "status": "pass"
+    },
+    {
+      "detail": "10 packages imported",
+      "id": "package-imports",
+      "status": "pass"
+    },
+    {
+      "detail": "{\"ok\": true, \"file\": \"C:\\\\Users\\\\205\\\\AppData\\\\Local\\\\Temp\\\\dl-verify-1yuil4op\\\\astrbot_plugin_digital_life\\\\__init__.py\"} (imported against the installed AstrBot)",
+      "id": "plugin-import",
+      "status": "pass"
+    }
+  ],
+  "dirty": false,
+  "environment": {
+    "implementation": "cpython",
+    "platform": "nt",
+    "python": "3.12.10",
+    "zlib": "1.3.1"
+  },
+  "finished_at": "2026-11-18T21:41:47+08:00",
+  "host": "astrbot-source",
+  "host_note": "imported against an AstrBot source checkout (C:\\Users\\205\\AppData\\Local\\Temp\\dl-astrbot-src); still not a live instance",
+  "host_path": "C:\\Users\\205\\AppData\\Local\\Temp\\dl-astrbot-src",
+  "manifest": "build_manifest.json",
+  "ok": true,
+  "plugin_version": "0.8.0-dev.3",
+  "schema": "digital-life-plugin-verification/1",
+  "source_commit": "4fb9cf3a07f48689dbebad1dd239e8e1f4a1969c",
+  "started_at": "2026-11-18T21:41:36+08:00"
+}
