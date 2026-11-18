@@ -9,7 +9,8 @@
 | 项 | 值 |
 | --- | --- |
 | 插件 | `astrbot_plugin_digital_life` |
-| 版本 | `0.8.0-dev.2`（开发版，不是 RC） |
+| 源码版本 | `0.8.0-dev.3` 修复候选 |
+| 最近公开版本 | `0.8.0-dev.2`，下列发布验收记录属于该版本 |
 | 版本源 | 仓库根 `VERSION`（唯一人工版本源）；`metadata.yaml` 由 `tools/sync_version.py` 派生并由 CI 校验 |
 | 源码基线 | `e32b76cc5148c40c873c2e4de363e7417bc6c996`（整理前的远端 `main`） |
 | 发布记录 | 被测提交、包哈希与各套件结果只在 [`dev/reports/current_acceptance.json`](../dev/reports/current_acceptance.json) 中给出；历史版本的数字标明所属版本，不复用 |

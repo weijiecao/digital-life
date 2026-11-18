@@ -246,6 +246,7 @@ class NativeInputService:
                       "invalid": 0, "created": 0, "attached": 0, "deferred": 0,
                       "stale": 0, "judge_errors": 0, "delivery_errors": 0}
         self.last_conflict: dict | None = None
+        self.withdrawal_epochs = {}
 
     @property
     def has_judge(self) -> bool:
@@ -327,11 +328,23 @@ class NativeInputService:
         with self.lock:
             if self.worker is None or tick is None:
                 return None
-            return self.worker.prepare_one(tick)
+            task = self.worker.prepare_one(tick)
+            if task is not None:
+                task["withdrawal_epoch"] = self.withdrawal_epochs.get(task["scope"], 0)
+            return task
+
+    def invalidate_prepared(self, scope):
+        """撤回在数据库线程生效时，取消该作用域尚未开始调用模型的请求。"""
+        with self.lock:
+            self.withdrawal_epochs[scope] = self.withdrawal_epochs.get(scope, 0) + 1
 
     def execute(self, task):
         """模型线程：执行判别调用；不接触 sqlite，也不持有数据库锁。"""
         if self.worker is not None and task is not None:
+            with self.lock:
+                if self.closed or task.get("withdrawal_epoch", 0) != self.withdrawal_epochs.get(task["scope"], 0):
+                    task["cancelled_before_model"] = True
+                    return task
             self.worker.execute(task)
         return task
 
@@ -342,7 +355,10 @@ class NativeInputService:
             # prepared task uncommitted for a later permitted retry.
             return empty_stats()
         with self.lock:
-            result = self.worker.commit_one(task) if self.worker is not None else empty_stats()
+            if task and task.get("cancelled_before_model"):
+                result = dict(empty_stats(), stale=1)
+            else:
+                result = self.worker.commit_one(task) if self.worker is not None else empty_stats()
         self._merge_stats(result)
         if (self.on_commit is not None
                 and (result.get("created") or result.get("attached"))):

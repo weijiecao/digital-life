@@ -977,9 +977,26 @@ class V15Store:
                 (scope_id, source_seq))
         return cursor.rowcount
 
+    def refresh_withdrawn_descriptions(self, scope_id, source_seq):
+        """A shared event can survive withdrawal of the quote used for its title."""
+        rows = self.db.execute("""SELECT DISTINCT c.event_id,c.current_revision,
+            (SELECT v.quote FROM event_evidence v
+             WHERE v.event_id=c.event_id AND v.rev=c.current_revision AND v.scope_id=c.scope_id
+               AND v.valid=1 ORDER BY v.source_seq LIMIT 1)
+            FROM event_evidence e JOIN event_candidate c
+              ON c.event_id=e.event_id AND c.scope_id=e.scope_id AND c.current_revision=e.rev
+            WHERE e.scope_id=? AND e.source_seq=?""", (scope_id, source_seq)).fetchall()
+        for event_id, rev, quote in rows:
+            text = quote or ""
+            self.db.execute("UPDATE event_candidate SET title=? WHERE event_id=?",
+                            (text[:80], event_id))
+            self.db.execute("UPDATE event_revision SET summary=? WHERE event_id=? AND rev=?",
+                            (text[:200], event_id, rev))
+
     def delete_source(self, scope_id: str, source_seq: int) -> int:
         with self.unit_of_work():
             count = self.invalidate_source_evidence(scope_id, source_seq)
+            self.refresh_withdrawn_descriptions(scope_id, source_seq)
             now = _now()
             self.db.execute("""INSERT OR REPLACE INTO source_tombstone
                 (scope_id,source_seq,deleted_at) VALUES(?,?,?)""",

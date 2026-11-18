@@ -108,22 +108,37 @@ class ApplicationService:
                     return p.migration.release(body["id"])
                 if name == "verify_backup":
                     return p.generations.validate_backup(body["id"])
-                if name == "withdraw":
-                    scope, seq = body["scope"], int(body["source_seq"])
+                if name in ("withdraw_preview", "withdraw"):
+                    if type(body.get("generation")) is not int or body["generation"] != p.store_generation:
+                        raise ValueError("数据代次已变化或缺失，请刷新管理页")
+                    scope, seq = body["scope"], body["source_seq"]
+                    if type(seq) is not int or seq < 1:
+                        raise ValueError("无效来源序号")
                     row = p.store.db.execute(
-                        "SELECT key FROM native_input_inbox WHERE scope_id=? AND source_seq=?",
+                        "SELECT key,content_hash,payload FROM native_input_inbox WHERE scope_id=? AND source_seq=?",
                         (scope, seq),
                     ).fetchone()
                     if row is None:
                         raise ValueError("source not found in this scope")
-                    # 先写重放屏障，再原子失效业务证据；任一中断均不允许再投递原文。
-                    p.service.journal.tombstone(row[0], "operator_withdrawal")
-                    with p.store.unit_of_work():
-                        p.engine.delete_source(scope, seq)
-                        p.store.db.execute(
-                            "UPDATE native_input_inbox SET state='WITHDRAWN' WHERE key=?",
-                            (row[0],),
-                        )
+                    key, content_hash, payload = row
+                    target = dict(scope=scope, source_seq=seq, generation=p.store_generation,
+                                  key=key, content_hash=content_hash)
+                    if name == "withdraw_preview":
+                        return {"target": target, "excerpt": json.loads(payload)["text"][:96]}
+                    if body.get("key") != key or body.get("content_hash") != content_hash:
+                        raise ValueError("来源身份已变化或缺失，请重新核对")
+                    p.service.invalidate_prepared(scope)
+                    p.generations.remember_withdrawal(scope, key, content_hash)
+                    try:
+                        with p.store.unit_of_work():
+                            p.store.db.execute("INSERT OR IGNORE INTO native_withdrawal VALUES(?,?,?)",
+                                               (scope, key, content_hash))
+                            p.generations.apply_withdrawal(p.store, p.service, p.engine, scope, key, content_hash)
+                        p.service.journal.tombstone(key, "operator_withdrawal")
+                    except Exception:
+                        # 权威记录已提交。重开时先补齐可见性，再受理任何读写。
+                        p._close()
+                        raise
                     p.followup.clear()
                     return {
                         "withdrawn": True,

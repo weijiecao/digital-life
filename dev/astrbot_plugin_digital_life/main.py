@@ -617,13 +617,12 @@ class DigitalLifePlugin(Star):
         self.migration = LegacyMigration(store, service, self.data_dir)
         store.db.execute('CREATE TABLE IF NOT EXISTS proactive_receipts(scope TEXT,request_id TEXT,query TEXT,PRIMARY KEY(scope,request_id))')
         store.db.commit()
-        # journal 先写的撤回屏障在启动时补齐业务失效，避免中断重放复活。
-        for (key,) in service.journal.db.execute('SELECT key FROM input_tombstone').fetchall():
-            row=store.db.execute('SELECT scope_id,source_seq FROM native_input_inbox WHERE key=?',(key,)).fetchone()
-            if row:
-                with store.unit_of_work():
-                    self.engine.delete_source(row[0],row[1])
-                    store.db.execute("UPDATE native_input_inbox SET state='WITHDRAWN' WHERE key=?",(key,))
+        try:
+            self.generations.reconcile_withdrawals(store, service, self.engine)
+        except Exception as exc:
+            self.error = type(exc).__name__ + ": " + str(exc)
+            self._close()
+            return False
         if self.output_mode == "inject":
             if MemoryOutputService is None or OutputRequest is None:
                 self.output_error = "output module unavailable"
@@ -750,6 +749,7 @@ class DigitalLifePlugin(Star):
                     "host_memory_tokens": 0}
 
     def _close(self):
+        self.output_service = self.engine = self.migration = None
         if self.service is not None:
             self.service.close()
             self.service = None

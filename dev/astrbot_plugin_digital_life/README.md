@@ -80,7 +80,7 @@ WebUI → 插件 → 数字生命 → 数字生命控制台 → **统一管理**
 
 维护期间未采集的事件记录缺口计数，后续完整历史快照会尝试补录。若宿主已截断或丢失这些消息，计数不能重建正文；这类宿主需要停聊维护或提供可靠历史回放。
 
-“撤回来源”使原文不再参与回忆，失效派生证据并阻止 journal 重放；中断发生在 journal 屏障之后时，重启补齐业务失效。这不是物理擦除：审计原文、旧目录和历史备份仍保留。
+撤回前，管理页展示目标代次、序号和原文片段。确认后，根目录的 `withdrawals.sqlite3` 持久保存作用域、稳定来源键和内容哈希。恢复、重启和重投时都会核对这份记录。同一稳定键出现不同哈希时隔离为 `WITHDRAWAL_CONFLICT`。备份携带创建时已知的撤回记录。跨机器恢复更早的备份时，须同时带上原实例停机后的撤回账本，才能保留备份日期之后的撤回。审计原文保留。
 
 ## 主动请求接入
 
@@ -100,7 +100,7 @@ result = await plugin.inject_proactive(
 
 默认根目录为 `<AstrBot>/data/plugin_data/astrbot_plugin_digital_life/`。若新目录不存在且旧 shadow 目录存在，沿用旧目录；这是整组接续。首次恢复前活动库位于根目录，之后位于 `generations/<id>/`。不得绕过 `CURRENT.json` 直接把根目录旧文件当作当前数据。
 
-管理 API 均在宿主鉴权保护下：`/astrbot_plugin_digital_life/console/runtime/`。`GET status`；POST `migration_create`、`migration_mapping`、`migration_batch`、`migration_release`、`shadow_import`、`backup`、`verify_backup`、`restore`、`withdraw`。
+管理 API 均在宿主鉴权保护下：`/astrbot_plugin_digital_life/console/runtime/`。`GET status`；POST `migration_create`、`migration_mapping`、`migration_batch`、`migration_release`、`shadow_import`、`backup`、`verify_backup`、`restore`、`withdraw_preview`、`withdraw`。预览传入 `generation`、`scope`、`source_seq`。确认撤回时传回预览返回的完整 `target`。
 接口行为、前提与失败处理见 [`docs/MIGRATION_RECOVERY.md`](../../docs/MIGRATION_RECOVERY.md)，
 路由与状态返回由 `dev/tests/test_unified_plugin.py::ConsoleApiTests` 覆盖。
 

@@ -112,7 +112,7 @@ class ConsoleApi:
                         return self._error(type(exc).__name__ + ': ' + str(exc), status_code=500)
                 return call
             for name in ('status','backup','restore','verify_backup','migration_create',
-                         'migration_batch','migration_mapping','migration_release','shadow_import','withdraw'):
+                         'migration_batch','migration_mapping','migration_release','shadow_import','withdraw_preview','withdraw'):
                 routes.append(('runtime/'+name,handler(name),['GET'] if name=='status' else ['POST'], '统一应用服务'))
         base = "/%s/console/" % self.plugin_name
         for suffix, handler, methods, desc in routes:

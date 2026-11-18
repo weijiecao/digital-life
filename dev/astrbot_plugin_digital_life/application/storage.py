@@ -114,6 +114,67 @@ class GenerationStore:
             op["phase"] = "ROLLED_BACK"
             atomic_json(self.operation, op)
 
+    @staticmethod
+    def _journal_withdrawals(db):
+        if not db.execute("SELECT 1 FROM sqlite_master WHERE name='input_tombstone'").fetchone():
+            return ()
+        return db.execute("""SELECT json_extract(c.payload,'$.scope_id'),t.key,
+                                    json_extract(c.payload,'$.content_hash')
+                             FROM input_tombstone t JOIN input_canonical c ON c.key=t.key""")
+
+    def remember_withdrawal(self, scope, key, content_hash):
+        # 独立提交，恢复 CURRENT 或回滚候选代次都不会覆盖这份身份记录。
+        with managed_database(self.root / "withdrawals.sqlite3") as ledger:
+            ledger.execute("INSERT OR IGNORE INTO withdrawal VALUES(?,?,?)", (scope, key, content_hash))
+
+    def reconcile_withdrawals(self, store, service, engine):
+        add = "INSERT OR IGNORE INTO withdrawal VALUES(?,?,?)"
+        with managed_database(self.root / "withdrawals.sqlite3") as ledger:
+            ledger.execute("""CREATE TABLE IF NOT EXISTS withdrawal(
+                scope TEXT NOT NULL,key TEXT NOT NULL,content_hash TEXT NOT NULL,
+                PRIMARY KEY(scope,key,content_hash))""")
+            # 首次升级时，可从保留的旧活动代次找回发生在上一次恢复前的撤回。
+            if not ledger.execute("PRAGMA user_version").fetchone()[0]:
+                directories = [self.root, *(self.root / "generations").glob("*")]
+                for directory in directories:
+                    if directory != self.root and not re.fullmatch("[a-f0-9]{32}", directory.name):
+                        continue
+                    path = directory / "native_input_journal.sqlite3"
+                    if directory.is_symlink() or path.is_symlink() or directory.resolve() == self.active or not path.is_file():
+                        continue
+                    with managed_database(path.resolve().as_uri() + "?mode=ro", uri=True) as old:
+                        ledger.executemany(add, self._journal_withdrawals(old))
+                ledger.execute("PRAGMA user_version=1")
+            ledger.executemany(add, self._journal_withdrawals(service.journal.db))
+            # 新格式备份携带代次所知的全部撤回，包括快照中尚无收件记录的来源。
+            ledger.executemany(add, store.db.execute("SELECT scope,key,content_hash FROM native_withdrawal"))
+            ledger.commit()
+            with store.unit_of_work():
+                store.db.executemany("INSERT OR IGNORE INTO native_withdrawal VALUES(?,?,?)",
+                                     ledger.execute("SELECT scope,key,content_hash FROM withdrawal"))
+                rows = store.db.execute("""SELECT DISTINCT i.scope_id,i.key,i.content_hash
+                    FROM native_withdrawal w JOIN native_input_inbox i ON i.key=w.key AND i.scope_id=w.scope""")
+                upgrade = not store.db.execute("SELECT 1 FROM meta WHERE key='withdrawn_descriptions_v1'").fetchone()
+                for scope, key, content_hash in rows.fetchall():
+                    self.apply_withdrawal(store, service, engine, scope, key, content_hash, upgrade)
+                if upgrade:
+                    store.db.execute("INSERT INTO meta(key,value) VALUES('withdrawn_descriptions_v1','1')")
+
+    @staticmethod
+    def apply_withdrawal(store, service, engine, scope, key, content_hash, upgrade=False):
+        state = service.inbox.withdrawal_state(scope, key, content_hash)
+        row = store.db.execute("SELECT state,source_seq FROM native_input_inbox WHERE key=? AND scope_id=?",
+                               (key, scope)).fetchone()
+        if not state or not row:
+            return
+        if row[0] == state:
+            if upgrade and row[1] is not None:
+                store.refresh_withdrawn_descriptions(scope, row[1])
+        else:
+            if row[1] is not None:
+                engine.delete_source(scope, row[1])
+            store.db.execute("UPDATE native_input_inbox SET state=? WHERE key=?", (state, key))
+
     def backups(self):
         result = []
         for file in sorted((self.root / "backups").glob("*/manifest.json")):

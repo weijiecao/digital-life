@@ -1,7 +1,7 @@
 name: astrbot_plugin_digital_life
 display_name: 数字生命（统一插件）
 desc: Native history input, memory-engine organization, optional temporary memory injection, and a unified console.
-version: 0.8.0-dev.2
+version: 0.8.0-dev.3
 author: DigitalLife_Local_Test
 repo: https://github.com/weijiecao/astrbot_plugin_digital_life
 views:

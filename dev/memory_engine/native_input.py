@@ -52,6 +52,36 @@ class NativeInputInbox:
                 store.db.execute('ALTER TABLE native_input_attempt ADD COLUMN '
                                  'next_attempt_at REAL NOT NULL DEFAULT 0')
 
+            store.db.execute("""CREATE TABLE IF NOT EXISTS native_withdrawal(
+                scope TEXT, key TEXT, content_hash TEXT, PRIMARY KEY(scope,key,content_hash))""")
+            if not store.db.execute("SELECT 1 FROM sqlite_master WHERE type='table' "
+                                    "AND name='native_input_position'").fetchone():
+                store.db.execute("""CREATE TABLE native_input_position(
+                    key TEXT PRIMARY KEY, stream TEXT NOT NULL, pos INTEGER NOT NULL)""")
+                store.db.execute("CREATE INDEX native_context_order ON native_input_position(stream,pos)")
+                for (payload,) in store.db.execute("SELECT payload FROM native_input_inbox ORDER BY rowid"):
+                    self._index_position(Record(**json.loads(payload)))
+
+    def _index_position(self, record):
+        pos = record.ordinal
+        if record.native_id is not None:
+            # 旧库中多个实时输入可能有相同 ordinal。依据首次接收顺序重建，
+            # 保留原始载荷以便与 journal 的回执逐字核对。
+            row = self.store.db.execute("SELECT MAX(pos) FROM native_input_position WHERE stream=?",
+                                        (record.stream_id,)).fetchone()
+            if row[0] is not None:
+                pos = max(pos, row[0] + 1)
+        self.store.db.execute("INSERT INTO native_input_position VALUES(?,?,?)",
+                              (record.key, record.stream_id, pos))
+
+    def withdrawal_state(self, scope, key, content_hash):
+        row = self.store.db.execute("""SELECT MAX(content_hash=?) FROM native_withdrawal
+            WHERE scope=? AND key=?""", (content_hash, scope, key)).fetchone()
+        if row[0] is None:
+            return None
+        # 相同稳定 ID 出现另一份载荷时保留审计，等待身份核对。
+        return 'WITHDRAWN' if row[0] else 'WITHDRAWAL_CONFLICT'
+
     def accept(self, record: Record):
         # 接收端重新验证来源，避免调用方构造不一致的标准记录。
         if type(record.schema_version) is not int or record.schema_version != 1 or type(record.ordinal) is not int or record.ordinal < 0:
@@ -92,6 +122,12 @@ class NativeInputInbox:
                     self.store.source_ref_upsert(record.scope_id, seq, record.content_hash, record.recorded_at or '')
                 if state == 'QUEUED' and raw.get('migration_hold') is True:
                     state = 'MIGRATION_HELD'
+                blocked = self.withdrawal_state(record.scope_id, record.key, record.content_hash)
+                if blocked:
+                    state = blocked
+                    if seq is not None:
+                        self.store.delete_source(record.scope_id, seq)
+                self._index_position(record)
                 self.store.db.execute('INSERT INTO native_input_inbox VALUES(?,?,?,?,?,?)',
                                      (record.key, record.content_hash, record.scope_id, seq,
                                       canonical(record.as_dict()), state))
@@ -238,7 +274,8 @@ class NativeInputWorker:
             'SELECT i.key,i.payload,i.source_seq,i.state,a.epoch,a.judge_revision,'
             'COALESCE(a.attempts,0),COALESCE(a.next_attempt_at,0) '
             'FROM native_input_inbox i LEFT JOIN native_input_attempt a ON a.key=i.key '
-            "WHERE i.state IN ('QUEUED','DEFERRED') ORDER BY " + order +
+            "WHERE i.state IN ('QUEUED','DEFERRED') AND NOT EXISTS (SELECT 1 FROM source_tombstone t "
+            "WHERE t.scope_id=i.scope_id AND t.source_seq=i.source_seq) ORDER BY " + order +
             ', COALESCE(a.next_attempt_at,0), i.rowid').fetchall()
         now = time.time()
         for key, payload, seq, state, last_epoch, last_revision, attempts, next_at in rows:
@@ -266,17 +303,23 @@ class NativeInputWorker:
             epoch = self.store.scope_epoch(scope)
             source = SourceEnvelope(scope, seq, record.content_hash,
                                     record.recorded_at or '', record.text)
-            context = []
-            for (prior,) in self.store.db.execute(
-                    'SELECT payload FROM native_input_inbox WHERE scope_id=? ORDER BY rowid',
-                    (scope,)):
-                item = Record(**json.loads(prior))
-                if item.stream_id == record.stream_id and item.ordinal < record.ordinal:
-                    context.append(item.as_dict())
+            rows = self.store.db.execute("""SELECT i.payload FROM native_input_position current
+                JOIN native_input_position prior ON prior.stream=current.stream AND prior.pos<current.pos
+                JOIN native_input_inbox i ON i.key=prior.key
+                WHERE current.key=? AND i.scope_id=?
+                  AND i.state NOT IN ('WITHDRAWN','WITHDRAWAL_CONFLICT','MIGRATION_HELD')
+                  AND NOT EXISTS (SELECT 1 FROM source_tombstone t
+                                  WHERE t.scope_id=i.scope_id AND t.source_seq=i.source_seq)
+                  AND NOT EXISTS (SELECT 1 FROM source_ref r WHERE r.scope_id=i.scope_id
+                                  AND r.source_seq=i.source_seq AND r.deleted_at IS NOT NULL)
+                  AND COALESCE(json_extract(json_extract(i.payload,'$.raw_json'),'$.source_kind'),'message')
+                      != 'legacy_archive'
+                ORDER BY prior.pos DESC, prior.rowid DESC LIMIT 12""", (key, scope)).fetchall()
+            context = [json.loads(row[0]) for row in reversed(rows)]
             candidates = self._candidates(scope, record.text)
             task = {'key': key, 'seq': seq, 'scope': scope, 'epoch': epoch,
                     'record': record, 'source': source, 'candidates': candidates,
-                    'context': context[-12:], 'prepared': None, 'judgment': None,
+                    'context': context, 'prepared': None, 'judgment': None,
                     'error': None}
             if callable(getattr(self.judge, 'prepare', None)) and callable(
                     getattr(self.judge, 'complete', None)):

@@ -413,6 +413,31 @@ class JournalTests(unittest.TestCase):
             self.service.submit_message(message(text="篡改"), ORIGIN)
         self.assertEqual(self.count(), 1)
 
+    def test_rejected_batch_does_not_poison_corrected_history(self):
+        self.service.submit_message(message(), ORIGIN)
+        self.service.submit([message("accepted")], ORIGIN)
+        bad = [message("new"), message(text="wrong")]
+        self.assertEqual(self.service.submit(bad, ORIGIN)["status"], "conflict")
+        self.assertEqual(self.j.db.execute("SELECT COUNT(*) FROM native_record").fetchone()[0], 1)
+        self.assertEqual(self.service.submit([message("new"), message()], ORIGIN)["status"], "staged")
+        self.assertEqual(self.count(), 3)
+
+    def test_upgrade_preserves_rejected_baseline_for_audit_and_allows_retry(self):
+        self.service.submit_message(message(), ORIGIN)
+        self.j.stage([message("accepted")], ORIGIN)
+        # 旧实现仅提交父层记录，history 别名没有提交。
+        ImportJournal.stage(self.j, [message(text="wrong")], ORIGIN)
+        self.j.db.execute("DROP TABLE rejected_history_baseline")
+        self.j.db.execute("DROP TABLE input_stream_cursor")
+        self.j.db.execute("DELETE FROM unified_meta WHERE key='atomic_history_v1'")
+        self.service.close()
+        self.service = NativeInputService(self.store, self.root / "native_input_journal.sqlite3",
+                                          journal_factory=UnifiedJournal)
+        self.j = self.service.journal
+        self.assertEqual(self.j.db.execute("SELECT COUNT(*) FROM rejected_history_baseline").fetchone()[0], 1)
+        self.assertEqual(self.service.submit([message()], ORIGIN)["status"], "staged")
+        self.assertEqual(self.service.submit([message("accepted", "changed")], ORIGIN)["status"], "conflict")
+
     def test_history_prefix_still_enforced(self):
         self.service.submit([{"role": "user", "content": TEXT}], ORIGIN)
         self.assertEqual(self.service.submit([], ORIGIN)["status"], "conflict")
@@ -437,6 +462,8 @@ class JournalTests(unittest.TestCase):
                 "input_overlap",
                 "input_tombstone",
                 "unified_meta",
+                "rejected_history_baseline",
+                "input_stream_cursor",
             ]:
                 db.execute("DROP TABLE " + table)
         self.service = NativeInputService(
@@ -810,6 +837,137 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(self.p.generations.backups()), 1)
         self.assertFalse(self.p.application.busy)
 
+    async def withdraw_target(self, seq):
+        preview = await self.p.application.action("withdraw_preview", {
+            "scope": ORIGIN.scope_id, "source_seq": seq, "generation": self.p.store_generation})
+        return preview["target"]
+
+    async def backup(self):
+        backup = await self.p.application.action("backup")
+        await self.p.pump.stop()
+        return backup["id"]
+
+    async def restore(self, backup):
+        await self.p.application.action("restore", {"id": backup})
+        await self.p.pump.stop()
+
+    async def test_withdraw_survives_restore_restart_and_late_replay(self):
+        empty = await self.backup()
+        await self.append()
+        await self.tick()
+        populated = await self.backup()
+        await self.p.application.action("withdraw", await self.withdraw_target(1))
+        for backup in (populated, empty):
+            await self.restore(backup)
+            await self.p.terminate()
+            self.p = mod.DigitalLifePlugin(self.context, {
+                "mode": "ASSIST", "allowed_sender_ids": "42", "proactive_enabled": True})
+            self.p._build_judge = lambda store: NativeRelationJudge(store, Provider())
+            await self.p.initialize()
+            await self.p.pump.stop()
+            await self.append()
+            await self.tick()
+            self.assertEqual((await self.p.status_async())["inbox"], {"WITHDRAWN": 1})
+            self.assertEqual(await self.db(lambda: self.p.engine.retrieve(ORIGIN.scope_id, TEXT)), [])
+            req = self.request()
+            result = await self.p.inject_proactive(Event(), req, "check-" + backup)
+            self.assertNotEqual(result["output_status"], "INJECTED")
+            self.assertFalse(any(TEXT in part.text for part in req.extra_user_content_parts))
+
+    async def test_withdraw_target_is_bound_to_generation_key_and_hash(self):
+        await self.append()
+        backup = await self.backup()
+        await self.append("second", "旧分支")
+        old = await self.withdraw_target(2)
+        await self.restore(backup)
+        await self.append("different", "新分支")
+        fresh = await self.withdraw_target(2)
+        for body in (old, dict(fresh, key=old["key"]), dict(fresh, content_hash=old["content_hash"]),
+                     {"scope": ORIGIN.scope_id, "source_seq": 2}):
+            with self.assertRaises(ValueError):
+                await self.p.application.action("withdraw", body)
+        self.assertNotIn("WITHDRAWN", (await self.p.status_async())["inbox"])
+
+    async def test_judge_context_and_prompt_exclude_withdrawn_history(self):
+        first, second = message("old", "WITHDRAWN_MARKER"), message("next", "后来呢")
+        await self.db(lambda: self.p.service.submit([first], ORIGIN))
+        await self.p.application.action("withdraw", await self.withdraw_target(1))
+        await self.db(lambda: self.p.service.submit([first, second], ORIGIN))
+        worker = self.p.service.worker
+        task = await self.db(lambda: worker.prepare_one(worker.start_tick(1)))
+        self.assertEqual(task["record"].native_id, "next")
+        self.assertEqual(task["context"], [])
+        self.assertNotIn("WITHDRAWN_MARKER", task["prepared"].prompt)
+
+    async def test_prepared_prompt_is_cancelled_before_model_dispatch(self):
+        await self.append("a", "不要再发送这个标记")
+        await self.tick()
+        await self.append("b", "还有一件事")
+        service = self.p.service
+        task = await self.db(lambda: service.prepare_one(service.start_tick(1)))
+        self.assertIn("不要再发送这个标记", task["prepared"].prompt)
+        await self.p.application.action("withdraw", await self.withdraw_target(1))
+        with patch.object(service.worker, "execute") as execute:
+            await asyncio.to_thread(service.execute, task)
+            execute.assert_not_called()
+        self.assertEqual((await self.db(lambda: service.commit_one(task)))["stale"], 1)
+
+    async def test_shared_event_title_and_summary_use_surviving_evidence(self):
+        await self.append("a", "撤回的标题标记")
+        await self.tick()
+        await self.append("b", "继续讨论的标记")
+
+        def share():
+            store = self.p.store
+            event = store.db.execute("SELECT event_id FROM event_candidate").fetchone()[0]
+            worker = self.p.service.worker
+            task = worker.prepare_one(worker.start_tick(1))
+            store.attach_source(ORIGIN.scope_id, task["source"], event, "test-share")
+            return event
+
+        event = await self.db(share)
+        await self.p.application.action("withdraw", await self.withdraw_target(1))
+        row = await self.db(lambda: self.p.store.db.execute("""SELECT c.title,r.summary
+            FROM event_candidate c JOIN event_revision r ON r.event_id=c.event_id AND r.rev=c.current_revision
+            WHERE c.event_id=?""", (event,)).fetchone())
+        self.assertEqual(tuple(row), ("继续讨论的标记", "继续讨论的标记"))
+        task = await self.db(lambda: self.p.service.worker.prepare_one(self.p.service.worker.start_tick(1)))
+        self.assertNotIn("撤回的标题标记", task["prepared"].prompt)
+
+    async def test_dev2_repeated_zero_ordinals_get_context_after_upgrade(self):
+        await self.append("a", "崂山")
+        await self.tick()
+        await self.append("b", "后来又去了那里")
+
+        def old_database():
+            with self.p.store.unit_of_work():
+                self.p.store.db.execute("UPDATE native_input_inbox SET payload=json_set(payload,'$.ordinal',0)")
+                self.p.store.db.execute("DROP TABLE native_input_position")
+            self.p.service.journal.db.execute("UPDATE input_canonical SET payload=json_set(payload,'$.ordinal',0)")
+            self.p._close()
+            self.assertTrue(self.p._ensure())
+            worker = self.p.service.worker
+            return worker.prepare_one(worker.start_tick(1))
+
+        task = await self.db(old_database)
+        self.assertEqual([x["text"] for x in task["context"]], ["崂山"])
+        await self.backup()
+
+    async def test_live_position_survives_retry_history_and_restart(self):
+        await self.append("a", "崂山")
+        await self.tick()
+        other = replace(ORIGIN, conversation="other")
+        await self.db(lambda: self.p.service.submit_message(dict(message(), role="assistant"), other))
+        await self.append("b", "后来又去了那里")
+        await self.append("b", "后来又去了那里")
+        await self.db(lambda: self.p.service.submit([message("a", "崂山"), message("b", "后来又去了那里")], ORIGIN))
+        await self.db(self.p._close)
+        self.assertTrue(await self.db(self.p._ensure))
+        worker = self.p.service.worker
+        task = await self.db(lambda: worker.prepare_one(worker.start_tick(1)))
+        self.assertEqual((task["record"].native_id, task["record"].ordinal), ("b", 1))
+        self.assertEqual([x["text"] for x in task["context"]], ["崂山"])
+
     async def test_withdraw_invalidates_evidence_and_replay(self):
         await self.append()
         await self.tick()
@@ -818,9 +976,7 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
                 "SELECT source_seq FROM native_input_inbox"
             ).fetchone()[0]
         )
-        await self.p.application.action(
-            "withdraw", {"scope": ORIGIN.scope_id, "source_seq": seq}
-        )
+        await self.p.application.action("withdraw", await self.withdraw_target(seq))
         await self.append()
         await self.tick()
         self.assertEqual((await self.p.status_async())["inbox"], {"WITHDRAWN": 1})

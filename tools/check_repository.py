@@ -13,6 +13,7 @@ archive, and that the documents do not point at removed files.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -115,12 +116,19 @@ def check_version(manifest: dict, checks: list[dict]) -> None:
             continue
         if value.get("name") == spec["name"]:
             declared = value.get("version") or value.get("plugin_version")
-            if declared != version:
+            if meta.name == f"digital-life-release-{declared}.json":
+                # A published release keeps its pinned version while VERSION advances.
+                package = release_dir / f"{spec['name']}-{declared}.zip"
+                plugin = next((a for a in value.get("attachments", []) if a.get("kind") == "plugin"), {})
+                if (plugin.get("name") != package.name or not package.is_file()
+                        or hashlib.sha256(package.read_bytes()).hexdigest() != plugin.get("sha256")):
+                    problems.append("%s does not match its published plugin" % meta.name)
+            elif declared != version or meta.name.startswith("digital-life-release-"):
                 problems.append("%s declares version %r" % (meta.name, declared))
     checks.append({"id": "version-source", "ok": not problems,
                    "detail": "problems: %s" % problems if problems else
-                   "VERSION %s is the only version source; metadata and release "
-                   "manifests agree" % version})
+                   "VERSION %s is the only version source; metadata agrees and published "
+                   "packages match their manifests" % version})
 
 
 def _local_target(doc: Path, target: str) -> Path | None:
@@ -257,7 +265,6 @@ def check_ignored_paths(manifest: dict, checks: list[dict]) -> None:
 
 def check_archive_releases(checks: list[dict]) -> None:
     """Archived packages keep their recorded bytes; nothing silently changes."""
-    import hashlib
     import zipfile
 
     release_dir = REPO_ROOT / "archive" / "releases"

@@ -23,9 +23,26 @@ async function main(){
  await click('unified-backup');await click('unified-verify');assert(doc.querySelector('#toast').textContent.includes('校验通过'));
  await click('unified-restore');assert.equal(doc.querySelectorAll('[data-act="unified-restore"]').length,2);
  doc.querySelector('#withdraw-scope').value=info.scope;doc.querySelector('#withdraw-seq').value='1';
+ // 在确认框打开后，由另一个管理会话恢复同一备份。
+ let confirmOpened, resumeConfirm;
+ const opened=new Promise(resolve=>{confirmOpened=resolve;});
+ w.waitForConfirmation=()=>{confirmOpened();return new Promise(resolve=>{resumeConfirm=resolve;});};
+ w.eval('confirmDialog=waitForConfirmation;');
+ w.__button=doc.querySelector('[data-act="unified-withdraw"]');
+ const pendingWithdraw=w.eval('handleActionClick({target:__button})');
+ await opened;
+ const backupId=doc.querySelector('[data-act="unified-restore"]').dataset.id;
+ await rpc('console/runtime/restore',{id:backupId});
+ resumeConfirm({ok:true});
+ await pendingWithdraw;
+ assert(doc.querySelector('#toast').textContent.includes('代次'));
+ assert(!(await rpc('console/runtime/status')).inbox.WITHDRAWN);
+ w.eval('confirmDialog=async()=>({ok:true});');
+ await w.eval('renderUnified()');
+ doc.querySelector('#withdraw-scope').value=info.scope;doc.querySelector('#withdraw-seq').value='1';
  await click('unified-withdraw');assert(doc.querySelector('#toast').textContent.includes('已撤回'));
- const state=await rpc('console/runtime/status');assert.equal(state.inbox.WITHDRAWN,1);assert.equal(state.store_generation,2);assert.deepEqual(errors,[]);
- console.log(JSON.stringify({environment:'jsdom + actual packaged ConsoleApi/ApplicationService; AstrBot stub',operations:['migration_create','migration_batch','migration_release','backup','verify_backup','restore','withdraw'],inbox:state.inbox,generation:state.store_generation,dom_errors:errors,visual_browser_validation:false},null,2));
+ const state=await rpc('console/runtime/status');assert.equal(state.inbox.WITHDRAWN,1);assert.equal(state.store_generation,3);assert.deepEqual(errors,[]);
+ console.log(JSON.stringify({environment:'jsdom + actual packaged ConsoleApi/ApplicationService; AstrBot stub',operations:['migration_create','migration_batch','migration_release','backup','verify_backup','restore','stale_withdraw_rejected','withdraw'],inbox:state.inbox,generation:state.store_generation,dom_errors:errors,visual_browser_validation:false},null,2));
  dom.window.close();proc.stdin.end();
 }
 main().catch(e=>{console.error(e);proc.stdin.end();process.exitCode=1;});

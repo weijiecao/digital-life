@@ -1,8 +1,9 @@
 """实时追加与历史快照共用的持久身份账本；不把文本相同当成同一消息。"""
 
 import json
+from dataclasses import replace
 from .journal import ImportJournal, ImportConflict
-from .native import Record, canonical, parse_history, digest
+from .native import Record, canonical, parse_history, parse_history_with_metadata, digest
 
 
 def equivalent(left, right):
@@ -92,6 +93,31 @@ class UnifiedJournal(ImportJournal):
                     )
                 self.db.execute("INSERT INTO unified_meta VALUES('overlap_index','1')")
 
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            if not self.db.execute(
+                "SELECT 1 FROM unified_meta WHERE key='atomic_history_v1'"
+            ).fetchone():
+                # 旧版先提交 native_record，再提交整批 history 别名。没有别名的
+                # 行从未被统一层接受。保存旧载荷供核对，只撤销其前缀约束。
+                self.db.execute("""CREATE TABLE IF NOT EXISTS rejected_history_baseline
+                    AS SELECT n.* FROM native_record n WHERE NOT EXISTS (
+                        SELECT 1 FROM input_alias a WHERE a.alias='history:' || n.key)""")
+                self.db.execute("DELETE FROM native_record WHERE key IN "
+                                "(SELECT key FROM rejected_history_baseline)")
+                self.db.execute("DELETE FROM native_stream WHERE NOT EXISTS "
+                                "(SELECT 1 FROM native_record n WHERE n.stream_id=native_stream.stream_id)")
+                self.db.execute("CREATE TABLE input_stream_cursor(stream TEXT PRIMARY KEY, next_pos INTEGER NOT NULL)")
+                self.db.execute("""INSERT INTO input_stream_cursor
+                    SELECT json_extract(payload,'$.stream_id'),
+                           MAX(COUNT(*),MAX(json_extract(payload,'$.ordinal'))+1)
+                    FROM input_canonical GROUP BY json_extract(payload,'$.stream_id')""")
+                self.db.execute("INSERT INTO unified_meta VALUES('atomic_history_v1','1')")
+            self.db.commit()
+        except BaseException:
+            self.db.rollback()
+            raise
+
     def _has_overlap(self, record, kind, positional=False):
         sql = "SELECT 1 FROM input_overlap WHERE stream=? AND kind=? AND fingerprint=?"
         if positional:
@@ -126,9 +152,16 @@ class UnifiedJournal(ImportJournal):
             key = None
         added = 0
         if key and existing is None:
+            cursor = self.db.execute("SELECT next_pos FROM input_stream_cursor WHERE stream=?",
+                                     (record.stream_id,)).fetchone()
+            next_pos = cursor[0] if cursor else 0
+            # 别名保留宿主位置；稳定 ID 的规范载荷取首次接受的流内顺序。
+            normalized = replace(record, ordinal=next_pos) if record.native_id is not None else record
+            self.db.execute("INSERT OR REPLACE INTO input_stream_cursor VALUES(?,?)",
+                            (record.stream_id, max(next_pos, normalized.ordinal) + 1))
             added = self.db.execute(
                 "INSERT OR IGNORE INTO input_canonical(key,payload) VALUES(?,?)",
-                (key, canonical(record.as_dict())),
+                (key, canonical(normalized.as_dict())),
             ).rowcount
         self.db.execute(
             "INSERT OR REPLACE INTO input_alias VALUES(?,?,?,?,?,?)",
@@ -173,16 +206,14 @@ class UnifiedJournal(ImportJournal):
 
     def stage(self, payload, origin, links=None):
         """保留原快照前缀规则。links 仅接受可信适配器提供的 ordinal→平台 ID。"""
-        staged = super().stage(payload, origin)
-        records = parse_history(payload, origin)
+        records, internal = parse_history_with_metadata(payload, origin)
         links = links or {}
-        if len(set(str(v) for v in links.values())) != len(links):
-            raise ImportConflict(
-                "one realtime message cannot bind two history positions"
-            )
         result = {"new": 0, "duplicates": 0, "pending": 0}
         self.db.execute("BEGIN IMMEDIATE")
         try:
+            if len(set(str(v) for v in links.values())) != len(links):
+                raise ImportConflict("one realtime message cannot bind two history positions")
+            self._stage_records(records, internal, origin)
             for record in records:
                 linked = None
                 identity = links.get(str(record.ordinal))
@@ -218,8 +249,9 @@ class UnifiedJournal(ImportJournal):
                 result["pending"] += item["pending"]
                 result["duplicates"] += int(not item["new"] and not item["pending"])
             self.db.commit()
-        except BaseException:
+        except BaseException as exc:
             self.db.rollback()
+            self._record_rejection(origin, exc)
             raise
         return result
 

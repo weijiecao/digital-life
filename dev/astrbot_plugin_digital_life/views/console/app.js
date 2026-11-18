@@ -313,7 +313,7 @@ async function renderUnified() {
     <section class="panel management-panel"><h2>撤回来源</h2>
     <label>新引擎 scope<input id="withdraw-scope"></label>
     <label>来源序号 source_seq<input id="withdraw-seq" type="number" min="1"></label>
-    <button class="btn danger" data-act="unified-withdraw" ${attr}>撤回并使派生证据失效</button>
+    <button class="btn danger" data-act="unified-withdraw" data-generation="${esc(s.store_generation)}" ${attr}>撤回并使派生证据失效</button>
     <p class="muted">这是撤回，不是物理删除；原文审计和历史备份仍保留。</p></section>`;
 }
 function saveManagementDraft() {
@@ -1238,10 +1238,18 @@ Object.assign(actions, {
   'unified-restore': async el => {
     const answer=await confirmDialog({title:'恢复运行库',message:'将暂停采集和注入，备份当前数据，再切换整组数据库。切换后会清空短指代缓存。',okText:'恢复并切换'});
     if(answer.ok) { saveManagementDraft(); await runtimePost('restore',{id:el.dataset.id}); await renderUnified(); } },
-  'unified-withdraw': async () => {
-    const scope=$('#withdraw-scope').value,source_seq=Number($('#withdraw-seq').value);
-    const answer=await confirmDialog({title:'撤回来源',message:'该来源不再参与回忆，其派生证据将失效。原文审计仍保留。'});
-    if(answer.ok) { await runtimePost('withdraw',{scope,source_seq}); toast('来源已撤回','ok'); } }
+  'unified-withdraw': async el => {
+    const scope = $('#withdraw-scope').value.trim();
+    const source_seq = Number($('#withdraw-seq').value);
+    const generation = Number(el.dataset.generation);
+    const {target, excerpt} = await runtimePost('withdraw_preview', {scope, source_seq, generation});
+    const answer = await confirmDialog({title:'撤回来源',
+      message:`第 ${generation} 代 · 来源 ${source_seq}：「${excerpt}」。确认后其派生证据将失效，审计原文保留。`});
+    if (answer.ok) {
+      await runtimePost('withdraw', target);
+      toast('来源已撤回', 'ok');
+    }
+  }
 });
 
 async function refreshCurrent() {

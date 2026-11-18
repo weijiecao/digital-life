@@ -11,7 +11,7 @@
 
 两者都独立于 V1 生产插件；当前只用于隔离验收。
 
-**当前状态：`0.8.0-dev.2` 开发基线（R0 / R1 NO-GO）。** 安装包只用于隔离验收，
+**当前源码：`0.8.0-dev.3` 修复候选（R0 / R1 NO-GO）。** 安装包只用于隔离验收，
 不要接入 V1 生产或生产 Shadow。能力与验证状态见 [`docs/CURRENT_STATUS.md`](docs/CURRENT_STATUS.md)。
 
 ## 最短路径
@@ -57,7 +57,7 @@ env/                            环境模板与锁文件
 
 ## 统一插件
 
-整体版本 `0.8.0-dev.2`（记忆基座、引擎、输入、输出、应用服务与 UI 同一版本号），包含旧基座迁移、实时追加与历史对账、恢复切换、撤回、
+整体版本 `0.8.0-dev.3`（记忆基座、引擎、输入、输出、应用服务与 UI 同一版本号），包含旧基座迁移、实时追加与历史对账、恢复切换、撤回、
 偏好排序/短指代/主动请求记忆入口与统一管理页。
 
 | 模式 | 行为 |
@@ -71,17 +71,17 @@ env/                            环境模板与锁文件
 
 ## 交付物
 
-版本只由仓库根 `VERSION` 决定（当前 `0.8.0-dev.2`）。一次交付是一整个集合，不是单个补丁包：
+版本只由仓库根 `VERSION` 决定（当前 `0.8.0-dev.3`）。一次交付是一整个集合，不是单个补丁包：
 
 | 文件 | 说明 |
 | --- | --- |
 | `VERSION` | 唯一人工版本源；`metadata.yaml` 由 `tools/sync_version.py` 派生 |
-| `releases/` | 当前版本的安装包、发布清单与校验值（构建后写入，旧版本移到 `archive/releases/`） |
+| `releases/` | 最近已发布版本的安装包、发布清单与校验值（构建后写入，旧版本移到 `archive/releases/`） |
 | `dist/release/` | 完整交付集合：插件 ZIP、源码 ZIP、工程 ZIP、发布 JSON、`SHA256SUMS-<版本>.txt` |
 | `dev/reports/current_acceptance.json` | 当前验收记录（含 suites、证据索引与一致性问题） |
 | `dev/reports/acceptance/<提交>/` | 持久证据：回归、包级用例、构建清单、验包与导出的小型报告 |
 | `dev/reports/SPECIALIZED_COVERAGE.md` | 能力 → 测试 → 环境的映射与缺口 |
-| `verification/README.md` | 包级与 UI 验收资产（47＋137＋20） |
+| `verification/README.md` | 包级与 UI 验收资产 |
 | `docs/ARCHITECTURE.md`、`docs/MIGRATION_RECOVERY.md` | 架构与迁移/恢复/撤回操作 |
 
 构建与验收：

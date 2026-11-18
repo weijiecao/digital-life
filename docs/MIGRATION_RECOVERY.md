@@ -13,7 +13,8 @@
 | 备份 | `POST …/runtime/backup` | `{}` |
 | 校验备份 | `POST …/runtime/verify_backup` | `{"id": "<backup>"}` |
 | 恢复 | `POST …/runtime/restore` | `{"id": "<backup>"}` |
-| 撤回 | `POST …/runtime/withdraw` | `{"scope": "<scope>", "source_seq": 12}` |
+| 撤回预览 | `POST …/runtime/withdraw_preview` | `{"scope": "<scope>", "source_seq": 12, "generation": 1}` |
+| 确认撤回 | `POST …/runtime/withdraw` | 预览返回的 `target` 对象，原样传回 |
 | 查询状态 | `GET …/runtime/status` | — |
 
 ## 1. 旧基座迁移
@@ -86,13 +87,10 @@
 
 ## 4. 撤回
 
-1. 先写 journal 重放屏障（`tombstone`），保证同一 key 不会再次投递；
-2. 在同一事务里让 `delete_source` 失效派生证据，并把收件箱状态改为 `WITHDRAWN`；
-3. 清空短指代缓存，返回 `physical_delete: false`。
-
-中断发生在屏障之后时，重启会补齐业务失效；撤回后原文不再参与回忆，但**不是物理擦除**：
-审计原文、旧代次目录与历史备份仍然保留。若需要真正删除，应另开数据清理任务，
-不能把撤回当作擦除承诺。
+1. 页面使用当前展示的代次读取来源片段。确认时，服务再次核对代次、作用域、序号、来源键与内容哈希。过期操作提示刷新。
+2. 在根目录的 `withdrawals.sqlite3` 提交稳定身份，再在活动库中失效证据、更新收件箱与上下文。输入 journal 保留重放屏障。
+3. 恢复旧备份或重启时，先合并已知撤回并处理当前代次。消息后续补录时也要核对账本。同键异哈希的输入隔离为 `WITHDRAWAL_CONFLICT`。
+4. 跨机器恢复时，旧快照只包含截至创建时的记录。若要带上后续撤回，停机后迁移整个插件数据目录。撤回后仍保留审计原文和旧备份。
 
 ## 5. 与旧 shadow 的关系
 
